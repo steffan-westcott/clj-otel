@@ -84,7 +84,7 @@
         (map (fn [[^AttributeKey k v]] [(.getKey k) v]))
         (.asMap attributes)))
 
-(defn map->Attributes
+(defn ->Attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
   keyword, string or `AttributeKey` instance. Each map value may be a boolean,
   long, double, string or a homogenous array of those types. Attributes with
