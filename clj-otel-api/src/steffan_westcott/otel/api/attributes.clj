@@ -76,14 +76,7 @@
           v' (attribute-value attribute-type v)]
       [k' v'])))
 
-;(defn- ->keyword
-;  "Coerce `k` (which may be [[AttributeKey]] or string) to a keyword."
-;  [k]
-;  (keyword (if (instance? AttributeKey k)
-;             (.getKey k)
-;             k)))
-
-(defn to-map
+(defn ->map
   "Converts an `Attributes` instance to an attribute map. Each key of the
   returned map is a string."
   [^Attributes attributes]
@@ -91,9 +84,11 @@
         (map (fn [[^AttributeKey k v]] [(.getKey k) v]))
         (.asMap attributes)))
 
-(defn to-Attributes
+(defn map->Attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
-  keyword, string or `AttributeKey`."
+  keyword, string or `AttributeKey` instance. Each map value may be a boolean,
+  long, double, string or a homogenous array of those types. Attributes with
+  `nil` or empty values are dropped."
   [m]
   (let [kvs (keep attribute-key-value m)]
     (if (seq kvs)

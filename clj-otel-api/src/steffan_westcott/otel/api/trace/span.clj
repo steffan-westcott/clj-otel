@@ -81,7 +81,7 @@
 (defn- add-link [^SpanBuilder builder [sc attributes]]
   (if-let [span-context (get-span-context sc)]
     (if attributes
-      (.addLink builder span-context (attr/to-Attributes attributes))
+      (.addLink builder span-context (attr/map->Attributes attributes))
       (.addLink builder span-context))
     builder))
 
@@ -121,7 +121,7 @@
         builder (cond-> (.spanBuilder tracer name)
                         :always (.setParent parent-context)
                         links (add-links links)
-                        :always (.setAllAttributes (attr/to-Attributes attributes'))
+                        :always (.setAllAttributes (attr/map->Attributes attributes'))
                         span-kind (.setSpanKind (keyword->SpanKind span-kind))
                         timestamp (as-> b (let [[amount unit] (util/timestamp timestamp)]
                                             (.setStartTimestamp b amount unit))))
@@ -131,7 +131,7 @@
 (defn- add-event!
   [^Span span {:keys [^String name attributes timestamp]
                :or   {name "" attributes {}}}]
-  (let [attrs (attr/to-Attributes attributes)]
+  (let [attrs (attr/map->Attributes attributes)]
     (if timestamp
       (let [[amount unit] (util/timestamp timestamp)]
         (.addEvent span name attrs amount unit))
@@ -142,7 +142,7 @@
                :or   {attributes {}}}]
   (let [attrs (cond-> attributes
                       (some? escaping?) (assoc SemanticAttributes/EXCEPTION_ESCAPED (boolean escaping?)))]
-    (.recordException span exception (attr/to-Attributes attrs))))
+    (.recordException span exception (attr/map->Attributes attrs))))
 
 (defn add-span-data!
   "Adds data to a span. All data values documented here are optional unless
@@ -187,7 +187,7 @@
     (cond-> span
             name (.updateName name)
             status (.setStatus (keyword->StatusCode (:code status)) (:description status))
-            attributes (.setAllAttributes (attr/to-Attributes attributes))
+            attributes (.setAllAttributes (attr/map->Attributes attributes))
             event (add-event! event)
             ex-data (add-ex-data! ex-data))))
 
