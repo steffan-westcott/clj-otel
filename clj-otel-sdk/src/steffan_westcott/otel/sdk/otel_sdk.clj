@@ -18,7 +18,7 @@
   (if (instance? Resource resource)
     resource
     (let [{:keys [attributes schema-url]} resource]
-      (Resource/create (attr/map->Attributes attributes) schema-url))))
+      (Resource/create (attr/->Attributes attributes) schema-url))))
 
 (defn- merge-resources-with-default [resources]
   (reduce #(.merge ^Resource %1 (as-Resource %2)) (Resource/getDefault) resources))
