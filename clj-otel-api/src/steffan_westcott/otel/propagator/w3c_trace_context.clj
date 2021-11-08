@@ -3,8 +3,7 @@
   (:import (io.opentelemetry.api.trace.propagation W3CTraceContextPropagator)))
 
 (defn w3c-trace-context-propagator
-  "Returns a text map propagator that implements the W3C TraceContext
-  propagation protocol. This is the default propagator used for context
-  propagation."
+  "Returns an implementation of the W3C TraceContext propagation protocol. This
+  is the default propagator used for context propagation."
   []
   (W3CTraceContextPropagator/getInstance))

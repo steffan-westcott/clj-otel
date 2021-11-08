@@ -52,7 +52,9 @@
 
 
 
-(defmacro catch-all [& body]
+(defmacro catch-all
+  "Evaluate body but catch any exceptions and return exception value."
+  [& body]
   `(try
      ~@body
      (catch Throwable e#
@@ -104,7 +106,11 @@
 
 
 
-(defmacro catch-response [context & body]
+(defmacro catch-response
+  "Evaluate body but catch any exception and return as 500 Server Error
+  response instead. The caught exception will also be added as an event to the
+  span in the given context."
+  [context & body]
   `(try
      ~@body
      (catch Throwable e#
@@ -130,7 +136,9 @@
 
 
 ;; Used by <with-span-binding
-(defn <instrumented-pipe [context <src buf-size timeout respond raise]
+(defn <instrumented-pipe
+  "Internal function used by [[<with-span-binding]]."
+  [context <src buf-size timeout respond raise]
   (let [<dest (async/chan buf-size)
         <timeout (async/timeout timeout)]
 

@@ -186,7 +186,8 @@
 
 
 (init-tracer!)
-(defonce server (jetty/run-jetty #'service {:port 8080 :async? true :join? false}))
+(defonce ^{:doc "puzzle-service server instance"} server
+         (jetty/run-jetty #'service {:port 8080 :async? true :join? false}))
 
 (comment
 

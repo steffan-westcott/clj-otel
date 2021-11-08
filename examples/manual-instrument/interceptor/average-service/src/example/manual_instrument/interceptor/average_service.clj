@@ -123,6 +123,7 @@
 
 
 (def service-map
+  "Pedestal service map for average HTTP service."
   {::http/routes routes
    ::http/type   :jetty
    ::http/port   8080
@@ -140,4 +141,5 @@
 ;;;;;;;;;;;;;
 
 (init-tracer!)
-(defonce server (http/start (http/create-server service-map)))
+(defonce ^{:doc "average-service server instance"} server
+         (http/start (http/create-server service-map)))

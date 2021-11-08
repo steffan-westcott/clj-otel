@@ -54,6 +54,13 @@
     (.build builder)))
 
 (defn as-Sampler
+  "Coerce to [[Sampler]]. May be given a map as follows:
+
+  | key           | description |
+  |---------------|-------------|
+  |`:always`      | With value `:on` always record and export all spans. With value `:off` drop all spans.
+  |`:ratio`       | double in range [0.0, 1.0], describing the ratio of spans to be sampled.
+  |`:parent-based`| Option map (see table below), describing sampling decisions based on the parent span."
   [sampler]
   (if (instance? Sampler sampler)
     sampler
@@ -192,7 +199,13 @@
 
 (defn init-otel-sdk!
   "Configure a [[OpenTelemetrySdk]] instance and set as the global
-  [[OpenTelemetry]] instance."
+  [[OpenTelemetry]] instance. Takes a map as follows:
+
+  | key                   | description |
+  |-----------------------|-------------|
+  |`:resources`           | Collection of resources to merge with default SDK resource. Each resource is either a [[Resource]] instance or a map with keys `:attributes` and `:schema-url`. The merged resource will be attached to all spans.
+  |`:tracer-provider-opts`| Options map as per parameter to [[get-sdk-tracer-provider]].
+  |`:propagators`         | Collection of [[TextMapPropagator]] instances to apply to spans. `nil` will apply default propagators W3C Trace Context and W3C Baggage."
   [{:keys [resources tracer-provider-opts propagators]}]
   (let [resource (merge-resources-with-default resources)
         tracer-provider (get-sdk-tracer-provider (assoc tracer-provider-opts :resource resource))

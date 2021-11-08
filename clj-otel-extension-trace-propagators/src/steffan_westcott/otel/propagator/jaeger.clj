@@ -3,7 +3,6 @@
   (:import (io.opentelemetry.extension.trace.propagation JaegerPropagator)))
 
 (defn jaeger-propagator
-  "Returns a [[TextMapPropagator]] that implements the Jaeger propagation
-  protocol."
+  "Returns an implementation of the Jaeger propagation protocol."
   []
   (JaegerPropagator/getInstance))

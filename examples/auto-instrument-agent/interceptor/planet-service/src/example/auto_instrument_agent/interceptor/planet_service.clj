@@ -10,6 +10,7 @@
             [steffan-westcott.otel.api.trace.span :as span]))
 
 (def planet-metrics
+  "Map of planets and their metric values. Saturn is missing some data."
   {:mercury {:diameter 4879 :gravity 3.7}
    :venus   {:diameter 12104 :gravity 8.9}
    :earth   {:diameter 12756 :gravity 9.8}
@@ -80,6 +81,7 @@
 
 
 (def service-map
+  "Pedestal service map for planet HTTP service."
   {::http/routes routes
    ::http/type   :jetty
    ::http/port   8081
@@ -96,4 +98,6 @@
 ;;;;;;;;;;;;;
 
 (init-tracer)
-(defonce server (http/start (http/create-server service-map)))
+
+(defonce ^{:doc "planet-service server instance"}
+         server (http/start (http/create-server service-map)))

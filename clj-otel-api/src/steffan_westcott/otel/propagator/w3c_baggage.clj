@@ -3,7 +3,7 @@
   (:import (io.opentelemetry.api.baggage.propagation W3CBaggagePropagator)))
 
 (defn w3c-baggage-propagator
-  "Returns a text map propagator that implements the W3C specification for
-  baggage header propagation."
+  "Returns an implementation of the W3C specification for baggage header
+  propagation."
   []
   (W3CBaggagePropagator/getInstance))

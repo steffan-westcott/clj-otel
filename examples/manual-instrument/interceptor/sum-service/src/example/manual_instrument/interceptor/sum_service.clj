@@ -70,6 +70,7 @@
 
 
 (def service-map
+  "Pedestal service map for sum HTTP service."
   {::http/routes routes
    ::http/type   :jetty
    ::http/port   8081
@@ -86,7 +87,8 @@
 ;;;;;;;;;;;;;
 
 (init-tracer!)
-(defonce server (http/start (http/create-server service-map)))
+(defonce ^{:doc "sum-service server instance"} server
+         (http/start (http/create-server service-map)))
 
 (comment
   )

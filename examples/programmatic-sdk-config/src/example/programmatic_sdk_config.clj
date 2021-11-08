@@ -101,7 +101,9 @@
   []
   (sdk/close-otel-sdk!))
 
-(defn square [n]
+(defn square
+  "Returns the square of a number."
+  [n]
   (span/with-span! {:name "squaring"}
     (Thread/sleep 500)
     (* n n)))

@@ -102,6 +102,7 @@
 
 
 (def service-map
+  "Pedestal service map for solar system HTTP service."
   {::http/routes routes
    ::http/type   :jetty
    ::http/port   8080
@@ -119,4 +120,5 @@
 ;;;;;;;;;;;;;
 
 (init-tracer!)
-(defonce server (http/start (http/create-server service-map)))
+(defonce ^{:doc "solar-system-service server instance"}
+         server (http/start (http/create-server service-map)))

@@ -9,6 +9,7 @@
             [steffan-westcott.otel.api.trace.span :as span]))
 
 (def words
+  "Map of word types and collections of random words of that type."
   {:noun      ["amusement" "bat" "cellar" "engine" "flesh" "frogs" "hearing" "record"]
    :verb      ["afford" "behave" "ignite" "justify" "race" "sprout" "strain" "wake"]
    :adjective ["cultured" "glorious" "grumpy" "handy" "kind" "lush" "mixed" "shut"]})
@@ -16,7 +17,7 @@
 
 
 (defn random-word
-  "Returns a random word of the requested type."
+  "Gets a random word of the requested type."
   [word-type]
 
   ;; Wrap the synchronous body in a new internal span.
@@ -80,4 +81,5 @@
 
 
 (init-tracer!)
-(defonce server (jetty/run-jetty #'service {:port 8081 :join? false}))
+(defonce ^{:doc "random-word-service server instance"} server
+         (jetty/run-jetty #'service {:port 8081 :join? false}))
