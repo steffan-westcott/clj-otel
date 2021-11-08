@@ -1,0 +1,3 @@
+{:paths ["src"]
+ :deps  {org.clojure/clojure                                {:mvn/version "1.10.3"}
+         io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.7.1-alpha"}}}

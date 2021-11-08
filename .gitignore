@@ -1,0 +1,14 @@
+.calva
+.cpcache
+.lein-*
+.lsp
+.nrepl-history
+.nrepl-port
+.rebel_readline_history
+.socket-repl-port
+/.clj-kondo/.cache
+*.iml
+/.idea
+
+/clj-otel-*/target
+*.jar

@@ -1,0 +1,12 @@
+{:paths   ["src"]
+
+ :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
+           org.clojure/core.async                   {:mvn/version "1.4.627"}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}}
+
+ :aliases {
+           ;; Used for development of clj-otel-* libraries with the examples
+
+           :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}}}
+
+           }}

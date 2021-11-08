@@ -1,0 +1,30 @@
+version: "2"
+services:
+
+  # Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "14250:14250"  # gRPC endpoint
+      - "14268:14268"  # Thrift endpoint
+      - "16686:16686"  # Web interface
+
+  # Zipkin
+  zipkin:
+    image: openzipkin/zipkin-slim:latest
+    ports:
+      - "9411:9411"    # Zipkin endpoint and web interface
+
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"    # OTLP gRPC receiver
+      - "4318:4318"    # OTLP HTTP receiver
+      - "13133:13133"  # health_check extension
+    depends_on:
+      - jaeger
+      - zipkin

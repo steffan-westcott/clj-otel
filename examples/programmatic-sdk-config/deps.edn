@@ -1,0 +1,77 @@
+{:paths   ["src"]
+
+ :deps    {org.clojure/clojure                                          {:mvn/version "1.10.3"}
+           com.github.steffan-westcott/clj-otel-api                     {:mvn/version "0.1.0-SNAPSHOT"}
+           com.github.steffan-westcott/clj-otel-sdk                     {:mvn/version "0.1.0-SNAPSHOT"}
+           com.github.steffan-westcott/clj-otel-sdk-extension-resources {:mvn/version "0.1.0-SNAPSHOT"}}
+
+ :aliases {
+
+           ;; Select any number of traces-* aliases
+
+           :traces-zipkin        {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-zipkin
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+           :traces-jaeger-grpc   {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+           :traces-jaeger-thrift {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+           :traces-otlp-grpc     {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+           :traces-otlp-http     {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+           :traces-logging       {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+           :traces-logging-otlp  {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging-otlp
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+
+
+           ;; Select one grpc-* alias if using an exporter with GRPC (above alias has -grpc suffix)
+
+           :grpc-netty           {:extra-deps {io.grpc/grpc-netty-shaded
+                                               {:mvn/version "1.42.0"}}}
+
+           :grpc-okhttp          {:extra-deps {io.grpc/grpc-okhttp
+                                               {:mvn/version "1.42.0"}}}
+
+
+
+           ;; Used for development of clj-otel-* libraries with the examples
+
+           :dev                  {:override-deps {com.github.steffan-westcott/clj-otel-api
+                                                  {:local/root "../../clj-otel-api"}
+
+                                                  com.github.steffan-westcott/clj-otel-sdk
+                                                  {:local/root "../../clj-otel-sdk"}
+
+                                                  com.github.steffan-westcott/clj-otel-sdk-extension-resources
+                                                  {:local/root "../../clj-otel-sdk-extension-resources"}
+
+                                                  com.github.steffan-westcott/clj-otel-exporter-zipkin
+                                                  {:local/root "../../clj-otel-exporter-zipkin"}
+
+                                                  com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc
+                                                  {:local/root "../../clj-otel-exporter-jaeger-grpc"}
+
+                                                  com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift
+                                                  {:local/root "../../clj-otel-exporter-jaeger-thrift"}
+
+                                                  com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace
+                                                  {:local/root "../../clj-otel-exporter-otlp-grpc-trace"}
+
+                                                  com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace
+                                                  {:local/root "../../clj-otel-exporter-otlp-http-trace"}
+
+                                                  com.github.steffan-westcott/clj-otel-exporter-logging
+                                                  {:local/root "../../clj-otel-exporter-logging"}
+
+                                                  com.github.steffan-westcott/clj-otel-exporter-logging-otlp
+                                                  {:local/root "../../clj-otel-exporter-logging-otlp"}}}
+
+           }}
