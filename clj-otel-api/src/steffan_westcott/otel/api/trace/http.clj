@@ -36,7 +36,7 @@
 
   | key                       | description |
   |---------------------------|-------------|
-  |`:app-root'                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
+  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
   |`:captured-request-headers`| Down-cased names of request headers to be captured as span attributes (default: no headers captured)."
   ([request]
    (server-span-opts request {}))
@@ -206,7 +206,7 @@
   |---------------------------|-------------|
   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
   |`:server-name`             | Primary server name of virtual host of this web application e.g. \"app.market.com\" (default: no server name).
-  |`:app-root'                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
+  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
   |`:captured-request-headers`| Down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([handler]
    (wrap-server-span handler {}))
@@ -275,7 +275,7 @@
 
   When `:create-span?` is false, for each request it is assumed the current
   context contains a server span created by the OpenTelemetry instrumentation
-  agent. `:create-current-context?` is ignored in this case.
+  agent. `:set-current-context?` is ignored in this case.
 
   When `:create-span?` is true, for each request a new context containing a new
   server span is created, with parent context extracted from the HTTP request
@@ -297,7 +297,7 @@
   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
   |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
   |`:server-name`             | Primary server name of virtual host of this web application e.g. \"app.market.com\" (default: no server name).
-  |`:app-root'                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
+  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
   |`:captured-request-headers`| Down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([]
    (server-span-interceptors {}))

@@ -1,10 +1,10 @@
 (ns steffan-westcott.otel.api.attributes
-  "Conversion functions between maps and [[Attributes]] objects.
+  "Conversion functions between maps and `Attributes` objects.
 
   Attributes may be attached to some OpenTelemetry objects such as spans and
-  resources. Attributes have string keys. Attribute values are booleans,
-  longs, doubles, strings or a homogenous array of those types. Attributes with
-  nil or empty values are dropped.
+  resources. Attribute keys are strings. Attribute values are booleans, longs,
+  doubles, strings or a homogenous array of those types. Attributes with `nil`
+  or empty values are dropped.
 
   OpenTelemetry has defined a rich standardised set of attributes describing
   vendor-agnostic telemetry data.
@@ -33,7 +33,7 @@
    AttributeType/STRING_ARRAY  #(map str %)})
 
 (defn- attribute-type-of
-  "Returns [[AttributeType]] inferred from type of `x`."
+  "Returns `AttributeType` inferred from type of `x`."
   [x]
   (cond
     (map? x) AttributeType/STRING
@@ -48,7 +48,7 @@
     :else AttributeType/STRING))
 
 (def ^:private attribute-key
-  "Function that returns a (memoized) [[AttributeKey]] for an attribute with
+  "Function that returns a (memoized) `AttributeKey` for an attribute with
   the given type and key name."
   (memoize
     (fn [attribute-type k]
@@ -60,8 +60,8 @@
   ((get type->valfn attribute-type) v))
 
 (defn- attribute-key-value
-  "Coerce `[k v]` to an [[AttributeKey]] and value pair. If `k` is not an
-  [[AttributeKey]] instance, the attribute type is inferred from the type of
+  "Coerce `[k v]` to an `AttributeKey` and value pair. If `k` is not an
+  `AttributeKey` instance, the attribute type is inferred from the type of
   `v`. In all cases `v` is coerced to an appropriate attribute type, or `nil`
   is returned if `v` is `nil`."
   [[k v]]
@@ -84,7 +84,7 @@
 ;             k)))
 
 (defn ->map
-  "Converts an [[Attributes]] instance to an attribute map. Each key of the
+  "Converts an `Attributes` instance to an attribute map. Each key of the
   returned map is a string."
   [^Attributes attributes]
   (into {}
@@ -92,8 +92,8 @@
         (.asMap attributes)))
 
 (defn ^Attributes map->Attributes
-  "Converts an attribute map to a [[Attributes]] instance. Each map key may be a
-  keyword, string or [[AttributeKey]]."
+  "Converts an attribute map to a `Attributes` instance. Each map key may be a
+  keyword, string or `AttributeKey`."
   [m]
   (let [kvs (keep attribute-key-value m)]
     (if (seq kvs)
