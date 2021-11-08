@@ -83,7 +83,7 @@
 ;             (.getKey k)
 ;             k)))
 
-(defn ->map
+(defn to-map
   "Converts an `Attributes` instance to an attribute map. Each key of the
   returned map is a string."
   [^Attributes attributes]
@@ -91,7 +91,7 @@
         (map (fn [[^AttributeKey k v]] [(.getKey k) v]))
         (.asMap attributes)))
 
-(defn ^Attributes ->Attributes
+(defn to-Attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
   keyword, string or `AttributeKey`."
   [m]
