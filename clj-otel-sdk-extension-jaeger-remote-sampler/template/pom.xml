@@ -6,7 +6,7 @@
   <version>VERSION</version>
   <name>clj-otel-sdk-extension-jaeger-remote-sampler</name>
   <description>Clojure wrapper of OpenTelemetry Jaeger remote sampler</description>
-  <url>https://github.com/steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler</url>
+  <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>
       <name>The Apache License, Version 2.0</name>
@@ -19,8 +19,8 @@
     </developer>
   </developers>
   <scm>
-    <url>https://github.com/steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler</url>
-    <connection>scm:git:git://github.com/steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler.git</developerConnection>
+    <url>https://github.com/steffan-westcott/clj-otel</url>
+    <connection>scm:git:git://github.com/steffan-westcott/clj-otel.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/steffan-westcott/clj-otel.git</developerConnection>
   </scm>
 </project>

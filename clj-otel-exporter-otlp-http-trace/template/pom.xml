@@ -6,7 +6,7 @@
   <version>VERSION</version>
   <name>clj-otel-exporter-otlp-http-trace</name>
   <description>Clojure wrapper of OpenTelemetry Protocol HTTP trace exporter</description>
-  <url>https://github.com/steffan-westcott/clj-otel-exporter-otlp-http-trace</url>
+  <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>
       <name>The Apache License, Version 2.0</name>
@@ -19,8 +19,8 @@
     </developer>
   </developers>
   <scm>
-    <url>https://github.com/steffan-westcott/clj-otel-exporter-otlp-http-trace</url>
-    <connection>scm:git:git://github.com/steffan-westcott/clj-otel-exporter-otlp-http-trace.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/steffan-westcott/clj-otel-exporter-otlp-http-trace.git</developerConnection>
+    <url>https://github.com/steffan-westcott/clj-otel</url>
+    <connection>scm:git:git://github.com/steffan-westcott/clj-otel.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/steffan-westcott/clj-otel.git</developerConnection>
   </scm>
 </project>
