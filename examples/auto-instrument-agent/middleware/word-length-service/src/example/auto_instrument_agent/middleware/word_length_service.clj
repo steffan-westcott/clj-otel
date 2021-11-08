@@ -2,11 +2,11 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
   synchronous Ring HTTP service that is run with the OpenTelemetry
   instrumentation agent."
-  (:require [steffan-westcott.otel.api.trace.span :as span]
-            [steffan-westcott.otel.api.trace.http :as trace-http]
-            [ring.adapter.jetty :as jetty]
+  (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.otel.api.trace.http :as trace-http]
+            [steffan-westcott.otel.api.trace.span :as span]))
 
 (defn word-length [word]
 

@@ -2,16 +2,16 @@
   "Example application demonstrating using `clj-otel` to add telemetry to an
   asynchronous Ring HTTP service that is run without the OpenTelemetry
   instrumentation agent."
-  (:require [steffan-westcott.otel.api.trace.span :as span]
-            [steffan-westcott.otel.api.trace.http :as trace-http]
-            [steffan-westcott.otel.context :as context]
+  (:require [clj-http.client :as client]
             [clojure.core.async :as async]
-            [example.common-utils.core-async :as async']
             [clojure.string :as str]
+            [example.common-utils.core-async :as async']
             [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
-            [clj-http.client :as client])
+            [steffan-westcott.otel.api.trace.http :as trace-http]
+            [steffan-westcott.otel.api.trace.span :as span]
+            [steffan-westcott.otel.context :as context])
   (:import (clojure.lang PersistentQueue)))
 
 

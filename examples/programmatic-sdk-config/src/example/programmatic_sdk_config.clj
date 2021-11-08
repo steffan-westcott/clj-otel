@@ -1,20 +1,21 @@
 (ns example.programmatic_sdk_config
   "An example application demonstrating programmatic configuration,
   initialisation and shutdown of the OpenTelemetry SDK."
-  (:require [steffan-westcott.otel.sdk.otel-sdk :as sdk]
-            [steffan-westcott.otel.resource.resources :as res]
-            [steffan-westcott.otel.api.trace.span :as span]
+  #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
+  (:require
 
-    ;;      Require desired span exporters
-            [steffan-westcott.otel.exporter.jaeger-grpc :as jaeger-grpc]
-    ;        [steffan-westcott.otel.exporter.jaeger-thrift :as jaeger-thrift]
-    ;        [steffan-westcott.otel.exporter.zipkin :as zipkin]
-    ;        [steffan-westcott.otel.exporter.otlp-http-trace :as otlp-http-trace]
-    ;        [steffan-westcott.otel.exporter.otlp-grpc-trace :as otlp-grpc-trace]
-    ;        [steffan-westcott.otel.exporter.logging :as logging]
-    ;        [steffan-westcott.otel.exporter.logging-otlp :as logging-otlp]
+    ;; Require desired span exporters
+    [steffan-westcott.otel.exporter.jaeger-grpc :as jaeger-grpc]
+    ;[steffan-westcott.otel.exporter.jaeger-thrift :as jaeger-thrift]
+    ;[steffan-westcott.otel.exporter.logging :as logging]
+    ;[steffan-westcott.otel.exporter.logging-otlp :as logging-otlp]
+    ;[steffan-westcott.otel.exporter.otlp-grpc-trace :as otlp-grpc-trace]
+    ;[steffan-westcott.otel.exporter.otlp-http-trace :as otlp-http-trace]
+    ;[steffan-westcott.otel.exporter.zipkin :as zipkin]
 
-            )
+    [steffan-westcott.otel.api.trace.span :as span]
+    [steffan-westcott.otel.resource.resources :as res]
+    [steffan-westcott.otel.sdk.otel-sdk :as sdk])
 
   (:import (io.opentelemetry.semconv.resource.attributes ResourceAttributes)))
 
@@ -47,7 +48,7 @@
                     ;; docstrings for further configuration options.
 
                     ;; Export spans to locally deployed Jaeger via gRPC
-                     (jaeger-grpc/span-exporter)
+                    (jaeger-grpc/span-exporter)
 
                     ;; Export spans to locally deployed Jaeger via Thrift
                     ; (jaeger-thrift/span-exporter)

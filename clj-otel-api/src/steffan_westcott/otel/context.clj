@@ -12,8 +12,8 @@
   for many API functions in `clj-otel` and the underlying Java implementation
   `opentelemetry-java`. The current context is safe to use in synchronous code,
   but is not suitable for use in asynchronous code."
-  (:require [steffan-westcott.otel.api.otel :as otel]
-            [clojure.string :as str])
+  (:require [clojure.string :as str]
+            [steffan-westcott.otel.api.otel :as otel])
   (:import (java.util HashMap)
            (io.opentelemetry.context Context ContextKey ImplicitContextKeyed Scope)
            (io.opentelemetry.context.propagation TextMapSetter TextMapPropagator TextMapGetter)))

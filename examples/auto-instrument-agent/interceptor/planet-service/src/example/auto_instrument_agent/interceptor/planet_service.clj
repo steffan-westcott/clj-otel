@@ -2,12 +2,12 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
   synchronous Pedestal HTTP service that is run with the OpenTelemetry
   instrumentation agent."
-  (:require [steffan-westcott.otel.api.trace.span :as span]
-            [steffan-westcott.otel.api.trace.http :as trace-http]
+  (:require [clojure.string :as str]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.util.response :as response]
-            [clojure.string :as str]))
+            [steffan-westcott.otel.api.trace.http :as trace-http]
+            [steffan-westcott.otel.api.trace.span :as span]))
 
 (def planet-metrics
   {:mercury {:diameter 4879 :gravity 3.7}

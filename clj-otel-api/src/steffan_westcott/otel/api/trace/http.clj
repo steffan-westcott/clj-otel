@@ -5,9 +5,9 @@
   working with HTTP server spans. Support is provided for working either with
   or without the OpenTelemetry instrumentation agent, and for synchronous or
   asynchronous HTTP request handlers."
-  (:require [steffan-westcott.otel.api.trace.span :as span]
-            [steffan-westcott.otel.context :as context]
-            [clojure.string :as str])
+  (:require [clojure.string :as str]
+            [steffan-westcott.otel.api.trace.span :as span]
+            [steffan-westcott.otel.context :as context])
   (:import (io.opentelemetry.semconv.trace.attributes SemanticAttributes)))
 
 (defn- parse-long [s]

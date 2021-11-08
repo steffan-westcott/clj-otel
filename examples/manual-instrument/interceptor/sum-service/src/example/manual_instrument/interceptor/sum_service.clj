@@ -2,11 +2,11 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
   synchronous Pedestal HTTP service that is run without the OpenTelemetry
   instrumentation agent."
-  (:require [steffan-westcott.otel.api.trace.span :as span]
-            [steffan-westcott.otel.api.trace.http :as trace-http]
+  (:require [clojure.string :as str]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
-            [clojure.string :as str]))
+            [steffan-westcott.otel.api.trace.http :as trace-http]
+            [steffan-westcott.otel.api.trace.span :as span]))
 
 
 (defn sum

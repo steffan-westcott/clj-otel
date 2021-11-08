@@ -7,10 +7,10 @@
 
   See the [span specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#span)
   for more conceptual information."
-  (:require [steffan-westcott.otel.api.otel :as otel]
+  (:require [clojure.main :as main]
             [steffan-westcott.otel.api.attributes :as attr]
+            [steffan-westcott.otel.api.otel :as otel]
             [steffan-westcott.otel.context :as context]
-            [clojure.main :as main]
             [steffan-westcott.otel.util :as util])
   (:import (io.opentelemetry.api.trace SpanBuilder Span SpanContext StatusCode SpanKind Tracer)
            (io.opentelemetry.context Context)

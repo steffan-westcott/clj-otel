@@ -1,2 +1,3 @@
 {:config-paths ["com.github.steffan-westcott/clj-otel-api"]
- :lint-as      {example.common-utils.core-async/<with-span-binding clojure.core/let}}
+ :lint-as      {example.common-utils.core-async/<with-span-binding clojure.core/let}
+ :linters      {:unsorted-required-namespaces {:level :warning}}}
