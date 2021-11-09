@@ -343,23 +343,7 @@
               (end-span! {:context context})
               (assoc ctx :io.pedestal.interceptor.chain/error e)))})
 
-(defn current-context-interceptor
-  "Returns a Pedestal interceptor that will on entry set the current context to
-  the value that has key `context-key` in the interceptor context map. The
-  original value of current context is restored on evaluation on interceptor
-  exit (either `leave` or `error`). The [[Scope]] of the set context is stored
-  with key `scope-key`."
-  [context-key scope-key]
-  {:name  ::current-context
-   :enter (fn [ctx]
-            (let [scope (context/set-current! (get ctx context-key))]
-              (assoc ctx scope-key scope)))
-   :leave (fn [ctx]
-            (context/close-scope! (get ctx scope-key))
-            ctx)
-   :error (fn [ctx e]
-            (context/close-scope! (get ctx scope-key))
-            (assoc ctx :io.pedestal.interceptor.chain/error e))})
+
 
 
 ;(defmacro in-span

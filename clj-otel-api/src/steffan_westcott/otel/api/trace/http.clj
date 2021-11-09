@@ -37,7 +37,7 @@
 
   | key                       | description |
   |---------------------------|-------------|
-  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
+  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
   |`:captured-request-headers`| Down-cased names of request headers to be captured as span attributes (default: no headers captured)."
   ([request]
    (server-span-opts request {}))
@@ -259,12 +259,8 @@
    :enter (fn [{:keys [io.opentelemetry/server-span-context] :as ctx}]
             (update ctx :request assoc :io.opentelemetry/server-span-context server-span-context))})
 
-(defn current-context-interceptor
-  "Returns a Pedestal interceptor that will on entry set the current context
-  to the context containing the server span. The original value of the current
-  context is restored on interceptor exit (either `leave` or `error`)."
-  []
-  (span/current-context-interceptor :io.opentelemetry/server-span-context :io.opentelemetry/server-span-scope))
+(defn- current-context-interceptor []
+  (context/current-context-interceptor :io.opentelemetry/server-span-context :io.opentelemetry/server-span-scope))
 
 (defn server-span-interceptors
   "Returns a vector of Pedestal interceptors that add HTTP server span support

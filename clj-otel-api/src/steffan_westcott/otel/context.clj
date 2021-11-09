@@ -98,6 +98,24 @@
 ;   (fn [& args]
 ;     (with-context! context (apply f args)))))
 
+(defn current-context-interceptor
+  "Returns a Pedestal interceptor that will on entry set the current context to
+  the value that has key `context-key` in the interceptor context map. The
+  original value of current context is restored on evaluation on interceptor
+  exit (either `leave` or `error`). The [[Scope]] of the set context is stored
+  with key `scope-key`."
+  [context-key scope-key]
+  {:name  ::current-context
+   :enter (fn [ctx]
+            (let [scope (set-current! (get ctx context-key))]
+              (assoc ctx scope-key scope)))
+   :leave (fn [ctx]
+            (close-scope! (get ctx scope-key))
+            ctx)
+   :error (fn [ctx e]
+            (close-scope! (get ctx scope-key))
+            (assoc ctx :io.pedestal.interceptor.chain/error e))})
+
 (defn ->headers
   "Returns a map to merge into the headers of an HTTP request for the purpose
   of context propagation i.e. transmit context transfer to a remote server. May
