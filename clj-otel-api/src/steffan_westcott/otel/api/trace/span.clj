@@ -33,8 +33,8 @@
   ([]
    (get-tracer {}))
   ([{:keys [name version schema-url open-telemetry]
-     :or   {name    (:name default-library)
-            version (:version default-library)
+     :or   {name       (:name default-library)
+            version    (:version default-library)
             schema-url (:schema-url default-library)}}]
    (let [^OpenTelemetry otel (or open-telemetry (otel/get-global-otel!))
          builder (cond-> (.tracerBuilder otel name)
@@ -47,12 +47,21 @@
   []
   (get-tracer {:open-telemetry (otel/get-noop)}))
 
-(defonce ^:private default-tracer (atom (noop-tracer)))
+(defonce ^:private default-tracer (atom nil))
 
 (defn set-default-tracer!
-  "Sets the default tracer used when creating spans. See also [[get-tracer]]."
+  "Sets the default tracer used when creating spans. Returns `tracer`. See also
+  [[get-tracer]]."
   [tracer]
   (reset! default-tracer tracer))
+
+(defn- get-default-tracer!
+  "Returns the default tracer if not nil. Otherwise, gets a tracer using
+  defaults and sets this as the default tracer."
+  []
+  (if-let [tracer @default-tracer]
+    tracer
+    (set-default-tracer! (get-tracer))))
 
 (def ^:private keyword->StatusCode
   {:unset StatusCode/UNSET
@@ -115,18 +124,18 @@
   |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
   |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
   [{:keys [^Tracer tracer name parent links attributes ^Thread thread span-kind timestamp]
-    :or   {tracer     @default-tracer
-           name       ""
+    :or   {name       ""
            parent     (context/current)
            attributes {}
            thread     (Thread/currentThread)}}]
-  (let [parent-context (or parent (context/root))
+  (let [tracer' (or tracer (get-default-tracer!))
+        parent-context (or parent (context/root))
         default-attributes (if thread
                              {SemanticAttributes/THREAD_NAME (.getName thread)
                               SemanticAttributes/THREAD_ID   (.getId thread)}
                              {})
         attributes' (merge default-attributes attributes)
-        builder (cond-> (.spanBuilder tracer name)
+        builder (cond-> (.spanBuilder tracer' name)
                         :always (.setParent parent-context)
                         links (add-links links)
                         :always (.setAllAttributes (attr/->attributes attributes'))

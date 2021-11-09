@@ -89,11 +89,7 @@
                     ;; (used for debugging only)
                     ;(logging-otlp/span-exporter)
 
-                    ]}]}})
-
-  ;; Configuration for the tracer instance used by the application.
-  (let [tracer (span/get-tracer)]
-    (span/set-default-tracer! tracer)))
+                    ]}]}}))
 
 (defn close-otel!
   "Shut down OpenTelemetry SDK processes. This should be called before the

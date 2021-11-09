@@ -105,15 +105,6 @@
                                     :server-name  "sentence-summary"})))
 
 
-(defn init-tracer
-  "Set default tracer used when manually creating spans."
-  []
-  (let [tracer (span/get-tracer)]
-    (span/set-default-tracer! tracer)))
 
-
-;;;;;;;;;;;;;
-
-(init-tracer)
 (defonce ^{:doc "sentence-summary-service server instance"} server
          (jetty/run-jetty #'service {:port 8080 :join? false}))

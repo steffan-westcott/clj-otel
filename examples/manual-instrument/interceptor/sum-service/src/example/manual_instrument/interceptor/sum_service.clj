@@ -77,18 +77,6 @@
    ::http/join?  false})
 
 
-(defn init-tracer!
-  "Set default tracer used when manually creating spans."
-  []
-  (let [tracer (span/get-tracer)]
-    (span/set-default-tracer! tracer)))
 
-
-;;;;;;;;;;;;;
-
-(init-tracer!)
 (defonce ^{:doc "sum-service server instance"} server
          (http/start (http/create-server service-map)))
-
-(comment
-  )

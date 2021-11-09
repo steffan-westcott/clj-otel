@@ -1,11 +1,6 @@
 (ns example.auto_sdk_config
   (:require [steffan-westcott.otel.api.trace.span :as span]))
 
-(defn init-tracer!
-  "Set default tracer used when manually creating spans."
-  []
-  (let [tracer (span/get-tracer)]
-    (span/set-default-tracer! tracer)))
 
 (defn square
   "Returns the square of a number."
@@ -17,7 +12,6 @@
 
 ;;;;;;;;;;;;;
 
-(init-tracer!)
 (square 9)
 
 (comment

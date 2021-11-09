@@ -70,16 +70,5 @@
 
 
 
-(defn init-tracer!
-  "Set default tracer used when manually creating spans."
-  []
-  (let [tracer (span/get-tracer)]
-    (span/set-default-tracer! tracer)))
-
-
-;;;;;;;;;;;;;
-
-
-(init-tracer!)
 (defonce ^{:doc "random-word-service server instance"} server
          (jetty/run-jetty #'service {:port 8081 :join? false}))
