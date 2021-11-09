@@ -30,9 +30,10 @@
     remote-addr))
 
 (defn server-span-opts
-  "Returns an options map for a manually created HTTP server span, initiated by
-  processing an HTTP request specified by Ring-style request map `request`.
-  May take an options map `create-span-opts` as follows:
+  "Returns a span options map (a parameter for
+  [[steffan-westcott.otel.api.trace.span/new-span!]]) for a manually created
+  HTTP server span, initiated by processing an HTTP request specified by
+  Ring-style request map `request`. May take an options map as follows:
 
   | key                       | description |
   |---------------------------|-------------|
@@ -40,9 +41,8 @@
   |`:captured-request-headers`| Down-cased names of request headers to be captured as span attributes (default: no headers captured)."
   ([request]
    (server-span-opts request {}))
-  ([request create-span-opts]
+  ([request {:keys [app-root captured-request-headers]}]
    (let [{:keys [headers request-method scheme uri query-string protocol remote-addr]} request
-         {:keys [app-root captured-request-headers]} create-span-opts
          {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
          request-method' (str/upper-case (name request-method))
          content-length' (when content-length (parse-long content-length))
@@ -65,10 +65,11 @@
                             content-length' (assoc! SemanticAttributes/HTTP_REQUEST_CONTENT_LENGTH content-length')))})))
 
 (defn client-span-opts
-  "Returns an options map for a manually created HTTP client span, where an
-  HTTP request specified by map `request` is issued in the span scope.  Only
-  `:method` is used in `request` to populate the span. May take an options map
-  as follows:
+  "Returns a span options map (a parameter for
+  [[steffan-westcott.otel.api.trace.span/new-span!]]) for a manually created
+  HTTP client span, where an HTTP request specified by Ring-style request map
+  `request` is issued in the span scope.  Only `:method` is used in `request`
+  to populate the span. May take an options map as follows:
 
   | key      | description |
   |----------|-------------|
@@ -104,7 +105,7 @@
   | key       | description |
   |-----------|-------------|
   |`:context` | Context containing server span (default: current context).
-  |`:app-root`| Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: `nil`)."
+  |`:app-root`| Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: `nil`)."
   ([route]
    (add-route-data! route {}))
   ([route {:keys [context app-root] :or {context (context/current)}}]
@@ -196,7 +197,7 @@
   context during request processing and restored to its original value on
   completion. For an asynchronous handler, the new context is set as the value
   of `:io.opentelemetry/server-span-context` in the request map. Finally, if
-  the HTTP response status code is 4xx or 5xx then the span status error
+  the HTTP response status code is `4xx` or `5xx` then the span status error
   description is set to the value of
   `:io.opentelemetry.api.trace.span.status/description` in the response map.
 
@@ -205,9 +206,9 @@
   | key                       | description |
   |---------------------------|-------------|
   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
-  |`:server-name`             | Primary server name of virtual host of this web application e.g. \"app.market.com\" (default: no server name).
-  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
-  |`:captured-request-headers`| Down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
+  |`:server-name`             | Primary server name of virtual host of this web application e.g. `\"app.market.com\"` (default: no server name).
+  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
+  |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([handler]
    (wrap-server-span handler {}))
   ([handler {:keys [create-span? server-name app-root captured-request-headers]}]
@@ -261,17 +262,17 @@
 (defn current-context-interceptor
   "Returns a Pedestal interceptor that will on entry set the current context
   to the context containing the server span. The original value of the current
-  context is restored on interceptor exit (either 'leave' or 'error')."
+  context is restored on interceptor exit (either `leave` or `error`)."
   []
   (span/current-context-interceptor :io.opentelemetry/server-span-context :io.opentelemetry/server-span-scope))
 
 (defn server-span-interceptors
   "Returns a vector of Pedestal interceptors that add HTTP server span support
-  to subsequent execution of the chain for an HTTP service. Returned vector has
-  metadata `{:interceptors true}` attached for convenient use in route
-  specification. These interceptors can be configured to either use existing
-  server spans created by the OpenTelemetry instrumentation agent or manually
-  create new server spans (when not using the agent).
+  to subsequent execution of the interceptor chain for an HTTP service.
+  Returned vector has metadata `{:interceptors true}` attached for convenient
+  use in route specification. These interceptors can be configured to either
+  use existing server spans created by the OpenTelemetry instrumentation agent
+  or manually create new server spans (when not using the agent).
 
   When `:create-span?` is false, for each request it is assumed the current
   context contains a server span created by the OpenTelemetry instrumentation
@@ -282,8 +283,8 @@
   headers. In addition, if `:set-current-context?` is true the current context
   is set to the new context on interceptor entry and its original value is
   restored on exit; this is only appropriate if all requests are to be
-  processed synchronously. Finally, if the HTTP response status code is 4xx or
-  5xx then the span status error description is set to the value of
+  processed synchronously. Finally, if the HTTP response status code is `4xx`
+  or `5xx` then the span status error description is set to the value of
   `:io.opentelemetry.api.trace.span.status/description` in the response map.
 
   No matter how the server span is created, the context containing the server
@@ -296,9 +297,9 @@
   |---------------------------|-------------|
   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
   |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
-  |`:server-name`             | Primary server name of virtual host of this web application e.g. \"app.market.com\" (default: no server name).
-  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. \"/webshop\" (default: no app root).
-  |`:captured-request-headers`| Down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
+  |`:server-name`             | Primary server name of virtual host of this web application e.g. `\"app.market.com\"` (default: no server name).
+  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
+  |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([]
    (server-span-interceptors {}))
   ([{:keys [create-span? set-current-context? server-name app-root captured-request-headers]

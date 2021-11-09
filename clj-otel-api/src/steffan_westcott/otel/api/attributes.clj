@@ -1,10 +1,11 @@
 (ns steffan-westcott.otel.api.attributes
-  "Conversion functions between maps and `Attributes` objects.
+  "Conversion functions between maps and
+  `io.opentelemetry.api.common.Attributes` objects.
 
   Attributes may be attached to some OpenTelemetry objects such as spans and
   resources. Attribute keys are strings. Attribute values are booleans, longs,
   doubles, strings or a homogenous array of those types. Attributes with `nil`
-  or empty values are dropped.
+  values are dropped.
 
   OpenTelemetry has defined a rich standardised set of attributes describing
   vendor-agnostic telemetry data.
@@ -84,11 +85,11 @@
         (map (fn [[^AttributeKey k v]] [(.getKey k) v]))
         (.asMap attributes)))
 
-(defn ->attributes
+(defn ^Attributes ->attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
   keyword, string or `AttributeKey` instance. Each map value may be a boolean,
   long, double, string or a homogenous array of those types. Attributes with
-  `nil` or empty values are dropped."
+  `nil` values are dropped."
   [m]
   (let [kvs (keep attribute-key-value m)]
     (if (seq kvs)
@@ -98,7 +99,3 @@
                             kvs)]
         (.build ^AttributesBuilder builder))
       (Attributes/empty))))
-
-(comment
-
-  )
