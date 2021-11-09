@@ -4,7 +4,7 @@
            (java.util.concurrent TimeUnit)))
 
 (defn duration
-  "Coerce to a [[Duration]] instance."
+  "Coerce to a `Duration` instance."
   [d]
   (cond
     (instance? Duration d) d
@@ -12,7 +12,7 @@
                   (Duration/of amount unit))))
 
 (defn timestamp
-  "Coerce [[Instant]] to a vector `[amount ^TimeUnit unit]`."
+  "Coerce `Instant` to a vector `[amount ^TimeUnit unit]`."
   [t]
   (cond
     (vector? t) t

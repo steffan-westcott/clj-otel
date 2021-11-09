@@ -92,7 +92,7 @@
                     ]}]}})
 
   ;; Configuration for the tracer instance used by the application.
-  (let [tracer (span/get-tracer {:name "example-app" :version "1.0.0"})]
+  (let [tracer (span/get-tracer)]
     (span/set-default-tracer! tracer)))
 
 (defn close-otel!

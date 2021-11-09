@@ -4,7 +4,7 @@
 (defn init-tracer!
   "Set default tracer used when manually creating spans."
   []
-  (let [tracer (span/get-tracer {:name "example-app" :version "1.0.0"})]
+  (let [tracer (span/get-tracer)]
     (span/set-default-tracer! tracer)))
 
 (defn square

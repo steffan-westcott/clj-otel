@@ -10,6 +10,7 @@
   (:require [clojure.main :as main]
             [steffan-westcott.otel.api.attributes :as attr]
             [steffan-westcott.otel.api.otel :as otel]
+            [steffan-westcott.otel.config :refer [config]]
             [steffan-westcott.otel.context :as context]
             [steffan-westcott.otel.util :as util])
   (:import (io.opentelemetry.api.trace SpanBuilder Span SpanContext StatusCode SpanKind Tracer)
@@ -17,22 +18,29 @@
            (io.opentelemetry.semconv.trace.attributes SemanticAttributes)
            (io.opentelemetry.api OpenTelemetry)))
 
+(def ^:private default-library (get-in config [:defaults :instrumentation-library]))
+
 (defn get-tracer
-  "Gets a tracer. Takes an option map as follows:
+  "Builds and returns a `io.opentelemetry.api.trace.Tracer` instance. May
+  take an option map as follows:
 
   | key             | description |
   |-----------------|-------------|
-  |`:name`          | Name of the instrumentation library, not the instrument*ed* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: \"default-tracer\").
-  |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: nil).
-  |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: nil).
-  |`:open-telemetry`| [[OpenTelemetry]] instance to get tracer from (default: global instance)."
-  [{:keys [name version schema-url open-telemetry]
-    :or   {name "default-tracer"}}]
-  (let [^OpenTelemetry otel (or open-telemetry (otel/get-global-otel!))
-        builder (cond-> (.tracerBuilder otel name)
-                        version (.setInstrumentationVersion version)
-                        schema-url (.setSchemaUrl schema-url))]
-    (.build builder)))
+  |`:name`          | Name of the *instrumentation* library, not the *instrumented* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: See `config.edn` resource file).
+  |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
+  |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
+  |`:open-telemetry`| `OpenTelemetry` instance to get tracer from (default: global `OpenTelemetry` instance)."
+  ([]
+   (get-tracer {}))
+  ([{:keys [name version schema-url open-telemetry]
+     :or   {name    (:name default-library)
+            version (:version default-library)
+            schema-url (:schema-url default-library)}}]
+   (let [^OpenTelemetry otel (or open-telemetry (otel/get-global-otel!))
+         builder (cond-> (.tracerBuilder otel name)
+                         version (.setInstrumentationVersion version)
+                         schema-url (.setSchemaUrl schema-url))]
+     (.build builder))))
 
 (defn noop-tracer
   "Gets a no-op tracer."
@@ -42,7 +50,7 @@
 (defonce ^:private default-tracer (atom (noop-tracer)))
 
 (defn set-default-tracer!
-  "Sets the default tracer used when creating spans."
+  "Sets the default tracer used when creating spans. See also [[get-tracer]]."
   [tracer]
   (reset! default-tracer tracer))
 
@@ -68,8 +76,8 @@
    (Span/fromContext context)))
 
 (defn get-span-context
-  "Returns the given [[SpanContext]], or extracts it from the given span
-  or context. With no arg it uses the current context."
+  "Returns the given `SpanContext`, or extracts it from the given span,
+  context or current context if no argument is given."
   ([]
    (get-span-context (get-span)))
   ([x]
@@ -98,14 +106,14 @@
 
   | key         | description |
   |-------------|-------------|
-  |`:tracer`    | [[Tracer]] used to create the span (default: default tracer).
-  |`:name`      | Span name (default: \"\").
+  |`:tracer`    | `Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]).
+  |`:name`      | Span name (default: `\"\"`).
   |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context).
-  |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a [[SpanContext]], [[Span]] or [[Context]] containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
+  |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
   |`:attributes`| Map of additional attributes for the span (default: no attributes).
   |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
-  |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also [[SpanKind]].
-  |`:timestamp` | Start timestamp for the span. Value is either an [[Instant]] or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
+  |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
+  |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
   [{:keys [^Tracer tracer name parent links attributes ^Thread thread span-kind timestamp]
     :or   {tracer     @default-tracer
            name       ""
@@ -152,7 +160,7 @@
 
   | key         | description |
   |-------------|-------------|
-  |`:context`   | Context containing span to data to (default: current context).
+  |`:context`   | Context containing span to add data to (default: current context).
   |`:name`      | Name to set span to.
   |`:status`    | Option map (see below) describing span status to set.
   |`:attributes`| Map of additional attributes to merge in the span.
@@ -164,7 +172,7 @@
   | key          | description |
   |--------------|-------------|
   |`:code`       | Status code, either `:ok` or `:error` (required).
-  |`:description`| Status description, only applicable with `:error` status code.
+  |`:description`| Status description string, only applicable with `:error` status code.
 
   `:event` option map
 
@@ -172,14 +180,14 @@
   |-------------|-------------|
   |`:name`      | Event name (required).
   |`:attributes`| Map of attributes to attach to event.
-  |`:timestamp` | Event timestamp, value is either an [[Instant]] or vector `[amount ^TimeUnit unit]`.
+  |`:timestamp` | Event timestamp, value is either an `Instant` or vector `[amount ^TimeUnit unit]`.
 
   `:ex-data` option map
 
   | key         | description |
   |-------------|-------------|
   |`:exception` | Exception instance (required).
-  |`:escaping?` | Optional boolean value, `true` if exception is escaping the span's scope, 'false' if exception is caught within the span's scope and not rethrown.
+  |`:escaping?` | Optional value, true if exception is escaping the span's scope, false if exception is caught within the span's scope and not rethrown.
   |`:attributes`| Map of additional attributes to attach to exception event."
   [{:keys [context name status attributes event ex-data]
     :or   {context (context/current)}}]
@@ -233,14 +241,13 @@
      (add-exception! exception {:context context :attributes attrs}))))
 
 (defn end-span!
-  "Low level function that ends a span, previously started by calling
-  [[new-span!]]. Does not mutate the current context. Takes an options map as
-  follows:
+  "Low level function that ends a span, previously started by [[new-span!]].
+  Does not mutate the current context. Takes an options map as follows:
 
   | key        | description |
   |------------|-------------|
   |`:context`  | Context containing span to end (default: current context)
-  |`:timestamp`| Span end timestamp. Value is either an [[Instant]] or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
+  |`:timestamp`| Span end timestamp. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
   [{:keys [context timestamp]
     :or   {context (context/current)}}]
   (let [span (get-span context)]
@@ -254,8 +261,8 @@
   and evaluates `body`. The span is ended on completion of body evaluation.
   It is expected `body` provides a synchronous result, use [[async-span]]
   instead for working with asynchronous functions. Does not use nor set the
-  current context. `span-opts` is an option map, the same as for [[new-span!]].
-  See also [[with-span!]]."
+  current context. `span-opts` is a span options map, the same as for
+  [[new-span!]]. See also [[with-span!]]."
   [[context span-opts] & body]
   `(let [~context (new-span! ~span-opts)]
      (try
@@ -271,8 +278,8 @@
   the span and evaluates `body`. The current context is restored to its
   previous value and the span is ended on completion of body evaluation.
   It is expected `body` provides a synchronous result, use [[async-span]]
-  instead for working with asynchronous functions. `span-opts` is an option
-  map, the same as for [[new-span!]]. See also [[with-span-binding]]."
+  instead for working with asynchronous functions. `span-opts` is a span
+  options map, the same as for [[new-span!]]. See also [[with-span-binding]]."
   [span-opts & body]
   `(with-span-binding [context# ~span-opts]
      (context/with-context! context# ~@body)))
@@ -285,13 +292,14 @@
   intended for adaption for use with any async library that can work with
   callbacks.
 
-  Async function execution in a span may occur on any of a number of threads.
-  For this reason async function executions must retain a reference to the
-  associated context as it is not possible to use the (default and unrelated)
-  current context bound to the thread. Some functions in this library take a
-  `:context` or `:parent` option to indicate which context to use. Contexts
-  are immutable. Creating a new span (or otherwise adding a new value to the
-  context) creates a new child context.
+  Async function evaluation in a span may occur on any of a number of threads.
+  For this reason async function evaluations must retain a reference to the
+  associated context as it is not possible to use the current context, a
+  thread local `Context` object. Some functions in this library take a
+  `:context` or `:parent` option to indicate which context to use, as an
+  alternative to the default current context. Contexts are immutable. Creating
+  a new span (or otherwise adding a new value to the context) creates a new
+  child context.
 
   `span-opts` is the same as for [[new-span!]]. `f` must take arguments
   `[context respond* raise*]` where `context` is a context containing the new
