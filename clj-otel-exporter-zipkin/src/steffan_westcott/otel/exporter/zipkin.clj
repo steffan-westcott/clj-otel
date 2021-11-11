@@ -6,14 +6,14 @@
 (defn span-exporter
   "Returns a span exporter that sends span data using the
   [`io.zipkin.reporter2:zipkin-reporter`](https://github.com/openzipkin/zipkin-reporter-java)
-  library. Takes an option map as follows:
+  library. May take an option map as follows:
 
   | key           | description |
   |---------------|-------------|
   |`:endpoint`    | With the default sender, Zipkin endpoint e.g. `\"http://zipkinhost:9411/api/v2/spans\"` (default: `\"http://localhost:9411/api/v2/spans\"`).
-  |`:read-timeout`| With the default sender, maximum time to wait for export of a batch of spans. Value is either a [[Duration]] or a vector `[amount ^TimeUnit unit]` (default: 10s).
-  |`:sender`      | [[zipkin2.reporter.Sender]] used to send span data (default: [[OkHttpSender]] instance with `:endpoint` and `:read-timeout` config).
-  |`:encoder`     | [[zipkin2.codec.BytesEncoder]] Format used to send span data (default: `SpanBytesEncoder/JSON_V2`)."
+  |`:read-timeout`| With the default sender, maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
+  |`:sender`      | `zipkin2.reporter.Sender` used to send span data (default: `OkHttpSender` instance with `:endpoint` and `:read-timeout` config).
+  |`:encoder`     | `zipkin2.codec.BytesEncoder` Format used to send span data (default: `SpanBytesEncoder/JSON_V2`)."
   ([]
    (span-exporter {}))
   ([{:keys [endpoint read-timeout sender encoder]}]

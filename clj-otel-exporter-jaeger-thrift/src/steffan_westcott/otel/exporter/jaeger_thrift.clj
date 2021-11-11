@@ -3,13 +3,13 @@
   (:import (io.opentelemetry.exporter.jaeger.thrift JaegerThriftSpanExporter)))
 
 (defn span-exporter
-  "Returns a span exporter that exports to Jaeger via Thrift. Takes an option
-  map as follows:
+  "Returns a span exporter that exports to Jaeger via Thrift. May Take an
+  option map as follows:
 
   | key       | description |
   |-----------|-------------|
   |`:endpoint`| Jaeger endpoint, used with the default sender (default: `\"http://localhost:14268/api/traces\"`).
-  |`:sender`  | [[ThriftSender]] instance to use for communication with the backend (default: [[ThriftSender]] instance configured to use `:endpoint`)."
+  |`:sender`  | `ThriftSender` instance to use for communication with the backend (default: `ThriftSender` instance configured to use `:endpoint`)."
   ([]
    (span-exporter {}))
   ([{:keys [endpoint thrift-sender]}]

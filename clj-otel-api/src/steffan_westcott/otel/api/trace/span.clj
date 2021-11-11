@@ -55,7 +55,7 @@
   [tracer]
   (reset! default-tracer tracer))
 
-(defn- get-default-tracer!
+(defn- ^Tracer get-default-tracer!
   "Returns the default tracer if not nil. Otherwise, gets a tracer using
   defaults and sets this as the default tracer."
   []

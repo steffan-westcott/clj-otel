@@ -5,13 +5,13 @@
 
 (defn span-exporter
   "Returns a span exporter that exports to Jaeger via gRPC, using Jaeger's
-  protobuf model. Takes an option map as follows:
+  protobuf model. May take an option map as follows:
 
   | key       | description |
   |-----------|-------------|
   |`:endpoint`| Jaeger endpoint, used with the default `:channel` (default: `\"http://localhost:14250\"`).
-  |`:timeout` | Maximum time to wait for export of a batch of spans.  Value is either a [[Duration]] or a vector `[amount ^TimeUnit unit]` (default: 10s).
-  |`:channel` | [[ManagedChannel]] instance to use for communication with the backend (default: [[ManagedChannel]] instance configured to use `:endpoint`)."
+  |`:timeout` | Maximum time to wait for export of a batch of spans.  Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
+  |`:channel` | `ManagedChannel` instance to use for communication with the backend (default: `ManagedChannel` instance configured to use `:endpoint`)."
   ([]
    (span-exporter {}))
   ([{:keys [endpoint timeout channel]}]

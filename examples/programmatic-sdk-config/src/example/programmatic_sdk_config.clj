@@ -15,9 +15,7 @@
 
     [steffan-westcott.otel.api.trace.span :as span]
     [steffan-westcott.otel.resource.resources :as res]
-    [steffan-westcott.otel.sdk.otel-sdk :as sdk])
-
-  (:import (io.opentelemetry.semconv.resource.attributes ResourceAttributes)))
+    [steffan-westcott.otel.sdk.otel-sdk :as sdk]))
 
 (defn init-otel!
   "Configure and initialise the OpenTelemetry SDK as the global OpenTelemetry
@@ -25,28 +23,29 @@
   any OpenTelemetry API operations such as tracing."
   []
   (sdk/init-otel-sdk!
-    {
-     ;; The collection of resources are merged to form information about the
-     ;; entity for which telemetry is recorded.
-     :resources [
-                 ;; A minimal resource which identifies this application
-                 {:attributes {ResourceAttributes/SERVICE_NAME "example-app"}}
 
-                 ;; More resources which provide information on the host, OS, process and JVM
-                 (res/host-resource)
+    ;; The service name is the minimum resource information.
+    "example-app"
+
+    {
+     ;; The collection of additional resources are merged with the service name
+     ;; to form information about the entity for which telemetry is recorded.
+     ;; Here the additional resources provide information on the host, OS,
+     ;; process and JVM.
+     :resources [(res/host-resource)
                  (res/os-resource)
                  (res/process-resource)
                  (res/process-runtime-resource)]
 
      ;; Configuration options for the context propagation, sampling, batching
      ;; and export of traces. Here we configure export to a local Jaeger server
-     ;; with default options.
-     :tracer-provider-opts
+     ;; with default options. The exported spans are batched by default.
+     :tracer-provider
      {:span-processors
-      [{:exporters [
-                    ;; Configure selected span exporter(s). See span exporter
-                    ;; docstrings for further configuration options.
 
+      ;; Configure selected span exporter(s). See span exporter docstrings for
+      ;; further configuration options.
+      [{:exporters [
                     ;; Export spans to locally deployed Jaeger via gRPC
                     (jaeger-grpc/span-exporter)
 

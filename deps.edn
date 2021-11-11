@@ -1,7 +1,7 @@
 {:deps    {org.clojure/clojure {:mvn/version "1.10.3"}}
- :aliases {:build      {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.5.2" :git/sha "8f75b81"}}
+ :aliases {:build      {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.5.3" :git/sha "dbf7321"}}
                         :ns-default build}
-           :antq       {:extra-deps {com.github.liquidz/antq {:mvn/version "1.1.0"}
+           :antq       {:extra-deps {com.github.liquidz/antq {:mvn/version "1.2.0"}
                                      org.slf4j/slf4j-nop     {:mvn/version "1.7.32"}}
                         :main-opts  ["-m" "antq.core"]}
            :java-agent {:deps {io.opentelemetry.javaagent/opentelemetry-javaagent {:mvn/version "1.7.2"}}}}}
