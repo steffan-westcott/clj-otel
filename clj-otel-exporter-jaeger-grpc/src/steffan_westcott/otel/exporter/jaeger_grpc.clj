@@ -1,5 +1,5 @@
 (ns steffan-westcott.otel.exporter.jaeger-grpc
-  "Span data exporter to Jaeger via GRPC."
+  "Span data exporter to Jaeger via gRPC."
   (:require [steffan-westcott.otel.util :as util])
   (:import (io.opentelemetry.exporter.jaeger JaegerGrpcSpanExporter)))
 

@@ -5,7 +5,7 @@
   <artifactId>clj-otel-exporter-otlp-grpc-metrics</artifactId>
   <version>VERSION</version>
   <name>clj-otel-exporter-otlp-grpc-metrics</name>
-  <description>Clojure wrapper of OpenTelemetry Protocol GRPC metrics exporter</description>
+  <description>Clojure wrapper of OpenTelemetry Protocol gRPC metrics exporter</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

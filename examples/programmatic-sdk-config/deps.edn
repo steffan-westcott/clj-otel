@@ -32,7 +32,7 @@
 
 
 
-           ;; Select one grpc-* alias if using an exporter with GRPC (above alias has -grpc suffix)
+           ;; Select one grpc-* alias if using an exporter with gRPC (above alias has -grpc suffix)
 
            :grpc-netty           {:extra-deps {io.grpc/grpc-netty-shaded
                                                {:mvn/version "1.42.0"}}}
