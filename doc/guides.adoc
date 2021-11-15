@@ -1,0 +1,65 @@
+= Guides
+:toc:
+:toclevels: 3
+
+== Add telemetry to your library or an application
+
+=== Add automatic instrumentation when running an application
+
+=== Add manual instrumentation to your library or application code
+
+==== Add instrumentation API project dependency
+
+==== Create a span for a synchronous process
+
+==== Create a span for an asynchronous process
+
+==== Add attributes to a span
+
+==== Add an event to a span
+
+==== Add an exception to a span
+
+=== Work with HTTP client and server spans
+
+==== Use Ring middleware for server spans
+
+==== Use Pedestal interceptors for server spans
+
+==== Add route data to a server span
+
+==== Add HTTP response data to a client or server span
+
+== Configure and run an application with telemetry
+
+=== Run with the OpenTelemetry auto-instrumentation agent
+
+=== Run without the OpenTelemetry auto-instrumentation agent
+
+=== Configure telemetry with properties
+
+If you are not using the OpenTelemetry instrumentation agent, you will also need to add project dependencies the autoconfig module and any extra components (exporters, propagators, resources).
+
+=== Configure telemetry programmatically
+
+This option is available only if running without the agent.
+
+=== Mute telemetry signals
+
+=== Batch spans prior to export
+
+=== Export spans to the OpenTelemetry Collector
+
+=== Export spans directly to back ends
+
+==== Export spans directly to back ends that support OTLP
+
+==== Export spans directly to Jaeger
+
+==== Export spans directly to Zipkin
+
+== Use the OpenTelemetry Collector
+
+=== Deploy the OpenTelemetry Collector
+
+=== Configure the OpenTelemetry Collector

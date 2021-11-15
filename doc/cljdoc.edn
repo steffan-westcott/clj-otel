@@ -1,0 +1,4 @@
+{:cljdoc.doc/tree [["Tutorial" {:file "doc/tutorial.adoc"}]
+                   ["Guides" {:file "doc/guides.adoc"}]
+                   ["Reference" {:file "doc/reference.adoc"}]
+                   ["Concepts" {:file "doc/concepts.adoc"}]]}
