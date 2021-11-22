@@ -50,9 +50,9 @@ This option is available only if running without the agent.
 
 === Export spans to the OpenTelemetry Collector
 
-=== Export spans directly to back ends
+=== Export spans directly to backends
 
-==== Export spans directly to back ends that support OTLP
+==== Export spans directly to backends that support OTLP
 
 ==== Export spans directly to Jaeger
 

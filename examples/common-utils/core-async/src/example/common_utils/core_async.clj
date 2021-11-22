@@ -179,7 +179,7 @@
   evaluates `body` which should return a `<src` channel. The span is ended
   when a close operation on `<src` completes (after values on `<src` have been
   consumed) or `timeout` milliseconds have elapsed. Because spans must be ended
-  before they are sent to the back end, the timeout guarantees the span will
+  before they are sent to the backend, the timeout guarantees the span will
   not be missing from the reported trace. If either `body` throws an exception
   or exception values are put on `<src`, exception events will be added to the
   span. `span-opts` is the same as for [[new-span!]]. Returns a `<dest` channel

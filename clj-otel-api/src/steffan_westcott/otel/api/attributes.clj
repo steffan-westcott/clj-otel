@@ -1,15 +1,6 @@
 (ns steffan-westcott.otel.api.attributes
   "Conversion functions between maps and
-  `io.opentelemetry.api.common.Attributes` objects.
-
-  Attributes may be attached to some OpenTelemetry objects such as spans and
-  resources. Attribute keys are strings. Attribute values are booleans, longs,
-  doubles, strings or a homogenous array of those types. Attributes with `nil`
-  values are dropped.
-
-  OpenTelemetry has defined a rich standardised set of attributes describing
-  vendor-agnostic telemetry data.
-  See [OpenTelemetry semantic conventions documentation](https://opentelemetry.io/docs/concepts/glossary/#semantic-conventions)."
+  `io.opentelemetry.api.common.Attributes` objects."
   (:require [steffan-westcott.otel.util :as util])
   (:import (io.opentelemetry.api.common Attributes AttributeKey AttributeType AttributesBuilder)))
 

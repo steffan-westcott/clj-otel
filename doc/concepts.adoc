@@ -1,1 +1,281 @@
 = Concepts
+:toc:
+:icons: font
+
+== Observability and `otel-clj`
+
+=== What is observability?
+
+*Observability* is the ability to measure a system's current state based on the *telemetry data* it generates, such as *traces*, *metrics*, *logs* and *events*.
+
+An *observable system* may be *queried* to describe its *composition* and *behaviour*.
+As systems are often highly distributed in nature, observability addresses the need to understand the behaviour with *context* across services, technologies and environments.
+
+*Monitoring* is a complementary activity to observability, where typically a *dashboard* is configured to report predetermined *metrics* and *alerts* are set to trigger on specific conditions in the system.
+Monitoring is oriented to detection of *known types of issues*, as the monitored metrics or conditions are determined in advance.
+
+=== What is the goal of observability?
+
+*Observability* enables *detection and exploration of issues* as they occur and *assists with root cause analysis*.
+By querying an observable system, *unexpected types of issue* can be detected, classified and monitored as they arise, addressing the issue of "unknown unknowns".
+Questions on the actual behaviour of an observable system may be more readily answered:
+
+* "What caused this failure?"
+* "What caused this change in behaviour?"
+* "Why do a particular user's requests fail?"
+* "Is my latest canary deployment stable?"
+* "Should I roll back the latest deployment?"
+* "Are my intended performance improvements in the latest deployment working as expected?"
+* "What uses my service, and what are the services it uses?"
+* "What mix of request types are issued to the system?
+Is that mix consistent across users?"
+* "Which areas should I work on to improve experience for most users?"
+* "How well is the system behaving for my premium users?"
+* "What user segment suffers high response times and why?"
+* "What is the biggest contributor to the system's poor performance?"
+* "Why is the system's error rate worse than last month?
+Are there new error cases?"
+* "What is the cause of my service level indicators (SLIs) not meeting the service level objectives (SLOs)?"
+
+Through *enhanced visibility* of system behaviour, observability *improves understanding* of the *impact of changes* made by developers and operators.
+
+=== What role does OpenTelemetry fulfill?
+
+https://opentelemetry.io/[OpenTelemetry] is a https://www.cncf.io/projects/[CNCF incubating project], formed after the merger of https://opentracing.io/[OpenTracing] and https://opencensus.io/[OpenCensus].
+
+[quote,OpenTelemetry community]
+OpenTelemetry's Mission: to enable effective observability by making high-quality, portable telemetry ubiquitousfootnote:[See https://github.com/open-telemetry/community/blob/main/mission-vision-values.md#mission-our-overall-north-star-as-a-community[OTel Mission, Vision And Values]].
+
+OpenTelemetry is a set of APIs, SDKs, tooling, integrations and semantic conventions that are designed for the creation and management of telemetry data.
+OpenTelemetry provides a vendor-agnostic implementation per language (Java, Go, JavaScript, C++ and others) that can be configured to export telemetry data to backends of your choice.
+The Java implementation supports both *automatic instrumentation* of a large number of https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] and *manual instrumentation* of library or application source code.
+OpenTelemetry supports various backends, including OSS projects (Jaeger, Zipkin, Prometheus, Grafana Tempo, SigNoz) and commercial products (Honeycomb, Lightstep, Aspecto, Dynatrace, Datadog and more).
+
+The OpenTelemetry project also provides the *OpenTelemetry Collector*, a vendor-agnostic deployable process which receives, processes and exports telemetry data.
+It removes the need to operate multiple agents or collectors to work with multiple telemetry data formats and backends.
+It is not required to use the OpenTelemetry Collector, though its use is recommended to simplify telemetry data management in larger systems that have many instrumented services.
+
+=== Status and adoption of OpenTelemetry
+
+Work on the OpenTelemetry specification and implementations is *in progress* by a *large community* of contributors.
+Support for traces is the most mature, followed by metrics and then logs.
+See https://opentelemetry.io/status/[a summary of OpenTelemetry status].
+
+There is a growing consensus in the commercial monitoring and APM tools market to adopt OpenTelemetry as a *standard for telemetry in cloud native software*.
+Many commercial products today offer ingest of OpenTelemetry trace data and support for metrics and logs is growing.
+Several vendors have created their own *distributions* of the OpenTelemetry SDK and OpenTelemetry Collector, which are customisations tailored for use with their products.
+
+=== What does this project `otel-clj` enable?
+
+https://github.com/steffan-westcott/clj-otel[`otel-clj`] extends the reach of OpenTelemetry to *Clojure libraries and applications* by providing:
+
+* A *small idiomatic Clojure API* that wraps the OpenTelemetry implementation for Java.
+This enables manual instrumentation of Clojure libraries and applications using pure Clojure.
+* *Ring middleware* and *Pedestal interceptors* for server span support.
+* Support for creating spans around *asynchronous* Clojure code.
+* A Clojure wrapper for programmatic configuration of the OpenTelemetry SDK.
+
+https://github.com/steffan-westcott/clj-otel[`otel-clj`] is an umbrella project for several Clojure modules `otel-clj-*`.
+They depend on the OpenTelemetry implementation for Java https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`] and the OpenTelemetry instrumentation agent provided by https://github.com/open-telemetry/opentelemetry-java-instrumentation[`opentelemetry-java-instrumentation`].
+
+== Telemetry backends
+
+OpenTelemetry *exports* telemetry data to a variety of telemetry backends.
+The choice of backend(s) is applied when configuring system components for deployment.
+
+Query and presentation capabilities vary between backends.
+Many backends predate OpenTelemetry and were conceived as solutions focussed on tracing, monitoring or application performance management (APM).
+They have since been retrofitted to ingest telemetry data from OpenTelemetry.
+
+The following sections are incomplete selections of OSS and commercial backends that accept telemetry data from OpenTelemetry.
+
+=== OSS telemetry backends
+
+* https://www.jaegertracing.io/[Jaeger]
+* https://zipkin.io/[Zipkin]
+* https://prometheus.io/[Prometheus]
+* https://grafana.com/oss/tempo/[Grafana Tempo]
+* https://signoz.io/[SigNoz]
+
+=== Commercial telemetry backends
+
+NOTE: Some commercial telemetry backends have a free version with reduced capacity or feature set.
+
+* https://www.honeycomb.io/[Honeycomb]
+* https://lightstep.com/[Lightstep]
+* https://www.dynatrace.com/[Dynatrace]
+* https://newrelic.com/[New Relic]
+* https://grafana.com/products/cloud/[Grafana Cloud]
+* https://www.aspecto.io/[Aspecto]
+* https://www.datadoghq.com/[Datadog]
+* https://www.elastic.co/apm/[Elastic APM]
+* https://www.splunk.com/en_us/observability.html[Splunk Observability Cloud]
+* https://www.sumologic.com/[Sumo Logic]
+* https://uptrace.dev/[Uptrace]
+* https://www.appdynamics.com/[AppDynamics]
+* https://www.instana.com/[Instana]
+* https://aws.amazon.com/xray/[AWS X-Ray]
+* https://cloud.google.com/trace[Google Cloud Trace]
+* https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview[Azure Application Insights]
+* https://docs.oracle.com/en-us/iaas/application-performance-monitoring/index.html[Oracle Cloud Infrastructure APM]
+* https://tanzu.vmware.com/observability[VMWare Tanzu Observability]
+* https://www.logicmonitor.com/[LogicMonitor]
+
+== Using OpenTelemetry
+
+The general workflow for using OpenTelemetry with your library or application is:
+
+. Add instrumentation to your library or application such that it emits telemetry data.
+. Configure system components to control how the telemetry data are processed and exported, either directly to telemetry backends or via the OpenTelemetry Collector.
+. Use telemetry backend features to explore system behaviour described by the telemetry data.
+
+== Instrumenting libraries and applications
+
+Instrumenting a library or application involves adding behaviour such that it emits telemetry data as it runs.
+
+*Automatic instrumentation* achieves this by dynamically altering the library or application at runtime.
+For the Java platform, automatic instrumentation is performed by the *OpenTelemetry instrumentation agent*, a Java agent that runs with the application.
+Many https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] are supported by the agent out of the box.
+
+*Manual instrumentation* involves adding program code to the library or application at design time, using the OpenTelemetry API.
+This library `clj-otel` wraps the OpenTelemetry API for Java in an idiomatic Clojure facade.
+
+IMPORTANT: Manual instrumentation program code depends on the OpenTelemetry API, never the OpenTelemetry SDK.
+The SDK is an implementation of the API and should appear only as an [.underline]#application runtime# dependency.
+
+It is possible to combine automatic and manual instrumentation.
+For example, attributes and events can be added using manual instrumentation to a span created by the agent, as well as adding extra spans.
+This demonstrates manually enriching the telemetry data produced by an automatically instrumented application.
+
+TIP: Make use of automatic instrumentation if possible for your application, as this is a quick way to get high quality telemetry for almost no effort.
+Use manual instrumentation to enrich the telemetry data, or if your application does not use a framework supported by the agent.
+
+== OpenTelemetry data model
+
+In observability terms, *telemetry data* is an aggregation of data from four sources: traces, metrics, logs and events.
+In the OpenTelemetry data model, these map onto traces, metrics and logs *data sources*.
+Events are treated as a specific type of log, or captured as part of a trace.
+
+=== Traces
+
+A trace represents the *flow of a single transaction* throughout the system.
+A trace comprises a tree of *spans*, where a span represents a *unit of work* in a service and the parent-child relationship between the spans represent dependencies between them.
+The *root span* of a trace typically describes the entire transaction and the other spans in the trace describe units of work performed as part of the transaction.
+Traces provide *context* for system activity and can identify other telemetry data (metrics or logs) that are relevant.
+
+Span data may include a name, *span kind*, attributes, start/end timestamps, links to other spans, a list of events and a status.
+
+* The span name should identify a class of spans and not include data.
+* The span kind indicates the relationship between the span and its parents and children in the trace.
+The span kind is one of:
+** `CLIENT` : Covers the client side of issuing a synchronous request, where the client side waits until a response is received.
+** `SERVER` : Covers the server side of handling a synchronous request, where the remote client waits for a response.
+** `PRODUCER` : Covers initiation of an asynchronous request, where the corresponding consumer span may start after the producer span ends.
+** `CONSUMER` : Covers processing of an asynchronous producer request.
+** `INTERNAL` : An internal operation within the local application or service.
+* The events are timestamped records that may include attributes. Exceptions thrown during a span are captured as events.
+* The status has a code `Ok` or `Error`, and in case of `Error` may also have a string description.
+
+See specifications for https://opentelemetry.io/docs/reference/specification/trace/api/#span[span] and https://opentelemetry.io/docs/reference/specification/trace/api/#spankind[span kind].
+
+=== Metrics
+
+A metric is a numerical *measurement over a period of time*.
+Metrics are used to indicate quantitative aspects of *system health*, such as resource (memory, disk, compute, network) usage, error rate, message queue length, and request response time.
+
+=== Logs
+
+A service log is made of *lines of text* (possibly structured e.g. in JSON format) written when certain *points in the service code are executed*.
+Logs are well suited to ad-hoc debugging and capture of low-level details.
+
+=== Events
+
+Events are captured as either a specific type of log or as a span event.
+Events are records that *describe actions taken* by the system over time, or *environmental changes* that occurred which are significant to the system, such as a service deployment or change in configuration.
+
+=== Attributes
+
+Attributes may be attached to some telemetry data such as spans and resources.
+Attributes are a map where each entry has a string key and a value which is a boolean, long, double, string or an array of one of those types.
+Attributes with `nil` values are dropped.
+
+See the specification for https://opentelemetry.io/docs/reference/specification/common/common/#attributes[attributes] and https://opentelemetry.io/docs/reference/specification/common/attribute-naming/[attribute naming].
+
+=== Resources
+
+A resource captures information about the entity for which telemetry data is recorded.
+For example, information on the host and JVM version may be part of a resource.
+Resources are included as part of other telemetry data such a traces and metrics.
+
+The OpenTelemetry SDK contains resource implementations which capture a variety of host and process information.
+
+=== Baggage
+
+== Semantic conventions
+
+OpenTelemetry has defined a rich set of conventions for telemetry data.
+This semantic unification across vendors and technologies promotes analysis of telemetry data created in heterogeneous, polyglot systems.
+In particular, *semantic attributes* for spans are defined for common base technologies like HTTP, database, RPC, messaging, FaaS (Function as a Service) and others.
+See https://opentelemetry.io/docs/concepts/glossary/#semantic-conventions[OpenTelemetry semantic conventions documentation].
+
+`clj-otel` uses the recommended semantic attributes for areas such as https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[span exception events] and manually created https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP server spans].
+
+== Context
+
+=== Current context
+
+=== Context propagation
+
+==== Examples of text map propagators
+
+== Sampling of traces
+
+* Head vs. tail based sampling of traces
+
+== OpenTelemetry Collector
+
+=== Receivers
+
+=== Processors
+
+=== Exporters
+
+== OpenTelemetry Protocol - OTLP
+
+== OpenTelemetry SDK
+
+=== Autoconfig module
+
+=== Programmatic config
+
+=== Using vendor distros of SDK
+
+== Alternative Clojure telemetry projects
+
+The following are alternatives to OpenTelemetry in the Clojure ecosystem, which are concerned with the creation or processing of telemetry data.
+
+=== Events & structured logs
+
+* https://github.com/BrunoBonacci/mulog[μ/log]
+* https://github.com/amperity/ken[ken]
+* https://github.com/viesti/timbre-json-appender[timbre-json-appender]
+* https://github.com/logicblocks/cartus[cartus]
+* https://cambium-clojure.github.io/[Cambium]
+* https://github.com/runejuhl/clj-journal[clj-journal]
+
+=== Traces
+
+* https://github.com/BrunoBonacci/mulog#%CE%BCtrace[μ/trace], a subsystem of https://github.com/BrunoBonacci/mulog[μ/log]
+* https://github.com/amperity/ken#tracing[ken] tracing support
+
+=== Unstructured logs
+
+* https://github.com/ptaoussanis/timbre[Timbre]
+* https://github.com/FundingCircle/clj-loga[clj-loga]
+* https://github.com/henryw374/clojure.log4j2[clojure.log4j2]
+
+=== Metrics & monitoring
+
+* https://riemann.io/[Riemann]
+* https://github.com/logicblocks/salutem[salutem]
+* https://github.com/sereno-xyz/sereno[sereno]
