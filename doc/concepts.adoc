@@ -2,7 +2,7 @@
 :toc:
 :icons: font
 
-== Observability and `otel-clj`
+== Observability, OpenTelemetry and `otel-clj`
 
 === What is observability?
 
@@ -17,7 +17,7 @@ Monitoring is oriented to detection of *known types of issues*, as the monitored
 === What is the goal of observability?
 
 *Observability* enables *detection and exploration of issues* as they occur and *assists with root cause analysis*.
-By querying an observable system, *unexpected types of issue* can be detected, classified and monitored as they arise, addressing the issue of "unknown unknowns".
+By querying an observable system, *unexpected types of issue* can be detected, classified and monitored as they arise, addressing the problem of "unknown unknowns".
 Questions on the actual behaviour of an observable system may be more readily answered:
 
 * "What caused this failure?"
@@ -78,7 +78,7 @@ This enables manual instrumentation of Clojure libraries and applications using 
 https://github.com/steffan-westcott/clj-otel[`otel-clj`] is an umbrella project for several Clojure modules `otel-clj-*`.
 They depend on the OpenTelemetry implementation for Java https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`] and the OpenTelemetry instrumentation agent provided by https://github.com/open-telemetry/opentelemetry-java-instrumentation[`opentelemetry-java-instrumentation`].
 
-== Telemetry backends
+== Supported telemetry backends
 
 OpenTelemetry *exports* telemetry data to a variety of telemetry backends.
 The choice of backend(s) is applied when configuring system components for deployment.
@@ -134,20 +134,19 @@ The general workflow for using OpenTelemetry with your library or application is
 Instrumenting a library or application involves adding behaviour such that it emits telemetry data as it runs.
 
 *Automatic instrumentation* achieves this by dynamically altering the library or application at runtime.
-For the Java platform, automatic instrumentation is performed by the *OpenTelemetry instrumentation agent*, a Java agent that runs with the application.
+For the Java platform, automatic instrumentation is performed by the https://github.com/open-telemetry/opentelemetry-java-instrumentation[*OpenTelemetry instrumentation agent*], a Java agent that runs with the application.
 Many https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] are supported by the agent out of the box.
 
 *Manual instrumentation* involves adding program code to the library or application at design time, using the OpenTelemetry API.
 This library `clj-otel` wraps the OpenTelemetry API for Java in an idiomatic Clojure facade.
 
 IMPORTANT: Manual instrumentation program code depends on the OpenTelemetry API, never the OpenTelemetry SDK.
-The SDK is an implementation of the API and should appear only as an [.underline]#application runtime# dependency.
 
 It is possible to combine automatic and manual instrumentation.
 For example, attributes and events can be added using manual instrumentation to a span created by the agent, as well as adding extra spans.
 This demonstrates manually enriching the telemetry data produced by an automatically instrumented application.
 
-TIP: Make use of automatic instrumentation if possible for your application, as this is a quick way to get high quality telemetry for almost no effort.
+TIP: Make use of automatic instrumentation if possible for your application, as this is a quick way to get high quality telemetry with almost no effort.
 Use manual instrumentation to enrich the telemetry data, or if your application does not use a framework supported by the agent.
 
 == OpenTelemetry data model
@@ -166,14 +165,15 @@ Traces provide *context* for system activity and can identify other telemetry da
 Span data may include a name, *span kind*, attributes, start/end timestamps, links to other spans, a list of events and a status.
 
 * The span name should identify a class of spans and not include data.
-* The span kind indicates the relationship between the span and its parents and children in the trace.
+* The span kind indicates the relationship between the span and its parent and children in the trace.
 The span kind is one of:
 ** `CLIENT` : Covers the client side of issuing a synchronous request, where the client side waits until a response is received.
 ** `SERVER` : Covers the server side of handling a synchronous request, where the remote client waits for a response.
 ** `PRODUCER` : Covers initiation of an asynchronous request, where the corresponding consumer span may start after the producer span ends.
 ** `CONSUMER` : Covers processing of an asynchronous producer request.
 ** `INTERNAL` : An internal operation within the local application or service.
-* The events are timestamped records that may include attributes. Exceptions thrown during a span are captured as events.
+* The events are timestamped records that may include attributes.
+Exceptions thrown during a span are captured as events.
 * The status has a code `Ok` or `Error`, and in case of `Error` may also have a string description.
 
 See specifications for https://opentelemetry.io/docs/reference/specification/trace/api/#span[span] and https://opentelemetry.io/docs/reference/specification/trace/api/#spankind[span kind].
@@ -211,26 +211,110 @@ The OpenTelemetry SDK contains resource implementations which capture a variety 
 
 === Baggage
 
+Baggage is mechanism for propagating telemetry metadata and is represented as a simple map.
+It is intended as a means to add contextual information at a point in a transaction, to be read by a downstream service later in the same transaction and used as an element of telemetry data e.g. an attribute.
+An example is to put a user identifier in the baggage to indicate the principal of a request.
+
 == Semantic conventions
 
 OpenTelemetry has defined a rich set of conventions for telemetry data.
 This semantic unification across vendors and technologies promotes analysis of telemetry data created in heterogeneous, polyglot systems.
-In particular, *semantic attributes* for spans are defined for common base technologies like HTTP, database, RPC, messaging, FaaS (Function as a Service) and others.
+In particular, *semantic attributes* for spans and metrics are defined for common base technologies like HTTP, database, RPC, messaging, FaaS (Function as a Service) and others.
 See https://opentelemetry.io/docs/concepts/glossary/#semantic-conventions[OpenTelemetry semantic conventions documentation].
 
-`clj-otel` uses the recommended semantic attributes for areas such as https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[span exception events] and manually created https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP server spans].
+`clj-otel` follows the semantic conventions for areas such as https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[span exception events] and manually created https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP server spans].
 
 == Context
 
+A context acts as an immutable map that holds values that are transmitted across API boundaries and threads.
+A context may contain a span, baggage and possibly other values.
+A new context is created from an existing context with the addition of a new key-value association.
+
 === Current context
+
+The *current context* is a thread local `io.opentelemetry.context.Context` object.
+It is used as a default for many functions in this library `clj-otel` and the underlying Java library `opentelemetry-java`.
+The current context is safe to use when manually instrumenting synchronous code.
+
+WARNING: The current context cannot be used when manually instrumenting asynchronous code.
+See <<_instrumenting_asynchronous_clojure_code,Instrumenting asynchronous Clojure code>>.
 
 === Context propagation
 
-==== Examples of text map propagators
+Context propagation is the mechanism used to transmit context values across API boundaries and threads.
+Context propagation enables traces to become *distributed traces*, joining clients to servers and producers to consumers.
+In practice, this is achieved by injecting and extracting header values in HTTP requests using a *text map propagator*.
 
-== Sampling of traces
+OpenTelemetry provides text map propagators for the following protocols:
 
-* Head vs. tail based sampling of traces
+* https://www.w3.org/TR/trace-context/[W3C Trace Context propagation protocol]
+* https://www.w3.org/TR/baggage/[W3C baggage header propagation protocol]
+* https://github.com/opentracing/basictracer-python/blob/master/basictracer/text_propagator.py[OpenTracing Basic Tracers protocol]
+* Jaeger propagation protocol
+* https://github.com/openzipkin/b3-propagation>openzipkin/b3-propagation[B3 propagation protocol]
+* https://https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader[AWS X-Ray Trace Header propagation protocol]
+
+The *W3C Trace Context* and *W3C baggage header* propagation protocols are the most commonly used protocols for propagation of trace context and baggage.
+
+[#_instrumenting_asynchronous_clojure_code]
+== Instrumenting asynchronous Clojure code
+
+When manually instrumenting asynchronous Clojure code with this library `otel-clj`, it is not possible to use the current context.
+This is because async Clojure function evaluations share threads, but each evaluation is associated with a distinct context.
+The async function must maintain a reference to the associated context during evaluation, rather than use the current context.
+Some functions in this library `otel-clj` take a `:context` or `:parent` option to indicate the associated context to use, as an alternative to the default current context.
+
+== Trace sampling
+
+*Sampling* is the process of selecting some elements from a set and deriving observations on the complete set using analysis of those selected elements.
+Sampling is a required technique when the volume of raw data is too high to analyse cost-effectively.
+
+*Trace sampling* may be applied at any number of points between the instrumented application and the telemetry backend.
+OpenTelemetry provides `Sampler` implementations which may be applied in the application and/or the Collector.
+Some backends may also apply sampling to trace data they receive, either automatically or with some developer intervention.
+
+== Processors
+
+== Batching
+
+== Using the OpenTelemetry SDK
+
+The OpenTelemetry SDK implements the creation, sampling, batching and export of telemetry data.
+The SDK acts as an implementation of the OpenTelemetry API.
+For an application to emit telemetry, the SDK and its dependencies need to be present and configured at runtime.
+
+The SDK and its dependencies are added to an application in one of the following ways:
+
+* [.underline]#By using the OpenTelemetry instrumentation agent#: In this option, the SDK and its dependencies do not appear on the application classpath.
+Also, autoconfiguration is used for configuring the SDK.
+* [.underline]#By using the `opentelemetry-sdk-extension-autoconfigure` library as an application dependency#: This option is for autoconfiguration of the SDK where the OpenTelemetry instrumentation agent is not present.
+The relevant optional SDK libraries (exporters, extensions, etc.) also need to be added as runtime dependencies.
+* [.underline]#By adding the SDK as a compile-time dependency to the application#: This option is for programmatic configuration of the SDK.
+The relevant optional SDK libraries also need to be added as compile-time dependencies.
+
+If the SDK is not present at application runtime, all OpenTelemetry API calls default to a no-op implementation where no telemetry data is created.
+
+=== Autoconfiguration
+
+Autoconfiguration of the OpenTelemetry SDK refers to configuration using system properties or environment variables.
+Configuration of the OpenTelemetry agent uses the same mechanism.
+
+See documentation for https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfiguration] and https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/agent-config.md[agent configuration].
+
+=== Programmatic configuration
+
+The SDK can be programmatically configured, as an alternative to autoconfiguration.
+This is a fallback option if autoconfiguration lacks the desired options.
+
+This project `clj-otel` provides a module `clj-otel-sdk` for configuring the SDK in Clojure, as well as other support modules `clj-otel-exporter-\*`,`clj-otel-extension-*` and `clj-otel-sdk-extension-*` for programmatic access to various optional components.
+
+== OpenTelemetry distros
+
+An OpenTelemetry distro (or "distribution") supplied by a vendor is a repackaging of reference OpenTelemetry software, customised with the purpose of ease of use with the vendor's products.
+They are not forks, in that they do not extend or change the OpenTelemetry API.
+
+It is not a requirement to use a vendor's distro, it should always be possible to use the reference OpenTelemetry software and configure it as appropriate.
+The obvious advantage to using a distro is ease of use, but a disadvantage is that sometimes the version of distro lags behind the reference OpenTelemetry version.
 
 == OpenTelemetry Collector
 
@@ -241,14 +325,6 @@ See https://opentelemetry.io/docs/concepts/glossary/#semantic-conventions[OpenTe
 === Exporters
 
 == OpenTelemetry Protocol - OTLP
-
-== OpenTelemetry SDK
-
-=== Autoconfig module
-
-=== Programmatic config
-
-=== Using vendor distros of SDK
 
 == Alternative Clojure telemetry projects
 
@@ -277,5 +353,9 @@ The following are alternatives to OpenTelemetry in the Clojure ecosystem, which 
 === Metrics & monitoring
 
 * https://riemann.io/[Riemann]
+* https://github.com/metrics-clojure/metrics-clojure[metrics-clojure]
+* https://github.com/samsara/trackit[TRACKit!]
+* https://github.com/mrmcc3/aws-metrics-collector[aws-metrics-collector]
 * https://github.com/logicblocks/salutem[salutem]
 * https://github.com/sereno-xyz/sereno[sereno]
+* https://github.com/bass3m/plumon[plumon]

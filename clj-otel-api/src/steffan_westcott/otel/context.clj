@@ -1,19 +1,5 @@
 (ns steffan-westcott.otel.context
-  "Functions for working with `Context` objects.
-
-  A context is a medium for carrying values across API boundaries and threads.
-  Contexts are used to propagate correlation identifiers from parent to child
-  spans to enable assembly of traces.
-
-  Contexts are immutable containers of keyed values. A new context is created
-  from an existing context with the addition of a new key-value association.
-
-  The \"current context\" is a thread local `Context` object, used as a default
-  for many functions in `clj-otel` (this library) and the underlying Java
-  library `opentelemetry-java`. The current context is safe to use in
-  synchronous code. To support asynchronous Clojure code, `clj-otel` functions
-  accept `:context` or `:parent` options as an alternative to using the current
-  context."
+  "Functions for working with `io.opentelemetry.context.Context` objects."
   (:require [clojure.string :as str]
             [steffan-westcott.otel.api.otel :as otel])
   (:import (java.util HashMap)
@@ -133,6 +119,7 @@
      :or   {context             (current)
             text-map-propagator (otel/get-text-map-propagator)}}]
    (let [carrier (HashMap.)
+         ;; TODO Replace setter with singleton
          setter (reify TextMapSetter
                   (set [_ _ key value]
                     (.put carrier key value)))]
@@ -153,6 +140,7 @@
   ([headers {:keys [^Context context ^TextMapPropagator text-map-propagator]
              :or   {context             (current)
                     text-map-propagator (otel/get-text-map-propagator)}}]
+   ;; TODO Replace getter with singleton
    (let [getter (reify TextMapGetter
                   (keys [_ _]
                     (keys headers))

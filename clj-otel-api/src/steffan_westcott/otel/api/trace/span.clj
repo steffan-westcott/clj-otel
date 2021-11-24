@@ -1,12 +1,5 @@
 (ns steffan-westcott.otel.api.trace.span
-  "Functions for manipulating spans.
-
-  A span represents a single operation and a tree of spans form a trace. For
-  example, a distributed trace may describe the cascade of operations
-  throughout a system of services initiated by a single external HTTP request.
-
-  See the [span specification](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/api.md#span)
-  for more conceptual information."
+  "Functions for manipulating spans."
   (:require [clojure.main :as main]
             [steffan-westcott.otel.api.attributes :as attr]
             [steffan-westcott.otel.api.otel :as otel]
@@ -21,8 +14,8 @@
 (def ^:private default-library (get-in config [:defaults :instrumentation-library]))
 
 (defn get-tracer
-  "Builds and returns a `io.opentelemetry.api.trace.Tracer` instance. May
-  take an option map as follows:
+  "Builds and returns a `io.opentelemetry.api.trace.Tracer` instance. May take
+  an option map as follows:
 
   | key             | description |
   |-----------------|-------------|
@@ -50,8 +43,8 @@
 (defonce ^:private default-tracer (atom nil))
 
 (defn set-default-tracer!
-  "Sets the default tracer used when creating spans. Returns `tracer`. See also
-  [[get-tracer]]."
+  "Sets the default `io.opentelemetry.api.trace.Tracer` instance used when
+  creating spans. Returns `tracer`. See also [[get-tracer]]."
   [tracer]
   (reset! default-tracer tracer))
 
@@ -108,14 +101,14 @@
 (defn ^Context new-span!
   "Low level function that starts a new span and returns the context containing
   the new span. Does not mutate the current context. The span must be ended by
-  calling [[end-span!]] to avoid broken traces and memory leaks. Use higher
+  evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
   level helpers [[with-span!]], [[with-span-binding]] and [[async-span]]
   instead of this function to manage the context and reliably end the span.
   Takes an options map as follows:
 
   | key         | description |
   |-------------|-------------|
-  |`:tracer`    | `Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
+  |`:tracer`    | `io.opentelemetry.api.trace.Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
   |`:name`      | Span name (default: `\"\"`).
   |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context).
   |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
@@ -294,21 +287,12 @@
      (context/with-context! context# ~@body)))
 
 (defn async-span
-  "Starts a new span and returns evaluation of function `f` with
-  success/exception callback functions `respond`/`raise`. The span is ended
-  just before either callback is evaluated or `f` itself throws an exception.
-  Does not use nor mutate the current context. This is a low-level function
-  intended for adaption for use with any async library that can work with
-  callbacks.
-
-  Async function evaluation in a span may occur on any of a number of threads.
-  For this reason async function evaluations must retain a reference to the
-  associated context as it is not possible to use the current context, a
-  thread local `Context` object. Some functions in this library take a
-  `:context` or `:parent` option to indicate which context to use, as an
-  alternative to the default current context. Contexts are immutable. Creating
-  a new span (or otherwise adding a new value to the context) creates a new
-  child context.
+  "Starts a new span and immediately returns evaluation of function `f`.
+  `respond`/`raise` are callback functions to be evaluated later on a
+  success/failure result. The span is ended just before either callback is
+  evaluated or `f` itself throws an exception. Does not use nor mutate the
+  current context. This is a low-level function intended for adaption for use
+  with any async library that can work with callbacks.
 
   `span-opts` is the same as for [[new-span!]]. `f` must take arguments
   `[context respond* raise*]` where `context` is a context containing the new

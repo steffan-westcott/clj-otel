@@ -5,7 +5,7 @@
            ring/ring-jetty-adapter                  {:mvn/version "1.9.4"}}
 
  :aliases {
-           ;; Required - Use OpenTelemetry instrumentation agent and set service name of the resource emitting telemetry
+           ;; Required - Use OpenTelemetry instrumentation agent
 
            :auto-instrument       {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
                                               "-Dotel.resource.attributes=service.name=word-length-service"]}
