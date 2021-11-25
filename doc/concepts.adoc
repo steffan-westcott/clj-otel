@@ -14,7 +14,7 @@ As systems are often highly distributed in nature, observability addresses the n
 *Monitoring* is a complementary activity to observability, where typically a *dashboard* is configured to report predetermined *metrics* and *alerts* are set to trigger on specific conditions in the system.
 Monitoring is oriented to detection of *known types of issues*, as the monitored metrics or conditions are determined in advance.
 
-=== What is the goal of observability?
+=== The goal of observability
 
 *Observability* enables *detection and exploration of issues* as they occur and *assists with root cause analysis*.
 By querying an observable system, *unexpected types of issue* can be detected, classified and monitored as they arise, addressing the problem of "unknown unknowns".
@@ -39,7 +39,7 @@ Are there new error cases?"
 
 Through *enhanced visibility* of system behaviour, observability *improves understanding* of the *impact of changes* made by developers and operators.
 
-=== What role does OpenTelemetry fulfill?
+=== Introducing OpenTelemetry
 
 https://opentelemetry.io/[OpenTelemetry] is a https://www.cncf.io/projects/[CNCF incubating project], formed after the merger of https://opentracing.io/[OpenTracing] and https://opencensus.io/[OpenCensus].
 
@@ -53,7 +53,7 @@ OpenTelemetry supports various backends, including OSS projects (Jaeger, Zipkin,
 
 The OpenTelemetry project also provides the *OpenTelemetry Collector*, a vendor-agnostic deployable process which receives, processes and exports telemetry data.
 
-=== Status and adoption of OpenTelemetry
+=== OpenTelemetry status and adoption
 
 Work on the OpenTelemetry specification and implementations is *in progress* by a *large community* of contributors.
 Support for traces is the most mature, followed by metrics and then logs.
@@ -85,7 +85,7 @@ Query and presentation capabilities vary between backends.
 Many backends predate OpenTelemetry and were conceived as solutions focussed on tracing, monitoring or application performance management (APM).
 They have since been retrofitted to ingest telemetry data from OpenTelemetry.
 
-The following sections are incomplete selections of OSS and commercial backends that accept telemetry data from OpenTelemetry.
+The following sections are incomplete selections of open-source software (OSS) and commercial backends that accept telemetry data from OpenTelemetry.
 
 === OSS telemetry backends
 
@@ -136,7 +136,7 @@ For the Java platform, automatic instrumentation is performed by the https://git
 Many https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] are supported by the agent out of the box.
 
 *Manual instrumentation* involves adding program code to the library or application at design time, using the OpenTelemetry API.
-This library `clj-otel` wraps the OpenTelemetry API for Java in an idiomatic Clojure facade.
+The `clj-otel-api` module in this project wraps the OpenTelemetry API for Java in an idiomatic Clojure facade.
 
 IMPORTANT: Manual instrumentation program code depends on the OpenTelemetry API, never the OpenTelemetry SDK.
 
@@ -231,7 +231,7 @@ A new context is created from an existing context with the addition of a new key
 === Current context
 
 The *current context* is a thread local `io.opentelemetry.context.Context` object.
-It is used as a default for many functions in this library `clj-otel` and the underlying Java library `opentelemetry-java`.
+It is used as a default for many functions in this project `clj-otel` and the underlying Java library `opentelemetry-java`.
 The current context is safe to use when manually instrumenting synchronous code.
 
 WARNING: The current context cannot be used when manually instrumenting asynchronous code.
@@ -259,7 +259,7 @@ The *W3C Trace Context* and *W3C baggage header* propagation protocols are the m
 
 When manually instrumenting asynchronous Clojure code with this library `otel-clj`, it is not possible to use the current context.
 This is because async Clojure function evaluations share threads, but each evaluation is associated with a distinct context.
-The async function must maintain a reference to the associated context during evaluation, rather than use the current context.
+The async function must instead maintain a reference to the associated context during evaluation, rather than use the current context.
 Some functions in this library `otel-clj` take a `:context` or `:parent` option to indicate the associated context to use, as an alternative to the default current context.
 
 == Trace sampling
@@ -299,9 +299,9 @@ If the SDK is not present at application runtime, all OpenTelemetry API calls de
 === Autoconfiguration
 
 Autoconfiguration of the OpenTelemetry SDK refers to configuration using system properties or environment variables.
-Configuration of the OpenTelemetry agent uses the same mechanism.
+Configuration of the OpenTelemetry instrumentation agent uses the same mechanism.
 
-See documentation for https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfiguration] and https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/agent-config.md[agent configuration].
+See documentation for https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfiguration] and https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/agent-config.md[instrumentation agent configuration].
 
 === Programmatic configuration
 
