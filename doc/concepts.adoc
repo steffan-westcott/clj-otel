@@ -49,11 +49,9 @@ OpenTelemetry's Mission: to enable effective observability by making high-qualit
 OpenTelemetry is a set of APIs, SDKs, tooling, integrations and semantic conventions that are designed for the creation and management of telemetry data.
 OpenTelemetry provides a vendor-agnostic implementation per language (Java, Go, JavaScript, C++ and others) that can be configured to export telemetry data to backends of your choice.
 The Java implementation supports both *automatic instrumentation* of a large number of https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] and *manual instrumentation* of library or application source code.
-OpenTelemetry supports various backends, including OSS projects (Jaeger, Zipkin, Prometheus, Grafana Tempo, SigNoz) and commercial products (Honeycomb, Lightstep, Aspecto, Dynatrace, Datadog and more).
+OpenTelemetry supports various backends, including OSS projects (Jaeger, Zipkin, Prometheus, Grafana Tempo, SigNoz) and commercial products (Honeycomb, Lightstep, Aspecto, Dynatrace, New Relic, Datadog and more).
 
 The OpenTelemetry project also provides the *OpenTelemetry Collector*, a vendor-agnostic deployable process which receives, processes and exports telemetry data.
-It removes the need to operate multiple agents or collectors to work with multiple telemetry data formats and backends.
-It is not required to use the OpenTelemetry Collector, though its use is recommended to simplify telemetry data management in larger systems that have many instrumented services.
 
 === Status and adoption of OpenTelemetry
 
@@ -73,7 +71,7 @@ https://github.com/steffan-westcott/clj-otel[`otel-clj`] extends the reach of Op
 This enables manual instrumentation of Clojure libraries and applications using pure Clojure.
 * *Ring middleware* and *Pedestal interceptors* for server span support.
 * Support for creating spans around *asynchronous* Clojure code.
-* A Clojure wrapper for programmatic configuration of the OpenTelemetry SDK.
+* A Clojure wrapper for *programmatic configuration* of the OpenTelemetry SDK.
 
 https://github.com/steffan-westcott/clj-otel[`otel-clj`] is an umbrella project for several Clojure modules `otel-clj-*`.
 They depend on the OpenTelemetry implementation for Java https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`] and the OpenTelemetry instrumentation agent provided by https://github.com/open-telemetry/opentelemetry-java-instrumentation[`opentelemetry-java-instrumentation`].
@@ -99,7 +97,7 @@ The following sections are incomplete selections of OSS and commercial backends 
 
 === Commercial telemetry backends
 
-NOTE: Some commercial telemetry backends have a free version with reduced capacity or feature set.
+NOTE: Some commercial telemetry backends have a free version with a reduced capacity or feature set.
 
 * https://www.honeycomb.io/[Honeycomb]
 * https://lightstep.com/[Lightstep]
@@ -266,16 +264,20 @@ Some functions in this library `otel-clj` take a `:context` or `:parent` option 
 
 == Trace sampling
 
-*Sampling* is the process of selecting some elements from a set and deriving observations on the complete set using analysis of those selected elements.
+*Sampling* is the process of selecting some elements from a set and deriving observations on the complete set based on analysis of those selected elements.
 Sampling is a required technique when the volume of raw data is too high to analyse cost-effectively.
 
 *Trace sampling* may be applied at any number of points between the instrumented application and the telemetry backend.
 OpenTelemetry provides `Sampler` implementations which may be applied in the application and/or the Collector.
-Some backends may also apply sampling to trace data they receive, either automatically or with some developer intervention.
+Some telemetry backends may also apply sampling to trace data they receive, either automatically or with some developer intervention.
 
-== Processors
+== OpenTelemetry Protocol - OTLP
 
-== Batching
+https://opentelemetry.io/docs/reference/specification/protocol/[OpenTelemetry Protocol (OTLP)] is the OpenTelemetry native protocol for encoding, transport and delivery of telemetry data.
+OTLP is currently implemented over gRPC and HTTP transports.
+
+Almost all telemetry backends that integrate with OpenTelemetry accept telemetry data in OTLP format.
+An application or OpenTelemetry Collector exports data to these backends using an OTLP exporter.
 
 == Using the OpenTelemetry SDK
 
@@ -318,13 +320,11 @@ The obvious advantage to using a distro is ease of use, but a disadvantage is th
 
 == OpenTelemetry Collector
 
-=== Receivers
+The https://opentelemetry.io/docs/collector/[OpenTelemetry Collector] is a vendor-agnostic deployable process to manage telemetry data as it flows through a system.
+It removes the need to run multiple, vendor-specific agents and collectors, when working with multiple telemetry data formats and telemetry backends.
 
-=== Processors
-
-=== Exporters
-
-== OpenTelemetry Protocol - OTLP
+It is not required to use the OpenTelemetry Collector, though its use is recommended to simplify telemetry data management in larger systems that have many instrumented services.
+Some exporters provided by OpenTelemetry have default options set to target a Collector instance running on the same host.
 
 == Alternative Clojure telemetry projects
 
