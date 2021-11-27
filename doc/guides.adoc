@@ -71,8 +71,8 @@ For example, with `deps.edn` use an alias like the following:
 {;; ...
  :aliases {
    :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=example-app"]
-          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.7.1-alpha"}
-                       io.opentelemetry/opentelemetry-sdk-extension-resources {:mvn/version "1.7.1"}}}}}
+          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.9.1-alpha"}
+                       io.opentelemetry/opentelemetry-sdk-extension-resources {:mvn/version "1.9.1"}}}}}
 ----
 
 [#_run_with_programmatically_configured_sdk]

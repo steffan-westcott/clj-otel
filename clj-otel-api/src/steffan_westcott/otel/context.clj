@@ -2,7 +2,7 @@
   "Functions for working with `io.opentelemetry.context.Context` objects."
   (:require [clojure.string :as str]
             [steffan-westcott.otel.api.otel :as otel])
-  (:import (java.util HashMap)
+  (:import (java.util HashMap Map)
            (io.opentelemetry.context Context ContextKey ImplicitContextKeyed Scope)
            (io.opentelemetry.context.propagation TextMapSetter TextMapPropagator TextMapGetter)))
 
@@ -104,6 +104,21 @@
             (close-scope! (get ctx scope-key))
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
 
+(def ^:private map-setter
+  (reify TextMapSetter
+    (set [_ carrier key value]
+      (.put ^Map carrier key value))))
+
+(def ^:private map-getter
+  (reify TextMapGetter
+    (keys [_ carrier]
+      (keys carrier))
+    (get [_ carrier key]
+      (some-> (get carrier key)
+              (str/split #",")
+              first
+              str/trim))))
+
 (defn ->headers
   "Returns a map to merge into the headers of an HTTP request for the purpose
   of context propagation i.e. transfer context to a remote server. May take an
@@ -118,12 +133,8 @@
   ([{:keys [^Context context ^TextMapPropagator text-map-propagator]
      :or   {context             (current)
             text-map-propagator (otel/get-text-map-propagator)}}]
-   (let [carrier (HashMap.)
-         ;; TODO Replace setter with singleton
-         setter (reify TextMapSetter
-                  (set [_ _ key value]
-                    (.put carrier key value)))]
-     (.inject text-map-propagator context nil setter)
+   (let [carrier (HashMap.)]
+     (.inject text-map-propagator context carrier map-setter)
      (into {} carrier))))
 
 (defn ^Context headers->merged-context
@@ -140,16 +151,7 @@
   ([headers {:keys [^Context context ^TextMapPropagator text-map-propagator]
              :or   {context             (current)
                     text-map-propagator (otel/get-text-map-propagator)}}]
-   ;; TODO Replace getter with singleton
-   (let [getter (reify TextMapGetter
-                  (keys [_ _]
-                    (keys headers))
-                  (get [_ _ key]
-                    (some-> (get headers key)
-                            (str/split #",")
-                            first
-                            str/trim)))]
-     (.extract text-map-propagator context nil getter))))
+   (.extract text-map-propagator context headers map-getter)))
 
 (comment
 
