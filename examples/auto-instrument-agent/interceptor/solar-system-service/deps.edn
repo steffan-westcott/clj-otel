@@ -1,7 +1,7 @@
 {:paths   ["src"]
 
  :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
-           org.clojure/core.async                   {:mvn/version "1.4.627"}
+           org.clojure/core.async                   {:mvn/version "1.5.640"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}
            io.pedestal/pedestal.service             {:mvn/version "0.5.9"}
            io.pedestal/pedestal.route               {:mvn/version "0.5.9"}

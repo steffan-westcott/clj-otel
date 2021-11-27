@@ -45,6 +45,7 @@
 
   (let [type (keyword (get query-params "type"))
         result (random-word type)]
+    (Thread/sleep (+ 20 (rand-int 20)))
     (response/response (str result))))
 
 

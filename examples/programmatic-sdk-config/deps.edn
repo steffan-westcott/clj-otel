@@ -35,10 +35,10 @@
            ;; Select one grpc-* alias if using an exporter with gRPC (above alias has -grpc suffix)
 
            :grpc-netty           {:extra-deps {io.grpc/grpc-netty-shaded
-                                               {:mvn/version "1.42.0"}}}
+                                               {:mvn/version "1.42.1"}}}
 
            :grpc-okhttp          {:extra-deps {io.grpc/grpc-okhttp
-                                               {:mvn/version "1.42.0"}}}
+                                               {:mvn/version "1.42.1"}}}
 
 
 
