@@ -268,7 +268,7 @@ Some functions in this library `otel-clj` take a `:context` or `:parent` option 
 Sampling is a required technique when the volume of raw data is too high to analyse cost-effectively.
 
 *Trace sampling* may be applied at any number of points between the instrumented application and the telemetry backend.
-OpenTelemetry provides `Sampler` implementations which may be applied in the application and/or the Collector.
+OpenTelemetry provides sampler implementations which may be applied in the application and/or the Collector.
 Some telemetry backends may also apply sampling to trace data they receive, either automatically or with some developer intervention.
 
 == OpenTelemetry Protocol - OTLP

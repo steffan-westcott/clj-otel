@@ -1,8 +1,8 @@
 = Tutorial
 :toc:
 
-In this tutorial, you will add trace telemetry to a Clojure program and view the traces in https://www.jaegertracing.io/[Jaeger], a distributed tracing tool.
+In this tutorial, you will add trace telemetry to a Clojure program and view the traces in https://www.jaegertracing.io/[Jaeger], a telemetry backend.
 You will use spans and traces to describe the runtime behaviour of your program.
-You will enrich the spans with attributes and events, and see how runtime errors are presented.
+You will enrich the spans with attributes and events, and see how runtime exceptions are presented.
 Finally, you'll change from Jaeger to https://zipkin.io/[Zipkin], without needing to change any code.
 

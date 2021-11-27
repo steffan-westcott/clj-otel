@@ -1,0 +1,58 @@
+= `clj-otel`
+
+`clj-otel` provides a small, idiomatic Clojure API for adding telemetry to your libraries and applications using *OpenTelemetry*, an emerging standard for *telemetry* in cloud-native software, enabling effective *observability*.
+
+== Quickstart
+
+== Documentation
+
+* link:doc/tutorial.adoc[Tutorial] : A walk-through of manually instrumenting a small Clojure program and viewing its telemetry.
+* link:doc/guides.adoc[Guides] : Recipes for common tasks of adding telemetry to Clojure libraries and applications, then configuring and running applications with telemetry.
+* link:doc/reference.adoc[API & Reference] : API documentation for all `clj-otel` modules.
+* link:doc/concepts.adoc[Concepts] : A primer on observability, OpenTelemetry and what this project `clj-otel` enables for Clojure libraries and applications.
+
+== Project status
+
+* `clj-otel` is a young, alpha grade project that has yet to be exercised in a production setting.
+Breaking API changes may still be made, but it is sincerely hoped there will be few, if any.
+* For manual instrumentation:
+** Coverage of the Traces API is complete.
+** Trace semantics conventions support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[recording exceptions] is complete.
+Support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] is partial as it is limited by HTTP client/server abstractions and will probably never be as complete as that provided by the OpenTelemetry instrumentation agent.
+** Support for wrapping asynchronous Clojure code in spans is complete.
+The API is minimal and low-level, supporting any async library that works with callbacks.
+Perhaps with community feedback this will be expanded to add more specialised support for popular async libraries.
+At present, code for creating spans around `core.async` channels can be found in the examples.
+** There is presently no coverage of the Metrics or Logs API, work on these will commence in the near future.
+* Coverage of programmatic configuration of the OpenTelemetry SDK is complete.
+
+== TODO
+
+* For manual instrumentation:
+** Add Metrics and Logs API support.
+** Consider supporting more https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/trace/semantic_conventions[trace semantics conventions].
+* Maintain parity with the latest version of https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`].
+* Implement integration tests, using https://github.com/javahippie/clj-test-containers[clj-test-containers] or similar.
+* Consider ClojureScript OpenTelemetry support in the browser and node.js using https://github.com/open-telemetry/opentelemetry-js[`opentelemetry-js`]. It is likely this will be a separate project.
+
+== Contributing & contact
+
+The *most needed* type of contribution is *experience reports* of using `clj-otel` in real systems. I am keen to hear of places where `clj-otel` is used and of any problems and successes. This is a very young project, so now is a good time to provide *feedback* on the API design as improvements can be freely made.
+
+I will be happy to consider pull requests for minor changes, but larger or structural changes may not be accepted while I make a start on some items in the TODO list.
+
+For questions or feedback on `clj-otel`, I can be contacted on `#observability` channel on http://clojurians.net/[Clojurians Slack], user `steffan`.
+
+== Acknowledgements
+
+I would like to give thanks:
+
+* To you (yes, you) for having the curiosity to look into this project. Thank you.
+* To my friends Golnaz and Nimmo, who pointed me in the direction of observability and OpenTelemetry. Without them, I wouldn't have had the idea to make this project.
+* To the OpenTelemetry community and all makers of telemetry backends, for making effective observability of systems a tangible reality. Cloud-native software is so complex now, we need all the help we can get to understand how well it is (or is not) working.
+* To https://diataxis.fr/[Diátaxis Framework], for a clear way to structure technical documentation.
+
+== License
+
+Copyright © 2021 Steffan Westcott +
+Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]
