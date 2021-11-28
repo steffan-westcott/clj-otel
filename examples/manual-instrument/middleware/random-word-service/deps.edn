@@ -17,12 +17,6 @@
 
            :traces-none           {:jvm-opts ["-Dotel.traces.exporter=none"]}
 
-           :traces-zipkin         {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
-                                   :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.9.1"}}}
-
-           :traces-jaeger-grpc    {:jvm-opts   ["-Dotel.traces.exporter=jaeger"]
-                                   :extra-deps {io.opentelemetry/opentelemetry-exporter-jaeger {:mvn/version "1.9.1"}}}
-
            :traces-collector-grpc {:jvm-opts   ["-Dotel.traces.exporter=otlp"
                                                 "-Dotel.exporter.otlp.traces.protocol=grpc"]
                                    :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp-trace {:mvn/version "1.9.1"}}}
@@ -49,6 +43,12 @@
                                                 "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]
                                    :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp-trace {:mvn/version "1.9.1"}}}
 
+           :traces-jaeger-grpc    {:jvm-opts   ["-Dotel.traces.exporter=jaeger"]
+                                   :extra-deps {io.opentelemetry/opentelemetry-exporter-jaeger {:mvn/version "1.9.1"}}}
+
+           :traces-zipkin         {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
+                                   :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.9.1"}}}
+
            :traces-logging        {:jvm-opts   ["-Dotel.traces.exporter=logging"]
                                    :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.9.1"}}}
 
@@ -63,11 +63,11 @@
 
 
 
-           ;; Select one grpc-* alias if using an exporter with gRPC (above alias has -grpc suffix)
+           ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
 
-           :grpc-netty            {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.42.1"}}}
-
-           :grpc-okhttp           {:extra-deps {io.grpc/grpc-okhttp {:mvn/version "1.42.1"}}}
+           :grpc-netty            {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.42.1"}
+                                                io.grpc/grpc-protobuf     {:mvn/version "1.42.1"}
+                                                io.grpc/grpc-stub         {:mvn/version "1.42.1"}}}
 
 
 

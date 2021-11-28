@@ -9,7 +9,10 @@
 
            ;; Select any number of traces-* aliases
 
-           :traces-zipkin        {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-zipkin
+           :traces-otlp-grpc     {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace
+                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
+
+           :traces-otlp-http     {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace
                                                {:mvn/version "0.1.0-SNAPSHOT"}}}
 
            :traces-jaeger-grpc   {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc
@@ -18,10 +21,7 @@
            :traces-jaeger-thrift {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift
                                                {:mvn/version "0.1.0-SNAPSHOT"}}}
 
-           :traces-otlp-grpc     {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace
-                                               {:mvn/version "0.1.0-SNAPSHOT"}}}
-
-           :traces-otlp-http     {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace
+           :traces-zipkin        {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-zipkin
                                                {:mvn/version "0.1.0-SNAPSHOT"}}}
 
            :traces-logging       {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging
@@ -32,13 +32,11 @@
 
 
 
-           ;; Select one grpc-* alias if using an exporter with gRPC (above alias has -grpc suffix)
+           ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
 
-           :grpc-netty           {:extra-deps {io.grpc/grpc-netty-shaded
-                                               {:mvn/version "1.42.1"}}}
-
-           :grpc-okhttp          {:extra-deps {io.grpc/grpc-okhttp
-                                               {:mvn/version "1.42.1"}}}
+           :grpc-netty           {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.42.1"}
+                                               io.grpc/grpc-protobuf     {:mvn/version "1.42.1"}
+                                               io.grpc/grpc-stub         {:mvn/version "1.42.1"}}}
 
 
 
