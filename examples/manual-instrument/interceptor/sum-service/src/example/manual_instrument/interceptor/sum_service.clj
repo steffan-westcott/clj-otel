@@ -48,9 +48,8 @@
           nums (map #(Integer/parseInt %) (str/split num-str #","))]
 
       ;; Simulate a client error when first number argument is zero.
-      ;; The server span status description may be set for 4xx and 5xx responses.
       (if (zero? (first nums))
-        {:status 400 :io.opentelemetry.api.trace.span.status/description "First number is zero"}
+        {:status 400}
         {:status 200 :body (str (sum nums))}))))
 
 

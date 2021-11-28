@@ -113,23 +113,41 @@
                          :name       (str app-root route)
                          :attributes {SemanticAttributes/HTTP_ROUTE route}})))
 
-(defn add-response-data!
-  "Adds data about the HTTP `response` to a manually created client or server
-  span. May take an options map as follows:
+(defn add-client-span-response-data!
+  "Adds data about the HTTP `response` to a manually created client span. May
+  take an options map as follows:
 
   | key       | description |
   |-----------|-------------|
   |`:context` | Context containing span to add response data to (default: current context)."
   ([response]
-   (add-response-data! response {}))
+   (add-client-span-response-data! response {}))
   ([response {:keys [context] :or {context (context/current)}}]
-   (let [{:keys [status headers io.opentelemetry.api.trace.span.status/description]} response
+   (let [{:keys [status headers]} response
          {:strs [Content-Length]} headers
          Content-Length' (when Content-Length (parse-long Content-Length))
          attrs (cond-> {SemanticAttributes/HTTP_STATUS_CODE status}
                        Content-Length' (assoc SemanticAttributes/HTTP_RESPONSE_CONTENT_LENGTH Content-Length'))
          stat (when (<= 400 status)
-                {:code :error :description description})]
+                {:code :error})]
+     (span/add-span-data! (cond-> {:context context :attributes attrs}
+                                  stat (assoc :status stat))))))
+
+(defn add-server-span-response-data!
+  "Adds data about the HTTP `response` to a manually created server span. May
+  take an options map as follows:
+
+  | key       | description |
+  |-----------|-------------|
+  |`:context` | Context containing span to add response data to (default: current context)."
+  ([response]
+   (add-server-span-response-data! response {}))
+  ([response {:keys [context] :or {context (context/current)}}]
+   (let [{:keys [status io.opentelemetry.api.trace.span.status/description]} response
+         attrs {SemanticAttributes/HTTP_STATUS_CODE status}
+         stat (when (<= 500 status)
+                (cond-> {:code :error}
+                        description (assoc :description description)))]
      (span/add-span-data! (cond-> {:context context :attributes attrs}
                                   stat (assoc :status stat))))))
 
@@ -141,20 +159,20 @@
      (span/with-span! (server-span-opts request create-span-opts)
        (try
          (let [response (handler request)]
-           (add-response-data! response)
+           (add-server-span-response-data! response)
            response)
          (catch Throwable e
-           (add-response-data! {:status 500 :headers {}})
+           (add-server-span-response-data! {:status 500 :headers {}})
            (throw e)))))
     ([request respond raise]
      (span/async-span (server-span-opts request create-span-opts)
                       (fn [context respond* raise*]
                         (handler (assoc request :io.opentelemetry/server-span-context context)
                                  (fn [response]
-                                   (add-response-data! response {:context context})
+                                   (add-server-span-response-data! response {:context context})
                                    (respond* response))
                                  (fn [e]
-                                   (add-response-data! {:status 500 :headers {}} {:context context})
+                                   (add-server-span-response-data! {:status 500 :headers {}} {:context context})
                                    (raise* e))))
                       respond
                       raise))))
@@ -197,9 +215,9 @@
   context during request processing and restored to its original value on
   completion. For an asynchronous handler, the new context is set as the value
   of `:io.opentelemetry/server-span-context` in the request map. Finally, if
-  the HTTP response status code is `4xx` or `5xx` then the span status error
-  description is set to the value of
-  `:io.opentelemetry.api.trace.span.status/description` in the response map.
+  the HTTP response status code is `5xx` then the span status error description
+  is set to the value of `:io.opentelemetry.api.trace.span.status/description`
+  in the response map.
 
   May take an option map as follows:
 
@@ -227,10 +245,10 @@
 (defn- response-data-interceptor []
   {:name  ::response-data
    :leave (fn [{:keys [io.opentelemetry/server-span-context response] :as ctx}]
-            (add-response-data! response {:context server-span-context})
+            (add-server-span-response-data! response {:context server-span-context})
             ctx)
    :error (fn [{:keys [io.opentelemetry/server-span-context] :as ctx} e]
-            (add-response-data! {:status 500 :headers {}} {:context server-span-context})
+            (add-server-span-response-data! {:status 500 :headers {}} {:context server-span-context})
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
 
 (defn- existing-server-span-interceptor []
@@ -279,8 +297,8 @@
   headers. In addition, if `:set-current-context?` is true the current context
   is set to the new context on interceptor entry and its original value is
   restored on exit; this is only appropriate if all requests are to be
-  processed synchronously. Finally, if the HTTP response status code is `4xx`
-  or `5xx` then the span status error description is set to the value of
+  processed synchronously. Finally, if the HTTP response status code is `5xx`
+  then the span status error description is set to the value of
   `:io.opentelemetry.api.trace.span.status/description` in the response map.
 
   No matter how the server span is created, the context containing the server

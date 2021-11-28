@@ -27,7 +27,7 @@
           response (client/request request')]
 
       ;; Add HTTP response data to the client span.
-      (trace-http/add-response-data! response)
+      (trace-http/add-client-span-response-data! response)
 
       response)))
 

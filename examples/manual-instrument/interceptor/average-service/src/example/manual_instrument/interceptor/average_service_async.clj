@@ -34,7 +34,7 @@
                         (fn [response]
 
                           ;; Add HTTP response data to the client span.
-                          (trace-http/add-response-data! response {:context context*})
+                          (trace-http/add-client-span-response-data! response {:context context*})
 
                           (respond* response))
                         raise*)))
