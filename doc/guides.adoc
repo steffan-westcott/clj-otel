@@ -1,26 +1,162 @@
 = Guides
 :toc:
 :toclevels: 3
+:icons: font
 
 == Add telemetry to your library or an application
 
 === Add automatic instrumentation when running an application
 
-Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>>.
+* Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>>.
 
 === Add manual instrumentation to your library or application code
 
-==== Add instrumentation API project dependency
+* Add project dependency :
++
+.`deps.edn`
+[source,clojure]
+----
+{;; ...
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}}}
+----
 
-==== Create a span for a synchronous process
+* Follow the guides in the remainder of this section to make changes to your library or application code to add instrumentation.
 
-==== Create a span for an asynchronous process
+==== Create a synchronous span using the current context
+
+* Use `steffan-westcott.otel.api.trace.span/with-span!` to wrap a body of forms in a span, where the current context is used to keep track of (potentially nested) spans:
++
+[source,clojure]
+----
+(defn get-nums [args]
+  (span/with-span! {:name "Getting numbers"}
+    (fetch-nums args)))
+----
+
+==== Create a synchronous span using explicit context
+
+* Use `steffan-westcott.otel.api.trace.span/with-span-binding` to wrap a body of forms in a span, where the context to use is passed in as the `:parent` option.
+The new context containing the new span is bound to `context*` in this example:
++
+[source,clojure]
+----
+(defn get-nums [context args]
+  (span/with-span-binding [context* {:parent context
+                                     :name "Getting numbers"}]
+    (fetch-nums context* args)))
+----
+
+==== Create an asynchronous span
+
+* Use `steffan-westcott.otel.api.trace.span/async-span` to start a new span that ends when either success/failure callback `respond`/`raise` is evaluated:
++
+[source,clojure]
+----
+(defn get-nums-async [context args respond raise]
+  (span/async-span {:parent context
+                    :name   "Getting numbers"
+                    :kind   :server}
+                   (fn [context* respond* raise*]
+                     (fetch-nums-async context* args respond* raise*))
+                   respond
+                   raise))
+----
 
 ==== Add attributes to a span
 
+* Use the `:attributes` option to add attributes when creating a span:
++
+[source,clojure]
+----
+(defn user-info [user-id]
+  (span/with-span! {:name "Getting user info"
+                    :attributes {:user-id user-id}}
+    (fetch-user-info user-id)))
+----
+
+* Alternatively, use `steffan-westcott.otel.api.trace.span/add-span-data!` to add attributes to an existing span.
++
+By default, the span in the current context is updated:
++
+[source,clojure]
+----
+(defn user-info [user-id]
+  (span/add-span-data! {:attributes {:user-id user-id}})
+  (fetch-user-info user-id))
+----
++
+Use the `:context` option to specify the context containing the span to update:
++
+[source,clojure]
+----
+(defn user-info [context user-id]
+  (span/add-span-data! {:context context
+                        :attributes {:user-id user-id}})
+  (fetch-user-info context user-id))
+----
+
 ==== Add an event to a span
 
-==== Add an exception to a span
+* Use `steffan-westcott.otel.api.trace.span/add-span-data!` to add an event to an existing span.
+The event may include attributes.
++
+By default, the event is added to the span in the current context:
++
+[source,clojure]
+----
+(defn complete-stage [job-state]
+  (span/add-span-data! {:event {:name "Stage completed"
+                                :attributes (select-keys job-state [:stage :status])}})
+  (notify-watchers job-state))
+----
++
+Use the `context:` option to specify the context containing the span to add the event to:
++
+[source,clojure]
+----
+(defn complete-stage [context job-state]
+  (span/add-span-data! {:event {:context context
+                                :name "Stage completed"
+                                :attributes (select-keys job-state [:stage :status])}})
+  (notify-watchers context job-state))
+----
+
+==== Add an exception event to a span
+
+NOTE: Events for exceptions thrown in spans which leave the span's scope are *automatically added* to the span.
+This applies to synchronous and asynchronous spans.
+For `async-span`, exceptions are "thrown" using the `raise` callback function.
+
+* Use `steffan-westcott.otel.api.trace.span/add-exception!` to add an event describing an exception to an existing span.
+The exception event may include attributes.
+Use this function to capture details about caught (non-escaping) exceptions.
++
+By default, the exception event is added to the span in the current context:
++
+[source,clojure]
+----
+(defn process-args [args]
+  (try
+    (parse-args args)
+    (catch Throwable e
+      (span/add-exception! e {:escaping? false
+                              :attributes {:args args}})
+      {:result :parse-error})))
+----
++
+Use the `context:` option to specify the context containing the span to add the exception event to:
++
+[source,clojure]
+----
+(defn process-args [context args]
+  (try
+    (parse-args args)
+    (catch Throwable e
+      (span/add-exception! e {:context context
+                              :escaping? false
+                              :attributes {:args args}})
+      {:result :parse-error})))
+----
 
 === Work with HTTP client and server spans
 
@@ -46,44 +182,80 @@ Manual instrumentation may optionally be added.
 
 * Download the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar[latest version of the OpenTelemetry instrumentation agent JAR].
 The agent JAR includes the SDK and all its dependencies.
-* Configure the agent and SDK, using properties.
+* Configure the agent and SDK, using properties and environment variables.
 See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/agent-config.md[agent and SDK configuration documentation].
 * When running the application, enable the agent with the `-javaagent` JVM flag.
-A minimal configuration includes the service name of the application.
-For example, with `deps.edn` use an alias like the following:
+
+For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC, use an alias like the following:
 
 .`deps.edn`
 [source,clojure]
+[.small]
 ----
 {;; ...
  :aliases {
-   :auto-instrument {:jvm-opts ["-javaagent:path/to/opentelemetry-javaagent.jar"
-                                "-Dotel.resource.attributes=service.name=my-app"]}}}
+   :otel {:jvm-opts ["-javaagent:path/to/opentelemetry-javaagent.jar"
+                     "-Dotel.resource.attributes=service.name=my-app"
+                     "-Dotel.traces.exporter=otlp"
+                     "-Dotel.exporter.otlp.traces.protocol=grpc"]}}}
 ----
 
 [#_run_with_autoconfigured_sdk]
 === Run with autoconfigured SDK
-* Configure the SDK using properties and environment variables. See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfigure configuration documentation].
+
+* Add project dependencies:
+** _Required:_ `io.opentelemetry/opentelemetry-sdk-extension-autoconfigure` for the SDK itself and SDK autoconfiguration
+** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any required exporters
+** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-resources` for various resources to be automatically added to telemetry data
+** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
+This is not needed if gRPC is not used by any exporters or the application.
+
+* Configure the SDK using properties and environment variables.
+See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfigure configuration documentation].
+
+For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC with Netty transport, use an alias like the following:
 
 .`deps.edn`
 [source,clojure]
+[.small]
 ----
 {;; ...
  :aliases {
-   :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=example-app"]
+   :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=my-app"
+                     "-Dotel.traces.exporter=otlp"
+                     "-Dotel.exporter.otlp.traces.protocol=grpc"]
           :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.9.1-alpha"}
-                       io.opentelemetry/opentelemetry-sdk-extension-resources {:mvn/version "1.9.1"}}}}}
+                       io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.9.1"}
+                       io.opentelemetry/opentelemetry-exporter-otlp-trace         {:mvn/version "1.9.1"}
+                       io.grpc/grpc-netty-shaded                                  {:mvn/version "1.42.1"}
+                       io.grpc/grpc-protobuf                                      {:mvn/version "1.42.1"}
+                       io.grpc/grpc-stub                                          {:mvn/version "1.42.1"}}}}}
 ----
 
 [#_run_with_programmatically_configured_sdk]
 === Run with programmatically configured SDK
 
+* Add project dependencies:
+** _Required:_ `com.github.steffan-westcott/clj-otel-sdk` for the SDK itself and a Clojure wrapper of SDK configuration
+** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for Clojure wrapped versions of any required exporters
+** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various resources to add to telemetry data
+** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
+This is not needed if gRPC is not used by any exporters or the application.
+
+
+For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC with Netty transport, use deps like the following:
+
 .`deps.edn`
 [source,clojure]
+[.small]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-sdk                     {:mvn/version "0.1.0-SNAPSHOT"}
-        com.github.steffan-westcott/clj-otel-sdk-extension-resources {:mvn/version "0.1.0-SNAPSHOT"}}}
+ :deps {com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.1.0-SNAPSHOT"}
+        com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.1.0-SNAPSHOT"}
+        com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace {:mvn/version "0.1.0-SNAPSHOT"}
+        io.grpc/grpc-netty-shaded                                     {:mvn/version "1.42.1"}
+        io.grpc/grpc-protobuf                                         {:mvn/version "1.42.1"}
+        io.grpc/grpc-stub                                             {:mvn/version "1.42.1"}}}
 ----
 
 === Mute telemetry signals

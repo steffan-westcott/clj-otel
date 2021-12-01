@@ -332,30 +332,37 @@ The following are alternatives to OpenTelemetry in the Clojure ecosystem, which 
 
 === Events & structured logs
 
-* https://github.com/BrunoBonacci/mulog[μ/log]
-* https://github.com/amperity/ken[ken]
-* https://github.com/viesti/timbre-json-appender[timbre-json-appender]
-* https://github.com/logicblocks/cartus[cartus]
-* https://cambium-clojure.github.io/[Cambium]
-* https://github.com/runejuhl/clj-journal[clj-journal]
+* https://github.com/BrunoBonacci/mulog[μ/log] : Micro-logging library that logs events and data, not words
+* https://github.com/amperity/ken[ken] : Observability library to instrument Clojure code
+* https://github.com/henryw374/clojure.log4j2[clojure.log4j2] : Sugar for using https://logging.apache.org/log4j/2.x/[Log4j2] from clojure, including `MapMessage` support
+* https://github.com/viesti/timbre-json-appender[timbre-json-appender] : Structured log appender for Timbre using jsonista
+* https://github.com/logicblocks/cartus[cartus] : Structured logging abstraction with multiple backends
+* https://cambium-clojure.github.io/[Cambium] : Structured logging for Clojure
+* https://github.com/runejuhl/clj-journal[clj-journal] : Structured logging to systemd journal using native systemd libraries and JNA (Java Native Access)
 
 === Traces
 
-* https://github.com/BrunoBonacci/mulog#%CE%BCtrace[μ/trace], a subsystem of https://github.com/BrunoBonacci/mulog[μ/log]
+* https://github.com/BrunoBonacci/mulog#%CE%BCtrace[μ/trace] : Micro distributed tracing library with the focus on tracking data with custom attributes; a subsystem of https://github.com/BrunoBonacci/mulog[μ/log]
 * https://github.com/amperity/ken#tracing[ken] tracing support
+* https://github.com/uswitch/opencensus-clojure[opencensus-clojure] : Clojure wrapper for https://github.com/census-instrumentation/opencensus-java[opencensus-java]
+* https://github.com/alvinfrancis/opentracing-clj[opentracing-clj] : OpenTracing API support for Clojure, built on top of https://github.com/opentracing/opentracing-java[opentracing-java]
+* https://github.com/Cyrik/omni-trace[omni-trace] : Clojure(Script) tracing for debugging
 
 === Unstructured logs
 
-* https://github.com/ptaoussanis/timbre[Timbre]
-* https://github.com/FundingCircle/clj-loga[clj-loga]
-* https://github.com/henryw374/clojure.log4j2[clojure.log4j2]
+* https://github.com/ptaoussanis/timbre[Timbre] : Pure Clojure/Script logging library
+* https://github.com/FundingCircle/clj-loga[clj-loga] : Custom log formatting for Timbre
 
-=== Metrics & monitoring
+=== Metrics
 
-* https://riemann.io/[Riemann]
-* https://github.com/metrics-clojure/metrics-clojure[metrics-clojure]
-* https://github.com/samsara/trackit[TRACKit!]
-* https://github.com/mrmcc3/aws-metrics-collector[aws-metrics-collector]
-* https://github.com/logicblocks/salutem[salutem]
-* https://github.com/sereno-xyz/sereno[sereno]
-* https://github.com/bass3m/plumon[plumon]
+* https://riemann.io/[Riemann] : Network event stream processing system, in Clojure
+* https://github.com/jitlogic/micrometer-clj[micrometer-clj] : Clojure wrapper for Java https://micrometer.io/[Micrometer] library
+* https://github.com/metrics-clojure/metrics-clojure[metrics-clojure] : Clojure façade around https://metrics.dropwizard.io/[Dropwizard Metrics] library
+* https://github.com/samsara/trackit[TRACKit!] : Clojure wrapper for https://metrics.dropwizard.io/[Dropwizard Metrics] library
+* https://github.com/mrmcc3/aws-metrics-collector[aws-metrics-collector] : Clojure AWS Cloudwatch metric collector
+
+=== Monitoring
+
+* https://github.com/logicblocks/salutem[salutem] : Health check library
+* https://github.com/sereno-xyz/sereno[sereno] : Uptime monitoring application
+* https://github.com/bass3m/plumon[plumon] : Clojure monitoring service with pluggable monitorables
