@@ -1,18 +1,18 @@
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure                                        {:mvn/version "1.10.3"}
-           org.clojure/core.async                                     {:mvn/version "1.5.640"}
-           com.github.steffan-westcott/clj-otel-api                   {:mvn/version "0.1.0-SNAPSHOT"}
-           io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.9.1-alpha"}
-           io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.9.1"}
-           ring/ring-jetty-adapter                                    {:mvn/version "1.9.4"}
-           clj-http/clj-http                                          {:mvn/version "3.12.3"}
-           org.example/common-utils.core-async                        {:local/root "../../../common-utils/core-async"}}
+ :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
+           org.clojure/core.async                   {:mvn/version "1.5.640"}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}
+           ring/ring-jetty-adapter                  {:mvn/version "1.9.4"}
+           clj-http/clj-http                        {:mvn/version "3.12.3"}
+           org.example/common-utils.core-async      {:local/root "../../../common-utils/core-async"}}
 
  :aliases {
-           ;; Required - Set the service name of the resource emitting telemetry
+           ;; Include this alias to emit telemetry data
 
-           :otel                  {:jvm-opts ["-Dotel.resource.attributes=service.name=puzzle-service"]}
+           :otel                  {:jvm-opts   ["-Dotel.resource.attributes=service.name=puzzle-service"]
+                                   :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.9.1-alpha"}
+                                                io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.9.1"}}}
 
 
 

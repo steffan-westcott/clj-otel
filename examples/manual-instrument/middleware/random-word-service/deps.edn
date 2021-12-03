@@ -1,15 +1,15 @@
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure                                        {:mvn/version "1.10.3"}
-           com.github.steffan-westcott/clj-otel-api                   {:mvn/version "0.1.0-SNAPSHOT"}
-           io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.9.1-alpha"}
-           io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.9.1"}
-           ring/ring-jetty-adapter                                    {:mvn/version "1.9.4"}}
+ :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}
+           ring/ring-jetty-adapter                  {:mvn/version "1.9.4"}}
 
  :aliases {
-           ;; Required - Set the service name of the resource emitting telemetry
+           ;; Include this alias to emit telemetry data
 
-           :otel                  {:jvm-opts ["-Dotel.resource.attributes=service.name=random-word-service"]}
+           :otel                  {:jvm-opts   ["-Dotel.resource.attributes=service.name=random-word-service"]
+                                   :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.9.1-alpha"}
+                                                io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.9.1"}}}
 
 
 

@@ -4,7 +4,7 @@
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}}
 
  :aliases {
-           ;; Required - Use autoconfigure module to add and configure the OpenTelemetry SDK
+           ;; Include this alias to emit telemetry data
 
            :otel                  {:jvm-opts   ["-Dotel.resource.attributes=service.name=example-app"]
                                    :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.9.1-alpha"}

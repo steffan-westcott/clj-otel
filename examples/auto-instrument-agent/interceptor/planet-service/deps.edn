@@ -9,9 +9,9 @@
            org.slf4j/slf4j-simple                   {:mvn/version "1.7.32"}}
 
  :aliases {
-           ;; Required - Use OpenTelemetry instrumentation agent
+           ;; Use this alias to run with OpenTelemetry instrumentation agent
 
-           :auto-instrument       {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
+           :otel                  {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
                                               "-Dotel.resource.attributes=service.name=planet-service"]}
 
 

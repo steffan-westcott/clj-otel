@@ -12,8 +12,9 @@
            org.example/common-utils.core-async      {:local/root "../../../common-utils/core-async"}}
 
  :aliases {
-           ;; Required - Use OpenTelemetry instrumentation agent
-           :auto-instrument       {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
+           ;; Use this alias to run with OpenTelemetry instrumentation agent
+
+           :otel                  {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
                                               "-Dotel.resource.attributes=service.name=solar-system-service"]}
 
 

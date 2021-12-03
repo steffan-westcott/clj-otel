@@ -2,7 +2,7 @@
 :toc:
 :icons: font
 
-== Observability, OpenTelemetry and `otel-clj`
+== Observability, OpenTelemetry and `clj-otel`
 
 === What is observability?
 
@@ -63,9 +63,9 @@ There is a growing consensus in the commercial monitoring and APM tools market t
 Many commercial products today offer ingest of OpenTelemetry trace data and support for metrics and logs is growing.
 Several vendors have created their own *distributions* of the OpenTelemetry SDK and OpenTelemetry Collector, which are customisations tailored for use with their products.
 
-=== What does this project `otel-clj` enable?
+=== What does this project `clj-otel` enable?
 
-https://github.com/steffan-westcott/clj-otel[`otel-clj`] extends the reach of OpenTelemetry to *Clojure libraries and applications* by providing:
+https://github.com/steffan-westcott/clj-otel[`clj-otel`] extends the reach of OpenTelemetry to *Clojure libraries and applications* by providing:
 
 * A *small idiomatic Clojure API* that wraps the OpenTelemetry implementation for Java.
 This enables manual instrumentation of Clojure libraries and applications using pure Clojure.
@@ -73,7 +73,7 @@ This enables manual instrumentation of Clojure libraries and applications using 
 * Support for creating spans around *asynchronous* Clojure code.
 * A Clojure wrapper for *programmatic configuration* of the OpenTelemetry SDK.
 
-https://github.com/steffan-westcott/clj-otel[`otel-clj`] is an umbrella project for several Clojure modules `otel-clj-*`.
+https://github.com/steffan-westcott/clj-otel[`clj-otel`] is an umbrella project for several Clojure modules `clj-otel-*`.
 They depend on the OpenTelemetry implementation for Java https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`] and the OpenTelemetry instrumentation agent provided by https://github.com/open-telemetry/opentelemetry-java-instrumentation[`opentelemetry-java-instrumentation`].
 
 == Supported telemetry backends
@@ -158,7 +158,7 @@ Events are treated as a specific type of log, or captured as part of a trace.
 A trace represents the *flow of a single transaction* throughout the system.
 A trace comprises a tree of *spans*, where a span represents a *unit of work* in a service and the parent-child relationship between the spans represent dependencies between them.
 The *root span* of a trace typically describes the entire transaction and the other spans in the trace describe units of work performed as part of the transaction.
-Traces provide *context* for system activity and can identify other telemetry data (metrics or logs) that are relevant.
+Traces provide causal *context* for system activity and can identify other telemetry data (metrics or logs) that are relevant.
 
 Span data may include a name, *span kind*, attributes, start/end timestamps, links to other spans, a list of events and a status.
 
@@ -171,7 +171,7 @@ The span kind is one of:
 ** `CONSUMER` : Covers processing of an asynchronous producer request.
 ** `INTERNAL` : An internal operation within the local application or service.
 * The events are timestamped records that may include attributes.
-Exceptions thrown during a span are captured as events.
+Exceptions thrown in a span's scope are captured as events.
 * The status has a code `Ok` or `Error`, and in case of `Error` may also have a string description.
 
 See specifications for https://opentelemetry.io/docs/reference/specification/trace/api/#span[span] and https://opentelemetry.io/docs/reference/specification/trace/api/#spankind[span kind].
@@ -257,10 +257,10 @@ The *W3C Trace Context* and *W3C baggage header* propagation protocols are the m
 [#_instrumenting_asynchronous_clojure_code]
 == Instrumenting asynchronous Clojure code
 
-When manually instrumenting asynchronous Clojure code with this library `otel-clj`, it is not possible to use the current context.
+When manually instrumenting asynchronous Clojure code with this library `clj-otel`, it is not possible to use the current context.
 This is because async Clojure function evaluations share threads, but each evaluation is associated with a distinct context.
 The async function must instead maintain a reference to the associated context during evaluation, rather than use the current context.
-Some functions in this library `otel-clj` take a `:context` or `:parent` option to indicate the associated context to use, as an alternative to the default current context.
+Some functions in this library `clj-otel` take a `:context` or `:parent` option to indicate the associated context to use, as an alternative to the default current context.
 
 == Trace sampling
 

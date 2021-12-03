@@ -55,7 +55,7 @@ The new context containing the new span is bound to `context*` in this example:
 (defn get-nums-async [context args respond raise]
   (span/async-span {:parent context
                     :name   "Getting numbers"
-                    :kind   :server}
+                    :kind   :client}
                    (fn [context* respond* raise*]
                      (fetch-nums-async context* args respond* raise*))
                    respond
@@ -160,22 +160,107 @@ Use the `context:` option to specify the context containing the span to add the 
 
 === Work with HTTP client and server spans
 
-==== Use Ring middleware for server spans
+==== Use Ring middleware for server span support
 
-==== Use Pedestal interceptors for server spans
+* Use Ring middleware `steffan-westcott.otel.api.trace.http/wrap-server-span` to add HTTP server span support to a Ring handler.
++
+The enabled support features vary with the selected middleware options.
+The middleware can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
+It also supports both synchronous and asynchronous handlers.
++
+An example using Jetty with server spans created by the agent:
++
+[source,clojure]
+----
+(defn handler [request]
+  ;; ...
+  )
+
+(def service
+  (-> handler
+      (trace-http/wrap-server-span {:create-span? false
+                                    :server-name  "my-server"})))
+
+(defonce server
+  (jetty/run-jetty #'service {:port 8080 :join? false}))
+----
+
+==== Use Pedestal interceptors for server span support
+
+* Use interceptors `steffan-westcott.otel.api.trace.http/server-span-interceptors` to add HTTP server span support to a Pedestal HTTP service.
++
+The enabled support features vary with the selected interceptor options.
+The interceptors can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
++
+An example using Jetty with server spans created by the agent:
++
+[source,clojure]
+----
+(def routes
+  (route/expand-routes
+    [[["/" (trace-http/server-span-interceptors {:create-span? false
+                                                 :server-name  "my-server"})
+       ;; ...
+       ]]]))
+
+(def service-map
+  {::http/routes routes
+   ::http/type   :jetty
+   ::http/port   8080
+   ::http/join?  false})
+
+(defonce server
+  (http/start (http/create-server service-map)))
+----
 
 ==== Add route data to a server span
 
-==== Add HTTP response data to a client or server span
+* Use `steffan-westcott.otel.api.trace.http/add-route-data!` to add the matched route to a server span.
++
+By default, the route data is added to the span in the current context:
++
+[source,clojure]
+----
+(trace-http/add-route-data! "/rooms/:room-id")
+----
++
+Use the `context:` option to specify the context containing the span to add the route data to:
++
+[source,clojure]
+----
+(trace-http/add-route-data! "/rooms/:room-id" {:context context})
+----
+
+==== Add HTTP response data to a client span
+
+NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans.
+
+* Use `steffan-westcott.otel.api.trace.http/add-client-span-response-data!` to add HTTP response data to a client span.
++
+By default, the HTTP response data is added to the span in the current context:
++
+[source,clojure]
+----
+(trace-http/add-client-span-response-data! response)
+----
++
+Use the `context:` option to specify the context containing the span to add the HTTP response data to:
++
+[source,clojure]
+----
+(trace-http/add-client-span-response-data! response {:context context})
+----
 
 == Configure and run an application with telemetry
 
-Select one of these options and follow the linked guide:
+The options below determine what telemetry data is emitted from an application as it runs. Select one of these options and follow the linked guide:
 
-* <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>> : Select this option to add automatic instrumentation to the application as it runs.
-Manual instrumentation may optionally be added.
-* <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>> : Select this option to add manual instrumentation only, without automatic instrumentation; The SDK will be configured using properties or environment variables.
-* <<_run_with_programmatically_configured_sdk,Run with programmatically configured SDK>> : Select this option to add manual instrumentation only, without automatic instrumentation; The SDK will be configured programmatically in the application.
+* <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>> : Select this option to emit telemetry data as a result of automatic and manual instrumentation.
+* <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>> : Select this option to emit telemetry data from manual instrumentation only; The SDK will be configured using properties or environment variables.
+* <<_run_with_programmatically_configured_sdk,Run with programmatically configured SDK>> : Select this option to emit telemetry data from manual instrumentation only; The SDK will be configured programmatically in the application.
+* <<_run_without_agent_or_sdk,Run without agent or SDK>> : Select this option to mute all telemetry data.
+
+TIP: Traces telemetry data is muted in the last option, or by setting the property `otel.traces.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration). `otel.metrics.exporter` has default `none`.
 
 [#_run_with_the_opentelemetry_auto_instrumentation_agent]
 === Run with the OpenTelemetry auto-instrumentation agent
@@ -258,7 +343,14 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
         io.grpc/grpc-stub                                             {:mvn/version "1.42.1"}}}
 ----
 
-=== Mute telemetry signals
+[#_run_without_agent_or_sdk]
+=== Run without agent or SDK
+
+There are no steps to add dependencies or otherwise configure the application in order to run it without the agent or SDK.
+
+NOTE: An application run without the OpenTelemetry instrumentation agent or SDK will not emit any telemetry data. Usage of the OpenTelemetry API (manual instrumentation) in the application will invoke no-op implementations.
+
+== Configure span export
 
 === Batch spans prior to export
 

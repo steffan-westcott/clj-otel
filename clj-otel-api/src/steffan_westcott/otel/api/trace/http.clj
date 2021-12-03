@@ -213,11 +213,13 @@
   server span is created, with parent context extracted from the HTTP request
   headers. For a synchronous handler, the current context is set to the new
   context during request processing and restored to its original value on
-  completion. For an asynchronous handler, the new context is set as the value
-  of `:io.opentelemetry/server-span-context` in the request map. Finally, if
-  the HTTP response status code is `5xx` then the span status error description
-  is set to the value of `:io.opentelemetry.api.trace.span.status/description`
-  in the response map.
+  completion. Finally, if the HTTP response status code is `5xx` then the span
+  status error description is set to the value of
+  `:io.opentelemetry.api.trace.span.status/description` in the response map.
+
+  No matter how the server span is created, for an asynchronous handler the
+  context containing the server span is set as the value of
+  `:io.opentelemetry/server-span-context` in the request map.
 
   May take an option map as follows:
 
