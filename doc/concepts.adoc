@@ -123,17 +123,18 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 
 The general workflow for using OpenTelemetry with your library or application is:
 
-. Add instrumentation to your library or application such that it emits telemetry data.
-. Configure system components to control how the telemetry data are processed and exported, either directly to telemetry backends or via the OpenTelemetry Collector.
+. Add instrumentation to your library or application such that it exports telemetry data.
+. Configure system components to control how the telemetry data are processed and exported, either directly to telemetry backends or via OpenTelemetry Collector instance(s).
 . Use telemetry backend features to explore system behaviour described by the telemetry data.
 
 == Instrumenting libraries and applications
 
-Instrumenting a library or application involves adding behaviour such that it emits telemetry data as it runs.
+Instrumenting a library or application involves adding behaviour such that it exports telemetry data as it runs.
 
 *Automatic instrumentation* achieves this by dynamically altering the library or application at runtime.
 For the Java platform, automatic instrumentation is performed by the https://github.com/open-telemetry/opentelemetry-java-instrumentation[*OpenTelemetry instrumentation agent*], a Java agent that runs with the application.
 Many https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] are supported by the agent out of the box.
+For example, the agent will create server spans for requests received by a Jetty server, and client spans for requests issued by an Apache HttpClient instance.
 
 *Manual instrumentation* involves adding program code to the library or application at design time, using the OpenTelemetry API.
 The `clj-otel-api` module in this project wraps the OpenTelemetry API for Java in an idiomatic Clojure facade.
@@ -283,7 +284,7 @@ An application or OpenTelemetry Collector exports data to these backends using a
 
 The OpenTelemetry SDK implements the creation, sampling, batching and export of telemetry data.
 The SDK acts as an implementation of the OpenTelemetry API.
-For an application to emit telemetry, the SDK and its dependencies need to be present and configured at runtime.
+For an application to export telemetry, the SDK and its dependencies need to be present and configured at runtime.
 
 The SDK and its dependencies are added to an application in one of the following ways:
 
@@ -320,7 +321,8 @@ The obvious advantage to using a distro is ease of use, but a disadvantage is th
 
 == OpenTelemetry Collector
 
-The https://opentelemetry.io/docs/collector/[OpenTelemetry Collector] is a vendor-agnostic deployable process to manage telemetry data as it flows through a system.
+The https://opentelemetry.io/docs/collector/[OpenTelemetry Collector] is a vendor-agnostic deployable process to manage telemetry data as it flows from instrumented applications to telemetry backends.
+The Collector can transform telemetry data, for example insert or filter attributes.
 It removes the need to run multiple, vendor-specific agents and collectors, when working with multiple telemetry data formats and telemetry backends.
 
 It is not required to use the OpenTelemetry Collector, though its use is recommended to simplify telemetry data management in larger systems that have many instrumented services.

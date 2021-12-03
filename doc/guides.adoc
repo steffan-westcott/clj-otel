@@ -231,9 +231,9 @@ Use the `context:` option to specify the context containing the span to add the 
 (trace-http/add-route-data! "/rooms/:room-id" {:context context})
 ----
 
-==== Add HTTP response data to a client span
+==== Manually add HTTP response data to a client span
 
-NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans.
+NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans for supported HTTP clients.
 
 * Use `steffan-westcott.otel.api.trace.http/add-client-span-response-data!` to add HTTP response data to a client span.
 +
@@ -251,13 +251,39 @@ Use the `context:` option to specify the context containing the span to add the 
 (trace-http/add-client-span-response-data! response {:context context})
 ----
 
+==== Manually propagate context in an HTTP client request
+
+NOTE: When an application is run with the OpenTelemetry instrumentation agent, context is *automatically propagated* in HTTP client requests for supported clients.
+
+* Use `steffan-westcott.otel.context/\->headers` to get headers to merge (inject) in the HTTP request to be issued.
++
+By default, the current context is propagated:
++
+[source,clojure]
+----
+(let [context-headers (context/->headers)
+      request' (update request :headers merge context-headers)]
+  ;; ...
+  )
+----
++
+Use the `:context` option to specify the context to be propagated:
++
+[source,clojure]
+----
+(let [context-headers (context/->headers {:context context})
+      request' (update request :headers merge context-headers)]
+  ;; ...
+  )
+----
+
 == Configure and run an application with telemetry
 
-The options below determine what telemetry data is emitted from an application as it runs. Select one of these options and follow the linked guide:
+The options below determine what telemetry data is exported from an application as it runs. Select one of these options and follow the linked guide:
 
-* <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>> : Select this option to emit telemetry data as a result of automatic and manual instrumentation.
-* <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>> : Select this option to emit telemetry data from manual instrumentation only; The SDK will be configured using properties or environment variables.
-* <<_run_with_programmatically_configured_sdk,Run with programmatically configured SDK>> : Select this option to emit telemetry data from manual instrumentation only; The SDK will be configured programmatically in the application.
+* <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>> : Select this option to export telemetry data as a result of automatic and manual instrumentation.
+* <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>> : Select this option to export telemetry data from manual instrumentation only; The SDK will be configured using properties or environment variables.
+* <<_run_with_programmatically_configured_sdk,Run with programmatically configured SDK>> : Select this option to export telemetry data from manual instrumentation only; The SDK will be configured programmatically in the application.
 * <<_run_without_agent_or_sdk,Run without agent or SDK>> : Select this option to mute all telemetry data.
 
 TIP: Traces telemetry data is muted in the last option, or by setting the property `otel.traces.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration). `otel.metrics.exporter` has default `none`.
@@ -326,7 +352,8 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various resources to add to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
-
+* On application start, use `steffan-westcott.otel.sdk.otel-sdk/init-otel-sdk!` to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
+* On application end, use `steffan-westcott.otel.sdk.otel-sdk/close-otel-sdk!` to close down activities of the SDK instance.
 
 For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC with Netty transport, use deps like the following:
 
@@ -343,29 +370,79 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
         io.grpc/grpc-stub                                             {:mvn/version "1.42.1"}}}
 ----
 
+To configure the SDK on start and close down on end, the application could have functions like the following:
+
+.`example/app.clj`
+[source,clojure]
+[.small]
+----
+(ns example.app
+  (:require [steffan-westcott.otel.exporter.otlp-grpc-trace :as otlp-grpc-trace]
+            [steffan-westcott.otel.resource.resources :as res]
+            [steffan-westcott.otel.sdk.otel-sdk :as sdk]))
+
+(defn init-otel! []
+  (sdk/init-otel-sdk!
+    "my-app"
+    {:resources [(res/host-resource)
+                 (res/os-resource)
+                 (res/process-resource)
+                 (res/process-runtime-resource)]
+     :tracer-provider
+       {:span-processors
+         [{:exporters [(otlp-grpc-trace/span-exporter)]}]}}))
+
+(defn close-otel! []
+  (sdk/close-otel-sdk!))
+----
+
 [#_run_without_agent_or_sdk]
 === Run without agent or SDK
 
 There are no steps to add dependencies or otherwise configure the application in order to run it without the agent or SDK.
 
-NOTE: An application run without the OpenTelemetry instrumentation agent or SDK will not emit any telemetry data. Usage of the OpenTelemetry API (manual instrumentation) in the application will invoke no-op implementations.
-
-== Configure span export
-
-=== Batch spans prior to export
-
-=== Export spans to the OpenTelemetry Collector
-
-=== Export spans directly to backends
-
-==== Export spans directly to backends that support OTLP
-
-==== Export spans directly to Jaeger
-
-==== Export spans directly to Zipkin
+NOTE: An application run without the OpenTelemetry instrumentation agent or SDK will not export any telemetry data. Usage of the OpenTelemetry API (manual instrumentation) in the application will invoke no-op implementations.
 
 == Use the OpenTelemetry Collector
 
 === Deploy the OpenTelemetry Collector
 
+See the https://opentelemetry.io/docs/collector/getting-started/[getting started documentation].
+
 === Configure the OpenTelemetry Collector
+
+See the https://opentelemetry.io/docs/collector/configuration/[configuration documentation].
+
+This example configuration has a traces pipeline where:
+
+* Trace data are received as OTLP over gRPC
+* Memory usage in the Collector process is limited
+* Traces are batched prior to export to the backend
+* Traces are exported to Jaeger backend on host `jaeger`
+
+.`otel-collector-config.yaml`
+[source,yaml]
+----
+receivers:
+  otlp:
+    protocols:
+      grpc:
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 750
+  batch:
+
+exporters:
+  jaeger:
+    endpoint: jaeger:14250
+    insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ jaeger ]
+----
