@@ -24,7 +24,7 @@
 
 ==== Create a synchronous span using the current context
 
-* Use `steffan-westcott.otel.api.trace.span/with-span!` to wrap a body of forms in a span, where the current context is used to keep track of (potentially nested) spans:
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#with-span![`steffan-westcott.otel.api.trace.span/with-span!`] to wrap a body of forms in a span, where the xref:concepts.adoc#_current_context[current context] is used to keep track of (potentially nested) spans:
 +
 [source,clojure]
 ----
@@ -35,7 +35,7 @@
 
 ==== Create a synchronous span using explicit context
 
-* Use `steffan-westcott.otel.api.trace.span/with-span-binding` to wrap a body of forms in a span, where the context to use is passed in as the `:parent` option.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#with-span-binding[`steffan-westcott.otel.api.trace.span/with-span-binding`] to wrap a body of forms in a span, where the context to use is passed in as the `:parent` option.
 The new context containing the new span is bound to `context*` in this example:
 +
 [source,clojure]
@@ -48,7 +48,7 @@ The new context containing the new span is bound to `context*` in this example:
 
 ==== Create an asynchronous span
 
-* Use `steffan-westcott.otel.api.trace.span/async-span` to start a new span that ends when either success/failure callback `respond`/`raise` is evaluated:
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#async-span[`steffan-westcott.otel.api.trace.span/async-span`] to start a new span that ends when either success/failure callback `respond`/`raise` is evaluated:
 +
 [source,clojure]
 ----
@@ -74,7 +74,7 @@ The new context containing the new span is bound to `context*` in this example:
     (fetch-user-info user-id)))
 ----
 
-* Alternatively, use `steffan-westcott.otel.api.trace.span/add-span-data!` to add attributes to an existing span.
+* Alternatively, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] to add attributes to an existing span.
 +
 By default, the span in the current context is updated:
 +
@@ -97,7 +97,7 @@ Use the `:context` option to specify the context containing the span to update:
 
 ==== Add an event to a span
 
-* Use `steffan-westcott.otel.api.trace.span/add-span-data!` to add an event to an existing span.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] to add an event to an existing span.
 The event may include attributes.
 +
 By default, the event is added to the span in the current context:
@@ -127,7 +127,7 @@ NOTE: Events for exceptions thrown in spans which leave the span's scope are *au
 This applies to synchronous and asynchronous spans.
 For `async-span`, exceptions are "thrown" using the `raise` callback function.
 
-* Use `steffan-westcott.otel.api.trace.span/add-exception!` to add an event describing an exception to an existing span.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-exception![`steffan-westcott.otel.api.trace.span/add-exception!`] to add an event describing an exception to an existing span.
 The exception event may include attributes.
 Use this function to capture details about caught (non-escaping) exceptions.
 +
@@ -162,7 +162,7 @@ Use the `context:` option to specify the context containing the span to add the 
 
 ==== Use Ring middleware for server span support
 
-* Use Ring middleware `steffan-westcott.otel.api.trace.http/wrap-server-span` to add HTTP server span support to a Ring handler.
+* Use Ring middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#wrap-server-span[`steffan-westcott.otel.api.trace.http/wrap-server-span`] to add HTTP server span support to a Ring handler.
 +
 The enabled support features vary with the selected middleware options.
 The middleware can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
@@ -187,7 +187,7 @@ An example using Jetty with server spans created by the agent:
 
 ==== Use Pedestal interceptors for server span support
 
-* Use interceptors `steffan-westcott.otel.api.trace.http/server-span-interceptors` to add HTTP server span support to a Pedestal HTTP service.
+* Use interceptors https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#server-span-interceptors[`steffan-westcott.otel.api.trace.http/server-span-interceptors`] to add HTTP server span support to a Pedestal HTTP service.
 +
 The enabled support features vary with the selected interceptor options.
 The interceptors can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
@@ -215,7 +215,7 @@ An example using Jetty with server spans created by the agent:
 
 ==== Add route data to a server span
 
-* Use `steffan-westcott.otel.api.trace.http/add-route-data!` to add the matched route to a server span.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#add-route-data![`steffan-westcott.otel.api.trace.http/add-route-data!`] to add the matched route to a server span.
 +
 By default, the route data is added to the span in the current context:
 +
@@ -235,7 +235,7 @@ Use the `context:` option to specify the context containing the span to add the 
 
 NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans for supported HTTP clients.
 
-* Use `steffan-westcott.otel.api.trace.http/add-client-span-response-data!` to add HTTP response data to a client span.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#add-client-span-response-data![`steffan-westcott.otel.api.trace.http/add-client-span-response-data!`] to add HTTP response data to a client span.
 +
 By default, the HTTP response data is added to the span in the current context:
 +
@@ -255,7 +255,7 @@ Use the `context:` option to specify the context containing the span to add the 
 
 NOTE: When an application is run with the OpenTelemetry instrumentation agent, context is *automatically propagated* in HTTP client requests for supported clients.
 
-* Use `steffan-westcott.otel.context/\->headers` to get headers to merge (inject) in the HTTP request to be issued.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.context#->headers[`steffan-westcott.otel.context/\->headers`] to get headers to merge (inject) in the HTTP request to be issued.
 +
 By default, the current context is propagated:
 +
@@ -352,8 +352,8 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various resources to add to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
-* On application start, use `steffan-westcott.otel.sdk.otel-sdk/init-otel-sdk!` to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
-* On application end, use `steffan-westcott.otel.sdk.otel-sdk/close-otel-sdk!` to close down activities of the SDK instance.
+* On application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.otel.sdk.otel-sdk#init-otel-sdk![`steffan-westcott.otel.sdk.otel-sdk/init-otel-sdk!`] to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
+* On application end, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.otel.sdk.otel-sdk#close-otel-sdk![`steffan-westcott.otel.sdk.otel-sdk/close-otel-sdk!`] to close down activities of the SDK instance.
 
 For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC with Netty transport, use deps like the following:
 
@@ -374,7 +374,6 @@ To configure the SDK on start and close down on end, the application could have 
 
 .`example/app.clj`
 [source,clojure]
-[.small]
 ----
 (ns example.app
   (:require [steffan-westcott.otel.exporter.otlp-grpc-trace :as otlp-grpc-trace]

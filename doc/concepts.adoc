@@ -229,6 +229,7 @@ A context acts as an immutable map that holds values that are transmitted across
 A context may contain a span, baggage and possibly other values.
 A new context is created from an existing context with the addition of a new key-value association.
 
+[#_current_context]
 === Current context
 
 The *current context* is a thread local `io.opentelemetry.context.Context` object.
