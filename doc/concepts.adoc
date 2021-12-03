@@ -131,11 +131,13 @@ The general workflow for using OpenTelemetry with your library or application is
 
 Instrumenting a library or application involves adding behaviour such that it exports telemetry data as it runs.
 
+[#_automatic_instrumentation]
 *Automatic instrumentation* achieves this by dynamically altering the library or application at runtime.
 For the Java platform, automatic instrumentation is performed by the https://github.com/open-telemetry/opentelemetry-java-instrumentation[*OpenTelemetry instrumentation agent*], a Java agent that runs with the application.
 Many https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] are supported by the agent out of the box.
 For example, the agent will create server spans for requests received by a Jetty server, and client spans for requests issued by an Apache HttpClient instance.
 
+[#_manual_instrumentation]
 *Manual instrumentation* involves adding program code to the library or application at design time, using the OpenTelemetry API.
 The `clj-otel-api` module in this project wraps the OpenTelemetry API for Java in an idiomatic Clojure facade.
 
@@ -154,6 +156,7 @@ In observability terms, *telemetry data* is an aggregation of data from four sou
 In the OpenTelemetry data model, these map onto traces, metrics and logs *data sources*.
 Events are treated as a specific type of log, or captured as part of a trace.
 
+[#_traces]
 === Traces
 
 A trace represents the *flow of a single transaction* throughout the system.
@@ -192,6 +195,7 @@ Logs are well suited to ad-hoc debugging and capture of low-level details.
 Events are captured as either a specific type of log or as a span event.
 Events are records that *describe actions taken* by the system over time, or *environmental changes* that occurred which are significant to the system, such as a service deployment or change in configuration.
 
+[#_attributes]
 === Attributes
 
 Attributes may be attached to some telemetry data such as spans and resources.
@@ -239,6 +243,7 @@ The current context is safe to use when manually instrumenting synchronous code.
 WARNING: The current context cannot be used when manually instrumenting asynchronous code.
 See <<_instrumenting_asynchronous_clojure_code,Instrumenting asynchronous Clojure code>>.
 
+[#_context_propagation]
 === Context propagation
 
 Context propagation is the mechanism used to transmit context values across API boundaries and threads.
@@ -259,7 +264,7 @@ The *W3C Trace Context* and *W3C baggage header* propagation protocols are the m
 [#_instrumenting_asynchronous_clojure_code]
 == Instrumenting asynchronous Clojure code
 
-When manually instrumenting asynchronous Clojure code with this library `clj-otel`, it is not possible to use the current context.
+When manually instrumenting asynchronous Clojure code with this library `clj-otel`, it is not possible to use the <<_current_context,current context>>.
 This is because async Clojure function evaluations share threads, but each evaluation is associated with a distinct context.
 The async function must instead maintain a reference to the associated context during evaluation, rather than use the current context.
 Some functions in this library `clj-otel` take a `:context` or `:parent` option to indicate the associated context to use, as an alternative to the default current context.

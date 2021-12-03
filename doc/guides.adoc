@@ -7,7 +7,7 @@
 
 === Add automatic instrumentation when running an application
 
-* Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>>.
+* Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>> to add xref:concepts.adoc#_automatic_instrumentation[automatic instrumentation].
 
 === Add manual instrumentation to your library or application code
 
@@ -20,11 +20,11 @@
  :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}}}
 ----
 
-* Follow the guides in the remainder of this section to make changes to your library or application code to add instrumentation.
+* Follow the guides in the remainder of this section to make changes to your library or application code to add xref:concepts.adoc#_manual_instrumentation[manual instrumentation].
 
 ==== Create a synchronous span using the current context
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#with-span![`steffan-westcott.otel.api.trace.span/with-span!`] to wrap a body of forms in a span, where the xref:concepts.adoc#_current_context[current context] is used to keep track of (potentially nested) spans:
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#with-span![`steffan-westcott.otel.api.trace.span/with-span!`] to wrap a body of forms in a xref:concepts.adoc#_traces[span], where the xref:concepts.adoc#_current_context[current context] is used to keep track of (potentially nested) spans:
 +
 [source,clojure]
 ----
@@ -74,7 +74,7 @@ The new context containing the new span is bound to `context*` in this example:
     (fetch-user-info user-id)))
 ----
 
-* Alternatively, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] to add attributes to an existing span.
+* Alternatively, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] including the `:attributes` option to add xref:concepts.adoc#_attributes[attributes] to an existing span.
 +
 By default, the span in the current context is updated:
 +
@@ -97,7 +97,7 @@ Use the `:context` option to specify the context containing the span to update:
 
 ==== Add an event to a span
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] to add an event to an existing span.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] including the `:event` option to add an xref:concepts.adoc#_events[event] to an existing span.
 The event may include attributes.
 +
 By default, the event is added to the span in the current context:
@@ -115,8 +115,8 @@ Use the `context:` option to specify the context containing the span to add the 
 [source,clojure]
 ----
 (defn complete-stage [context job-state]
-  (span/add-span-data! {:event {:context context
-                                :name "Stage completed"
+  (span/add-span-data! {:context context
+                        :event {:name "Stage completed"
                                 :attributes (select-keys job-state [:stage :status])}})
   (notify-watchers context job-state))
 ----
@@ -255,7 +255,7 @@ Use the `context:` option to specify the context containing the span to add the 
 
 NOTE: When an application is run with the OpenTelemetry instrumentation agent, context is *automatically propagated* in HTTP client requests for supported clients.
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.context#->headers[`steffan-westcott.otel.context/\->headers`] to get headers to merge (inject) in the HTTP request to be issued.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.context#\->headers[`steffan-westcott.otel.context/\->headers`] to get headers to merge (inject) with the other headers in the HTTP request to be issued, for the purpose of xref:concepts.adoc#_context_propagation[context propagation].
 +
 By default, the current context is propagated:
 +
@@ -352,8 +352,8 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various resources to add to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
-* On application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.otel.sdk.otel-sdk#init-otel-sdk![`steffan-westcott.otel.sdk.otel-sdk/init-otel-sdk!`] to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
-* On application end, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.otel.sdk.otel-sdk#close-otel-sdk![`steffan-westcott.otel.sdk.otel-sdk/close-otel-sdk!`] to close down activities of the SDK instance.
+* At application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.otel.sdk.otel-sdk#init-otel-sdk![`steffan-westcott.otel.sdk.otel-sdk/init-otel-sdk!`] to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
+* At application end, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.otel.sdk.otel-sdk#close-otel-sdk![`steffan-westcott.otel.sdk.otel-sdk/close-otel-sdk!`] to close down activities of the SDK instance.
 
 For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC with Netty transport, use deps like the following:
 
@@ -370,7 +370,7 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
         io.grpc/grpc-stub                                             {:mvn/version "1.42.1"}}}
 ----
 
-To configure the SDK on start and close down on end, the application could have functions like the following:
+To configure the SDK at start and close down at end, the application could have functions like the following:
 
 .`example/app.clj`
 [source,clojure]
@@ -412,7 +412,7 @@ See the https://opentelemetry.io/docs/collector/getting-started/[getting started
 
 See the https://opentelemetry.io/docs/collector/configuration/[configuration documentation].
 
-This example configuration has a traces pipeline where:
+This example Collector configuration has a traces pipeline where:
 
 * Trace data are received as OTLP over gRPC
 * Memory usage in the Collector process is limited
