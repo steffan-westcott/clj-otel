@@ -1,5 +1,7 @@
 = Reference
 
+== `clj-otel` modules
+
 .OpenTelemetry API module
 |===
 |Module |Purpose |Documentation
@@ -74,3 +76,6 @@ Intended for debugging only.
 |image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-logging-otlp[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-logging-otlp]
 
 |===
+
+== `opentelemetry-java` libraries
+

@@ -180,7 +180,7 @@
   when a close operation on `<src` completes (after values on `<src` have been
   consumed) or `timeout` milliseconds have elapsed. Because spans must be ended
   before they are sent to the backend, the timeout guarantees the span will
-  not be missing from the reported trace. If either `body` throws an exception
+  not be missing from the exported trace. If either `body` throws an exception
   or exception values are put on `<src`, exception events will be added to the
   span. `span-opts` is the same as for [[new-span!]]. Returns a `<dest` channel
   with buffer size `buf-size`, where values are taken from `<src` and placed on

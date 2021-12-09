@@ -204,6 +204,7 @@ Attributes with `nil` values are dropped.
 
 See the specification for https://opentelemetry.io/docs/reference/specification/common/common/#attributes[attributes] and https://opentelemetry.io/docs/reference/specification/common/attribute-naming/[attribute naming].
 
+[#_resources]
 === Resources
 
 A resource captures information about the entity for which telemetry data is recorded.
@@ -218,6 +219,7 @@ Baggage is mechanism for propagating telemetry metadata and is represented as a 
 It is intended as a means to add contextual information at a point in a transaction, to be read by a downstream service later in the same transaction and used as an element of telemetry data e.g. an attribute.
 An example is to put a user identifier in the baggage to indicate the principal of a request.
 
+[#_semantic_conventions]
 == Semantic conventions
 
 OpenTelemetry has defined a rich set of conventions for telemetry data.
@@ -225,7 +227,7 @@ This semantic unification across vendors and technologies promotes analysis of t
 In particular, *semantic attributes* for spans and metrics are defined for common base technologies like HTTP, database, RPC, messaging, FaaS (Function as a Service) and others.
 See https://opentelemetry.io/docs/concepts/glossary/#semantic-conventions[OpenTelemetry semantic conventions documentation].
 
-`clj-otel` follows the semantic conventions for areas such as https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[span exception events] and manually created https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP server spans].
+`clj-otel` follows the semantic conventions for areas such as https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[span exception events] and manually created https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP client and server spans].
 
 == Context
 
@@ -278,6 +280,11 @@ Sampling is a required technique when the volume of raw data is too high to anal
 OpenTelemetry provides sampler implementations which may be applied in the application and/or the Collector.
 Some telemetry backends may also apply sampling to trace data they receive, either automatically or with some developer intervention.
 
+[#_exporters]
+== Exporters
+
+*Exporters* emit telemetry data to consumers, such as the Collector and telemetry backends.Exporters can be push or pull based.
+
 == OpenTelemetry Protocol - OTLP
 
 https://opentelemetry.io/docs/reference/specification/protocol/[OpenTelemetry Protocol (OTLP)] is the OpenTelemetry native protocol for encoding, transport and delivery of telemetry data.
@@ -294,7 +301,7 @@ For an application to export telemetry, the SDK and its dependencies need to be 
 
 The SDK and its dependencies are added to an application in one of the following ways:
 
-* [.underline]#By using the OpenTelemetry instrumentation agent#: In this option, the SDK and its dependencies do not appear on the application classpath.
+* [.underline]#By using the OpenTelemetry instrumentation agent#: In this option, the SDK and its dependencies are present but do not appear on the application classpath.
 Also, autoconfiguration is used for configuring the SDK.
 * [.underline]#By using the `opentelemetry-sdk-extension-autoconfigure` library as an application dependency#: This option is for autoconfiguration of the SDK where the OpenTelemetry instrumentation agent is not present.
 The relevant optional SDK libraries (exporters, extensions, etc.) also need to be added as runtime dependencies.
@@ -325,6 +332,7 @@ They are not forks, in that they do not extend or change the OpenTelemetry API.
 It is not a requirement to use a vendor's distro, it should always be possible to use the reference OpenTelemetry software and configure it as appropriate.
 The obvious advantage to using a distro is ease of use, but a disadvantage is that sometimes the version of distro lags behind the reference OpenTelemetry version.
 
+[#_opentelemetry_collector]
 == OpenTelemetry Collector
 
 The https://opentelemetry.io/docs/collector/[OpenTelemetry Collector] is a vendor-agnostic deployable process to manage telemetry data as it flows from instrumented applications to telemetry backends.

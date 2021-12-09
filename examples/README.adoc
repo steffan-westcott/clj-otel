@@ -1,0 +1,1 @@
+Follow this link to see xref:../doc/examples.adoc[information on examples].

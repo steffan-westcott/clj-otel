@@ -89,5 +89,5 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ logging, jaeger ]    # Select desired exporters (configured above)
+      exporters: [ logging, jaeger, zipkin ]    # Select desired exporters (configured above)
 

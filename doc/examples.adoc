@@ -1,0 +1,146 @@
+= Examples
+:toc:
+:toclevels: 3
+:icons: font
+
+== Running the examples
+
+These instructions assume a Unix-like environment, with `docker-compose` to spin up backend instances and `curl` to issue HTTP requests.
+All examples use `deps.edn` for project configuration.
+
+. *Clone `clj-otel` repository*
++
+To clone this repository, run the following command :
++
+[source,bash]
+----
+git clone https://github.com/steffan-westcott/clj-otel.git
+----
+
+. *Get agent JAR*
++
+Before running any of the examples, the OpenTelemetry instrumentation agent JAR must be downloaded and placed in the `examples` directory.
+This can be done by running the following command in the clone root directory:
++
+[source,bash]
+----
+clojure -T:build get-java-agent
+----
+
+. *Start Collector and telemetry backend instances*
++
+`docker-compose.yaml` is a Docker Compose configuration file that can be used to spin up a Collector, Jaeger and Zipkin instances.
+The Collector config in file `otel-collector-config.yaml` is set to forward trace data to both Jaeger and Zipkin.
++
+To start the instances, run the following command in the `examples` directory :
++
+[source,bash]
+----
+docker-compose up -d
+----
+
+. *Load and exercise example*
++
+Select an example from the <<_examples_overview,overview>> below and follow the notes on starting and exercising the application or services.
+See the choice of aliases in the `deps.edn` file to configure telemetry export to an OpenTelemetry Collector or backend of your choice.
+For example, in `examples/auto-sdk-config`, to export trace data to the Collector using gRPC with Netty transport start a REPL with aliases `otel`, `traces-collector-grpc`, `metrics-none` and `grpc-netty`.
+
+. *View telemetry data in backend(s)*
++
+*Jaeger* : Navigate to http://localhost:16686/search then select an option in the *Service* dropdown and click the *Find Traces* button.
++
+*Zipkin* : Navigate to http://localhost:9411/zipkin/ then select search options under the cog icon and click the *Run Query* button.
+
+. *Stop Collector and telemetry backend instances*
++
+To stop the Collector and backend instances, run the following command in the `examples` directory :
++
+[source,bash]
+----
+docker-compose down -v
+----
+
+[#_examples_overview]
+== Examples overview
+
+=== Manually instrumented application run with autoconfigured SDK
+
+* Simplest example; small standalone application
+* Project directory `examples/auto-sdk-config`
+* Manual instrumentation only, no automatic instrumentation
+* Runs with autoconfigured OpenTelemetry SDK
+
+To start and exercise the application:
+
+. Start REPL with chosen aliases in `examples/auto-sdk-config/deps.edn`
+. In the REPL, load namespace `example.auto_sdk_config`
++
+This will create a single span named "squaring" with an event "my event".
+
+=== Microservices run with combined automatic and manual instrumentation
+
+* Two dependent microservices; One microservice has a choice of synchronous and asynchronous implementations
+* Project directories for Ring middleware example in `examples/auto-instrument-agent/middleware`
+* Project directories for Pedestal interceptors example in `examples/auto-instrument-agent/interceptor`
+* A combination of automatic and manual instrumentation
+* Runs with OpenTelemetry instrumentation agent
+
+==== Ring middleware example
+
+To start and exercise the microservices using Ring middleware:
+
+. Start first REPL with chosen aliases in `examples/auto-instrument-agent/middleware/word-length-service/deps.edn`
+. In the first REPL, load namespace `example.auto-instrument-agent.middleware.word-length-service`. This starts a `word-length-service` server on port 8081.
+. Start second REPL with chosen aliases in `examples/auto-instrument-agent/middleware/sentence-summary-service/deps.edn`
+. In the second REPL, load namespace `example.auto-instrument-agent.middleware.sentence-summary-service` (synchronous example) or `example.auto-instrument-agent.middleware.sentence-summary-service-async` (asynchronous example). This start a `sentence-summary-service` server on port 8080.
+. Send an HTTP request to exercise the servers:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/summary?sentence=Clojure+and+OpenTelemetry"
+# {:word-count 3, :shortest-length 3, :longest-length 13}
+----
++
+Simulate a downstream 5xx internal server error by including the word `boom` in the request:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/summary?sentence=Things+went+boom"
+# HTML with HTTP ERROR 500 ...
+----
++
+Simulate a downstream 4xx user request error by including the word `problem` in the request:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
+# HTML with HTTP ERROR 500 ...
+----
+
+
+=== Microservices run with manual instrumentation only
+
+* Two dependent microservices; One microservice has a choice of synchronous and asynchronous implementations
+* Project directories for Ring middleware example in `examples/manual-instrument/middleware`
+* Project directories for Pedestal interceptors example in `examples/manual-instrument/interceptor`
+* Manual instrumentation only, no automatic instrumentation
+* Runs with autoconfigured OpenTelemetry SDK
+* Two examples, showing use of Ring middleware and Pedestal interceptors
+
+=== Manually instrumented application run with programmatic SDK configuration
+
+* Small standalone application
+* Project directory `examples/programmatic-sdk-config`
+* Manual instrumentation only, no automatic instrumentation
+* Runs with programmatically configured OpenTelemetry SDK
+
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/summary?sentence=Clojure+and+OpenTelemetry"
+# {:word-count 3, :shortest-length 3, :longest-length 13}
+----
+

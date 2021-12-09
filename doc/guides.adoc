@@ -64,7 +64,7 @@ The new context containing the new span is bound to `context*` in this example:
 
 ==== Add attributes to a span
 
-* Use the `:attributes` option to add attributes when creating a span:
+* Use the `:attributes` option to add xref:concepts.adoc#_attributes[attributes] when creating a span:
 +
 [source,clojure]
 ----
@@ -74,7 +74,7 @@ The new context containing the new span is bound to `context*` in this example:
     (fetch-user-info user-id)))
 ----
 
-* Alternatively, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] including the `:attributes` option to add xref:concepts.adoc#_attributes[attributes] to an existing span.
+* Alternatively, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] including the `:attributes` option to add attributes to an existing span.
 +
 By default, the span in the current context is updated:
 +
@@ -98,7 +98,7 @@ Use the `:context` option to specify the context containing the span to update:
 ==== Add an event to a span
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-span-data![`steffan-westcott.otel.api.trace.span/add-span-data!`] including the `:event` option to add an xref:concepts.adoc#_events[event] to an existing span.
-The event may include attributes.
+The event may include xref:concepts.adoc#_attributes[attributes].
 +
 By default, the event is added to the span in the current context:
 +
@@ -125,10 +125,10 @@ Use the `context:` option to specify the context containing the span to add the 
 
 NOTE: Events for exceptions thrown in spans which leave the span's scope are *automatically added* to the span.
 This applies to synchronous and asynchronous spans.
-For `async-span`, exceptions are "thrown" using the `raise` callback function.
+For https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#async-span[`async-span`], exceptions are "thrown" using the `raise` callback function.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#add-exception![`steffan-westcott.otel.api.trace.span/add-exception!`] to add an event describing an exception to an existing span.
-The exception event may include attributes.
+The exception event may include xref:concepts.adoc#_attributes[attributes].
 Use this function to capture details about caught (non-escaping) exceptions.
 +
 By default, the exception event is added to the span in the current context:
@@ -159,6 +159,8 @@ Use the `context:` option to specify the context containing the span to add the 
 ----
 
 === Work with HTTP client and server spans
+
+The guides in this section describe xref:concepts.adoc#_semantic_conventions[semantic conventions] support for HTTP client and server spans.
 
 ==== Use Ring middleware for server span support
 
@@ -281,10 +283,18 @@ Use the `:context` option to specify the context to be propagated:
 
 The options below determine what telemetry data is exported from an application as it runs. Select one of these options and follow the linked guide:
 
-* <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>> : Select this option to export telemetry data as a result of automatic and manual instrumentation.
-* <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>> : Select this option to export telemetry data from manual instrumentation only; The SDK will be configured using properties or environment variables.
-* <<_run_with_programmatically_configured_sdk,Run with programmatically configured SDK>> : Select this option to export telemetry data from manual instrumentation only; The SDK will be configured programmatically in the application.
-* <<_run_without_agent_or_sdk,Run without agent or SDK>> : Select this option to mute all telemetry data.
+* <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>>
++
+Select this option to export telemetry data as a result of automatic and manual instrumentation.
+* <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>>
++
+Select this option to export telemetry data from manual instrumentation only; The SDK will be configured using properties or environment variables.
+* <<_run_with_programmatically_configured_sdk,Run with programmatically configured SDK>>
++
+Select this option to export telemetry data from manual instrumentation only; The SDK will be configured programmatically in the application.
+* <<_run_without_agent_or_sdk,Run without agent or SDK>>
++
+Select this option to mute all telemetry data.
 
 TIP: Traces telemetry data is muted in the last option, or by setting the property `otel.traces.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration). `otel.metrics.exporter` has default `none`.
 
@@ -316,8 +326,8 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 
 * Add project dependencies:
 ** _Required:_ `io.opentelemetry/opentelemetry-sdk-extension-autoconfigure` for the SDK itself and SDK autoconfiguration
-** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any required exporters
-** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-resources` for various resources to be automatically added to telemetry data
+** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any required xref:concepts.adoc#_exporters[exporters]
+** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
 
@@ -348,8 +358,8 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 
 * Add project dependencies:
 ** _Required:_ `com.github.steffan-westcott/clj-otel-sdk` for the SDK itself and a Clojure wrapper of SDK configuration
-** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for Clojure wrapped versions of any required exporters
-** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various resources to add to telemetry data
+** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for Clojure wrapped versions of any required xref:concepts.adoc#_exporters[exporters]
+** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various xref:concepts.adoc#_resources[resources] to add to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
 * At application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.otel.sdk.otel-sdk#init-otel-sdk![`steffan-westcott.otel.sdk.otel-sdk/init-otel-sdk!`] to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
@@ -403,6 +413,8 @@ There are no steps to add dependencies or otherwise configure the application in
 NOTE: An application run without the OpenTelemetry instrumentation agent or SDK will not export any telemetry data. Usage of the OpenTelemetry API (manual instrumentation) in the application will invoke no-op implementations.
 
 == Use the OpenTelemetry Collector
+
+The xref:concepts.adoc#_opentelemetry_collector[OpenTelemetry Collector] is used to manage telemetry data, as an alternative to applications exporting data directly to telemetry backends.
 
 === Deploy the OpenTelemetry Collector
 
