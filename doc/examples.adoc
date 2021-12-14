@@ -87,12 +87,14 @@ This will create a single span named "squaring" with an event "my event".
 
 ==== Ring middleware example
 
-To start and exercise the microservices using Ring middleware:
+To start and exercise the Ring middleware example with combined automatic and manual instrumentation:
 
 . Start first REPL with chosen aliases in `examples/auto-instrument-agent/middleware/word-length-service/deps.edn`
-. In the first REPL, load namespace `example.auto-instrument-agent.middleware.word-length-service`. This starts a `word-length-service` server on port 8081.
+. In the first REPL, load namespace `example.auto-instrument-agent.middleware.word-length-service`.
+This starts a `word-length-service` server on port 8081.
 . Start second REPL with chosen aliases in `examples/auto-instrument-agent/middleware/sentence-summary-service/deps.edn`
-. In the second REPL, load namespace `example.auto-instrument-agent.middleware.sentence-summary-service` (synchronous example) or `example.auto-instrument-agent.middleware.sentence-summary-service-async` (asynchronous example). This start a `sentence-summary-service` server on port 8080.
+. In the second REPL, load namespace `example.auto-instrument-agent.middleware.sentence-summary-service` (synchronous example) or `example.auto-instrument-agent.middleware.sentence-summary-service-async` (asynchronous example).
+This starts a `sentence-summary-service` server on port 8080.
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -120,6 +122,42 @@ curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
 # HTML with HTTP ERROR 500 ...
 ----
 
+==== Pedestal interceptor example
+
+To start and exercise the Pedestal interceptor example with combined automatic and manual instrumentation:
+
+. Start first REPL with chosen aliases in `examples/auto-instrument-agent/interceptor/planet-service/deps.edn`
+. In the first REPL, load namespace `example.auto-instrument-agent.interceptor.planet-service`.
+This starts a `planet-service` server on port 8081.
+. Start second REPL with chosen aliases in `examples/auto-instrument-agent/interceptor/solar-system-service/deps.edn`
+. In the second REPL, load namespace `example.auto-instrument-agent.interceptor.solar-system-service` (synchronous example) or `example.auto-instrument-agent.interceptor.solar-system-service-async` (asynchronous example).
+This starts a `solar-system-service` server on port 8080.
+. Send an HTTP request to exercise the servers:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/metrics?planet=jupiter"
+# The planet Jupiter has diameter 142984.0km and gravity 23.1m/s^2.
+----
++
+Simulate a downstream 5xx internal server error by requesting data on Saturn:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/metrics?planet=saturn"
+# planet-service failed
+----
++
+Simulate a downstream 4xx user request error by requesting data on Pluto:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/metrics?planet=pluto"
+# planet-service failed
+----
 
 === Microservices run with manual instrumentation only
 
@@ -128,7 +166,43 @@ curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
 * Project directories for Pedestal interceptors example in `examples/manual-instrument/interceptor`
 * Manual instrumentation only, no automatic instrumentation
 * Runs with autoconfigured OpenTelemetry SDK
-* Two examples, showing use of Ring middleware and Pedestal interceptors
+
+==== Ring middleware example
+
+To start and exercise the Ring middleware example with manual instrumentation:
+
+. Start first REPL with chosen aliases in `examples/manual-instrument/middleware/random-word-service/deps.edn`
+. In the first REPL, load namespace `example.manual-instrument.middleware.random-word-service`.
+This starts a `random-word-service` server on port 8081.
+. Start second REPL with chosen aliases in `examples/manual-instrument/middleware/puzzle-service/deps.edn`
+. In the second REPL, load namespace `example.manual-instrument.middleware.puzzle-service` (synchronous example) or `example.manual-instrument.middleware.puzzle-service-async` (asynchronous example).
+This starts a `puzzle-service` server on port 8080.
+. Send an HTTP request to exercise the servers:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/puzzle?types=verb,noun,adjective,noun"
+# reac abt mixde fgrso
+----
++
+Simulate a downstream 5xx internal server error by including the word `boom` in the request:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/summary?sentence=Things+went+boom"
+# HTML with HTTP ERROR 500 ...
+----
++
+Simulate a downstream 4xx user request error by including the word `problem` in the request:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
+# HTML with HTTP ERROR 500 ...
+----
 
 === Manually instrumented application run with programmatic SDK configuration
 
@@ -136,11 +210,3 @@ curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
 * Project directory `examples/programmatic-sdk-config`
 * Manual instrumentation only, no automatic instrumentation
 * Runs with programmatically configured OpenTelemetry SDK
-
-[source,bash]
-[.small]
-----
-curl -X GET --location "http://localhost:8080/summary?sentence=Clojure+and+OpenTelemetry"
-# {:word-count 3, :shortest-length 3, :longest-length 13}
-----
-

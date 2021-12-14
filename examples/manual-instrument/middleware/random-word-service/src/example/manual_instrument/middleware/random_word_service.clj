@@ -2,7 +2,8 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
   synchronous Ring HTTP service that is run without the OpenTelemetry
   instrumentation agent."
-  (:require [ring.adapter.jetty :as jetty]
+  (:require [example.common-utils.middleware :as middleware]
+            [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
             [steffan-westcott.otel.api.trace.http :as trace-http]
@@ -25,7 +26,9 @@
 
     (Thread/sleep (+ 10 (rand-int 80)))
     (let [candidates (or (get words word-type)
-                         (throw (ex-info "Unknown word type" {:type word-type})))
+                         (throw (ex-info "Unknown word type" {:status 400
+                                                              :error  ::unknown-word-type
+                                                              ::type  word-type})))
           word (rand-nth candidates)]
 
       ;; Add more attributes to the internal span
@@ -63,6 +66,7 @@
   "Ring handler with middleware applied."
   (-> handler
       params/wrap-params
+      middleware/wrap-exception
 
       ;; Wrap request handling of all routes. As this application is not run
       ;; with the OpenTelemetry instrumentation agent, create a server span
