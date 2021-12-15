@@ -9,7 +9,8 @@
            io.pedestal/pedestal.jetty               {:mvn/version "0.5.9"}
            org.slf4j/slf4j-simple                   {:mvn/version "1.7.32"}
            clj-http/clj-http                        {:mvn/version "3.12.3"}
-           org.example/common-utils.core-async      {:local/root "../../../common-utils/core-async"}}
+           org.example/common-utils.core-async      {:local/root "../../../common-utils/core-async"}
+           org.example/common-utils.interceptor     {:local/root "../../../common-utils/interceptor"}}
 
  :aliases {
            ;; Use this alias to run with OpenTelemetry instrumentation agent

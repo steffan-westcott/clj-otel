@@ -6,7 +6,8 @@
            io.pedestal/pedestal.route               {:mvn/version "0.5.9"}
            io.pedestal/pedestal.interceptor         {:mvn/version "0.5.9"}
            io.pedestal/pedestal.jetty               {:mvn/version "0.5.9"}
-           org.slf4j/slf4j-simple                   {:mvn/version "1.7.32"}}
+           org.slf4j/slf4j-simple                   {:mvn/version "1.7.32"}
+           org.example/common-utils.interceptor     {:local/root "../../../common-utils/interceptor"}}
 
  :aliases {
            ;; Use this alias to run with OpenTelemetry instrumentation agent

@@ -3,11 +3,13 @@
   synchronous Pedestal HTTP service that is run with the OpenTelemetry
   instrumentation agent."
   (:require [clojure.string :as str]
+            [example.common-utils.interceptor :as interceptor]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.util.response :as response]
             [steffan-westcott.otel.api.trace.http :as trace-http]
             [steffan-westcott.otel.api.trace.span :as span]))
+
 
 (def planet-metrics
   "Map of planets and their metric values. Saturn is missing some data."
@@ -20,6 +22,8 @@
    :uranus  {:diameter 51118 :gravity 8.7}
    :neptune {:diameter 49528 :gravity 11.0}
    :pluto   {:diameter 2370 :gravity 0.7}})
+
+
 
 (defn planet-metric
   "Returns a specific metric value for a planet."
@@ -44,7 +48,11 @@
         ;; An uncaught exception leaving a span's scope is reported as an
         ;; exception event and the span status description is set to the
         ;; exception triage summary.
-        (throw (ex-info "Failed to retrieve metric" {:metric metric}))))))
+        (throw (ex-info "Failed to retrieve metric"
+                        {:status  500
+                         :error   ::missing-data
+                         ::metric metric}))))))
+
 
 
 (defn get-planet-metric-handler
@@ -60,20 +68,30 @@
 
     ;; Simulate a client error when requesting data on Pluto.
     (if (= planet :pluto)
-      (response/bad-request "Pluto is not a full planet")
+      (throw (ex-info "Pluto is not a full planet"
+                      {:status 400
+                       :error  ::pluto-not-full-planet}))
       (response/response (str (planet-metric planet metric))))))
+
+
+
+(def root-interceptors
+  "Interceptors for all routes."
+  (conj
+
+    ;; As this application is run with the OpenTelemetry instrumentation agent,
+    ;; a server span will be provided by the agent and there is no need to
+    ;; create another one.
+    (trace-http/server-span-interceptors {:create-span? false
+                                          :server-name  "planet"})
+
+    (interceptor/exception-response-interceptor)))
 
 
 (def routes
   "Route maps for the service."
   (route/expand-routes
-    [[[
-       ;; Wrap request handling of all routes. As this application is run with
-       ;; the OpenTelemetry instrumentation agent, a server span will be
-       ;; provided by the agent and there is no need to create another one.
-       "/" (trace-http/server-span-interceptors {:create-span? false
-                                                 :server-name  "planet"})
-
+    [[["/" root-interceptors
        ["/planets/:planet/:metric"
         ^:constraints {:planet (re-pattern (str/join "|" (map name (keys planet-metrics))))
                        :metric #"diameter|gravity"}

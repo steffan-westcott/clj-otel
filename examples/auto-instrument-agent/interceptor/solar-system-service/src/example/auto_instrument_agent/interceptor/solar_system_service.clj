@@ -4,6 +4,7 @@
   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.string :as str]
+            [example.common-utils.interceptor :as interceptor]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.util.response :as response]
@@ -21,12 +22,14 @@
         ;; propagates the context containing the client span to the remote HTTP
         ;; server by injecting headers into the request.
         response (client/get (str "http://localhost:8081" path)
-                             {:throw-exceptions false})]
+                             {:throw-exceptions false})
+        status (:status response)]
 
-    (if (= (:status response) 200)
+    (if (= 200 status)
       {metric (Double/parseDouble (:body response))}
-      (throw (ex-info "planet-service failed"
-                      {:server-status (:status response)})))))
+      (throw (ex-info "Unexpected HTTP response"
+                      {:status status
+                       :error  :unexpected-http-response})))))
 
 
 
@@ -87,16 +90,25 @@
     (response/response report)))
 
 
+
+(def root-interceptors
+  "Interceptors for all routes."
+  (conj
+
+    ;; As this application is run with the OpenTelemetry instrumentation agent,
+    ;; a server span will be provided by the agent and there is no need to
+    ;; create another one.
+    (trace-http/server-span-interceptors {:create-span? false
+                                          :server-name  "solar"})
+
+    (interceptor/exception-response-interceptor)))
+
+
+
 (def routes
   "Route maps for the service."
   (route/expand-routes
-    [[[
-       ;; Wrap request handling of all routes. As this application is run with
-       ;; the OpenTelemetry instrumentation agent, a server span will be
-       ;; provided by the agent and there is no need to create another one.
-       "/" (trace-http/server-span-interceptors {:create-span? false
-                                                 :server-name  "solar"})
-
+    [[["/" root-interceptors
        ["/metrics" {:get 'get-metrics-handler}]]]]))
 
 
