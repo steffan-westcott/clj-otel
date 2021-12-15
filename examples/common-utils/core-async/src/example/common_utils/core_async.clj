@@ -1,5 +1,6 @@
 (ns example.common-utils.core-async
   (:require [clojure.core.async :as async]
+            [ring.util.response :as response]
             [steffan-westcott.otel.api.trace.span :as span]))
 
 
@@ -106,10 +107,20 @@
 
 
 
+(defn exception-response
+  "Converts exception to a response, with status set to `:status` if exception
+  is an `IExceptionInfo` instance, 500 Server Error otherwise."
+  [e]
+  (let [resp (response/response (ex-message e))
+        status (:status (ex-data e) 500)]
+    (response/status resp status)))
+
+
+
 (defmacro catch-response
-  "Evaluate body but catch any exception and return as 500 Server Error
-  response instead. The caught exception will also be added as an event to the
-  span in the given context."
+  "Evaluate body but catch any exception and return as response instead. The
+  caught exception will also be added as an event to the span in the given
+  context."
   [context & body]
   `(try
      ~@body
@@ -118,8 +129,7 @@
        ;; Add non-escaping exception to span as an event
        (span/add-exception! e# {:context ~context :escaping? false})
 
-       {:body   (.getMessage e#)
-        :status 500})))
+       (exception-response e#))))
 
 
 

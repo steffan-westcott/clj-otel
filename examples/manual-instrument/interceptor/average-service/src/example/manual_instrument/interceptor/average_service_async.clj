@@ -6,6 +6,7 @@
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common-utils.core-async :as async']
+            [example.common-utils.interceptor :as interceptor]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.util.response :as response]
@@ -63,10 +64,13 @@
                                     :async            true
                                     :throw-exceptions false})]
     (async'/go-try
-      (let [response (async'/<? <response)]
-        (if (= (:status response) 200)
+      (let [response (async'/<? <response)
+            status (:status response)]
+        (if (= 200 status)
           (Integer/parseInt (:body response))
-          (throw (ex-info "sum-service failed" {:server-status (:status response)})))))))
+          (throw (ex-info "Unexpected HTTP response"
+                          {:status status
+                           :error  :unexpected-http-response})))))))
 
 
 (defn divide
@@ -151,18 +155,27 @@
    :enter <get-averages})
 
 
+
+(def root-interceptors
+  "Interceptors for all routes."
+  (conj
+
+    ;; As this application is not run with the OpenTelemetry instrumentation
+    ;; agent, create a server span for each request. Because part of this
+    ;; service uses asynchronous processing, the current context is not set on
+    ;; each request.
+    (trace-http/server-span-interceptors {:create-span?         true
+                                          :set-current-context? false
+                                          :server-name          "average"})
+
+    (interceptor/exception-response-interceptor)))
+
+
+
 (def routes
   "Route maps for the service."
   (route/expand-routes
-    [[[
-       ;; Wrap request handling of all routes. As this application is not run
-       ;; with the OpenTelemetry instrumentation agent, create a server span
-       ;; for each request. Because part of this service uses asynchronous
-       ;; processing, the current context is not set on each request.
-       "/" (trace-http/server-span-interceptors {:create-span?         true
-                                                 :set-current-context? false
-                                                 :server-name          "average"})
-
+    [[["/" root-interceptors
        ["/average" {:get 'get-averages-interceptor}]]]]))
 
 

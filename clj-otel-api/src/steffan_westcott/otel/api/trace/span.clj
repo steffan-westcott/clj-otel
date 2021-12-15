@@ -231,16 +231,17 @@
   | key         | description |
   |-------------|-------------|
   |`:context`   | Context containing span to add exception event to (default: current context)
+  |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
   |`:attributes`| Map of additional attributes for the event (default: `{}`)."
   ([e]
    (add-interceptor-exception! e {}))
-  ([e {:keys [context attributes]
-       :or   {context (context/current) attributes {}}}]
+  ([e {:keys [context escaping? attributes]
+       :or   {context (context/current) escaping? true attributes {}}}]
    (let [{:keys [exception interceptor stage] :or {exception e}} (ex-data e)
          attrs (merge {:io.pedestal.interceptor.chain/interceptor interceptor
                        :io.pedestal.interceptor.chain/stage       stage}
                       attributes)]
-     (add-exception! exception {:context context :attributes attrs}))))
+     (add-exception! exception {:context context :escaping? escaping? :attributes attrs}))))
 
 (defn end-span!
   "Low level function that ends a span, previously started by [[new-span!]].

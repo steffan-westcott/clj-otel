@@ -3,8 +3,10 @@
   synchronous Pedestal HTTP service that is run without the OpenTelemetry
   instrumentation agent."
   (:require [clojure.string :as str]
+            [example.common-utils.interceptor :as interceptor]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
+            [ring.util.response :as response]
             [steffan-westcott.otel.api.trace.http :as trace-http]
             [steffan-westcott.otel.api.trace.span :as span]))
 
@@ -29,7 +31,7 @@
       ;; exception event and the span status description is set to the
       ;; exception triage summary.
       (when (= 13 result)
-        (throw (ex-info "Unlucky 13" {:error :superstition})))
+        (throw (ex-info "Unlucky 13" {:status 500 :error ::superstition})))
 
       result)))
 
@@ -49,23 +51,33 @@
 
       ;; Simulate a client error when first number argument is zero.
       (if (zero? (first nums))
-        {:status 400}
-        {:status 200 :body (str (sum nums))}))))
+        (throw (ex-info "Zero argument" {:status 400 :error ::zero-argument}))
+        (response/response (str (sum nums)))))))
+
+
+
+(def root-interceptors
+  "Interceptors for all routes."
+  (conj
+
+    ;; As this application is not run with the OpenTelemetry instrumentation
+    ;; agent, create a server span for each request. Because all request
+    ;; processing for this service is synchronous, the current context is set
+    ;; for each request.
+    (trace-http/server-span-interceptors {:create-span?         true
+                                          :set-current-context? true
+                                          :server-name          "sum"})
+
+    (interceptor/exception-response-interceptor)))
+
 
 
 (def routes
   "Route maps for the service."
   (route/expand-routes
-    [[[
-       ;; Wrap request handling of all routes. As this application is not run
-       ;; with the OpenTelemetry instrumentation agent, create a server span
-       ;; for each request. Because all request processing for this service
-       ;; is synchronous, the current context is set for each request.
-       "/" (trace-http/server-span-interceptors {:create-span?         true
-                                                 :set-current-context? true
-                                                 :server-name          "sum"})
-
+    [[["/" root-interceptors
        ["/sum" {:get 'get-sum-handler}]]]]))
+
 
 
 (def service-map

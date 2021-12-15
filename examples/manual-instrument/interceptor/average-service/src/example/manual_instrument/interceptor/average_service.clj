@@ -4,6 +4,7 @@
   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.string :as str]
+            [example.common-utils.interceptor :as interceptor]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
             [ring.util.response :as response]
@@ -39,10 +40,13 @@
   (let [response (client-request {:method           :get
                                   :url              "http://localhost:8081/sum"
                                   :query-params     {"nums" (str/join "," nums)}
-                                  :throw-exceptions false})]
-    (if (= (:status response) 200)
+                                  :throw-exceptions false})
+        status (:status response)]
+    (if (= 200 status)
       (Integer/parseInt (:body response))
-      (throw (ex-info "sum-service failed" {:server-status (:status response)})))))
+      (throw (ex-info "Unexpected HTTP response"
+                      {:status status
+                       :error :unexpected-http-response})))))
 
 
 
@@ -106,18 +110,26 @@
 
 
 
+(def root-interceptors
+  "Interceptors for all routes."
+  (conj
+
+    ;; As this application is not run with the OpenTelemetry instrumentation
+    ;; agent, create a server span for each request. Because all request
+    ;; processing for this service is synchronous, the current context is set
+    ;; for each request.
+    (trace-http/server-span-interceptors {:create-span?         true
+                                          :set-current-context? true
+                                          :server-name          "average"})
+
+    (interceptor/exception-response-interceptor)))
+
+
+
 (def routes
   "Route maps for the service."
   (route/expand-routes
-    [[[
-       ;; Wrap request handling of all routes. As this application is not run
-       ;; with the OpenTelemetry instrumentation agent, create a server span
-       ;; for each request. Because all request processing for this service
-       ;; is synchronous, the current context is set for each request.
-       "/" (trace-http/server-span-interceptors {:create-span?         true
-                                                 :set-current-context? true
-                                                 :server-name          "average"})
-
+    [[["/" root-interceptors
        ["/average" {:get 'get-averages-handler}]]]]))
 
 
