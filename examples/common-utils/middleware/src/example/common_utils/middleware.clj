@@ -22,7 +22,11 @@
          (exception-response e))))
     ([{:keys [io.opentelemetry/server-span-context] :as request} respond _]
      (try
-       (handler request respond (comp respond exception-response))
+       (handler request
+                respond
+                (fn [e]
+                  (span/add-exception! e {:context server-span-context :escaping? false})
+                  (respond (exception-response e))))
        (catch Throwable e
          (span/add-exception! e {:context server-span-context :escaping? false})
          (respond (exception-response e)))))))

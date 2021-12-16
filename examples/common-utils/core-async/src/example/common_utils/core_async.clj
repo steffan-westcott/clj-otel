@@ -136,7 +136,8 @@
 (defmacro go-try-response
   "Same as `go` but channel return value is Pedestal interceptor context `ctx`
   with body return value assoc'ed as `:response`. Any exception is converted to
-  a 500 Server Error response."
+  a response with status set to `:status` if exception\n  is an
+  `IExceptionInfo` instance, 500 Server Error otherwise."
   [ctx & body]
   `(async/go
      (let [context# (:io.opentelemetry/server-span-context ~ctx)
