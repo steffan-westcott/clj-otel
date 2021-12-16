@@ -6,6 +6,7 @@
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common-utils.core-async :as async']
+            [example.common-utils.middleware :as middleware]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
@@ -51,11 +52,13 @@
                                     :async            true
                                     :throw-exceptions false})]
     (async'/go-try
-      (let [response (async'/<? <response)]
-        (if (= (:status response) 200)
+      (let [response (async'/<? <response)
+            status (:status response)]
+        (if (= 200 status)
           (Integer/parseInt (:body response))
-          (throw (ex-info "word-length service failed"
-                          {:server-status (:status response)})))))))
+          (throw (ex-info "Unexpected HTTP response"
+                          {:status status
+                           :error  :unexpected-http-response})))))))
 
 
 
@@ -147,6 +150,7 @@
   "Ring handler with middleware applied."
   (-> handler
       params/wrap-params
+      middleware/wrap-exception
 
       ;; Wrap request handling of all routes. As this application is run with
       ;; the OpenTelemetry instrumentation agent, a server span will be

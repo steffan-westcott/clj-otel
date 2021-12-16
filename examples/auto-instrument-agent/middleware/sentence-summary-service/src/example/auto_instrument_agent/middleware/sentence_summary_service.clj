@@ -4,6 +4,7 @@
   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.string :as str]
+            [example.common-utils.middleware :as middleware]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
@@ -20,12 +21,14 @@
   ;; server by injecting headers into the request.
   (let [response (client/get "http://localhost:8081/length"
                              {:throw-exceptions false
-                              :query-params     {"word" word}})]
+                              :query-params     {"word" word}})
+        status (:status response)]
 
-    (if (= (:status response) 200)
+    (if (= 200 status)
       (Integer/parseInt (:body response))
-      (throw (ex-info "word-length service failed"
-                      {:server-status (:status response)})))))
+      (throw (ex-info "Unexpected HTTP response"
+                      {:status status
+                       :error  :unexpected-http-response})))))
 
 
 
@@ -97,6 +100,7 @@
   "Ring handler with middleware applied."
   (-> handler
       params/wrap-params
+      middleware/wrap-exception
 
       ;; Wrap request handling of all routes. As this application is run with
       ;; the OpenTelemetry instrumentation agent, a server span will be

@@ -2,7 +2,8 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
   synchronous Ring HTTP service that is run with the OpenTelemetry
   instrumentation agent."
-  (:require [ring.adapter.jetty :as jetty]
+  (:require [example.common-utils.middleware :as middleware]
+            [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
             [steffan-westcott.otel.api.trace.http :as trace-http]
@@ -22,7 +23,9 @@
     ;; exception event and the span status description is set to the
     ;; exception triage summary.
     (when (= "boom" word)
-      (throw (ex-info "Unable to process word" {:problem-word word})))
+      (throw (ex-info "Unable to process word" {:status        500
+                                                :error         ::word-processing-error
+                                                ::problem-word word})))
 
     (let [result (count word)]
 
@@ -45,7 +48,7 @@
 
     ;; Simulate a client error for some requests.
     (if (= word "problem")
-      (response/bad-request "Cannot handle word")
+      (throw (ex-info "Bad word argument" {:status 400 :error ::bad-word-argument}))
       (response/response (str (word-length word))))))
 
 
@@ -61,6 +64,7 @@
   "Ring handler with middleware applied."
   (-> handler
       params/wrap-params
+      middleware/wrap-exception
 
       ;; Wrap request handling of all routes. As this application is run with
       ;; the OpenTelemetry instrumentation agent, a server span will be
