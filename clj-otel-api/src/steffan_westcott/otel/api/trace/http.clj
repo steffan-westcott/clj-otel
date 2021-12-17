@@ -10,7 +10,7 @@
             [steffan-westcott.otel.context :as context])
   (:import (io.opentelemetry.semconv.trace.attributes SemanticAttributes)))
 
-(defn- parse-long [s]
+(defn- parse-long* [s]
   (try
     (Long/parseLong s)
     (catch Throwable _)))
@@ -45,7 +45,7 @@
    (let [{:keys [headers request-method scheme uri query-string protocol remote-addr]} request
          {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
          request-method' (str/upper-case (name request-method))
-         content-length' (when content-length (parse-long content-length))
+         content-length' (when content-length (parse-long* content-length))
          common-attrs {SemanticAttributes/HTTP_METHOD    request-method'
                        SemanticAttributes/HTTP_SCHEME    (name scheme)
                        SemanticAttributes/HTTP_HOST      host
@@ -125,7 +125,7 @@
   ([response {:keys [context] :or {context (context/current)}}]
    (let [{:keys [status headers]} response
          {:strs [Content-Length]} headers
-         Content-Length' (when Content-Length (parse-long Content-Length))
+         Content-Length' (when Content-Length (parse-long* Content-Length))
          attrs (cond-> {SemanticAttributes/HTTP_STATUS_CODE status}
                        Content-Length' (assoc SemanticAttributes/HTTP_RESPONSE_CONTENT_LENGTH Content-Length'))
          stat (when (<= 400 status)
@@ -330,4 +330,5 @@
            (and create-span? set-current-context?) (conj (current-context-interceptor)))))
 
 (comment
+
   )
