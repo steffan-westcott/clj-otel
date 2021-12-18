@@ -56,7 +56,7 @@
             status (:status response)]
         (if (= 200 status)
           (Integer/parseInt (:body response))
-          (throw (ex-info "Unexpected HTTP response"
+          (throw (ex-info (str status " HTTP response")
                           {:status status
                            :error  :unexpected-http-response})))))))
 

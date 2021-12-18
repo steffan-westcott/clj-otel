@@ -27,7 +27,7 @@
 
     (if (= 200 status)
       {metric (Double/parseDouble (:body response))}
-      (throw (ex-info "Unexpected HTTP response"
+      (throw (ex-info (str status " HTTP response")
                       {:status status
                        :error  :unexpected-http-response})))))
 

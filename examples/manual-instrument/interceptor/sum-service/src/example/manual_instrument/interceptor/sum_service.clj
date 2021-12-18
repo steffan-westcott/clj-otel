@@ -31,7 +31,7 @@
       ;; exception event and the span status description is set to the
       ;; exception triage summary.
       (when (= 13 result)
-        (throw (ex-info "Unlucky 13" {:status 500 :error ::superstition})))
+        (throw (RuntimeException. "Unlucky 13")))
 
       result)))
 
@@ -47,10 +47,11 @@
     (trace-http/add-route-data! "/sum")
 
     (let [num-str (get query-params :nums)
-          nums (map #(Integer/parseInt %) (str/split num-str #","))]
+          num-strs (->> (str/split num-str #",") (map str/trim) (filter seq))
+          nums (map #(Integer/parseInt %) num-strs)]
 
       ;; Simulate a client error when first number argument is zero.
-      (if (zero? (first nums))
+      (if (= 0 (first nums))
         (throw (ex-info "Zero argument" {:status 400 :error ::zero-argument}))
         (response/response (str (sum nums)))))))
 

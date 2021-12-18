@@ -25,6 +25,15 @@
   (span/with-span! {:name "Generating word" :attributes {:word-type word-type}}
 
     (Thread/sleep (+ 10 (rand-int 80)))
+
+    ;; Simulate an intermittent runtime exception.
+    ;; An uncaught exception leaving a span's scope is reported as an
+    ;; exception event and the span status description is set to the
+    ;; exception triage summary.
+    (when (= :fault word-type)
+      (throw (ex-info "Processing fault" {:status 500
+                                          :error  ::processing-fault})))
+
     (let [candidates (or (get words word-type)
                          (throw (ex-info "Unknown word type" {:status 400
                                                               :error  ::unknown-word-type

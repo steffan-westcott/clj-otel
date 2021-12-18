@@ -110,7 +110,7 @@ Simulate a downstream 5xx internal server error by including the word `boom` in 
 [.small]
 ----
 curl -X GET --location "http://localhost:8080/summary?sentence=Things+went+boom"
-# HTML with HTTP ERROR 500 ...
+# 500 HTTP response
 ----
 +
 Simulate a downstream 4xx user request error by including the word `problem` in the request:
@@ -119,7 +119,7 @@ Simulate a downstream 4xx user request error by including the word `problem` in 
 [.small]
 ----
 curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
-# HTML with HTTP ERROR 500 ...
+# 400 HTTP response
 ----
 
 ==== Pedestal interceptor example
@@ -147,7 +147,7 @@ Simulate a downstream 5xx internal server error by requesting data on Saturn:
 [.small]
 ----
 curl -X GET --location "http://localhost:8080/metrics?planet=saturn"
-# planet-service failed
+# 500 HTTP response
 ----
 +
 Simulate a downstream 4xx user request error by requesting data on Pluto:
@@ -156,7 +156,7 @@ Simulate a downstream 4xx user request error by requesting data on Pluto:
 [.small]
 ----
 curl -X GET --location "http://localhost:8080/metrics?planet=pluto"
-# planet-service failed
+# 400 HTTP response
 ----
 
 === Microservices run with manual instrumentation only
@@ -186,22 +186,59 @@ curl -X GET --location "http://localhost:8080/puzzle?types=verb,noun,adjective,n
 # reac abt mixde fgrso
 ----
 +
-Simulate a downstream 5xx internal server error by including the word `boom` in the request:
+Simulate a downstream 5xx internal server error by including the word type `fault` in the request:
 +
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/summary?sentence=Things+went+boom"
-# HTML with HTTP ERROR 500 ...
+curl -X GET --location "http://localhost:8080/puzzle?types=noun,fault,verb"
+# 500 HTTP response
 ----
 +
-Simulate a downstream 4xx user request error by including the word `problem` in the request:
+Simulate a downstream 4xx user request error by including an unknown word type in the request:
 +
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
-# HTML with HTTP ERROR 500 ...
+curl -X GET --location "http://localhost:8080/puzzle?types=bogus,noun"
+# 400 HTTP response
+----
+
+==== Pedestal interceptor example
+
+To start and exercise the Pedestal interceptor example with manual instrumentation:
+
+. Start first REPL with chosen aliases in `examples/manual-instrument/interceptor/sum-service/deps.edn`
+. In the first REPL, load namespace `example.manual-instrument.interceptor.sum-service`.
+This starts a `sum-service` server on port 8081.
+. Start second REPL with chosen aliases in `examples/manual-instrument/interceptor/average-service/deps.edn`
+. In the second REPL, load namespace `example.manual-instrument.interceptor.average-service` (synchronous example) or `example.manual-instrument.interceptor.average-service-async` (asynchronous example).
+This starts a `average-service` server on port 8080.
+. Send an HTTP request to exercise the servers:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/average?nums=1,2,3,4"
+# {:odds 2.0, :evens 3.0}
+----
++
+Simulate a downstream 5xx internal server error by using odd numbers that add to 13:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/average?nums=1,2,3,4,9"
+# 500 HTTP response
+----
++
+Simulate a downstream 4xx user request error by giving first number 0:
++
+[source,bash]
+[.small]
+----
+curl -X GET --location "http://localhost:8080/average?nums=0,1,2"
+# 400 HTTP response
 ----
 
 === Manually instrumented application run with programmatic SDK configuration

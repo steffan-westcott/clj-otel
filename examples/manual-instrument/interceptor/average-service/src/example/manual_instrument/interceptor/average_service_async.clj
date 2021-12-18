@@ -68,7 +68,7 @@
             status (:status response)]
         (if (= 200 status)
           (Integer/parseInt (:body response))
-          (throw (ex-info "Unexpected HTTP response"
+          (throw (ex-info (str status " HTTP response")
                           {:status status
                            :error  :unexpected-http-response})))))))
 
@@ -117,11 +117,13 @@
   "Calculates the averages of the odd numbers and the even numbers of nums and
   returns a channel of the result."
   [context nums]
-  (let [<odds-average (<average context (filter odd? nums))
-        <evens-average (<average context (filter even? nums))]
+  (let [odds (filter odd? nums)
+        evens (filter even? nums)
+        <odds-average (when (seq odds) (<average context odds))
+        <evens-average (when (seq evens) (<average context evens))]
     (async'/go-try
-      (let [result {:odds  (async'/<? <odds-average)
-                    :evens (async'/<? <evens-average)}]
+      (let [result {:odds  (when <odds-average (async'/<? <odds-average))
+                    :evens (when <evens-average (async'/<? <evens-average))}]
 
         ;; Add event to span
         (span/add-span-data! {:context context
@@ -141,12 +143,13 @@
   (trace-http/add-route-data! "/average" {:context server-span-context})
 
   (let [num-str (get-in request [:query-params :nums])
-        nums (map #(Integer/parseInt %) (str/split num-str #","))
+        num-strs (->> (str/split num-str #",") (map str/trim) (filter seq))
+        nums (map #(Integer/parseInt %) num-strs)
         <avs (<averages server-span-context nums)]
     (async'/go-try-response
       ctx
-      (let [{:keys [odds evens]} (async'/<? <avs)]
-        (response/response (str "Odds average: " odds " Evens average: " evens))))))
+      (let [avs (async'/<? <avs)]
+        (response/response (str avs))))))
 
 
 (def get-averages-interceptor

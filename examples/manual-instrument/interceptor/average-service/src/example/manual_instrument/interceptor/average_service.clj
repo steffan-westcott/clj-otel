@@ -44,9 +44,9 @@
         status (:status response)]
     (if (= 200 status)
       (Integer/parseInt (:body response))
-      (throw (ex-info "Unexpected HTTP response"
+      (throw (ex-info (str status " HTTP response")
                       {:status status
-                       :error :unexpected-http-response})))))
+                       :error  :unexpected-http-response})))))
 
 
 
@@ -80,8 +80,10 @@
   "Calculates the averages of the odd numbers and the even numbers of nums and
   returns a channel of the result."
   [nums]
-  (let [odds-average (average (filter odd? nums))
-        evens-average (average (filter even? nums))
+  (let [odds (filter odd? nums)
+        evens (filter even? nums)
+        odds-average (when (seq odds) (average odds))
+        evens-average (when (seq evens) (average evens))
         result {:odds  odds-average
                 :evens evens-average}]
 
@@ -103,10 +105,10 @@
     (trace-http/add-route-data! "/average")
 
     (let [num-str (get query-params :nums)
-          nums (map #(Integer/parseInt %) (str/split num-str #","))
-          avs (averages nums)
-          {:keys [odds evens]} avs]
-      (response/response (str "Odds average: " odds " Evens average: " evens)))))
+          num-strs (->> (str/split num-str #",") (map str/trim) (filter seq))
+          nums (map #(Integer/parseInt %) num-strs)
+          avs (averages nums)]
+      (response/response (str avs)))))
 
 
 
