@@ -224,9 +224,10 @@
                              status (assoc :status status))))))
 
 (defn add-interceptor-exception!
-  "Adds an event describing a wrapped interceptor exception `e` to a span and
-  sets the span's status to `:error` with the wrapped exception triage summary
-  as the error description. May take an option map as follows:
+  "Adds an event describing an interceptor exception `e` to a span. If the
+  exception is escaping the span's scope, the span's status is also set to
+  `:error` with the wrapped exception triage summary as the error description.
+  May take an option map as follows:
 
   | key         | description |
   |-------------|-------------|

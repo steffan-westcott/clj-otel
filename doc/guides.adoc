@@ -123,7 +123,7 @@ Use the `context:` option to specify the context containing the span to add the 
 
 ==== Add an exception event to a span
 
-NOTE: Events for exceptions thrown in spans which leave the span's scope are *automatically added* to the span.
+NOTE: Events for exceptions thrown in spans which leave (escape) the span's scope are *automatically added* to the span.
 This applies to synchronous and asynchronous spans.
 For https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#async-span[`async-span`], exceptions are "thrown" using the `raise` callback function.
 
@@ -281,7 +281,8 @@ Use the `:context` option to specify the context to be propagated:
 
 == Configure and run an application with telemetry
 
-The options below determine what telemetry data is exported from an application as it runs. Select one of these options and follow the linked guide:
+The options below determine what telemetry data is exported from an application as it runs.
+Select one of these options and follow the linked guide:
 
 * <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>>
 +
@@ -410,7 +411,8 @@ To configure the SDK at start and close down at end, the application could have 
 
 There are no steps to add dependencies or otherwise configure the application in order to run it without the agent or SDK.
 
-NOTE: An application run without the OpenTelemetry instrumentation agent or SDK will not export any telemetry data. Usage of the OpenTelemetry API (manual instrumentation) in the application will invoke no-op implementations.
+NOTE: An application run without the OpenTelemetry instrumentation agent or SDK will not export any telemetry data.
+Usage of the OpenTelemetry API (manual instrumentation) in the application will invoke no-op implementations.
 
 == Use the OpenTelemetry Collector
 

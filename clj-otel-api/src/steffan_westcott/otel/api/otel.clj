@@ -19,7 +19,9 @@
   (GlobalOpenTelemetry/get))
 
 (defn set-global-otel!
-  "Sets the global `OpenTelemetry` instance."
+  "Sets the global `OpenTelemetry` instance. This function may be evaluated
+  once only. Any attempts to evaluate this more than once will result in an
+  error."
   [open-telemetry]
   (GlobalOpenTelemetry/set open-telemetry))
 

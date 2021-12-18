@@ -73,7 +73,7 @@ docker-compose down -v
 To start and exercise the application:
 
 . Start REPL with chosen aliases in `examples/auto-sdk-config/deps.edn`
-. In the REPL, load namespace `example.auto_sdk_config`
+. In the REPL, load namespace `example.auto-sdk-config`
 +
 This will create a single span named "squaring" with an event "my event".
 
@@ -104,7 +104,7 @@ curl -X GET --location "http://localhost:8080/summary?sentence=Clojure+and+OpenT
 # {:word-count 3, :shortest-length 3, :longest-length 13}
 ----
 +
-Simulate a downstream 5xx internal server error by including the word `boom` in the request:
+Simulate a downstream 5xx server error by including the word `boom` in the request:
 +
 [source,bash]
 [.small]
@@ -113,7 +113,7 @@ curl -X GET --location "http://localhost:8080/summary?sentence=Things+went+boom"
 # 500 HTTP response
 ----
 +
-Simulate a downstream 4xx user request error by including the word `problem` in the request:
+Simulate a downstream 4xx client error by including the word `problem` in the request:
 +
 [source,bash]
 [.small]
@@ -141,7 +141,7 @@ curl -X GET --location "http://localhost:8080/metrics?planet=jupiter"
 # The planet Jupiter has diameter 142984.0km and gravity 23.1m/s^2.
 ----
 +
-Simulate a downstream 5xx internal server error by requesting data on Saturn:
+Simulate a downstream 5xx server error by requesting data on Saturn:
 +
 [source,bash]
 [.small]
@@ -150,7 +150,7 @@ curl -X GET --location "http://localhost:8080/metrics?planet=saturn"
 # 500 HTTP response
 ----
 +
-Simulate a downstream 4xx user request error by requesting data on Pluto:
+Simulate a downstream 4xx client error by requesting data on Pluto:
 +
 [source,bash]
 [.small]
@@ -186,7 +186,7 @@ curl -X GET --location "http://localhost:8080/puzzle?types=verb,noun,adjective,n
 # reac abt mixde fgrso
 ----
 +
-Simulate a downstream 5xx internal server error by including the word type `fault` in the request:
+Simulate a downstream 5xx server error by including the word type `fault` in the request:
 +
 [source,bash]
 [.small]
@@ -195,7 +195,7 @@ curl -X GET --location "http://localhost:8080/puzzle?types=noun,fault,verb"
 # 500 HTTP response
 ----
 +
-Simulate a downstream 4xx user request error by including an unknown word type in the request:
+Simulate a downstream 4xx client error by including an unknown word type in the request:
 +
 [source,bash]
 [.small]
@@ -223,7 +223,7 @@ curl -X GET --location "http://localhost:8080/average?nums=1,2,3,4"
 # {:odds 2.0, :evens 3.0}
 ----
 +
-Simulate a downstream 5xx internal server error by using odd numbers that add to 13:
+Simulate a downstream 5xx server error by using odd numbers that add to 13:
 +
 [source,bash]
 [.small]
@@ -232,7 +232,7 @@ curl -X GET --location "http://localhost:8080/average?nums=1,2,3,4,9"
 # 500 HTTP response
 ----
 +
-Simulate a downstream 4xx user request error by giving first number 0:
+Simulate a downstream 4xx client error by giving first number 0:
 +
 [source,bash]
 [.small]
@@ -247,3 +247,19 @@ curl -X GET --location "http://localhost:8080/average?nums=0,1,2"
 * Project directory `examples/programmatic-sdk-config`
 * Manual instrumentation only, no automatic instrumentation
 * Runs with programmatically configured OpenTelemetry SDK
+
+To start and exercise the application:
+
+. Start REPL with chosen aliases in `examples/programmatic-sdk-config/deps.edn`
+. In the REPL, load namespace `example.programmatic-sdk-config`
+. Edit and redefine function `init-otel` to configure the SDK as desired.
+. In the REPL, evaluate the following forms to initialise the SDK, exercise an instrumented function, then close the SDK:
++
+[source,clojure]
+----
+(init-otel!)
+(square 7)
+(close-otel!)
+----
++
+NOTE: `init-otel!` may be evaluated once only.

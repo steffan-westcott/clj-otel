@@ -132,7 +132,10 @@
 (defn init-otel-sdk!
   "Configure an `OpenTelemetrySdk` instance and set as the global
   `OpenTelemetry` instance. `service-name` is the service name given to the
-  resource emitting telemetry. Takes a nested option map as described in the
+  resource emitting telemetry. This function may be evaluated once only.
+  Attempts to evaluate this more than once will result in error.
+
+  Takes a nested option map as described in the
   following sections. Some options can take either an option map or an
   equivalent fully configured Java object.
 

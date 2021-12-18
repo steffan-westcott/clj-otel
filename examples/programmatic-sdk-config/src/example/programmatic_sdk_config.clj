@@ -19,8 +19,10 @@
 
 (defn init-otel!
   "Configure and initialise the OpenTelemetry SDK as the global OpenTelemetry
-  instance used by the application. This should be called before performing
-  any OpenTelemetry API operations such as tracing."
+  instance used by the application. This function should be evaluated before
+  performing any OpenTelemetry API operations such as tracing. This function
+  may be evaluated once only, any attempts to evaluate it more than once will
+  result in error."
   []
   (sdk/init-otel-sdk!
 
@@ -104,28 +106,7 @@
     (* n n)))
 
 (comment
-  ;; To try out this example (docker required):
-  ;;
-  ;; Run the following command to spin up containers for Jaeger, Zipkin and
-  ;; OpenTelemetry Collector:
-  ;;
-  ;; cd examples
-  ;; docker-compose up -d
-  ;;
-  ;; then evaluate the following forms in a REPL
-  ;;
-  (init-otel!)
+  (init-otel!)                                              ; once only
   (square 7)
-
-  ;; Open a browser at http://localhost:9411/zipkin/ and click Run Query to
-  ;; view a trace with a single span.
-  ;;
-  ;; Finally, evaluate this form to shut down the OpenTelemetry SDK
-  ;;
   (close-otel!)
-
-  ;; To stop and remove the containers:
-  ;;
-  ;; cd examples
-  ;; docker-compose down -v
   )
