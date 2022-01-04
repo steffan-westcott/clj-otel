@@ -1,6 +1,7 @@
 (ns build
-  "Build scripts for clj-otel-* libraries and examples. To install all
-  clj-otel-* libraries:
+  "Build scripts for clj-otel-* libraries, examples and tutorials.
+
+  To install all clj-otel-* libraries:
 
   clojure -T:build install
 
@@ -40,11 +41,15 @@
                     "examples/auto-instrument-agent/middleware/word-length-service"
                     "examples/auto-sdk-config"
                     "examples/common-utils/core-async"
+                    "examples/common-utils/interceptor"
+                    "examples/common-utils/middleware"
                     "examples/manual-instrument/interceptor/average-service"
                     "examples/manual-instrument/interceptor/sum-service"
                     "examples/manual-instrument/middleware/puzzle-service"
                     "examples/manual-instrument/middleware/random-word-service"
-                    "examples/programmatic-sdk-config"])
+                    "examples/programmatic-sdk-config"
+                    "tutorial/instrumented"
+                    "tutorial/uninstrumented"])
 
 (def project-paths (concat artifact-ids example-paths))
 
@@ -66,21 +71,21 @@
   (doall (map #(jar+install % opts) artifact-ids)))
 
 (defn lint
-  "Lint all clj-otel-* library and example application source files using
-  clj-kondo."
+  "Lint all clj-otel-* libraries, example applications and tutorial source
+  files using clj-kondo."
   [_opts]
   (let [src-paths (map #(str % "/src") project-paths)]
     (b/process {:command-args (concat ["clj-kondo" "--lint"] src-paths)})))
 
 (defn outdated
-  "Check all clj-otel-* libraries and example applications for outdated
-  dependencies using antq."
+  "Check all clj-otel-* libraries, example applications and tutorials for
+  outdated dependencies using antq."
   [_opts]
   (cb/run-task {:main-opts ["--directory" (str/join ":" project-paths) "--skip" "pom"]}
                [:antq]))
 
 (defn get-java-agent
-  "Download OpenTelemetry instrumentation agent JAR to examples directory.
+  "Download OpenTelemetry instrumentation agent JAR to `examples` directory.
   This needs to be done once only before running any of the examples."
   [_opts]
   (let [basis (b/create-basis {:aliases [:java-agent]})
@@ -91,7 +96,3 @@
         target "examples/opentelemetry-javaagent.jar"]
     (b/copy-file {:src src :target target})
     (println "Copied OpenTelemetry instrumentation agent JAR to" target)))
-
-(comment
-
-  )

@@ -17,7 +17,7 @@
 
 == Examples
 
-Complete examples can be found in the `examples` directory.
+Complete example applications can be found in the `examples` directory.
 The examples aim to show:
 
 * Adding automatic and manual instrumentation to applications

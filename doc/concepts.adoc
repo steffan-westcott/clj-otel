@@ -222,7 +222,7 @@ An example is to put a user identifier in the baggage to indicate the principal 
 [#_semantic_conventions]
 == Semantic conventions
 
-OpenTelemetry has defined a rich set of conventions for telemetry data.
+OpenTelemetry defines a rich set of conventions for telemetry data.
 This semantic unification across vendors and technologies promotes analysis of telemetry data created in heterogeneous, polyglot systems.
 In particular, *semantic attributes* for spans and metrics are defined for common base technologies like HTTP, database, RPC, messaging, FaaS (Function as a Service) and others.
 See https://opentelemetry.io/docs/concepts/glossary/#semantic-conventions[OpenTelemetry semantic conventions documentation].
@@ -283,7 +283,8 @@ Some telemetry backends may also apply sampling to trace data they receive, eith
 [#_exporters]
 == Exporters
 
-*Exporters* emit telemetry data to consumers, such as the Collector and telemetry backends.Exporters can be push or pull based.
+*Exporters* emit telemetry data to consumers, such as the Collector and telemetry backends.
+Exporters can be push or pull based.
 
 == OpenTelemetry Protocol - OTLP
 

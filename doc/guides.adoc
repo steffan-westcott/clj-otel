@@ -5,9 +5,11 @@
 
 == Add telemetry to your library or an application
 
+To add telemetry to a library or application, use xref:concepts.adoc#_automatic_instrumentation[automatic instrumentation] and/or xref:concepts.adoc#_manual_instrumentation[manual instrumentation] as described in the following subsections.
+
 === Add automatic instrumentation when running an application
 
-* Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>> to add xref:concepts.adoc#_automatic_instrumentation[automatic instrumentation].
+* Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>> to add automatic instrumentation.
 
 === Add manual instrumentation to your library or application code
 
@@ -20,7 +22,7 @@
  :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}}}
 ----
 
-* Follow the guides in the remainder of this section to make changes to your library or application code to add xref:concepts.adoc#_manual_instrumentation[manual instrumentation].
+* Follow the guides in the remainder of this section to make changes to your library or application code to add manual instrumentation.
 
 ==== Create a synchronous span using the current context
 
@@ -238,6 +240,7 @@ Use the `context:` option to specify the context containing the span to add the 
 NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans for supported HTTP clients.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#add-client-span-response-data![`steffan-westcott.otel.api.trace.http/add-client-span-response-data!`] to add HTTP response data to a client span.
+Use this function when not using a supported HTTP client with the OpenTelemetry instrumentation agent.
 +
 By default, the HTTP response data is added to the span in the current context:
 +
@@ -258,6 +261,7 @@ Use the `context:` option to specify the context containing the span to add the 
 NOTE: When an application is run with the OpenTelemetry instrumentation agent, context is *automatically propagated* in HTTP client requests for supported clients.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.context#\->headers[`steffan-westcott.otel.context/\->headers`] to get headers to merge (inject) with the other headers in the HTTP request to be issued, for the purpose of xref:concepts.adoc#_context_propagation[context propagation].
+Use this function when not using a supported HTTP client with the OpenTelemetry instrumentation agent.
 +
 By default, the current context is propagated:
 +
@@ -297,7 +301,8 @@ Select this option to export telemetry data from manual instrumentation only; Th
 +
 Select this option to mute all telemetry data.
 
-TIP: Traces telemetry data is muted in the last option, or by setting the property `otel.traces.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration). `otel.metrics.exporter` has default `none`.
+TIP: Traces telemetry data is muted in the last option, or by setting the property `otel.traces.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration).
+Note that for metrics telemetry data, `otel.metrics.exporter` has default `none`.
 
 [#_run_with_the_opentelemetry_auto_instrumentation_agent]
 === Run with the OpenTelemetry auto-instrumentation agent

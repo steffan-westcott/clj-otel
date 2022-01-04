@@ -252,7 +252,7 @@ To start and exercise the application:
 
 . Start REPL with chosen aliases in `examples/programmatic-sdk-config/deps.edn`
 . In the REPL, load namespace `example.programmatic-sdk-config`
-. Edit and redefine function `init-otel` to configure the SDK as desired.
+. Edit and redefine function `init-otel!` to configure the SDK as desired.
 . In the REPL, evaluate the following forms to initialise the SDK, exercise an instrumented function, then close the SDK:
 +
 [source,clojure]
