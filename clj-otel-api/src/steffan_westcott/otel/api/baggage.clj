@@ -50,7 +50,3 @@
   `[value metadata]`, where `value` and `metadata` are strings."
   [m]
   (.build ^BaggageBuilder (reduce-kv put-entry (Baggage/builder) m)))
-
-(comment
-
-  )

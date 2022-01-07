@@ -75,17 +75,6 @@
   []
   (Context/root))
 
-;(defn bound-context-fn*
-;  "Returns a function which will call function `f` with same arguments and
-;  current context set to `context`. If `context` arg is not given, the
-;  current context at the time `bound-context-fn*` will be used. The original
-;  context is restored after function evaluation completes."
-;  ([f]
-;   (bound-context-fn* f (current)))
-;  ([f ^Context context]
-;   (fn [& args]
-;     (with-context! context (apply f args)))))
-
 (defn current-context-interceptor
   "Returns a Pedestal interceptor that will on entry set the current context to
   the value that has key `context-key` in the interceptor context map. The
@@ -152,7 +141,3 @@
              :or   {context             (current)
                     text-map-propagator (otel/get-text-map-propagator)}}]
    (.extract text-map-propagator context headers map-getter)))
-
-(comment
-
-  )

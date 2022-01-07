@@ -328,7 +328,3 @@
            :always (conj (execution-id-interceptor))
            :always (conj (copy-context-interceptor))
            (and create-span? set-current-context?) (conj (current-context-interceptor)))))
-
-(comment
-
-  )

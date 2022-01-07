@@ -16,15 +16,17 @@
   |`:headers`                 | HTTP headers to add to request, used with the default channel (default: `{}`).
   |`:trusted-certificates-pem`| `^bytes` X.509 certificate chain in PEM format, used with the default channel (default: system default trusted certificates).
   |`:channel`                 | `ManagedChannel` instance to use for communication with the backend (default: `ManagedChannel` instance configured to use `:endpoint`, `:headers` amd `:trusted-certificates-pem`).
+  |`:compression-method`      | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
   |`:timeout`                 | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s)."
   ([]
    (span-exporter {}))
-  ([{:keys [endpoint headers trusted-certificates-pem managed-channel timeout]
+  ([{:keys [endpoint headers trusted-certificates-pem managed-channel compression-method timeout]
      :or   {headers {}}}]
    (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
                          endpoint (.setEndpoint endpoint)
                          headers (add-headers headers)
                          trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
                          managed-channel (.setChannel managed-channel)
+                         compression-method (.setCompression compression-method)
                          timeout (.setTimeout (util/duration timeout)))]
      (.build builder))))
