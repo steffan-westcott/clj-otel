@@ -1,8 +1,29 @@
 = Tutorial
 :toc:
 
-In this tutorial, you will add trace telemetry to a Clojure program and view the traces in https://www.jaegertracing.io/[Jaeger], a telemetry backend.
-You will use spans and traces to describe the runtime behaviour of your program.
-You will enrich the spans with attributes and events, and see how runtime exceptions are presented.
-Finally, you'll change from Jaeger to https://zipkin.io/[Zipkin], without needing to change any code.
+In this tutorial, you will add trace telemetry to a Clojure HTTP server application and view the traces in https://www.jaegertracing.io/[Jaeger], a telemetry backend.
 
+You will first add automatic instrumentation to quickly get telemetry without adding any code.
+You then add manual instrumentation to enrich the telemetry data and gain further insight on the application behaviour.
+
+[source,bash]
+[.small]
+----
+docker run --rm -p 16686:16686 -p 14250:14250 jaegertracing/all-in-one
+----
+
+[source,bash]
+----
+curl -X GET --location "http://localhost:8080/count"
+# 1
+----
+
+[source,bash]
+----
+curl -X POST --location "http://localhost:8080/inc"
+----
+
+[source,bash]
+----
+curl -X PUT --location "http://localhost:8080/reset?n=3"
+----

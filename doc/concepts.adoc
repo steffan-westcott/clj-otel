@@ -39,7 +39,7 @@ Are there new error cases?"
 
 Through *enhanced visibility* of system behaviour, observability *improves understanding* of the *impact of changes* made by developers and operators.
 
-=== Introducing OpenTelemetry
+=== About OpenTelemetry
 
 https://opentelemetry.io/[OpenTelemetry] is a https://www.cncf.io/projects/[CNCF incubating project], formed after the merger of https://opentracing.io/[OpenTracing] and https://opencensus.io/[OpenCensus].
 
@@ -144,8 +144,9 @@ The `clj-otel-api` module in this project wraps the OpenTelemetry API for Java i
 IMPORTANT: Manual instrumentation program code depends on the OpenTelemetry API, never the OpenTelemetry SDK.
 
 It is possible to combine automatic and manual instrumentation.
-For example, attributes and events can be added using manual instrumentation to a span created by the agent, as well as adding extra spans.
-This demonstrates manually enriching the telemetry data produced by an automatically instrumented application.
+For example, attributes and events can be added using manual instrumentation to a span automatically created by the agent.
+Extra spans can also be added using manual instrumentation.
+These are examples of manually enriching the telemetry data produced by an automatically instrumented application.
 
 TIP: Make use of automatic instrumentation if possible for your application, as this is a quick way to get high quality telemetry with almost no effort.
 Use manual instrumentation to enrich the telemetry data, or if your application does not use a framework supported by the agent.
@@ -153,8 +154,8 @@ Use manual instrumentation to enrich the telemetry data, or if your application 
 == OpenTelemetry data model
 
 In observability terms, *telemetry data* is an aggregation of data from four sources: traces, metrics, logs and events.
-In the OpenTelemetry data model, these map onto traces, metrics and logs *data sources*.
-Events are treated as a specific type of log, or captured as part of a trace.
+In the OpenTelemetry data model, data sources are *traces*, *metrics* and *logs*.
+Events are treated as a specific type of log or captured as part of a trace.
 
 [#_traces]
 === Traces
@@ -162,7 +163,7 @@ Events are treated as a specific type of log, or captured as part of a trace.
 A trace represents the *flow of a single transaction* throughout the system.
 A trace comprises a tree of *spans*, where a span represents a *unit of work* in a service and the parent-child relationship between the spans represent dependencies between them.
 The *root span* of a trace typically describes the entire transaction and the other spans in the trace describe units of work performed as part of the transaction.
-Traces provide causal *context* for system activity and can identify other telemetry data (metrics or logs) that are relevant.
+Traces provide *context* for system activity performed in spans.
 
 Span data may include a name, *span kind*, attributes, start/end timestamps, links to other spans, a list of events and a status.
 

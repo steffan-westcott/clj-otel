@@ -48,8 +48,7 @@
                     "examples/manual-instrument/middleware/puzzle-service"
                     "examples/manual-instrument/middleware/random-word-service"
                     "examples/programmatic-sdk-config"
-                    "tutorial/instrumented"
-                    "tutorial/uninstrumented"])
+                    "tutorial/instrumented"])
 
 (def project-paths (concat artifact-ids example-paths))
 
@@ -84,15 +83,3 @@
   (cb/run-task {:main-opts ["--directory" (str/join ":" project-paths) "--skip" "pom"]}
                [:antq]))
 
-(defn get-java-agent
-  "Download OpenTelemetry instrumentation agent JAR to `examples` directory.
-  This needs to be done once only before running any of the examples."
-  [_opts]
-  (let [basis (b/create-basis {:aliases [:java-agent]})
-        src (get-in basis [:libs
-                           'io.opentelemetry.javaagent/opentelemetry-javaagent
-                           :paths
-                           0])
-        target "examples/opentelemetry-javaagent.jar"]
-    (b/copy-file {:src src :target target})
-    (println "Copied OpenTelemetry instrumentation agent JAR to" target)))

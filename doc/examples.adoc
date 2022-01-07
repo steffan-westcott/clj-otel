@@ -17,15 +17,10 @@ To clone this repository, run the following command :
 git clone https://github.com/steffan-westcott/clj-otel.git
 ----
 
-. *Get agent JAR*
+. *Get OpenTelemetry instrumentation agent JAR*
 +
-Before running any of the examples, the OpenTelemetry instrumentation agent JAR must be downloaded and placed in the `examples` directory.
-This can be done by running the following command in the clone root directory:
-+
-[source,bash]
-----
-clojure -T:build get-java-agent
-----
+Before running any of the examples, the file `opentelemetry-javaagent.jar` must be downloaded and placed in the `examples` directory.
+See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[releases page] for notes and download links.
 
 . *Start Collector and telemetry backend instances*
 +
