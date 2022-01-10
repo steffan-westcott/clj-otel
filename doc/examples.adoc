@@ -42,9 +42,9 @@ For example, in `examples/auto-sdk-config`, to export trace data to the Collecto
 
 . *View telemetry data in backend(s)*
 +
-*Jaeger* : Navigate to http://localhost:16686/search then select an option in the *Service* dropdown and click the *Find Traces* button.
+*Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
 +
-*Zipkin* : Navigate to http://localhost:9411/zipkin/ then select search options under the cog icon and click the *Run Query* button.
+*Zipkin* : Navigate to http://localhost:9411/zipkin/ then select search options under the cog icon and click the `Run Query` button.
 
 . *Stop Collector and telemetry backend instances*
 +
@@ -70,7 +70,7 @@ To start and exercise the application:
 . Start REPL with chosen aliases in `examples/auto-sdk-config/deps.edn`
 . In the REPL, load namespace `example.auto-sdk-config`
 +
-This will create a single span named "squaring" with an event "my event".
+This will create a single span named `squaring` with an event `my event`.
 
 === Microservices run with combined automatic and manual instrumentation
 

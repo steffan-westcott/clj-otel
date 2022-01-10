@@ -11,7 +11,7 @@ You then add manual instrumentation to enrich the telemetry data and gain furthe
 The tutorial walks through creation and instrumentation of the application from scratch.
 For reference, the source code of the application before and after instrumentation can be found in the `tutorial` directory of this repository.
 
-This tutorial assumes a Unix-like OS equipped with Docker and a Clojure development environment.
+The tutorial assumes a Unix-like OS equipped with Docker and a Clojure development environment.
 It is assumed you are comfortable working in a Clojure REPL and are familiar with Ring-based HTTP server development.
 
 toc::[]

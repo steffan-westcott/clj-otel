@@ -2,19 +2,63 @@
 
 `clj-otel` provides a *small idiomatic Clojure API* for adding *telemetry* to your libraries and applications using *OpenTelemetry*, an emerging standard for telemetry in cloud-native software, enabling effective *observability*.
 
-== Quickstart
-
 == Requirements
 
 `clj-otel` is tested with Clojure 1.10.3 and is based on the reference https://github.com/open-telemetry/opentelemetry-java[OpenTelemetry for Java] implementation which supports Java 8 and higher.
 
+== Quickstart
+
+`clj-otel` may be used in many ways and is highly configurable.
+This quickstart is a brief outline for getting started in a local environment.
+More in-depth information on `clj-otel` can be found in the xref:_documentation[documentation] and xref:_examples[examples].
+
+* To add manual instrumentation to your library or application at design time
+** Add project dependency
++
+.`deps.edn`
+[source,clojure]
+----
+{;; ...
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0"}}}
+----
+** Use Clojure functions such as `steffan-westcott.otel.api.trace.span/with-span!` to create spans with attributes
++
+[source,clojure]
+----
+(defn validate-profile [profile]
+  (span/with-span! {:name       "Validating profile"
+                    :attributes {:profile-id (:id profile)}}
+    (validate profile)))
+----
+
+* To export telemetry data (from both manual and automatic instrumentation) from an application at runtime
+** Download the latest OpenTelemetry instrumentation JAR `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[OpenTelemetry instrumentation agent releases page].
+** Add the following JVM options to your application, assuming export to Jaeger:
++
+----
+"-javaagent:opentelemetry-javaagent.jar"
+"-Dotel.resource.attributes=service.name=NAME-OF-YOUR-SERVICE"
+"-Dotel.traces.exporter=jaeger"
+----
+
+* To receive exported telemetry data, prepare an OpenTelemetry Collector instance or a telemetry backend such as Jaeger
++
+[source,bash]
+----
+docker run --rm -p 16686:16686 -p 14250:14250 jaegertracing/all-in-one
+----
+
+* To explore application behaviour described by the exported telemetry data, use telemetry backend features such as the Jaeger user interface at http://localhost:16686/search
+
+[#_documentation]
 == Documentation
 
 * link:doc/tutorial.adoc[Tutorial] : A walk-through of instrumenting a small Clojure program and viewing its telemetry.
-* link:doc/guides.adoc[Guides] : Common task recipes for adding telemetry to Clojure libraries and applications, then configuring and running applications with telemetry.
+* link:doc/guides.adoc[Guides] : Common task recipes for adding telemetry to your Clojure libraries and applications, then configuring and running applications with telemetry.
 * link:doc/reference.adoc[API & Reference] : API documentation for all `clj-otel` modules.
 * link:doc/concepts.adoc[Concepts] : A primer on observability, OpenTelemetry and what this project `clj-otel` enables for Clojure libraries and applications.
 
+[#_examples]
 == Examples
 
 Complete example applications can be found in the `examples` directory.
@@ -55,7 +99,7 @@ It is likely this will be a separate project.
 
 The *most needed* type of contribution is *experience reports* of using `clj-otel` in real systems.
 I am keen to hear of places where `clj-otel` is used and of any problems and successes.
-This is a very young project, so now is a good time to provide *feedback* on the API design as improvements can be freely made.
+This is a very young project, so now is a good time to provide *feedback* on the API design as improvements can be made freely.
 
 I will be happy to consider pull requests for minor changes, but larger or structural changes may not be accepted while I make a start on some items in the TODO list.
 
@@ -75,5 +119,5 @@ Cloud-native software is so complex now, we need all the help we can get to unde
 
 == License
 
-Copyright © 2021 Steffan Westcott +
+Copyright © 2022 Steffan Westcott +
 Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]
