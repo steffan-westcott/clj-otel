@@ -1,7 +1,9 @@
 (ns tutorial.counter-service
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.otel.api.trace.http :as trace-http]
+            [steffan-westcott.otel.api.trace.span :as span]))
 
 
 (def counter
@@ -16,39 +18,43 @@
     (try
       (handler request)
       (catch Throwable e
+        (span/add-exception! e {:escaping? false})
         (let [resp (response/response (ex-message e))]
           (response/status resp 500))))))
+
+
+(defn reset-count-handler
+  "Ring handler for 'PUT /reset' request. Resets counter, returns HTTP 204."
+  [{:keys [query-params]}]
+  (let [n (Integer/parseInt (get query-params "n"))]
+    (reset! counter n)
+    (response/status 204)))
 
 
 (defn get-count-handler
   "Ring handler for 'GET /count' request. Returns an HTTP response with counter
   value."
   []
-  (response/response (str @counter)))
+  (let [n @counter]
+    (span/add-span-data! {:attributes {:counter n}})
+    (response/response (str n))))
 
 
 (defn inc-count-handler
   "Ring handler for 'POST /inc' request. Increments counter, returns HTTP 204."
   []
-  (swap! counter inc)
+  (span/with-span! {:name "Incrementing counter"}
+    (swap! counter inc))
   (response/status 204))
-
-
-(defn reset-count-handler
-  "Ring handler for 'PUT /reset' request. Resets counter, returns HTTP 200."
-  [{:keys [query-params]}]
-  (let [n (Integer/parseInt (get query-params "n"))]
-    (reset! counter n)
-    (response/response nil)))
 
 
 (defn handler
   "Ring handler for all requests."
   [{:keys [request-method uri] :as request}]
   (case [request-method uri]
+    [:put "/reset"] (reset-count-handler request)
     [:get "/count"] (get-count-handler)
     [:post "/inc"] (inc-count-handler)
-    [:put "/reset"] (reset-count-handler request)
     (response/not-found "Not found")))
 
 
@@ -56,7 +62,8 @@
   "Ring handler with middleware applied."
   (-> handler
       params/wrap-params
-      wrap-exception))
+      wrap-exception
+      (trace-http/wrap-server-span {:create-span? false})))
 
 
 (defonce ^{:doc "counter-service server instance"} server

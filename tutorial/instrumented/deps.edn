@@ -5,6 +5,5 @@
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
-                             "-Dotel.resource.attributes=service.name=tutorial"
-                             "-Dotel.traces.exporter=jaeger"
-                             "-Dotel.metrics.exporter=none"]}}}
+                             "-Dotel.resource.attributes=service.name=counter-service"
+                             "-Dotel.traces.exporter=jaeger"]}}}

@@ -19,7 +19,7 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}}}
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0"}}}
 ----
 
 * Follow the guides in the remainder of this section to make changes to your library or application code to add manual instrumentation.
@@ -162,7 +162,7 @@ Use the `context:` option to specify the context containing the span to add the 
 
 === Work with HTTP client and server spans
 
-The guides in this section describe xref:concepts.adoc#_semantic_conventions[semantic conventions] support for HTTP client and server spans.
+The guides in this section describe xref:concepts.adoc#_semantic_conventions[semantic conventions] support for HTTP xref:concepts.adoc#_span_kind[client and server spans].
 
 ==== Use Ring middleware for server span support
 
@@ -170,7 +170,7 @@ The guides in this section describe xref:concepts.adoc#_semantic_conventions[sem
 +
 The enabled support features vary with the selected middleware options.
 The middleware can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
-It also supports both synchronous and asynchronous handlers.
+It also supports both synchronous (1-arity) and asynchronous (3-arity) handlers.
 +
 An example using Jetty with server spans created by the agent:
 +
@@ -237,10 +237,10 @@ Use the `context:` option to specify the context containing the span to add the 
 
 ==== Manually add HTTP response data to a client span
 
-NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans for supported HTTP clients.
+NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans for supported clients.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#add-client-span-response-data![`steffan-westcott.otel.api.trace.http/add-client-span-response-data!`] to add HTTP response data to a client span.
-Use this function when not using a supported HTTP client with the OpenTelemetry instrumentation agent.
+Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
 +
 By default, the HTTP response data is added to the span in the current context:
 +
@@ -261,7 +261,7 @@ Use the `context:` option to specify the context containing the span to add the 
 NOTE: When an application is run with the OpenTelemetry instrumentation agent, context is *automatically propagated* in HTTP client requests for supported clients.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.context#\->headers[`steffan-westcott.otel.context/\->headers`] to get headers to merge (inject) with the other headers in the HTTP request to be issued, for the purpose of xref:concepts.adoc#_context_propagation[context propagation].
-Use this function when not using a supported HTTP client with the OpenTelemetry instrumentation agent.
+Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
 +
 By default, the current context is propagated:
 +
@@ -378,9 +378,9 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 [.small]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.1.0-SNAPSHOT"}
-        com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.1.0-SNAPSHOT"}
-        com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace {:mvn/version "0.1.0-SNAPSHOT"}
+ :deps {com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.1.0"}
+        com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.1.0"}
+        com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace {:mvn/version "0.1.0"}
         io.grpc/grpc-netty-shaded                                     {:mvn/version "1.42.1"}
         io.grpc/grpc-protobuf                                         {:mvn/version "1.42.1"}
         io.grpc/grpc-stub                                             {:mvn/version "1.42.1"}}}
@@ -433,10 +433,10 @@ See the https://opentelemetry.io/docs/collector/configuration/[configuration doc
 
 This example Collector configuration has a traces pipeline where:
 
-* Trace data are received as OTLP over gRPC
+* Trace data are received by the Collector as OTLP over gRPC
 * Memory usage in the Collector process is limited
-* Traces are batched prior to export to the backend
-* Traces are exported to Jaeger backend on host `jaeger`
+* Traces are batched in the Collector prior to export to the backend
+* Traces are exported by the Collector to the Jaeger backend on host `jaeger`
 
 .`otel-collector-config.yaml`
 [source,yaml]

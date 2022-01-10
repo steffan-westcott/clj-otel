@@ -95,7 +95,7 @@ This starts a `sentence-summary-service` server on port 8080.
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/summary?sentence=Clojure+and+OpenTelemetry"
+curl -X GET "http://localhost:8080/summary?sentence=Clojure+and+OpenTelemetry"
 # {:word-count 3, :shortest-length 3, :longest-length 13}
 ----
 +
@@ -104,7 +104,7 @@ Simulate a downstream 5xx server error by including the word `boom` in the reque
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/summary?sentence=Things+went+boom"
+curl -X GET "http://localhost:8080/summary?sentence=Things+went+boom"
 # 500 HTTP response
 ----
 +
@@ -113,7 +113,7 @@ Simulate a downstream 4xx client error by including the word `problem` in the re
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/summary?sentence=User+problem"
+curl -X GET "http://localhost:8080/summary?sentence=User+problem"
 # 400 HTTP response
 ----
 
@@ -132,7 +132,7 @@ This starts a `solar-system-service` server on port 8080.
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/metrics?planet=jupiter"
+curl -X GET "http://localhost:8080/metrics?planet=jupiter"
 # The planet Jupiter has diameter 142984.0km and gravity 23.1m/s^2.
 ----
 +
@@ -141,7 +141,7 @@ Simulate a downstream 5xx server error by requesting data on Saturn:
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/metrics?planet=saturn"
+curl -X GET "http://localhost:8080/metrics?planet=saturn"
 # 500 HTTP response
 ----
 +
@@ -150,7 +150,7 @@ Simulate a downstream 4xx client error by requesting data on Pluto:
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/metrics?planet=pluto"
+curl -X GET "http://localhost:8080/metrics?planet=pluto"
 # 400 HTTP response
 ----
 
@@ -177,7 +177,7 @@ This starts a `puzzle-service` server on port 8080.
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/puzzle?types=verb,noun,adjective,noun"
+curl -X GET "http://localhost:8080/puzzle?types=verb,noun,adjective,noun"
 # reac abt mixde fgrso
 ----
 +
@@ -186,7 +186,7 @@ Simulate a downstream 5xx server error by including the word type `fault` in the
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/puzzle?types=noun,fault,verb"
+curl -X GET "http://localhost:8080/puzzle?types=noun,fault,verb"
 # 500 HTTP response
 ----
 +
@@ -195,7 +195,7 @@ Simulate a downstream 4xx client error by including an unknown word type in the 
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/puzzle?types=bogus,noun"
+curl -X GET "http://localhost:8080/puzzle?types=bogus,noun"
 # 400 HTTP response
 ----
 
@@ -214,7 +214,7 @@ This starts a `average-service` server on port 8080.
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/average?nums=1,2,3,4"
+curl -X GET "http://localhost:8080/average?nums=1,2,3,4"
 # {:odds 2.0, :evens 3.0}
 ----
 +
@@ -223,7 +223,7 @@ Simulate a downstream 5xx server error by using odd numbers that add to 13:
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/average?nums=1,2,3,4,9"
+curl -X GET "http://localhost:8080/average?nums=1,2,3,4,9"
 # 500 HTTP response
 ----
 +
@@ -232,7 +232,7 @@ Simulate a downstream 4xx client error by giving first number 0:
 [source,bash]
 [.small]
 ----
-curl -X GET --location "http://localhost:8080/average?nums=0,1,2"
+curl -X GET "http://localhost:8080/average?nums=0,1,2"
 # 400 HTTP response
 ----
 

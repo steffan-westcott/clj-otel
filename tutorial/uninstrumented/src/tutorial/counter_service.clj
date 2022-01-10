@@ -20,6 +20,14 @@
           (response/status resp 500))))))
 
 
+(defn reset-count-handler
+  "Ring handler for 'PUT /reset' request. Resets counter, returns HTTP 204."
+  [{:keys [query-params]}]
+  (let [n (Integer/parseInt (get query-params "n"))]
+    (reset! counter n)
+    (response/status 204)))
+
+
 (defn get-count-handler
   "Ring handler for 'GET /count' request. Returns an HTTP response with counter
   value."
@@ -34,21 +42,13 @@
   (response/status 204))
 
 
-(defn reset-count-handler
-  "Ring handler for 'PUT /reset' request. Resets counter, returns HTTP 200."
-  [{:keys [query-params]}]
-  (let [n (Integer/parseInt (get query-params "n"))]
-    (reset! counter n)
-    (response/response nil)))
-
-
 (defn handler
   "Ring handler for all requests."
   [{:keys [request-method uri] :as request}]
   (case [request-method uri]
+    [:put "/reset"] (reset-count-handler request)
     [:get "/count"] (get-count-handler)
     [:post "/inc"] (inc-count-handler)
-    [:put "/reset"] (reset-count-handler request)
     (response/not-found "Not found")))
 
 

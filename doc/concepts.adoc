@@ -169,6 +169,7 @@ Span data may include a name, *span kind*, attributes, start/end timestamps, lin
 
 * The span name should identify a class of spans and not include data.
 * The span kind indicates the relationship between the span and its parent and children in the trace.
+[#_span_kind]
 The span kind is one of:
 ** `CLIENT` : Covers the client side of issuing a synchronous request, where the client side waits until a response is received.
 ** `SERVER` : Covers the server side of handling a synchronous request, where the remote client waits for a response.
