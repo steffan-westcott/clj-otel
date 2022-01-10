@@ -1,12 +1,12 @@
 (ns tutorial.counter-service
+  "Uninstrumented version of tutorial counter-service application."
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]))
 
 
-(def counter
-  "Counter state"
-  (atom 0))
+(defonce ^{:doc "Counter state"} counter
+         (atom 0))
 
 
 (defn wrap-exception
@@ -32,7 +32,8 @@
   "Ring handler for 'GET /count' request. Returns an HTTP response with counter
   value."
   []
-  (response/response (str @counter)))
+  (let [n @counter]
+    (response/response (str n))))
 
 
 (defn inc-count-handler

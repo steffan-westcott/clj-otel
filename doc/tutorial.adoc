@@ -5,8 +5,11 @@
 
 In this tutorial, you will add trace telemetry to a Clojure HTTP server application and view the traces in https://www.jaegertracing.io/[Jaeger], a telemetry backend.
 
-You will first add automatic instrumentation to quickly get telemetry.
+You will first add automatic instrumentation to quickly get telemetry without changing any application code.
 You then add manual instrumentation to enrich the telemetry data and gain further insight on the application behaviour.
+
+The tutorial walks through creation and instrumentation of the application from scratch.
+For reference, the source code of the application before and after instrumentation can be found in the `tutorial` directory of this repository.
 
 This tutorial assumes a Unix-like OS equipped with Docker and a Clojure development environment.
 It is assumed you are comfortable working in a Clojure REPL and are familiar with Ring-based HTTP server development.
@@ -42,7 +45,7 @@ In your favourite development environment, create a project with these two files
             [ring.middleware.params :as params]
             [ring.util.response :as response]))
 
-(def counter (atom 0))
+(defonce counter (atom 0))
 
 (defn wrap-exception [handler]
   (fn [request]
@@ -58,7 +61,8 @@ In your favourite development environment, create a project with these two files
     (response/status 204)))
 
 (defn get-count-handler []
-  (response/response (str @counter)))
+  (let [n @counter]
+    (response/response (str n))))
 
 (defn inc-count-handler []
   (swap! counter inc)
@@ -159,7 +163,7 @@ The span's `Process` attributes describe the instrumented application and its en
 
 == Add manual instrumentation
 
-You will now add more detail by adding manual instrumentation on top of the automatic instrumentation.
+You will now enrich the telemetry detail by adding manual instrumentation on top of the automatic instrumentation.
 
 First, add a dependency `com.github.steffan-westcott/clj-otel-api`:
 

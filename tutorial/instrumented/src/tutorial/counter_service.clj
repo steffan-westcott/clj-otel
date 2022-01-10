@@ -1,4 +1,5 @@
 (ns tutorial.counter-service
+  "Instrumented version of tutorial counter-service application."
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
@@ -6,9 +7,8 @@
             [steffan-westcott.otel.api.trace.span :as span]))
 
 
-(def counter
-  "Counter state"
-  (atom 0))
+(defonce ^{:doc "Counter state"} counter
+         (atom 0))
 
 
 (defn wrap-exception

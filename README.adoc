@@ -10,7 +10,7 @@
 
 == Documentation
 
-* link:doc/tutorial.adoc[Tutorial] : A walk-through of manually instrumenting a small Clojure program and viewing its telemetry.
+* link:doc/tutorial.adoc[Tutorial] : A walk-through of instrumenting a small Clojure program and viewing its telemetry.
 * link:doc/guides.adoc[Guides] : Common task recipes for adding telemetry to Clojure libraries and applications, then configuring and running applications with telemetry.
 * link:doc/reference.adoc[API & Reference] : API documentation for all `clj-otel` modules.
 * link:doc/concepts.adoc[Concepts] : A primer on observability, OpenTelemetry and what this project `clj-otel` enables for Clojure libraries and applications.
