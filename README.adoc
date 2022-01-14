@@ -119,5 +119,5 @@ Cloud-native software is so complex now, we need all the help we can get to unde
 
 == License
 
-Copyright © 2022 Steffan Westcott +
+Copyright © 2021-2022 Steffan Westcott +
 Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]

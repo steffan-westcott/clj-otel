@@ -211,7 +211,7 @@ See the specification for https://opentelemetry.io/docs/reference/specification/
 
 A resource captures information about the entity for which telemetry data is recorded.
 For example, information on the host and JVM version may be part of a resource.
-Resources are included as part of other telemetry data such a traces and metrics.
+Resources are included as part of other telemetry data such as traces and metrics.
 
 The OpenTelemetry SDK contains resource implementations which capture a variety of host and process information.
 
@@ -241,7 +241,7 @@ A new context is created from an existing context with the addition of a new key
 === Current context
 
 The *current context* is a thread local `io.opentelemetry.context.Context` object.
-It is used as a default for many functions in this project `clj-otel` and the underlying Java library `opentelemetry-java`.
+It is used as a default for many functions in this project `clj-otel` and methods of the underlying Java library `opentelemetry-java`.
 The current context is safe to use when manually instrumenting synchronous code.
 
 WARNING: The current context cannot be used when manually instrumenting asynchronous code.
@@ -300,7 +300,7 @@ An application or OpenTelemetry Collector exports data to these backends using a
 
 The OpenTelemetry SDK implements the creation, sampling, batching and export of telemetry data.
 The SDK acts as an implementation of the OpenTelemetry API.
-For an application to export telemetry, the SDK and its dependencies need to be present and configured at runtime.
+For an application to export telemetry data, the SDK and its dependencies need to be present and configured at runtime.
 
 The SDK and its dependencies are added to an application in one of the following ways:
 
