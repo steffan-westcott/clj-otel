@@ -151,12 +151,12 @@ curl -X GET "http://localhost:8080/count"
 In a web browser navigate to the Jaeger search page at http://localhost:16686/search.
 In the `Search` options, select `counter-service`  in the `Service` selector and click the `Find Traces` button.
 
-image::/{docdir}/images/jaeger-search.png[Jaeger search results]
+image:images/jaeger-search.png[Jaeger search results]
 
 You will see a trace corresponding to each request handled by the server.
 Click on the trace for `HTTP GET` to view it, then click on the single span in the trace to expand its details.
 
-image::images/jaeger-get-trace.png[Jaeger HTTP GET trace]
+image:images/jaeger-get-trace.png[Jaeger HTTP GET trace]
 
 The span's `Tags` attributes describe this as a server span for an HTTP `GET` request for target `/count` with an HTTP response code of 200.
 The span's `Process` attributes describe the instrumented application and its environment such as the service name, runtime JVM, process, OS and host.
