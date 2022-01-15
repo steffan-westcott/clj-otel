@@ -11,6 +11,7 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 
 * Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>> to add automatic instrumentation.
 
+[#_add_manual_instrumentation_to_your_library_or_application_code]
 === Add manual instrumentation to your library or application code
 
 * Add project dependency :
@@ -48,6 +49,7 @@ The new context containing the new span is bound to `context*` in this example:
     (fetch-nums context* args)))
 ----
 
+[#_create_an_asynchronous_span]
 ==== Create an asynchronous span
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.span#async-span[`steffan-westcott.otel.api.trace.span/async-span`] to start a new span that ends when either success/failure callback `respond`/`raise` is evaluated:
@@ -164,6 +166,7 @@ Use the `context:` option to specify the context containing the span to add the 
 
 The guides in this section describe xref:concepts.adoc#_semantic_conventions[semantic conventions] support for HTTP xref:concepts.adoc#_span_kind[client and server spans].
 
+[#_use_ring_middleware_for_server_span_support]
 ==== Use Ring middleware for server span support
 
 * Use Ring middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#wrap-server-span[`steffan-westcott.otel.api.trace.http/wrap-server-span`] to add HTTP server span support to a Ring handler.
@@ -189,6 +192,7 @@ An example using Jetty with server spans created by the agent:
   (jetty/run-jetty #'service {:port 8080 :join? false}))
 ----
 
+[#_use_pedestal_interceptors_for_server_span_support]
 ==== Use Pedestal interceptors for server span support
 
 * Use interceptors https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.otel.api.trace.http#server-span-interceptors[`steffan-westcott.otel.api.trace.http/server-span-interceptors`] to add HTTP server span support to a Pedestal HTTP service.
@@ -332,7 +336,7 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 
 * Add project dependencies:
 ** _Required:_ `io.opentelemetry/opentelemetry-sdk-extension-autoconfigure` for the SDK itself and SDK autoconfiguration
-** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any required xref:concepts.adoc#_exporters[exporters]
+** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any required xref:reference.adoc#_exporter_libraries_and_modules[exporters]
 ** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
@@ -364,7 +368,7 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 
 * Add project dependencies:
 ** _Required:_ `com.github.steffan-westcott/clj-otel-sdk` for the SDK itself and a Clojure wrapper of SDK configuration
-** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for Clojure wrapped versions of any required xref:concepts.adoc#_exporters[exporters]
+** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for xref:reference.adoc#_exporter_libraries_and_modules[Clojure wrapped versions of any required exporters]
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various xref:concepts.adoc#_resources[resources] to add to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.

@@ -165,9 +165,8 @@ A trace comprises a tree of *spans*, where a span represents a *unit of work* in
 The *root span* of a trace typically describes the entire transaction and the other spans in the trace describe units of work performed as part of the transaction.
 Traces provide *context* for system activity performed in spans.
 
-Span data may include a name, *span kind*, attributes, start/end timestamps, links to other spans, a list of events and a status.
+Span data may include a *span kind*, name, attributes, start/end timestamps, links to other spans, a list of events and a status.
 
-* The span name should identify a class of spans and not include data.
 * The span kind indicates the relationship between the span and its parent and children in the trace.
 [#_span_kind]
 The span kind is one of:
@@ -176,9 +175,10 @@ The span kind is one of:
 ** `PRODUCER` : Covers initiation of an asynchronous request, where the corresponding consumer span may start after the producer span ends.
 ** `CONSUMER` : Covers processing of an asynchronous producer request.
 ** `INTERNAL` : An internal operation within the local application or service.
-* The events are timestamped records that may include attributes.
+* The span name should identify a class of spans and not include data.
+* The events in a span are timestamped records that may include attributes.
 Exceptions thrown in a span's scope are captured as events.
-* The status has a code `Ok` or `Error`, and in case of `Error` may also have a string description.
+* The span status has a code `Ok` or `Error`, and in case of `Error` may also have a string description.
 
 See specifications for https://opentelemetry.io/docs/reference/specification/trace/api/#span[span] and https://opentelemetry.io/docs/reference/specification/trace/api/#spankind[span kind].
 
@@ -218,8 +218,8 @@ The OpenTelemetry SDK contains resource implementations which capture a variety 
 === Baggage
 
 Baggage is mechanism for propagating telemetry metadata and is represented as a simple map.
-It is intended as a means to add contextual information at a point in a transaction, to be read by a downstream service later in the same transaction and used as an element of telemetry data e.g. an attribute.
-An example is to put a user identifier in the baggage to indicate the principal of a request.
+It is intended as a means to add contextual information at a point in a transaction, to be read by a downstream service later in the same transaction and then used as an element of telemetry data e.g. an attribute.
+For example, a user identifier may put in the baggage to indicate the principal of a request and subsequent spans in the trace include a `principal` attribute.
 
 [#_semantic_conventions]
 == Semantic conventions
