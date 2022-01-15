@@ -146,7 +146,7 @@ IMPORTANT: Manual instrumentation program code depends on the OpenTelemetry API,
 It is possible to combine automatic and manual instrumentation.
 For example, attributes and events can be added using manual instrumentation to a span automatically created by the agent.
 Extra spans can also be added using manual instrumentation.
-These are examples of manually enriching the telemetry data produced by an automatic instrumentation.
+These are examples of manually enriching the telemetry data produced by automatic instrumentation.
 
 TIP: Make use of automatic instrumentation if possible for your application, as this is a quick way to get high quality telemetry with almost no effort.
 Use manual instrumentation to enrich the telemetry data, or if your application does not use a framework supported by the agent.
@@ -276,7 +276,7 @@ Some functions in this library `clj-otel` take a `:context` or `:parent` option 
 == Trace sampling
 
 *Sampling* is the process of selecting some elements from a set and deriving observations on the complete set based on analysis of those selected elements.
-Sampling is a required technique when the volume of raw data is too high to analyse cost-effectively.
+Sampling is needed when the volume of raw data is too high to analyse cost-effectively.
 
 *Trace sampling* may be applied at any number of points between the instrumented application and the telemetry backend.
 OpenTelemetry provides sampler implementations which may be applied in the application and/or the Collector.

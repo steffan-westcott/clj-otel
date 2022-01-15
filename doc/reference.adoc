@@ -79,3 +79,5 @@ Intended for debugging only.
 
 == `opentelemetry-java` libraries
 
+=== Exporters
+

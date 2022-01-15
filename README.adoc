@@ -1,5 +1,7 @@
 = `clj-otel`
 
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api] image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-api[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api] image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License] image:https://img.shields.io/badge/clojurians-observability-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/observability]
+
 `clj-otel` provides a *small idiomatic Clojure API* for adding *telemetry* to your libraries and applications using *OpenTelemetry*, an emerging standard for telemetry in cloud-native software, enabling effective *observability*.
 
 == Requirements
@@ -77,7 +79,7 @@ Breaking API changes may still be made, but it is sincerely hoped there will be 
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
 ** Trace semantics conventions support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[recording exceptions] is complete.
-Support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] is partial as it is limited by HTTP client/server abstractions and will never be as complete as that provided by auto-instrumentation.
+Support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] is partial as it is limited by HTTP client/server abstractions and will never be as complete as that provided by automatic instrumentation.
 ** Support for wrapping asynchronous Clojure code in spans is complete.
 The API is minimal and low-level, supporting any async library that works with callbacks.
 Perhaps with community feedback this will be expanded to add more specialised support for popular async libraries.
