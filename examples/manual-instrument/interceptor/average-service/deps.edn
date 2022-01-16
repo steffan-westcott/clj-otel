@@ -2,11 +2,11 @@
 
  :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0-SNAPSHOT"}
-           io.pedestal/pedestal.service             {:mvn/version "0.5.9"}
-           io.pedestal/pedestal.route               {:mvn/version "0.5.9"}
-           io.pedestal/pedestal.interceptor         {:mvn/version "0.5.9"}
-           io.pedestal/pedestal.jetty               {:mvn/version "0.5.9"}
-           org.slf4j/slf4j-simple                   {:mvn/version "1.7.32"}
+           io.pedestal/pedestal.service             {:mvn/version "0.5.10"}
+           io.pedestal/pedestal.route               {:mvn/version "0.5.10"}
+           io.pedestal/pedestal.interceptor         {:mvn/version "0.5.10"}
+           io.pedestal/pedestal.jetty               {:mvn/version "0.5.10"}
+           org.slf4j/slf4j-simple                   {:mvn/version "1.7.33"}
            clj-http/clj-http                        {:mvn/version "3.12.3"}
            org.example/common-utils.core-async      {:local/root "../../../common-utils/core-async"}
            org.example/common-utils.interceptor     {:local/root "../../../common-utils/interceptor"}}
