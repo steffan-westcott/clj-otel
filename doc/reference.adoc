@@ -1,7 +1,10 @@
 = Reference
+:icons: font
 
-Click on the `clojars` / `maven-central` badges for dependency co-ordinates.
-The `cljdoc` badges are links to the Clojure module documentation.
+All `clj-otel` modules and API documentation are hosted on https://clojars.org/[Clojars] and https://cljdoc.org/[cljdoc].
+Click on the `clojars` and `cljdoc` badges below to see further information.
+
+NOTE: `clj-otel` comprises several Clojure modules, though it is likely most users will need the `clj-otel-api` module only.
 
 == `clj-otel-api`
 
@@ -9,7 +12,7 @@ image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?
 
 `clj-otel-api` is the primary module of `clj-otel`.
 It provides an xref:guides.adoc#_add_manual_instrumentation_to_your_library_or_application_code[idiomatic Clojure wrapper of the OpenTelemetry API for manual instrumentation].
-It also adds xref:guides.adoc#_use_ring_middleware_for_server_span_support[support for Ring] and xref:guides.adoc#_use_pedestal_interceptors_for_server_span_support[Pedestal] applications, as well as xref:guides.adoc#_create_an_asynchronous_span[support for asynchronous Clojure code].
+It also offers xref:guides.adoc#_use_ring_middleware_for_server_span_support[support for Ring] and xref:guides.adoc#_use_pedestal_interceptors_for_server_span_support[Pedestal] applications, as well as xref:guides.adoc#_create_an_asynchronous_span[support for asynchronous Clojure code].
 
 == `clj-otel-sdk`
 

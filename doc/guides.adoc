@@ -335,9 +335,10 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 === Run with autoconfigured SDK
 
 * Add project dependencies:
-** _Required:_ `io.opentelemetry/opentelemetry-sdk-extension-autoconfigure` for the SDK itself and SDK autoconfiguration
-** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any required xref:reference.adoc#_exporter_libraries_and_modules[exporters]
-** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data
+** _Required:_ `io.opentelemetry/opentelemetry-sdk-extension-autoconfigure` for the SDK itself and SDK autoconfiguration.
+** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any xref:concepts.adoc#_exporters[exporters] referenced in the configuration.
+See xref:reference.adoc#_exporter_libraries_and_modules[exporters supported by autoconfiguration].
+** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data.
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
 
@@ -368,7 +369,8 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
 
 * Add project dependencies:
 ** _Required:_ `com.github.steffan-westcott/clj-otel-sdk` for the SDK itself and a Clojure wrapper of SDK configuration
-** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for xref:reference.adoc#_exporter_libraries_and_modules[Clojure wrapped versions of any required exporters]
+** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for Clojure wrapped versions of any xref:concepts.adoc#_exporters[exporters] referenced in the configuration.
+See xref:reference.adoc#_exporter_libraries_and_modules[Clojure wrapped versions of exporters supported by autoconfiguation].
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various xref:concepts.adoc#_resources[resources] to add to telemetry data
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
