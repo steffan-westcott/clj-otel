@@ -1,5 +1,8 @@
 = Reference
 
+Click on the `clojars` / `maven-central` badges for dependency co-ordinates.
+The `cljdoc` badges are links to the Clojure module documentation.
+
 == `clj-otel-api`
 
 image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api] image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-api[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api]
@@ -38,43 +41,44 @@ image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-sdk-extensio
 [#_exporter_libraries_and_modules]
 == Exporter libraries and modules
 
-These are optional exporters used with the OpenTelemetry SDK, when the SDK is either autoconfigured or programmatically configured.Use the xref:guides.adoc#_run_with_autoconfigured_sdk[Java libraries for autoconfiguration], or xref:guides.adoc#_run_with_programmatically_configured_sdk[Clojure modules for programmatic configuration].
+These are optional exporters used with the OpenTelemetry SDK, when the SDK is either autoconfigured or programmatically configured.
+Use the xref:guides.adoc#_run_with_autoconfigured_sdk[Java libraries for autoconfiguration] or xref:guides.adoc#_run_with_programmatically_configured_sdk[Clojure modules for programmatic configuration].
 
 |===
 |Java library |Clojure module |Purpose
 
-|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp-trace[Maven Central]
+|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp-trace[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-otlp-trace]
 |image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace]
 |Programmatic configuration of span exporter using OTLP via gRPC
 
-|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp-http-trace[Maven Central]
+|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp-http-trace[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-otlp-http-trace]
 |image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace]
 |Programmatic configuration of span exporter using OTLP via HTTP
 
-|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-jaeger[Maven Central]
+|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-jaeger[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-jaeger]
 |image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc]
 |Programmatic configuration of span exporter to Jaeger using gRPC
 
-|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-jaeger-thrift[Maven Central]
+|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-jaeger-thrift[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-jaeger-thrift]
 |image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift]
 |Programmatic configuration of span exporter to Jaeger using Thrift
 
-|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-zipkin[Maven Central]
+|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-zipkin[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-zipkin]
 |image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-zipkin?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-zipkin]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-zipkin[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-zipkin]
 |Programmatic configuration of span exporter to Zipkin
 
-|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-logging[Maven Central]
+|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-logging[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-logging]
 |image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-logging?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-logging]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-logging[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-logging]
 |Programmatic configuration of exporters that log using `java.util.logging`.
 Intended for debugging only.
 
-|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-logging-otlp[Maven Central]
+|image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-logging-otlp[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-logging-otlp]
 |image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-logging-otlp?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-logging-otlp]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-logging-otlp[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-logging-otlp]
 |Programmatic configuration of exporters that log OTLP in JSON format using `java.util.logging`.
