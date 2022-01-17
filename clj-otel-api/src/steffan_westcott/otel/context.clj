@@ -1,7 +1,8 @@
 (ns steffan-westcott.otel.context
   "Functions for working with `io.opentelemetry.context.Context` objects."
   (:require [clojure.string :as str]
-            [steffan-westcott.otel.api.otel :as otel])
+            [steffan-westcott.otel.api.otel :as otel]
+            [steffan-westcott.otel.util :as util])
   (:import (java.util HashMap Map)
            (io.opentelemetry.context Context ContextKey ImplicitContextKeyed Scope)
            (io.opentelemetry.context.propagation TextMapSetter TextMapPropagator TextMapGetter)))
@@ -46,7 +47,7 @@
 (def ^:private context-key*
   (memoize
     (fn [k]
-      (ContextKey/named (name k)))))
+      (ContextKey/named (util/qualified-name k)))))
 
 (defn ^ContextKey context-key
   "Coerces k to a `ContextKey`."
