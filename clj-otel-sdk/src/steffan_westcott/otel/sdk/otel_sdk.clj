@@ -212,6 +212,3 @@
   (when-let [^SdkTracerProvider tracer-provider @sdk-tracer-provider]
     (.close tracer-provider)))
 
-(comment
-
-  )

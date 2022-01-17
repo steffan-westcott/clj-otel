@@ -6,9 +6,9 @@
 (defn span-exporter
   "Returns a span exporter that logs every span using `java.util.logging`."
   []
-  (LoggingSpanExporter.))
+  (LoggingSpanExporter/create))
 
 (defn metric-exporter
   "Returns a metric exporter that logs every metric using `java.util.logging`."
   []
-  (LoggingMetricExporter.))
+  (LoggingMetricExporter/create))
