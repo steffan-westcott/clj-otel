@@ -2,7 +2,13 @@
 
 image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars badge,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api] image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-api[cljdoc badge,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api] image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License] image:https://img.shields.io/badge/clojurians-observability-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/observability]
 
-`clj-otel` provides a *small idiomatic Clojure API* for adding *telemetry* to your libraries and applications using *OpenTelemetry*, an emerging standard for telemetry in cloud-native software, enabling effective *observability*.
+`clj-otel` provides a *small idiomatic Clojure API* for adding *telemetry* to your libraries and applications using https://opentelemetry.io/[*OpenTelemetry*], an emerging standard for telemetry in cloud-native software, enabling effective *observability*.
+
+.A distributed trace displayed in https://www.honeycomb.io/[Honeycomb]
+image::doc/images/honeycomb-trace.png[Trace displayed in Honeycomb backend,width=500,link="doc/images/honeycomb-trace.png"]
+
+.Exploring microservice dependencies with https://lightstep.com/[Lightstep]
+image::doc/images/lightstep-service-diagram.png[Microservice dependencies displayed in Lightstep,width=500,link="doc/images/lightstep-service-diagram.png"]
 
 == Requirements
 
@@ -23,7 +29,7 @@ More in-depth information on `clj-otel` can be found in the xref:_documentation[
 {;; ...
  :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0"}}}
 ----
-** Use Clojure functions such as `steffan-westcott.clj-otel.api.trace.span/with-span!` to create spans with attributes
+** Use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
 +
 [source,clojure]
 ----
@@ -35,7 +41,7 @@ More in-depth information on `clj-otel` can be found in the xref:_documentation[
 
 * To export telemetry data (from both manual and automatic instrumentation) from an application at runtime
 ** Download the latest OpenTelemetry instrumentation JAR `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[OpenTelemetry instrumentation agent releases page].
-** Add the following JVM options to your application, assuming export to Jaeger:
+** Add the following JVM options to your application, assuming export to https://www.jaegertracing.io/[Jaeger]:
 +
 ----
 "-javaagent:opentelemetry-javaagent.jar"
