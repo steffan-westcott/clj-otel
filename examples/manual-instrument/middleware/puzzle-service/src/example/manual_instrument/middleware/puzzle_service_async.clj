@@ -10,9 +10,9 @@
             [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
-            [steffan-westcott.otel.api.trace.http :as trace-http]
-            [steffan-westcott.otel.api.trace.span :as span]
-            [steffan-westcott.otel.context :as context])
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]
+            [steffan-westcott.clj-otel.api.trace.span :as span]
+            [steffan-westcott.clj-otel.context :as context])
   (:import (clojure.lang PersistentQueue)))
 
 

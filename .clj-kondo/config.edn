@@ -1,14 +1,14 @@
 {:config-paths ["com.github.steffan-westcott/clj-otel-api"]
  :lint-as      {example.common-utils.core-async/<with-span-binding clojure.core/let}
  :linters      {:consistent-alias
-                {:aliases {clojure.core.async                   async
-                           clojure.string                       str
-                           steffan-westcott.otel.api.attributes attr
-                           steffan-westcott.otel.api.baggage    baggage
-                           steffan-westcott.otel.api.otel       otel
-                           steffan-westcott.otel.sdk.otel-sdk   sdk
-                           steffan-westcott.otel.api.trace.http trace-http
-                           steffan-westcott.otel.api.trace.span span
-                           steffan-westcott.otel.context        context}}
+                {:aliases {clojure.core.async                       async
+                           clojure.string                           str
+                           steffan-westcott.clj-otel.api.attributes attr
+                           steffan-westcott.clj-otel.api.baggage    baggage
+                           steffan-westcott.clj-otel.api.otel       otel
+                           steffan-westcott.clj-otel.sdk.otel-sdk   sdk
+                           steffan-westcott.clj-otel.api.trace.http trace-http
+                           steffan-westcott.clj-otel.api.trace.span span
+                           steffan-westcott.clj-otel.context        context}}
                 :unsorted-required-namespaces {:level :warning}
                 :missing-docstring            {:level :warning}}}

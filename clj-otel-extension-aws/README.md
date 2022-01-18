@@ -1,1 +1,0 @@
-# clj-otel-extension-aws

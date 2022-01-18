@@ -3,8 +3,8 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.params :as params]
             [ring.util.response :as response]
-            [steffan-westcott.otel.api.trace.http :as trace-http]
-            [steffan-westcott.otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defonce ^{:doc "Counter state"} counter

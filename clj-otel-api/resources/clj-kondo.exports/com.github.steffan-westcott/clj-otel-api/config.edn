@@ -1,1 +1,1 @@
-{:lint-as {steffan-westcott.otel.api.trace.span/with-span-binding clojure.core/let}}
+{:lint-as {steffan-westcott.clj-otel.api.trace.span/with-span-binding clojure.core/let}}

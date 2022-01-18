@@ -1,7 +1,7 @@
 (ns example.common-utils.core-async
   (:require [clojure.core.async :as async]
             [ring.util.response :as response]
-            [steffan-westcott.otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn throwable?

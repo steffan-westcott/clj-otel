@@ -1,5 +1,5 @@
 (ns example.auto-sdk-config
-  (:require [steffan-westcott.otel.api.trace.span :as span]))
+  (:require [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn square
