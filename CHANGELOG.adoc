@@ -1,1 +1,7 @@
-= Change Log
+= Changelog
+
+All `clj-otel-*` module versions are released in lockstep to Clojars.
+
+== Under development
+
+- Initial release
