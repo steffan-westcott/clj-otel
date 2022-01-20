@@ -1,0 +1,7 @@
+= `clj-otel-extension-trace-propagators`
+
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-extension-trace-propagators?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-extension-trace-propagators] image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-extension-trace-propagators[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-extension-trace-propagators] image:https://img.shields.io/badge/changelog-0.1.0-red[changelog,link=../CHANGELOG.adoc] image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License] image:https://img.shields.io/badge/clojurians-observability-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/observability]
+
+Clojure wrapper of OpenTelemetry extension trace propagators
+
+This is a Clojure module which is part of the umbrella project `clj-otel`. For more information, see xref:../README.adoc[introduction to `clj-otel`].
