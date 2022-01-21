@@ -4,4 +4,4 @@ image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exte
 
 Clojure wrapper of OpenTelemetry API extensions for AWS
 
-This is a Clojure module which is part of the umbrella project `clj-otel`. For more information, see xref:../README.adoc[introduction to `clj-otel`].
+This is an optional Clojure module which is part of the umbrella project `clj-otel`. For more information, see xref:../README.adoc[introduction to `clj-otel`].
