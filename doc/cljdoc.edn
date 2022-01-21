@@ -1,8 +1,23 @@
-{:cljdoc.doc/tree                         [["Introduction" {:file "README.adoc"}]
-                                           ["Tutorial" {:file "doc/tutorial.adoc"}]
-                                           ["Guides" {:file "doc/guides.adoc"}]
-                                           ["API & Reference" {:file "doc/reference.adoc"}]
-                                           ["Concepts" {:file "doc/concepts.adoc"}]
-                                           ["Examples" {:file "doc/examples.adoc"}]
-                                           ["Changelog" {:file "CHANGELOG.adoc"}]]
- com.github.steffan-westcott/clj-otel-sdk {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk/README.adoc"}]]}}
+{:cljdoc.doc/tree                                                         [["Introduction" {:file "README.adoc"}]
+                                                                           ["Tutorial" {:file "doc/tutorial.adoc"}]
+                                                                           ["Guides" {:file "doc/guides.adoc"}]
+                                                                           ["API & Reference" {:file "doc/reference.adoc"}]
+                                                                           ["Concepts" {:file "doc/concepts.adoc"}]
+                                                                           ["Examples" {:file "doc/examples.adoc"}]
+                                                                           ["Changelog" {:file "CHANGELOG.adoc"}]]
+ com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc                {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-jaeger-grpc/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift              {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-jaeger-thrift/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-logging                    {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-logging/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-logging-otlp               {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-logging-otlp/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-metrics          {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-otlp-grpc-metrics/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace            {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-otlp-grpc-trace/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-otlp-http-metrics          {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-otlp-http-metrics/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace            {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-otlp-http-trace/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-prometheus                 {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-prometheus/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-exporter-zipkin                     {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-zipkin/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-extension-aws                       {:cljdoc.doc/tree [["README" {:file "clj-otel-extension-aws/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-extension-trace-propagators         {:cljdoc.doc/tree [["README" {:file "clj-otel-extension-trace-propagators/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-sdk                                 {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-sdk-extension-aws                   {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-aws/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-jaeger-remote-sampler/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-sdk-extension-resources             {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-resources/README.adoc"}]]}}
