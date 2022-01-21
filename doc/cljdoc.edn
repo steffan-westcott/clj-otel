@@ -1,7 +1,8 @@
-{:cljdoc.doc/tree [["Introduction" {:file "README.adoc"}]
-                   ["Tutorial" {:file "doc/tutorial.adoc"}]
-                   ["Guides" {:file "doc/guides.adoc"}]
-                   ["API & Reference" {:file "doc/reference.adoc"}]
-                   ["Concepts" {:file "doc/concepts.adoc"}]
-                   ["Examples" {:file "doc/examples.adoc"}]
-                   ["Changelog" {:file "CHANGELOG.adoc"}]]}
+{:cljdoc.doc/tree                         [["Introduction" {:file "README.adoc"}]
+                                           ["Tutorial" {:file "doc/tutorial.adoc"}]
+                                           ["Guides" {:file "doc/guides.adoc"}]
+                                           ["API & Reference" {:file "doc/reference.adoc"}]
+                                           ["Concepts" {:file "doc/concepts.adoc"}]
+                                           ["Examples" {:file "doc/examples.adoc"}]
+                                           ["Changelog" {:file "CHANGELOG.adoc"}]]
+ com.github.steffan-westcott/clj-otel-sdk {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk/README.adoc"}]]}}
