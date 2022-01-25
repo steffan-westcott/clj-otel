@@ -52,22 +52,33 @@
 
 (def project-paths (concat artifact-ids example-paths))
 
-(defn- jar+install [artifact-id opts]
-  (println "\nProcessing artifact" artifact-id)
+(defn- jar* [artifact-id opts]
   (b/set-project-root! artifact-id)
   (-> opts
       (assoc :lib (symbol group-id artifact-id)
              :version version
              :src-pom "template/pom.xml")
       cb/clean
-      cb/jar
-      cb/install))
+      cb/jar))
+
+(defn- install* [artifact-id opts]
+  (cb/install (jar* artifact-id opts))
+  (println "Installed" artifact-id))
+
+(defn- deploy* [artifact-id opts]
+  (cb/deploy (jar* artifact-id opts))
+  (println "Deployed" artifact-id))
 
 (defn install
   "Build all clj-otel-* library JAR files and install them in the local Maven
   repository."
   [opts]
-  (doall (map #(jar+install % opts) artifact-ids)))
+  (doall (map #(install* % opts) artifact-ids)))
+
+(defn deploy
+  "Build all clj-otel-* library JAR files and deploy them to Clojars."
+  [opts]
+  (doall (map #(deploy* % opts) artifact-ids)))
 
 (defn lint
   "Lint all clj-otel-* libraries, example applications and tutorial source
