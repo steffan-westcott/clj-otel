@@ -41,7 +41,7 @@ In your favourite development environment, create a project with these two files
 {:paths ["src"]
 
  :deps  {org.clojure/clojure     {:mvn/version "1.10.3"}
-         ring/ring-jetty-adapter {:mvn/version "1.9.4"}}}
+         ring/ring-jetty-adapter {:mvn/version "1.9.5"}}}
 ----
 
 .`./src/tutorial/counter_service.clj`
@@ -136,7 +136,7 @@ Add an alias `:otel`:
 {:paths   ["src"]
 
  :deps    {org.clojure/clojure     {:mvn/version "1.10.3"}
-           ring/ring-jetty-adapter {:mvn/version "1.9.4"}}
+           ring/ring-jetty-adapter {:mvn/version "1.9.5"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"
@@ -180,7 +180,7 @@ First, add a dependency `com.github.steffan-westcott/clj-otel-api`:
 {:paths   ["src"]
 
  :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
-           ring/ring-jetty-adapter                  {:mvn/version "1.9.4"}
+           ring/ring-jetty-adapter                  {:mvn/version "1.9.5"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
