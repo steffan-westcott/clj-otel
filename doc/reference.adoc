@@ -1,5 +1,12 @@
 = API & Reference
 :icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
 
 All `clj-otel` modules and API documentation are hosted on https://clojars.org/[Clojars] and https://cljdoc.org/[cljdoc].
 Click on the `clojars` and `cljdoc` badges below to see further information.

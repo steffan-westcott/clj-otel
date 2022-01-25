@@ -2,6 +2,13 @@
 :toc:
 :toc-placement!:
 :icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
 
 In this tutorial, you will add trace telemetry to a Clojure HTTP server application and view the traces in https://www.jaegertracing.io/[Jaeger], a telemetry backend.
 
