@@ -5,10 +5,10 @@ image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?
 `clj-otel` provides a *small idiomatic Clojure API* for adding *telemetry* to your libraries and applications using https://opentelemetry.io/[*OpenTelemetry*], an emerging standard for telemetry in cloud-native software, enabling effective *observability*.
 
 .A distributed trace displayed in https://www.honeycomb.io/[Honeycomb]
-image::doc/images/honeycomb-trace.png[Distributed trace displayed in Honeycomb,width=500,link="doc/images/honeycomb-trace.png"]
+image::doc/images/honeycomb-trace.png[Distributed trace displayed in Honeycomb,width=500,link="doc/images/honeycomb-trace.png?raw=true"]
 
 .Exploring microservice dependencies with https://lightstep.com/[Lightstep]
-image::doc/images/lightstep-service-diagram.png[Microservice dependencies displayed in Lightstep,width=500,link="doc/images/lightstep-service-diagram.png"]
+image::doc/images/lightstep-service-diagram.png[Microservice dependencies displayed in Lightstep,width=500,link="doc/images/lightstep-service-diagram.png?raw=true"]
 
 == Requirements
 
