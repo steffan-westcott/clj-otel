@@ -52,6 +52,8 @@
 
 (def project-paths (concat artifact-ids example-paths))
 
+(def group-artifact-ids (map #(str group-id "/" %) artifact-ids))
+
 (defn- jar* [artifact-id opts]
   (b/set-project-root! artifact-id)
   (-> opts
@@ -91,6 +93,8 @@
   "Check all clj-otel-* libraries, example applications and tutorials for
   outdated dependencies using antq."
   [_opts]
-  (cb/run-task {:main-opts ["--directory" (str/join ":" project-paths) "--skip" "pom"]}
+  (cb/run-task {:main-opts ["--directory" (str/join ":" project-paths)
+                            "--skip" "pom"
+                            "--exclude" (str/join ":" group-artifact-ids)]}
                [:antq]))
 
