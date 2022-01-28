@@ -17,6 +17,7 @@
 
 (def version "0.1.0-SNAPSHOT")
 
+;; Later artifacts in this vector may depend on earlier artifacts
 (def artifact-ids ["clj-otel-api"
                    "clj-otel-sdk"
                    "clj-otel-sdk-extension-aws"
@@ -52,9 +53,12 @@
 
 (def project-paths (concat artifact-ids example-paths))
 
-(def group-artifact-ids (map #(str group-id "/" %) artifact-ids))
+(defn group-artifact-id [artifact-id]
+  (str group-id "/" artifact-id))
 
-(defn- jar* [artifact-id opts]
+(def group-artifact-ids (map group-artifact-id artifact-ids))
+
+(defn- jar* [opts artifact-id]
   (b/set-project-root! artifact-id)
   (-> opts
       (assoc :lib (symbol group-id artifact-id)
@@ -63,38 +67,48 @@
       cb/clean
       cb/jar))
 
-(defn- install* [artifact-id opts]
-  (cb/install (jar* artifact-id opts))
-  (println "Installed" artifact-id))
+(defn- install* [opts artifact-id]
+  (let [opts' (jar* opts artifact-id)]
+    (println (str "Installing " (group-artifact-id artifact-id) "..."))
+    (cb/install opts')))
 
-(defn- deploy* [artifact-id opts]
-  (cb/deploy (jar* artifact-id opts))
-  (println "Deployed" artifact-id))
+(defn- deploy* [opts artifact-id]
+  (let [opts' (install* opts artifact-id)]
+    (println (str "Deploying " (group-artifact-id artifact-id) "..."))
+    (cb/deploy opts')))
 
 (defn install
-  "Build all clj-otel-* library JAR files and install them in the local Maven
-  repository."
+  "Ensure all clj-otel-* library JAR files are built and installed in the local
+  Maven repository. The libraries are processed in an order such that later
+  libraries may depend on earlier ones."
   [opts]
-  (doall (map #(install* % opts) artifact-ids)))
+  (doseq [artifact-id artifact-ids]
+    (install* opts artifact-id)))
 
 (defn deploy
-  "Build all clj-otel-* library JAR files and deploy them to Clojars."
+  "Ensure all clj-otel-* library JAR files are built, installed in the local
+  Maven repository and deployed to Clojars. The libraries are processed in an
+  order such that later libraries may depend on earlier ones."
   [opts]
-  (doall (map #(deploy* % opts) artifact-ids)))
+  (doseq [artifact-id artifact-ids]
+    (deploy* opts artifact-id)))
 
 (defn lint
   "Lint all clj-otel-* libraries, example applications and tutorial source
   files using clj-kondo."
-  [_opts]
+  [opts]
   (let [src-paths (map #(str % "/src") project-paths)]
-    (b/process {:command-args (concat ["clj-kondo" "--lint"] src-paths)})))
+    (-> opts
+        (assoc :command-args (concat ["clj-kondo" "--lint"] src-paths))
+        b/process)))
 
 (defn outdated
   "Check all clj-otel-* libraries, example applications and tutorials for
-  outdated dependencies using antq."
-  [_opts]
-  (cb/run-task {:main-opts ["--directory" (str/join ":" project-paths)
-                            "--skip" "pom"
-                            "--exclude" (str/join ":" group-artifact-ids)]}
-               [:antq]))
-
+  outdated dependencies using antq. Dependencies on clj-otel-* libraries are
+  not checked, as they are not available until after deployment."
+  [opts]
+  (-> opts
+      (assoc :main-opts ["--directory" (str/join ":" project-paths)
+                         "--skip" "pom"
+                         "--exclude" (str/join ":" group-artifact-ids)])
+      (cb/run-task [:antq])))
