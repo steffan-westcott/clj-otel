@@ -12,9 +12,9 @@
 
   | key                       | description |
   |---------------------------|-------------|
-  |`:endpoint`                | OTLP endpoint, used with the default channel. Must start with `\"http://\"` or `\"https://\"` (default: `\"http://localhost:4317\"`).
-  |`:headers`                 | HTTP headers to add to request, used with the default channel (default: `{}`).
-  |`:trusted-certificates-pem`| `^bytes` X.509 certificate chain in PEM format, used with the default channel (default: system default trusted certificates).
+  |`:endpoint`                | OTLP endpoint, must start with `\"http://\"` or `\"https://\"` (default: `\"http://localhost:4317\"`).
+  |`:headers`                 | HTTP headers to add to request (default: `{}`).
+  |`:trusted-certificates-pem`| `^bytes` X.509 certificate chain in PEM format (default: system default trusted certificates).
   |`:compression-method`      | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
   |`:timeout`                 | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s)."
   ([]
