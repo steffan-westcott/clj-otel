@@ -29,11 +29,8 @@
                    "clj-otel-exporter-jaeger-thrift"
                    "clj-otel-exporter-logging"
                    "clj-otel-exporter-logging-otlp"
-                   "clj-otel-exporter-otlp-grpc-metrics"
                    "clj-otel-exporter-otlp-grpc-trace"
-                   "clj-otel-exporter-otlp-http-metrics"
                    "clj-otel-exporter-otlp-http-trace"
-                   "clj-otel-exporter-prometheus"
                    "clj-otel-exporter-zipkin"])
 
 (def example-paths ["examples/auto-instrument-agent/interceptor/planet-service"
