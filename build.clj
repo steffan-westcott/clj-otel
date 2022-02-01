@@ -15,7 +15,7 @@
 
 (def group-id "com.github.steffan-westcott")
 
-(def version "0.1.0-SNAPSHOT")
+(def deploy-version "0.1.0")
 
 ;; Later artifacts in this vector may depend on earlier artifacts
 (def artifact-ids ["clj-otel-api"
@@ -55,12 +55,16 @@
 
 (def group-artifact-ids (map group-artifact-id artifact-ids))
 
-(defn- jar* [opts artifact-id]
+(defn- version [{:keys [snapshot?]}]
+  (str deploy-version (when snapshot? "-SNAPSHOT")))
+
+(defn- jar* [{:keys [snapshot?] :as opts} artifact-id]
   (b/set-project-root! artifact-id)
   (-> opts
       (assoc :lib (symbol group-id artifact-id)
-             :version version
-             :src-pom "template/pom.xml")
+             :version (version opts)
+             :src-pom "template/pom.xml"
+             :basis (b/create-basis {:aliases (when snapshot? [:snapshot])}))
       cb/clean
       cb/jar))
 
