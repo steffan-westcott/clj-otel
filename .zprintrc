@@ -1,0 +1,40 @@
+{:style [:community :justified :map-nl :pair-nl :binding-nl :respect-bl]
+ :width 100
+ :map {:comma?    false
+       :sort?     false
+       :force-nl? true}
+ :pair {:force-nl? true}
+ :fn-force-nl #{:arg1-body :arg2 :binding :fn}
+ :fn-map
+ {;; clojure.core and special forms
+  "defn"
+  [:arg1-body
+   {:next-inner {:list {:respect-nl? true}
+                 :next-inner-restore [[:list :respect-nl?]]}}]
+
+  "fn"
+  [:fn
+   {:next-inner {:list {:respect-nl? true}
+                 :next-inner-restore [[:list :respect-nl?]]}}]
+
+  "do" :flow-body
+  "try" :flow-body
+  "finally" :flow-body
+
+  ;; clj-otel-api
+  "with-context!" :arg1-body
+  "with-value!" :arg1-body
+  "with-span!" :arg1-body
+  "with-span-binding" :binding
+
+  ;; examples
+  "catch-all" :flow-body
+  "go-try" :flow-body
+  "catch-response" :arg1-body
+  "go-try-response" :arg1-body
+  "<with-span-binding" :binding
+
+  ;; core.async
+  "async/alt!" :pair-fn
+  "async/go" :flow-body
+  "async/go-loop" :binding}}
