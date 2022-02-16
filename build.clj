@@ -3,9 +3,9 @@
 (ns build
   "Build scripts for clj-otel-* libraries, examples and tutorials.
 
-  To install all clj-otel-* libraries:
+  For example, to lint all clj-otel-* libraries:
 
-  clojure -T:build install
+  clojure -T:build lint
 
   To see a description of all build scripts:
 
@@ -20,7 +20,7 @@
 (def ^:private group-id
   "com.github.steffan-westcott")
 
-(def ^:private deploy-version
+(def ^:private base-version
   "0.1.0")
 
 ;; Later artifacts in this vector may depend on earlier artifacts
@@ -68,7 +68,7 @@
 
 (defn- version
   [{:keys [snapshot?]}]
-  (str deploy-version
+  (str base-version
        (when snapshot?
          "-SNAPSHOT")))
 
@@ -131,7 +131,9 @@
 (defn install
   "Ensure all clj-otel-* library JAR files are built and installed in the local
   Maven repository. The libraries are processed in an order such that later
-  libraries may depend on earlier ones."
+  libraries may depend on earlier ones. `opts` is an option map that may take
+  option `:snapshot?`, where true indicates the installed JARs should be
+  `-SNAPSHOT` versions."
   [opts]
   (doseq [artifact-id artifact-ids]
     (install-artifact opts artifact-id)))
@@ -139,14 +141,17 @@
 (defn deploy
   "Ensure all clj-otel-* library JAR files are built, installed in the local
   Maven repository and deployed to Clojars. The libraries are processed in an
-  order such that later libraries may depend on earlier ones."
+  order such that later libraries may depend on earlier ones. `opts` is an
+  option map that may take option `:snapshot?`, where true indicates the
+  installed and deployed JARs should be `-SNAPSHOT` versions."
   [opts]
   (doseq [artifact-id artifact-ids]
     (deploy-artifact opts artifact-id)))
 
 (defn lint
   "Lint all clj-otel-* libraries, example applications and tutorial source
-  files using clj-kondo. Assumes a working installation of `clj-kondo` binary."
+  files using clj-kondo. Assumes a working installation of `clj-kondo`
+  executable binary."
   [opts]
   (let [src-paths (map #(str % "/src") project-paths)]
     (-> opts

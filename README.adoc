@@ -119,6 +119,34 @@ I will be happy to consider pull requests for minor changes, but larger or struc
 
 For questions or feedback on `clj-otel`, I can be contacted on `#observability` channel on http://clojurians.net/[Clojurians Slack], user `steffan`.
 
+== Development
+
+=== Requirements
+
+The following tools should be installed:
+
+* https://clojure.org/guides/deps_and_cli[Clojure CLI tools]
+* https://github.com/clj-kondo/clj-kondo/blob/master/doc/install.md[`clj-kondo` executable binary]
+* https://github.com/kkinnear/zprint#get-zprint[`zprint` executable binary]
+
+=== Developing
+
+* Enable the `:dev` alias in any REPL session to ensure dependencies on `clj-otel-*` modules use `:local/root` versions.
+This enables development of the modules and their dependents without the need to install the modules for each change to take effect.
+* Use the following command to get information on available build scripts:
++
+[source,bash]
+----
+clojure -A:deps -T:build help/doc
+----
+* Before making any pull requests, please ensure the source code has been linted and formatted:
++
+[source,bash]
+----
+clojure -T:build lint
+clojure -T:build fmt
+----
+
 == Acknowledgements
 
 I would like to give thanks:
