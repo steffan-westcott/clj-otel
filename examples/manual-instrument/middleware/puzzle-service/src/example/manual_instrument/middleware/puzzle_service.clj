@@ -37,11 +37,11 @@
 (defn get-random-word
   "Get a random word string of the requested type."
   [word-type]
-  (let [response (client-request {:method           :get
-                                  :url              "http://localhost:8081/random-word"
-                                  :query-params     {"type" (name word-type)}
+  (let [response (client-request {:method       :get
+                                  :url          "http://localhost:8081/random-word"
+                                  :query-params {"type" (name word-type)}
                                   :throw-exceptions false})
-        status (:status response)]
+        status   (:status response)]
     (if (= 200 status)
       (:body response)
       (throw (ex-info (str status " HTTP response")
@@ -70,7 +70,10 @@
                     :attributes {:word word}}
 
     (Thread/sleep 5)
-    (let [scrambled-word (->> word seq shuffle (apply str))]
+    (let [scrambled-word (->> word
+                              seq
+                              shuffle
+                              (apply str))]
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:attributes {:scrambled scrambled-word}})
@@ -103,14 +106,15 @@
   (trace-http/add-route-data! "/puzzle")
 
   (let [word-types (map keyword (str/split (get query-params "types") #","))
-        puzzle (generate-puzzle word-types)]
+        puzzle     (generate-puzzle word-types)]
     (response/response puzzle)))
 
 
 
 (defn handler
   "Synchronous Ring handler for all requests."
-  [{:keys [request-method uri] :as request}]
+  [{:keys [request-method uri]
+    :as   request}]
   (case [request-method uri]
     [:get "/puzzle"] (get-puzzle-handler request)
     (response/not-found "Not found")))
@@ -132,4 +136,6 @@
 
 
 (defonce ^{:doc "puzzle-service server instance"} server
-         (jetty/run-jetty #'service {:port 8080 :join? false}))
+         (jetty/run-jetty #'service
+                          {:port  8080
+                           :join? false}))

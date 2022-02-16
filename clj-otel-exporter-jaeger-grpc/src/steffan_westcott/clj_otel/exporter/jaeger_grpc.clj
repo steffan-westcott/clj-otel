@@ -16,7 +16,7 @@
    (span-exporter {}))
   ([{:keys [endpoint trusted-certificates-pem timeout]}]
    (let [builder (cond-> (JaegerGrpcSpanExporter/builder)
-                         endpoint (.setEndpoint endpoint)
-                         trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
-                         timeout (.setTimeout (util/duration timeout)))]
+                   endpoint (.setEndpoint endpoint)
+                   trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
+                   timeout  (.setTimeout (util/duration timeout)))]
      (.build builder))))

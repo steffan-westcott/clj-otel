@@ -13,15 +13,24 @@
 
 (def planet-metrics
   "Map of planets and their metric values. Saturn is missing some data."
-  {:mercury {:diameter 4879 :gravity 3.7}
-   :venus   {:diameter 12104 :gravity 8.9}
-   :earth   {:diameter 12756 :gravity 9.8}
-   :mars    {:diameter 6792 :gravity 3.7}
-   :jupiter {:diameter 142984 :gravity 23.1}
-   :saturn  {:diameter 120536 :gravity nil}                 ; missing gravity data
-   :uranus  {:diameter 51118 :gravity 8.7}
-   :neptune {:diameter 49528 :gravity 11.0}
-   :pluto   {:diameter 2370 :gravity 0.7}})
+  {:mercury {:diameter 4879
+             :gravity  3.7}
+   :venus   {:diameter 12104
+             :gravity  8.9}
+   :earth   {:diameter 12756
+             :gravity  9.8}
+   :mars    {:diameter 6792
+             :gravity  3.7}
+   :jupiter {:diameter 142984
+             :gravity  23.1}
+   :saturn  {:diameter 120536
+             :gravity  nil}                 ; missing gravity data
+   :uranus  {:diameter 51118
+             :gravity  8.7}
+   :neptune {:diameter 49528
+             :gravity  11.0}
+   :pluto   {:diameter 2370
+             :gravity  0.7}})
 
 
 
@@ -31,7 +40,8 @@
 
   ;; Wrap the synchronous body in a new internal span.
   (span/with-span! {:name       "Fetching data"
-                    :attributes {:the-planet planet :the-metric metric}}
+                    :attributes {:the-planet planet
+                                 :the-metric metric}}
 
     (Thread/sleep 50)
     (let [path [planet metric]]
@@ -79,23 +89,22 @@
   "Interceptors for all routes."
   (conj
 
-    ;; As this application is run with the OpenTelemetry instrumentation agent,
-    ;; a server span will be provided by the agent and there is no need to
-    ;; create another one.
-    (trace-http/server-span-interceptors {:create-span? false
-                                          :server-name  "planet"})
+   ;; As this application is run with the OpenTelemetry instrumentation agent,
+   ;; a server span will be provided by the agent and there is no need to
+   ;; create another one.
+   (trace-http/server-span-interceptors {:create-span? false
+                                         :server-name  "planet"})
 
-    (interceptor/exception-response-interceptor)))
+   (interceptor/exception-response-interceptor)))
 
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes
-    [[["/" root-interceptors
-       ["/planets/:planet/:metric"
-        ^:constraints {:planet (re-pattern (str/join "|" (map name (keys planet-metrics))))
-                       :metric #"diameter|gravity"}
-        {:get 'get-planet-metric-handler}]]]]))
+  (route/expand-routes [[["/" root-interceptors
+                          ["/planets/:planet/:metric"
+                           ^:constraints
+                           {:planet (re-pattern (str/join "|" (map name (keys planet-metrics))))
+                            :metric #"diameter|gravity"} {:get 'get-planet-metric-handler}]]]]))
 
 
 (def service-map
@@ -107,5 +116,5 @@
 
 
 
-(defonce ^{:doc "planet-service server instance"}
-         server (http/start (http/create-server service-map)))
+(defonce ^{:doc "planet-service server instance"} server
+         (http/start (http/create-server service-map)))

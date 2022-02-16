@@ -27,24 +27,21 @@
 (defn- attribute-type-of
   "Returns `AttributeType` inferred from type of `x`."
   [x]
-  (cond
-    (map? x) AttributeType/STRING
-    (coll? x) (cond
-                (every? boolean? x) AttributeType/BOOLEAN_ARRAY
-                (every? integer? x) AttributeType/LONG_ARRAY
-                (every? number? x) AttributeType/DOUBLE_ARRAY
-                :else AttributeType/STRING_ARRAY)
-    (boolean? x) AttributeType/BOOLEAN
-    (integer? x) AttributeType/LONG
-    (number? x) AttributeType/DOUBLE
-    :else AttributeType/STRING))
+  (cond (map? x)     AttributeType/STRING
+        (coll? x)    (cond (every? boolean? x) AttributeType/BOOLEAN_ARRAY
+                           (every? integer? x) AttributeType/LONG_ARRAY
+                           (every? number? x)  AttributeType/DOUBLE_ARRAY
+                           :else               AttributeType/STRING_ARRAY)
+        (boolean? x) AttributeType/BOOLEAN
+        (integer? x) AttributeType/LONG
+        (number? x)  AttributeType/DOUBLE
+        :else        AttributeType/STRING))
 
 (def ^:private attribute-key
   "Function that returns a (memoized) `AttributeKey` for an attribute with
   the given type and key name."
-  (memoize
-    (fn [attribute-type k]
-      ((get type->keyfn attribute-type) k))))
+  (memoize (fn [attribute-type k]
+             ((get type->keyfn attribute-type) k))))
 
 (defn- attribute-value
   "Coerce `v` to a value of the given attribute type."

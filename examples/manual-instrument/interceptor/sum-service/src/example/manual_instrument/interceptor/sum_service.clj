@@ -46,13 +46,17 @@
     ; Add data describing matched route to server span.
     (trace-http/add-route-data! "/sum")
 
-    (let [num-str (get query-params :nums)
-          num-strs (->> (str/split num-str #",") (map str/trim) (filter seq))
-          nums (map #(Integer/parseInt %) num-strs)]
+    (let [num-str  (get query-params :nums)
+          num-strs (->> (str/split num-str #",")
+                        (map str/trim)
+                        (filter seq))
+          nums     (map #(Integer/parseInt %) num-strs)]
 
       ;; Simulate a client error when first number argument is zero.
       (if (= 0 (first nums))
-        (throw (ex-info "Zero argument" {:status 400 :error ::zero-argument}))
+        (throw (ex-info "Zero argument"
+                        {:status 400
+                         :error  ::zero-argument}))
         (response/response (str (sum nums)))))))
 
 
@@ -61,23 +65,21 @@
   "Interceptors for all routes."
   (conj
 
-    ;; As this application is not run with the OpenTelemetry instrumentation
-    ;; agent, create a server span for each request. Because all request
-    ;; processing for this service is synchronous, the current context is set
-    ;; for each request.
-    (trace-http/server-span-interceptors {:create-span?         true
-                                          :set-current-context? true
-                                          :server-name          "sum"})
+   ;; As this application is not run with the OpenTelemetry instrumentation
+   ;; agent, create a server span for each request. Because all request
+   ;; processing for this service is synchronous, the current context is set
+   ;; for each request.
+   (trace-http/server-span-interceptors {:create-span?         true
+                                         :set-current-context? true
+                                         :server-name          "sum"})
 
-    (interceptor/exception-response-interceptor)))
+   (interceptor/exception-response-interceptor)))
 
 
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes
-    [[["/" root-interceptors
-       ["/sum" {:get 'get-sum-handler}]]]]))
+  (route/expand-routes [[["/" root-interceptors ["/sum" {:get 'get-sum-handler}]]]]))
 
 
 
@@ -90,5 +92,4 @@
 
 
 
-(defonce ^{:doc "sum-service server instance"} server
-         (http/start (http/create-server service-map)))
+(defonce ^{:doc "sum-service server instance"} server (http/start (http/create-server service-map)))

@@ -7,8 +7,7 @@
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(defonce ^{:doc "Counter state"} counter
-         (atom 0))
+(defonce ^{:doc "Counter state"} counter (atom 0))
 
 
 (defn wrap-exception
@@ -50,11 +49,12 @@
 
 (defn handler
   "Ring handler for all requests."
-  [{:keys [request-method uri] :as request}]
+  [{:keys [request-method uri]
+    :as   request}]
   (case [request-method uri]
     [:put "/reset"] (reset-count-handler request)
     [:get "/count"] (get-count-handler)
-    [:post "/inc"] (inc-count-handler)
+    [:post "/inc"]  (inc-count-handler)
     (response/not-found "Not found")))
 
 
@@ -67,4 +67,6 @@
 
 
 (defonce ^{:doc "counter-service server instance"} server
-         (jetty/run-jetty #'service {:port 8080 :join? false}))
+         (jetty/run-jetty #'service
+                          {:port  8080
+                           :join? false}))

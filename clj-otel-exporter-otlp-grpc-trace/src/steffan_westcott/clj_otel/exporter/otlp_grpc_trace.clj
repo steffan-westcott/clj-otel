@@ -3,7 +3,8 @@
   (:require [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.exporter.otlp.trace OtlpGrpcSpanExporter OtlpGrpcSpanExporterBuilder)))
 
-(defn- ^OtlpGrpcSpanExporterBuilder add-headers [builder headers]
+(defn- ^OtlpGrpcSpanExporterBuilder add-headers
+  [builder headers]
   (reduce-kv #(.addHeader ^OtlpGrpcSpanExporterBuilder %1 %2 %3) builder headers))
 
 (defn span-exporter
@@ -22,9 +23,9 @@
   ([{:keys [endpoint headers trusted-certificates-pem compression-method timeout]
      :or   {headers {}}}]
    (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
-                         endpoint (.setEndpoint endpoint)
-                         headers (add-headers headers)
-                         trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
-                         compression-method (.setCompression compression-method)
-                         timeout (.setTimeout (util/duration timeout)))]
+                   endpoint (.setEndpoint endpoint)
+                   headers  (add-headers headers)
+                   trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
+                   compression-method (.setCompression compression-method)
+                   timeout  (.setTimeout (util/duration timeout)))]
      (.build builder))))

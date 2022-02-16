@@ -37,11 +37,11 @@
 (defn get-sum
   "Get the sum of the nums."
   [nums]
-  (let [response (client-request {:method           :get
-                                  :url              "http://localhost:8081/sum"
-                                  :query-params     {"nums" (str/join "," nums)}
+  (let [response (client-request {:method       :get
+                                  :url          "http://localhost:8081/sum"
+                                  :query-params {"nums" (str/join "," nums)}
                                   :throw-exceptions false})
-        status (:status response)]
+        status   (:status response)]
     (if (= 200 status)
       (Integer/parseInt (:body response))
       (throw (ex-info (str status " HTTP response")
@@ -80,12 +80,14 @@
   "Calculates the averages of the odd numbers and the even numbers of nums and
   returns a channel of the result."
   [nums]
-  (let [odds (filter odd? nums)
-        evens (filter even? nums)
-        odds-average (when (seq odds) (average odds))
-        evens-average (when (seq evens) (average evens))
-        result {:odds  odds-average
-                :evens evens-average}]
+  (let [odds          (filter odd? nums)
+        evens         (filter even? nums)
+        odds-average  (when (seq odds)
+                        (average odds))
+        evens-average (when (seq evens)
+                        (average evens))
+        result        {:odds  odds-average
+                       :evens evens-average}]
 
     ;; Add event to span
     (span/add-span-data! {:event {:name       "Finished calculations"
@@ -104,10 +106,12 @@
     ; Add data describing matched route to the server span.
     (trace-http/add-route-data! "/average")
 
-    (let [num-str (get query-params :nums)
-          num-strs (->> (str/split num-str #",") (map str/trim) (filter seq))
-          nums (map #(Integer/parseInt %) num-strs)
-          avs (averages nums)]
+    (let [num-str  (get query-params :nums)
+          num-strs (->> (str/split num-str #",")
+                        (map str/trim)
+                        (filter seq))
+          nums     (map #(Integer/parseInt %) num-strs)
+          avs      (averages nums)]
       (response/response (str avs)))))
 
 
@@ -116,23 +120,21 @@
   "Interceptors for all routes."
   (conj
 
-    ;; As this application is not run with the OpenTelemetry instrumentation
-    ;; agent, create a server span for each request. Because all request
-    ;; processing for this service is synchronous, the current context is set
-    ;; for each request.
-    (trace-http/server-span-interceptors {:create-span?         true
-                                          :set-current-context? true
-                                          :server-name          "average"})
+   ;; As this application is not run with the OpenTelemetry instrumentation
+   ;; agent, create a server span for each request. Because all request
+   ;; processing for this service is synchronous, the current context is set
+   ;; for each request.
+   (trace-http/server-span-interceptors {:create-span?         true
+                                         :set-current-context? true
+                                         :server-name          "average"})
 
-    (interceptor/exception-response-interceptor)))
+   (interceptor/exception-response-interceptor)))
 
 
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes
-    [[["/" root-interceptors
-       ["/average" {:get 'get-averages-handler}]]]]))
+  (route/expand-routes [[["/" root-interceptors ["/average" {:get 'get-averages-handler}]]]]))
 
 
 

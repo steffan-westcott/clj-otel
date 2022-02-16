@@ -11,7 +11,8 @@
            (io.opentelemetry.semconv.trace.attributes SemanticAttributes)
            (io.opentelemetry.api OpenTelemetry)))
 
-(def ^:private default-library (get-in config [:defaults :instrumentation-library]))
+(def ^:private default-library
+  (get-in config [:defaults :instrumentation-library]))
 
 (defn get-tracer
   "Builds and returns a `io.opentelemetry.api.trace.Tracer` instance. May take
@@ -31,8 +32,8 @@
             schema-url (:schema-url default-library)}}]
    (let [^OpenTelemetry otel (or open-telemetry (otel/get-global-otel!))
          builder (cond-> (.tracerBuilder otel name)
-                         version (.setInstrumentationVersion version)
-                         schema-url (.setSchemaUrl schema-url))]
+                   version    (.setInstrumentationVersion version)
+                   schema-url (.setSchemaUrl schema-url))]
      (.build builder))))
 
 (defn noop-tracer
@@ -83,19 +84,20 @@
   ([]
    (get-span-context (get-span)))
   ([x]
-   (cond
-     (instance? SpanContext x) x
-     (instance? Span x) (.getSpanContext ^Span x)
-     (instance? Context x) (.getSpanContext (get-span ^Context x)))))
+   (cond (instance? SpanContext x) x
+         (instance? Span x)        (.getSpanContext ^Span x)
+         (instance? Context x)     (.getSpanContext (get-span ^Context x)))))
 
-(defn- add-link [^SpanBuilder builder [sc attributes]]
+(defn- add-link
+  [^SpanBuilder builder [sc attributes]]
   (if-let [span-context (get-span-context sc)]
     (if attributes
       (.addLink builder span-context (attr/->attributes attributes))
       (.addLink builder span-context))
     builder))
 
-(defn- ^SpanBuilder add-links [^SpanBuilder builder links]
+(defn- ^SpanBuilder add-links
+  [^SpanBuilder builder links]
   (reduce add-link builder links))
 
 (defn ^Context new-span!
@@ -121,26 +123,28 @@
            parent     (context/current)
            attributes {}
            thread     (Thread/currentThread)}}]
-  (let [tracer' (or tracer (get-default-tracer!))
+  (let [tracer'        (or tracer (get-default-tracer!))
         parent-context (or parent (context/root))
         default-attributes (if thread
                              {SemanticAttributes/THREAD_NAME (.getName thread)
                               SemanticAttributes/THREAD_ID   (.getId thread)}
                              {})
-        attributes' (merge default-attributes attributes)
-        builder (cond-> (.spanBuilder tracer' name)
-                        :always (.setParent parent-context)
-                        links (add-links links)
-                        :always (.setAllAttributes (attr/->attributes attributes'))
-                        span-kind (.setSpanKind (keyword->SpanKind span-kind))
-                        timestamp (as-> b (let [[amount unit] (util/timestamp timestamp)]
-                                            (.setStartTimestamp b amount unit))))
-        span (.startSpan builder)]
+        attributes'    (merge default-attributes attributes)
+        builder        (cond-> (.spanBuilder tracer' name)
+                         :always   (.setParent parent-context)
+                         links     (add-links links)
+                         :always   (.setAllAttributes (attr/->attributes attributes'))
+                         span-kind (.setSpanKind (keyword->SpanKind span-kind))
+                         timestamp (as-> b (let [[amount unit] (util/timestamp timestamp)]
+                                             (.setStartTimestamp b amount unit))))
+        span           (.startSpan builder)]
     (context/assoc-value parent-context span)))
 
 (defn- add-event!
-  [^Span span {:keys [^String name attributes timestamp]
-               :or   {name "" attributes {}}}]
+  [^Span span
+   {:keys [^String name attributes timestamp]
+    :or   {name       ""
+           attributes {}}}]
   (let [attrs (attr/->attributes attributes)]
     (if timestamp
       (let [[amount unit] (util/timestamp timestamp)]
@@ -148,10 +152,11 @@
       (.addEvent span name attrs))))
 
 (defn- add-ex-data!
-  [^Span span {:keys [exception escaping? attributes]
-               :or   {attributes {}}}]
+  [^Span span
+   {:keys [exception escaping? attributes]
+    :or   {attributes {}}}]
   (let [attrs (cond-> attributes
-                      (some? escaping?) (assoc SemanticAttributes/EXCEPTION_ESCAPED (boolean escaping?)))]
+                (some? escaping?) (assoc SemanticAttributes/EXCEPTION_ESCAPED (boolean escaping?)))]
     (.recordException span exception (attr/->attributes attrs))))
 
 (defn add-span-data!
@@ -195,11 +200,11 @@
     :or   {context (context/current)}}]
   (let [span (get-span context)]
     (cond-> span
-            name (.updateName name)
-            status (.setStatus (keyword->StatusCode (:code status)) (:description status))
-            attributes (.setAllAttributes (attr/->attributes attributes))
-            event (add-event! event)
-            ex-data (add-ex-data! ex-data))))
+      name       (.updateName name)
+      status     (.setStatus (keyword->StatusCode (:code status)) (:description status))
+      attributes (.setAllAttributes (attr/->attributes attributes))
+      event      (add-event! event)
+      ex-data    (add-ex-data! ex-data))))
 
 (defn add-exception!
   "Adds an event describing `exception` to a span. If the exception is escaping
@@ -214,14 +219,21 @@
   |`:attributes`| Map of additional attributes for the event (default: `{}`)."
   ([exception]
    (add-exception! exception {}))
-  ([exception {:keys [context escaping? attributes]
-               :or   {context (context/current) escaping? true attributes {}}}]
+  ([exception
+    {:keys [context escaping? attributes]
+     :or   {context    (context/current)
+            escaping?  true
+            attributes {}}}]
    (let [triage (main/ex-triage (Throwable->map exception))
-         attrs (merge triage attributes)
-         status (when escaping? {:code :error :description (main/ex-str triage)})]
+         attrs  (merge triage attributes)
+         status (when escaping?
+                  {:code        :error
+                   :description (main/ex-str triage)})]
      (add-span-data! (cond-> {:context context
-                              :ex-data {:exception exception :escaping? escaping? :attributes attrs}}
-                             status (assoc :status status))))))
+                              :ex-data {:exception  exception
+                                        :escaping?  escaping?
+                                        :attributes attrs}}
+                       status (assoc :status status))))))
 
 (defn add-interceptor-exception!
   "Adds an event describing an interceptor exception `e` to a span. If the
@@ -236,13 +248,22 @@
   |`:attributes`| Map of additional attributes for the event (default: `{}`)."
   ([e]
    (add-interceptor-exception! e {}))
-  ([e {:keys [context escaping? attributes]
-       :or   {context (context/current) escaping? true attributes {}}}]
-   (let [{:keys [exception interceptor stage] :or {exception e}} (ex-data e)
+  ([e
+    {:keys [context escaping? attributes]
+     :or   {context    (context/current)
+            escaping?  true
+            attributes {}}}]
+   (let [{:keys [exception interceptor stage]
+          :or   {exception e}}
+         (ex-data e)
+
          attrs (merge {:io.pedestal.interceptor.chain/interceptor interceptor
                        :io.pedestal.interceptor.chain/stage       stage}
                       attributes)]
-     (add-exception! exception {:context context :escaping? escaping? :attributes attrs}))))
+     (add-exception! exception
+                     {:context    context
+                      :escaping?  escaping?
+                      :attributes attrs}))))
 
 (defn end-span!
   "Low level function that ends a span, previously started by [[new-span!]].
@@ -286,7 +307,8 @@
   options map, the same as for [[new-span!]]. See also [[with-span-binding]]."
   [span-opts & body]
   `(with-span-binding [context# ~span-opts]
-     (context/with-context! context# ~@body)))
+     (context/with-context! context#
+       ~@body)))
 
 (defn async-span
   "Starts a new span and immediately returns evaluation of function `f`.
@@ -312,7 +334,8 @@
             (fn [e]
               (if (instance? Throwable e)
                 (add-exception! e {:context context})
-                (add-span-data! {:context context :status {:code :error}}))
+                (add-span-data! {:context context
+                                 :status  {:code :error}}))
               (end-span! {:context context})
               (raise e)))
          (catch Throwable e

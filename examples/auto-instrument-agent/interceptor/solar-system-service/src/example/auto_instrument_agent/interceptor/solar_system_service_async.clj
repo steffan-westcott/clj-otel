@@ -35,7 +35,7 @@
 (defn <client-request
   "Make an asynchronous HTTP request and return a channel of the response."
   [context request]
-  (let [<ch (async/chan)
+  (let [<ch    (async/chan)
         put-ch #(async/put! <ch %)]
     (client-request context request put-ch put-ch)
     <ch))
@@ -46,15 +46,15 @@
   "Get a single metric value of a planet and return a channel of a
   single-valued map of the metric and its value."
   [context planet metric]
-  (let [path (str "/planets/" (name planet) "/" (name metric))
+  (let [path      (str "/planets/" (name planet) "/" (name metric))
         <response (<client-request context
-                                   {:method           :get
-                                    :url              (str "http://localhost:8081" path)
-                                    :async            true
+                                   {:method :get
+                                    :url    (str "http://localhost:8081" path)
+                                    :async  true
                                     :throw-exceptions false})]
     (async'/go-try
       (let [response (async'/<? <response)
-            status (:status response)]
+            status   (:status response)]
         (if (= 200 status)
           {metric (Double/parseDouble (:body response))}
           (throw (ex-info (str status " HTTP response")
@@ -75,7 +75,8 @@
   (async'/<with-span-binding [context* {:parent     context
                                         :name       "Getting planet metrics"
                                         :attributes {:planet planet}}]
-    4000 2
+    4000
+    2
 
     (let [chs (map #(<get-metric-value context* planet %) [:diameter :gravity])]
       (async/merge chs))))
@@ -96,7 +97,8 @@
     (Thread/sleep 25)
     (let [planet' (str/capitalize (name planet))
           {:keys [diameter gravity]} metric-values
-          report (str "The planet " planet' " has diameter " diameter "km and gravity " gravity "m/s^2.")]
+          report
+          (str "The planet " planet' " has diameter " diameter "km and gravity " gravity "m/s^2.")]
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
@@ -110,7 +112,7 @@
   "Builds a report of planet metrics and results a channel of the report
   string."
   [context planet]
-  (let [<all-metrics (<planet-metrics context planet)
+  (let [<all-metrics   (<planet-metrics context planet)
         <metric-values (async'/<into?? {} <all-metrics)]
     (async'/go-try
       (try
@@ -124,16 +126,17 @@
 (defn <get-metrics
   "Asynchronous handler for 'GET /metrics' request. Returns a channel of the
   HTTP response containing a formatted report of the planet's metric values."
-  [{:keys [io.opentelemetry/server-span-context request] :as ctx}]
+  [{:keys [io.opentelemetry/server-span-context request]
+    :as   ctx}]
 
   ;; Add data describing matched route to the server span.
   (trace-http/add-route-data! "/metrics" {:context server-span-context})
 
-  (let [planet (keyword (get-in request [:query-params :planet]))
+  (let [planet  (keyword (get-in request [:query-params :planet]))
         <report (<planet-report server-span-context planet)]
     (async'/go-try-response ctx
-                            (let [report (async'/<? <report)]
-                              (response/response report)))))
+      (let [report (async'/<? <report)]
+        (response/response report)))))
 
 
 
@@ -148,21 +151,19 @@
   "Interceptors for all routes."
   (conj
 
-    ;; As this application is run with the OpenTelemetry instrumentation agent,
-    ;; a server span will be provided by the agent and there is no need to
-    ;; create another one.
-    (trace-http/server-span-interceptors {:create-span? false
-                                          :server-name  "solar"})
+   ;; As this application is run with the OpenTelemetry instrumentation agent,
+   ;; a server span will be provided by the agent and there is no need to
+   ;; create another one.
+   (trace-http/server-span-interceptors {:create-span? false
+                                         :server-name  "solar"})
 
-    (interceptor/exception-response-interceptor)))
+   (interceptor/exception-response-interceptor)))
 
 
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes
-    [[["/" root-interceptors
-       ["/metrics" {:get 'get-metrics-interceptor}]]]]))
+  (route/expand-routes [[["/" root-interceptors ["/metrics" {:get 'get-metrics-interceptor}]]]]))
 
 
 

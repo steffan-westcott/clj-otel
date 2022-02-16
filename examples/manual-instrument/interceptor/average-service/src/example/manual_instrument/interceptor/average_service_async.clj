@@ -23,31 +23,31 @@
   ;; Context containing client span is assigned to `context*`. Client span is
   ;; ended when either a response or exception is returned.
   (span/async-span
-    (trace-http/client-span-opts request {:parent context})
-    (fn [context* respond* raise*]
+   (trace-http/client-span-opts request {:parent context})
+   (fn [context* respond* raise*]
 
-      (let [;; Propagate context containing client span to remote
-            ;; server by injecting headers. This enables span
-            ;; correlation to make distributed traces.
-            request' (update request :headers merge (context/->headers {:context context*}))]
+     (let [;; Propagate context containing client span to remote
+           ;; server by injecting headers. This enables span
+           ;; correlation to make distributed traces.
+           request' (update request :headers merge (context/->headers {:context context*}))]
 
-        (client/request request'
-                        (fn [response]
+       (client/request request'
+                       (fn [response]
 
-                          ;; Add HTTP response data to the client span.
-                          (trace-http/add-client-span-response-data! response {:context context*})
+                         ;; Add HTTP response data to the client span.
+                         (trace-http/add-client-span-response-data! response {:context context*})
 
-                          (respond* response))
-                        raise*)))
-    respond
-    raise))
+                         (respond* response))
+                       raise*)))
+   respond
+   raise))
 
 
 
 (defn <client-request
   "Make an asynchronous HTTP request and return a channel of the response."
   [context request]
-  (let [<ch (async/chan)
+  (let [<ch    (async/chan)
         put-ch #(async/put! <ch %)]
     (client-request context request put-ch put-ch)
     <ch))
@@ -58,14 +58,14 @@
   "Get the sum of the nums and return a channel of the result."
   [context nums]
   (let [<response (<client-request context
-                                   {:method           :get
-                                    :url              "http://localhost:8081/sum"
-                                    :query-params     {"nums" (str/join "," nums)}
-                                    :async            true
+                                   {:method       :get
+                                    :url          "http://localhost:8081/sum"
+                                    :query-params {"nums" (str/join "," nums)}
+                                    :async        true
                                     :throw-exceptions false})]
     (async'/go-try
       (let [response (async'/<? <response)
-            status (:status response)]
+            status   (:status response)]
         (if (= 200 status)
           (Integer/parseInt (:body response))
           (throw (ex-info (str status " HTTP response")
@@ -105,7 +105,8 @@
   (async'/<with-span-binding [context* {:parent     context
                                         :name       "Calculating average"
                                         :attributes {:nums nums}}]
-    3000 1
+    3000
+    1
 
     (let [<sum (<get-sum context* nums)]
       (async'/go-try
@@ -117,13 +118,17 @@
   "Calculates the averages of the odd numbers and the even numbers of nums and
   returns a channel of the result."
   [context nums]
-  (let [odds (filter odd? nums)
-        evens (filter even? nums)
-        <odds-average (when (seq odds) (<average context odds))
-        <evens-average (when (seq evens) (<average context evens))]
+  (let [odds          (filter odd? nums)
+        evens         (filter even? nums)
+        <odds-average (when (seq odds)
+                        (<average context odds))
+        <evens-average (when (seq evens)
+                         (<average context evens))]
     (async'/go-try
-      (let [result {:odds  (when <odds-average (async'/<? <odds-average))
-                    :evens (when <evens-average (async'/<? <evens-average))}]
+      (let [result {:odds  (when <odds-average
+                             (async'/<? <odds-average))
+                    :evens (when <evens-average
+                             (async'/<? <evens-average))}]
 
         ;; Add event to span
         (span/add-span-data! {:context context
@@ -137,17 +142,19 @@
 (defn <get-averages
   "Asynchronous handler for 'GET /average' request. Returns a channel of the
   HTTP response containing calculated averages of the `nums` query parameters."
-  [{:keys [io.opentelemetry/server-span-context request] :as ctx}]
+  [{:keys [io.opentelemetry/server-span-context request]
+    :as   ctx}]
 
   ; Add data describing matched route to the server span.
   (trace-http/add-route-data! "/average" {:context server-span-context})
 
-  (let [num-str (get-in request [:query-params :nums])
-        num-strs (->> (str/split num-str #",") (map str/trim) (filter seq))
-        nums (map #(Integer/parseInt %) num-strs)
-        <avs (<averages server-span-context nums)]
-    (async'/go-try-response
-      ctx
+  (let [num-str  (get-in request [:query-params :nums])
+        num-strs (->> (str/split num-str #",")
+                      (map str/trim)
+                      (filter seq))
+        nums     (map #(Integer/parseInt %) num-strs)
+        <avs     (<averages server-span-context nums)]
+    (async'/go-try-response ctx
       (let [avs (async'/<? <avs)]
         (response/response (str avs))))))
 
@@ -163,23 +170,21 @@
   "Interceptors for all routes."
   (conj
 
-    ;; As this application is not run with the OpenTelemetry instrumentation
-    ;; agent, create a server span for each request. Because part of this
-    ;; service uses asynchronous processing, the current context is not set on
-    ;; each request.
-    (trace-http/server-span-interceptors {:create-span?         true
-                                          :set-current-context? false
-                                          :server-name          "average"})
+   ;; As this application is not run with the OpenTelemetry instrumentation
+   ;; agent, create a server span for each request. Because part of this
+   ;; service uses asynchronous processing, the current context is not set on
+   ;; each request.
+   (trace-http/server-span-interceptors {:create-span?         true
+                                         :set-current-context? false
+                                         :server-name          "average"})
 
-    (interceptor/exception-response-interceptor)))
+   (interceptor/exception-response-interceptor)))
 
 
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes
-    [[["/" root-interceptors
-       ["/average" {:get 'get-averages-interceptor}]]]]))
+  (route/expand-routes [[["/" root-interceptors ["/average" {:get 'get-averages-interceptor}]]]]))
 
 
 

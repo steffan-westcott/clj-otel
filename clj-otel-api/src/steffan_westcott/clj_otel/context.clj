@@ -45,9 +45,8 @@
        ~@body)))
 
 (def ^:private context-key*
-  (memoize
-    (fn [k]
-      (ContextKey/named (util/qualified-name k)))))
+  (memoize (fn [k]
+             (ContextKey/named (util/qualified-name k)))))
 
 (defn ^ContextKey context-key
   "Coerces k to a `ContextKey`."
@@ -95,19 +94,21 @@
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
 
 (def ^:private map-setter
-  (reify TextMapSetter
-    (set [_ carrier key value]
-      (.put ^Map carrier key value))))
+  (reify
+   TextMapSetter
+     (set [_ carrier key value]
+       (.put ^Map carrier key value))))
 
 (def ^:private map-getter
-  (reify TextMapGetter
-    (keys [_ carrier]
-      (keys carrier))
-    (get [_ carrier key]
-      (some-> (get carrier key)
-              (str/split #",")
-              first
-              str/trim))))
+  (reify
+   TextMapGetter
+     (keys [_ carrier]
+       (keys carrier))
+     (get [_ carrier key]
+       (some-> (get carrier key)
+               (str/split #",")
+               first
+               str/trim))))
 
 (defn ->headers
   "Returns a map to merge into the headers of an HTTP request for the purpose
@@ -121,7 +122,7 @@
   ([]
    (->headers {}))
   ([{:keys [^Context context ^TextMapPropagator text-map-propagator]
-     :or   {context             (current)
+     :or   {context (current)
             text-map-propagator (otel/get-text-map-propagator)}}]
    (let [carrier (HashMap.)]
      (.inject text-map-propagator context carrier map-setter)
@@ -138,7 +139,8 @@
   |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in global `OpenTelemetry` instance)."
   ([headers]
    (headers->merged-context headers {}))
-  ([headers {:keys [^Context context ^TextMapPropagator text-map-propagator]
-             :or   {context             (current)
-                    text-map-propagator (otel/get-text-map-propagator)}}]
+  ([headers
+    {:keys [^Context context ^TextMapPropagator text-map-propagator]
+     :or   {context (current)
+            text-map-propagator (otel/get-text-map-propagator)}}]
    (.extract text-map-propagator context headers map-getter)))

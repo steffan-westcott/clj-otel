@@ -14,7 +14,9 @@
 (defn maybe-throw
   "Returns `x`, but throws if `x` is an exception."
   [x]
-  (if (throwable? x) (throw x) x))
+  (if (throwable? x)
+    (throw x)
+    x))
 
 
 
@@ -66,7 +68,9 @@
 (defmacro go-try
   "Same as `go` but catch any exceptions and return as channel value."
   [& body]
-  `(async/go (catch-all ~@body)))
+  `(async/go
+     (catch-all
+       ~@body)))
 
 
 
@@ -100,10 +104,11 @@
   "Takes a single value from channel `<ch` and invokes a callback function
   `respond` or `raise`."
   [<ch respond raise]
-  (async/take! <ch (fn [x]
-                     (if (throwable? x)
-                       (raise x)
-                       (respond x)))))
+  (async/take! <ch
+               (fn [x]
+                 (if (throwable? x)
+                   (raise x)
+                   (respond x)))))
 
 
 
@@ -111,7 +116,7 @@
   "Converts exception to a response, with status set to `:status` if exception
   is an `IExceptionInfo` instance, 500 Server Error otherwise."
   [e]
-  (let [resp (response/response (ex-message e))
+  (let [resp   (response/response (ex-message e))
         status (:status (ex-data e) 500)]
     (response/status resp status)))
 
@@ -127,7 +132,9 @@
      (catch Throwable e#
 
        ;; Add non-escaping exception to span as an event
-       (span/add-exception! e# {:context ~context :escaping? false})
+       (span/add-exception! e#
+                            {:context   ~context
+                             :escaping? false})
 
        (exception-response e#))))
 
@@ -140,8 +147,9 @@
   `IExceptionInfo` instance, 500 Server Error otherwise."
   [ctx & body]
   `(async/go
-     (let [context# (:io.opentelemetry/server-span-context ~ctx)
-           response# (catch-response context# ~@body)]
+     (let [context#  (:io.opentelemetry/server-span-context ~ctx)
+           response# (catch-response context#
+                       ~@body)]
        (assoc ~ctx :response response#))))
 
 
@@ -150,7 +158,7 @@
 (defn <instrumented-pipe
   "Internal function used by [[<with-span-binding]]."
   [context <src buf-size timeout respond raise]
-  (let [<dest (async/chan buf-size)
+  (let [<dest    (async/chan buf-size)
         <timeout (async/timeout timeout)]
 
     ;; Implementation note: While active, the timeout channel `<timeout`
@@ -159,28 +167,31 @@
     ;; or `raise` are evaluated (before or on timeout) and thus the span is
     ;; always ended.
 
-    (async/go-loop [timer-running? true v nil]
+    (async/go-loop [timer-running? true
+                    v nil]
       (if (nil? v)
         (async/alt!
-          <timeout (do
-                     (raise (ex-info "Truncating span due to channel timeout" {::error :src-take-timeout}))
-                     (recur false nil))
-          <src ([x] (if (some? x)
-                      (do
-                        (when (and timer-running? (throwable? x))
-                          (span/add-exception! x {:context context}))
-                        (recur timer-running? x))
-                      (do
-                        (async/close! <dest)
-                        (when timer-running?
-                          (respond nil)))))
+          <timeout  (do
+                      (raise (ex-info "Truncating span due to channel timeout"
+                                      {::error :src-take-timeout}))
+                      (recur false nil))
+          <src      ([x]
+                     (if (some? x)
+                       (do
+                         (when (and timer-running? (throwable? x))
+                           (span/add-exception! x {:context context}))
+                         (recur timer-running? x))
+                       (do
+                         (async/close! <dest)
+                         (when timer-running?
+                           (respond nil)))))
           :priority true)
-        (async/alt!
-          <timeout (do
-                     (raise (ex-info "Truncating span due to channel timeout" {::error :dest-put-timeout}))
-                     (recur false v))
-          [[<dest v]] (recur timer-running? nil)
-          :priority true)))
+        (async/alt! <timeout    (do
+                                  (raise (ex-info "Truncating span due to channel timeout"
+                                                  {::error :dest-put-timeout}))
+                                  (recur false v))
+                    [[<dest v]] (recur timer-running? nil)
+                    :priority   true)))
     <dest))
 
 
@@ -198,11 +209,11 @@
   `<dest` irrespective of timeout. `<dest` will stop consuming and close when
   `<src` closes."
   [[context span-opts] timeout buf-size & body]
-  `(span/async-span
-     ~span-opts
-     (fn [context# respond# raise#]
-       (let [~context context#
-             <src# (do ~@body)]
-         (<instrumented-pipe context# <src# ~buf-size ~timeout respond# raise#)))
-     identity
-     identity))
+  `(span/async-span ~span-opts
+                    (fn [context# respond# raise#]
+                      (let [~context context#
+                            <src#    (do
+                                       ~@body)]
+                        (<instrumented-pipe context# <src# ~buf-size ~timeout respond# raise#)))
+                    identity
+                    identity))

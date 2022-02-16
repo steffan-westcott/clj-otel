@@ -20,8 +20,8 @@
 
 (defn- BaggageEntry->value
   [^BaggageEntry entry]
-  (let [entry-value (.getValue entry)
-        metadata (.getMetadata entry)
+  (let [entry-value    (.getValue entry)
+        metadata       (.getMetadata entry)
         metadata-value (.getValue metadata)]
     (if (empty? metadata-value)
       entry-value

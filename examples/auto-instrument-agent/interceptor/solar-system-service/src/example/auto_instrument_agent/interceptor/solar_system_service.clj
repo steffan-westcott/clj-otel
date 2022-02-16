@@ -15,15 +15,14 @@
 (defn get-metric-value
   "Get a single metric value of a planet."
   [planet metric]
-  (let [path (str "/planets/" (name planet) "/" (name metric))
+  (let [path     (str "/planets/" (name planet) "/" (name metric))
 
         ;; Apache HttpClient request is automatically wrapped in a client span
         ;; created by the OpenTelemetry instrumentation agent. The agent also
         ;; propagates the context containing the client span to the remote HTTP
         ;; server by injecting headers into the request.
-        response (client/get (str "http://localhost:8081" path)
-                             {:throw-exceptions false})
-        status (:status response)]
+        response (client/get (str "http://localhost:8081" path) {:throw-exceptions false})
+        status   (:status response)]
 
     (if (= 200 status)
       {metric (Double/parseDouble (:body response))}
@@ -59,7 +58,8 @@
     (Thread/sleep 25)
     (let [planet' (str/capitalize (name planet))
           {:keys [diameter gravity]} metric-values
-          report (str "The planet " planet' " has diameter " diameter "km and gravity " gravity "m/s^2.")]
+          report
+          (str "The planet " planet' " has diameter " diameter "km and gravity " gravity "m/s^2.")]
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:attributes (:report-length (count report))})
@@ -71,7 +71,7 @@
 (defn planet-report
   "Builds a report of planet metrics and returns report string."
   [planet]
-  (let [all-metrics (planet-metrics planet)
+  (let [all-metrics   (planet-metrics planet)
         metric-values (into {} all-metrics)]
     (format-report planet metric-values)))
 
@@ -95,21 +95,19 @@
   "Interceptors for all routes."
   (conj
 
-    ;; As this application is run with the OpenTelemetry instrumentation agent,
-    ;; a server span will be provided by the agent and there is no need to
-    ;; create another one.
-    (trace-http/server-span-interceptors {:create-span? false
-                                          :server-name  "solar"})
+   ;; As this application is run with the OpenTelemetry instrumentation agent,
+   ;; a server span will be provided by the agent and there is no need to
+   ;; create another one.
+   (trace-http/server-span-interceptors {:create-span? false
+                                         :server-name  "solar"})
 
-    (interceptor/exception-response-interceptor)))
+   (interceptor/exception-response-interceptor)))
 
 
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes
-    [[["/" root-interceptors
-       ["/metrics" {:get 'get-metrics-handler}]]]]))
+  (route/expand-routes [[["/" root-interceptors ["/metrics" {:get 'get-metrics-handler}]]]]))
 
 
 
@@ -122,5 +120,5 @@
 
 
 
-(defonce ^{:doc "solar-system-service server instance"}
-         server (http/start (http/create-server service-map)))
+(defonce ^{:doc "solar-system-service server instance"} server
+         (http/start (http/create-server service-map)))

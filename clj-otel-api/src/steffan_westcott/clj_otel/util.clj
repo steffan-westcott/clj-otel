@@ -17,8 +17,9 @@
   (cond
     (vector? t) t
     (instance? Instant t) (let [seconds-part (.getEpochSecond ^Instant t)
-                                nanos-part (.getNano ^Instant t)
-                                nanos (+ (.toNanos TimeUnit/SECONDS seconds-part) nanos-part)]
+                                nanos-part   (.getNano ^Instant t)
+                                nanos        (+ (.toNanos TimeUnit/SECONDS seconds-part)
+                                                nanos-part)]
                             [nanos TimeUnit/NANOSECONDS])))
 
 (defn qualified-name

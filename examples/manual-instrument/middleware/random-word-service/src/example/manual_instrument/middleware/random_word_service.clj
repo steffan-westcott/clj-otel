@@ -22,7 +22,8 @@
   [word-type]
 
   ;; Wrap the synchronous body in a new internal span.
-  (span/with-span! {:name "Generating word" :attributes {:word-type word-type}}
+  (span/with-span! {:name       "Generating word"
+                    :attributes {:word-type word-type}}
 
     (Thread/sleep (+ 10 (rand-int 80)))
 
@@ -31,14 +32,16 @@
     ;; exception event and the span status description is set to the
     ;; exception triage summary.
     (when (= :fault word-type)
-      (throw (ex-info "Processing fault" {:status 500
-                                          :error  ::processing-fault})))
+      (throw (ex-info "Processing fault"
+                      {:status 500
+                       :error  ::processing-fault})))
 
     (let [candidates (or (get words word-type)
-                         (throw (ex-info "Unknown word type" {:status 400
-                                                              :error  ::unknown-word-type
-                                                              ::type  word-type})))
-          word (rand-nth candidates)]
+                         (throw (ex-info "Unknown word type"
+                                         {:status 400
+                                          :error  ::unknown-word-type
+                                          ::type  word-type})))
+          word       (rand-nth candidates)]
 
       ;; Add more attributes to the internal span
       (span/add-span-data! {:attributes {:generated-word word}})
@@ -55,7 +58,7 @@
   ; Add attributes describing matched route to server span
   (trace-http/add-route-data! "/random-word")
 
-  (let [type (keyword (get query-params "type"))
+  (let [type   (keyword (get query-params "type"))
         result (random-word type)]
     (Thread/sleep (+ 20 (rand-int 20)))
     (response/response (str result))))
@@ -64,7 +67,8 @@
 
 (defn handler
   "Synchronous Ring handler for all requests."
-  [{:keys [request-method uri] :as request}]
+  [{:keys [request-method uri]
+    :as   request}]
   (case [request-method uri]
     [:get "/random-word"] (get-random-word-handler request)
     (response/not-found "Not found")))
@@ -80,9 +84,12 @@
       ;; Wrap request handling of all routes. As this application is not run
       ;; with the OpenTelemetry instrumentation agent, create a server span
       ;; for each request.
-      (trace-http/wrap-server-span {:create-span? true :server-name "random"})))
+      (trace-http/wrap-server-span {:create-span? true
+                                    :server-name  "random"})))
 
 
 
 (defonce ^{:doc "random-word-service server instance"} server
-         (jetty/run-jetty #'service {:port 8081 :join? false}))
+         (jetty/run-jetty #'service
+                          {:port  8081
+                           :join? false}))

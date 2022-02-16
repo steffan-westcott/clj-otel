@@ -35,7 +35,7 @@
 (defn <client-request
   "Make an asynchronous HTTP request and return a channel of the response."
   [context request]
-  (let [<ch (async/chan)
+  (let [<ch    (async/chan)
         put-ch #(async/put! <ch %)]
     (client-request context request put-ch put-ch)
     <ch))
@@ -46,14 +46,14 @@
   "Get the length of `word` and return a channel of the length value."
   [context word]
   (let [<response (<client-request context
-                                   {:method           :get
-                                    :url              "http://localhost:8081/length"
-                                    :query-params     {"word" word}
-                                    :async            true
+                                   {:method       :get
+                                    :url          "http://localhost:8081/length"
+                                    :query-params {"word" word}
+                                    :async        true
                                     :throw-exceptions false})]
     (async'/go-try
       (let [response (async'/<? <response)
-            status (:status response)]
+            status   (:status response)]
         (if (= 200 status)
           (Integer/parseInt (:body response))
           (throw (ex-info (str status " HTTP response")
@@ -74,7 +74,8 @@
   (async'/<with-span-binding [context* {:parent     context
                                         :name       "Getting word lengths"
                                         :attributes {:words words}}]
-    6000 3
+    6000
+    3
 
     (let [chs (map #(<get-word-length context* %) words)]
       (async/merge chs))))
@@ -108,13 +109,13 @@
   "Builds a summary of the words in the sentence and returns a channel of the
   summary value."
   [context sentence]
-  (let [words (str/split sentence #"\s+")
+  (let [words        (str/split sentence #"\s+")
         <all-lengths (<word-lengths context words)
-        <lengths (async'/<into?? [] <all-lengths)]
+        <lengths     (async'/<into?? [] <all-lengths)]
     (async'/go-try
       (try
         (let [lengths (async'/<? <lengths)]
-         (summary context lengths))
+          (summary context lengths))
         (finally
           (async'/close-and-drain!! <all-lengths))))))
 
@@ -139,7 +140,8 @@
 
 (defn handler
   "Asynchronous Ring handler for all requests."
-  [{:keys [request-method uri] :as request} respond raise]
+  [{:keys [request-method uri]
+    :as   request} respond raise]
   (case [request-method uri]
     [:get "/summary"] (get-summary-handler request respond raise)
     (response/not-found "Not found")))
@@ -161,4 +163,7 @@
 
 
 (defonce ^{:doc "sentence-summary-service server instance"} server
-         (jetty/run-jetty #'service {:port 8080 :async? true :join? false}))
+         (jetty/run-jetty #'service
+                          {:port   8080
+                           :async? true
+                           :join?  false}))

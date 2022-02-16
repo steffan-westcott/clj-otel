@@ -22,7 +22,7 @@
   (let [response (client/get "http://localhost:8081/length"
                              {:throw-exceptions false
                               :query-params     {"word" word}})
-        status (:status response)]
+        status   (:status response)]
 
     (if (= 200 status)
       (Integer/parseInt (:body response))
@@ -68,7 +68,7 @@
 (defn build-summary
   "Builds a summary of the words in the sentence."
   [sentence]
-  (let [words (str/split sentence #"\s+")
+  (let [words   (str/split sentence #"\s+")
         lengths (word-lengths words)]
     (summary lengths)))
 
@@ -83,14 +83,15 @@
   (trace-http/add-route-data! "/summary")
 
   (let [sentence (get query-params "sentence")
-        summary (build-summary sentence)]
+        summary  (build-summary sentence)]
     (response/response (str summary))))
 
 
 
 (defn handler
   "Synchronous Ring handler for all requests."
-  [{:keys [request-method uri] :as request}]
+  [{:keys [request-method uri]
+    :as   request}]
   (case [request-method uri]
     [:get "/summary"] (get-summary-handler request)
     (response/not-found "Not found")))
@@ -111,4 +112,6 @@
 
 
 (defonce ^{:doc "sentence-summary-service server instance"} server
-         (jetty/run-jetty #'service {:port 8080 :join? false}))
+         (jetty/run-jetty #'service
+                          {:port  8080
+                           :join? false}))

@@ -7,7 +7,7 @@
   "Converts exception to a response, with status set to `:status` value if
   exception is an `IExceptionInfo` instance, 500 Server Error otherwise."
   [e]
-  (let [resp (response/response (ex-message e))
+  (let [resp   (response/response (ex-message e))
         status (:status (ex-data e) 500)]
     (response/status resp status)))
 
@@ -18,7 +18,10 @@
   response."
   []
   {:name  ::exception-response
-   :error (fn [{:keys [io.opentelemetry/server-span-context] :as ctx} e]
-            (span/add-interceptor-exception! e {:context server-span-context :escaping? false})
+   :error (fn [{:keys [io.opentelemetry/server-span-context]
+                :as   ctx} e]
+            (span/add-interceptor-exception! e
+                                             {:context   server-span-context
+                                              :escaping? false})
             (let [exception (get (ex-data e) :exception e)]
               (assoc ctx :response (exception-response exception))))})

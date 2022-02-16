@@ -16,7 +16,7 @@
   |`:initial-sampler` | Initial sampler that is used before sampling configuration is obtained (default: `{:parent-based {:root {:ratio 0.001}}}`)."
   [{:keys [service-name endpoint polling-interval initial-sampler]}]
   (let [builder (cond-> (.setServiceName (JaegerRemoteSampler/builder) service-name)
-                        endpoint (.setEndpoint endpoint)
-                        polling-interval (.setPollingInterval (util/duration polling-interval))
-                        initial-sampler (.setInitialSampler (sdk/as-Sampler initial-sampler)))]
+                  endpoint         (.setEndpoint endpoint)
+                  polling-interval (.setPollingInterval (util/duration polling-interval))
+                  initial-sampler  (.setInitialSampler (sdk/as-Sampler initial-sampler)))]
     (.build builder)))

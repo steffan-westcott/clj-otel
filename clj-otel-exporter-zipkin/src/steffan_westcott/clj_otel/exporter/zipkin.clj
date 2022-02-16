@@ -18,8 +18,8 @@
    (span-exporter {}))
   ([{:keys [endpoint read-timeout sender encoder]}]
    (let [builder (cond-> (ZipkinSpanExporter/builder)
-                         endpoint (.setEndpoint endpoint)
-                         read-timeout (.setReadTimeout (util/duration read-timeout))
-                         sender (.setSender sender)
-                         encoder (.setEncoder encoder))]
+                   endpoint     (.setEndpoint endpoint)
+                   read-timeout (.setReadTimeout (util/duration read-timeout))
+                   sender       (.setSender sender)
+                   encoder      (.setEncoder encoder))]
      (.build builder))))

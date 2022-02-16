@@ -1,7 +1,11 @@
 (ns steffan-westcott.clj-otel.resource.aws
   "Provide `Resource` objects describing the current execution environment in
   the Amazon Web Services (AWS) platform."
-  (:import (io.opentelemetry.sdk.extension.aws.resource BeanstalkResource Ec2Resource EcsResource EksResource LambdaResource)))
+  (:import (io.opentelemetry.sdk.extension.aws.resource BeanstalkResource
+                                                        Ec2Resource
+                                                        EcsResource
+                                                        EksResource
+                                                        LambdaResource)))
 
 (defn beanstalk-resource
   "Returns a `Resource` which provides information about the current EC2

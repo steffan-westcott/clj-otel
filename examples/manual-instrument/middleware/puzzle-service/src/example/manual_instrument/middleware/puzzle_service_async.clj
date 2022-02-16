@@ -24,31 +24,31 @@
   ;; Context containing client span is assigned to `context*`. Client span is
   ;; ended when either a response or exception is returned.
   (span/async-span
-    (trace-http/client-span-opts request {:parent context})
-    (fn [context* respond* raise*]
+   (trace-http/client-span-opts request {:parent context})
+   (fn [context* respond* raise*]
 
-      (let [;; Propagate context containing client span to remote
-            ;; server by injecting headers. This enables span
-            ;; correlation to make distributed traces.
-            request' (update request :headers merge (context/->headers {:context context*}))]
+     (let [;; Propagate context containing client span to remote
+           ;; server by injecting headers. This enables span
+           ;; correlation to make distributed traces.
+           request' (update request :headers merge (context/->headers {:context context*}))]
 
-        (client/request request'
-                        (fn [response]
+       (client/request request'
+                       (fn [response]
 
-                          ;; Add HTTP response data to the client span.
-                          (trace-http/add-client-span-response-data! response {:context context*})
+                         ;; Add HTTP response data to the client span.
+                         (trace-http/add-client-span-response-data! response {:context context*})
 
-                          (respond* response))
-                        raise*)))
-    respond
-    raise))
+                         (respond* response))
+                       raise*)))
+   respond
+   raise))
 
 
 
 (defn <client-request
   "Make an asynchronous HTTP request and return a channel of the response."
   [context request]
-  (let [<ch (async/chan)
+  (let [<ch    (async/chan)
         put-ch #(async/put! <ch %)]
     (client-request context request put-ch put-ch)
     <ch))
@@ -60,14 +60,14 @@
   word."
   [context word-type]
   (let [<response (<client-request context
-                                   {:method           :get
-                                    :url              "http://localhost:8081/random-word"
-                                    :query-params     {"type" (name word-type)}
-                                    :async            true
+                                   {:method       :get
+                                    :url          "http://localhost:8081/random-word"
+                                    :query-params {"type" (name word-type)}
+                                    :async        true
                                     :throw-exceptions false})]
     (async'/go-try
       (let [response (async'/<? <response)
-            status (:status response)]
+            status   (:status response)]
         (if (= 200 status)
           (:body response)
           (throw (ex-info (str status " HTTP response")
@@ -88,7 +88,8 @@
   (async'/<with-span-binding [context* {:parent     context
                                         :name       "Getting random words"
                                         :attributes {:word-types word-types}}]
-    5000 2
+    5000
+    2
 
     (let [<words* (map #(<get-random-word context* %) word-types)]
       (async'/<concat <words*))))
@@ -106,7 +107,10 @@
                                      :attributes {:word word}}]
 
     (Thread/sleep 5)
-    (let [scrambled-word (->> word seq shuffle (apply str))]
+    (let [scrambled-word (->> word
+                              seq
+                              shuffle
+                              (apply str))]
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
@@ -148,7 +152,7 @@
   (trace-http/add-route-data! "/puzzle" {:context server-span-context})
 
   (let [word-types (map keyword (str/split (get query-params "types") #","))
-        <puzzle (<generate-puzzle server-span-context word-types)]
+        <puzzle    (<generate-puzzle server-span-context word-types)]
     (async'/ch->respond-raise <puzzle
                               (fn [puzzle]
                                 (respond (response/response puzzle)))
@@ -158,7 +162,8 @@
 
 (defn handler
   "Asynchronous Ring handler for all requests."
-  [{:keys [request-method uri] :as request} respond raise]
+  [{:keys [request-method uri]
+    :as   request} respond raise]
   (case [request-method uri]
     [:get "/puzzle"] (get-puzzle-handler request respond raise)
     (response/not-found "Not found")))
@@ -180,4 +185,7 @@
 
 
 (defonce ^{:doc "puzzle-service server instance"} server
-         (jetty/run-jetty #'service {:port 8080 :async? true :join? false}))
+         (jetty/run-jetty #'service
+                          {:port   8080
+                           :async? true
+                           :join?  false}))

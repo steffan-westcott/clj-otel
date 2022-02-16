@@ -1,68 +1,72 @@
+;!zprint {:style [:respect-nl] :width 140}
+
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
-           org.clojure/core.async                   {:mvn/version "1.5.648"}
+ :deps    {org.clojure/clojure {:mvn/version "1.10.3"}
+           org.clojure/core.async {:mvn/version "1.5.648"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0"}
-           io.pedestal/pedestal.service             {:mvn/version "0.5.10"}
-           io.pedestal/pedestal.route               {:mvn/version "0.5.10"}
-           io.pedestal/pedestal.interceptor         {:mvn/version "0.5.10"}
-           io.pedestal/pedestal.jetty               {:mvn/version "0.5.10"}
-           org.slf4j/slf4j-simple                   {:mvn/version "1.7.36"}
-           clj-http/clj-http                        {:mvn/version "3.12.3"}
-           org.example/common-utils.core-async      {:local/root "../../../common-utils/core-async"}
-           org.example/common-utils.interceptor     {:local/root "../../../common-utils/interceptor"}}
+           io.pedestal/pedestal.service {:mvn/version "0.5.10"}
+           io.pedestal/pedestal.route {:mvn/version "0.5.10"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.5.10"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
+           org.slf4j/slf4j-simple {:mvn/version "1.7.36"}
+           clj-http/clj-http {:mvn/version "3.12.3"}
+           org.example/common-utils.core-async {:local/root "../../../common-utils/core-async"}
+           org.example/common-utils.interceptor {:local/root "../../../common-utils/interceptor"}}
 
- :aliases {
-           ;; Use this alias to run with OpenTelemetry instrumentation agent
+ :aliases
+ {;; Use this alias to run with OpenTelemetry instrumentation agent
 
-           :otel                  {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
-                                              "-Dotel.resource.attributes=service.name=solar-system-service"]}
-
-
-
-           ;; Select exactly one traces-* alias
-
-           :traces-none           {:jvm-opts ["-Dotel.traces.exporter=none"]}
-
-           :traces-zipkin         {:jvm-opts ["-Dotel.traces.exporter=zipkin"]}
-
-           :traces-jaeger-grpc    {:jvm-opts ["-Dotel.traces.exporter=jaeger"]}
-
-           :traces-collector-grpc {:jvm-opts ["-Dotel.traces.exporter=otlp"
-                                              "-Dotel.exporter.otlp.traces.protocol=grpc"]}
-
-           :traces-collector-http {:jvm-opts ["-Dotel.traces.exporter=otlp"
-                                              "-Dotel.exporter.otlp.traces.protocol=http/protobuf"]}
-
-           :traces-honeycomb-grpc {:jvm-opts ["-Dotel.traces.exporter=otlp"
-                                              "-Dotel.exporter.otlp.traces.protocol=grpc"
-                                              "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443"
-                                              "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]}
-
-           :traces-honeycomb-http {:jvm-opts ["-Dotel.traces.exporter=otlp"
-                                              "-Dotel.exporter.otlp.traces.protocol=http/protobuf"
-                                              "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443/v1/traces"
-                                              "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]}
-
-           :traces-lightstep-grpc {:jvm-opts ["-Dotel.traces.exporter=otlp"
-                                              "-Dotel.exporter.otlp.traces.protocol=grpc"
-                                              "-Dotel.exporter.otlp.traces.endpoint=https://ingest.lightstep.com:443"
-                                              "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]}
-
-           :traces-logging        {:jvm-opts ["-Dotel.traces.exporter=logging"]}
+  :otel            {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
+                               "-Dotel.resource.attributes=service.name=solar-system-service"]}
 
 
 
-           ;; Select exactly one metrics-* alias
+  ;; Select exactly one traces-* alias
 
-           :metrics-none          {:jvm-opts ["-Dotel.metrics.exporter=none"]}
+  :traces-none     {:jvm-opts ["-Dotel.traces.exporter=none"]}
 
-           :metrics-logging       {:jvm-opts ["-Dotel.metrics.exporter=logging"]}
+  :traces-zipkin   {:jvm-opts ["-Dotel.traces.exporter=zipkin"]}
+
+  :traces-jaeger-grpc {:jvm-opts ["-Dotel.traces.exporter=jaeger"]}
+
+  :traces-collector-grpc {:jvm-opts ["-Dotel.traces.exporter=otlp"
+                                     "-Dotel.exporter.otlp.traces.protocol=grpc"]}
+
+  :traces-collector-http {:jvm-opts ["-Dotel.traces.exporter=otlp"
+                                     "-Dotel.exporter.otlp.traces.protocol=http/protobuf"]}
+
+  :traces-honeycomb-grpc
+  {:jvm-opts ["-Dotel.traces.exporter=otlp"
+              "-Dotel.exporter.otlp.traces.protocol=grpc"
+              "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443"
+              "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]}
+
+  :traces-honeycomb-http
+  {:jvm-opts ["-Dotel.traces.exporter=otlp"
+              "-Dotel.exporter.otlp.traces.protocol=http/protobuf"
+              "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443/v1/traces"
+              "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]}
+
+  :traces-lightstep-grpc {:jvm-opts ["-Dotel.traces.exporter=otlp"
+                                     "-Dotel.exporter.otlp.traces.protocol=grpc"
+                                     "-Dotel.exporter.otlp.traces.endpoint=https://ingest.lightstep.com:443"
+                                     "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]}
+
+  :traces-logging  {:jvm-opts ["-Dotel.traces.exporter=logging"]}
 
 
 
-           ;; Used for development of clj-otel-* libraries with the examples
+  ;; Select exactly one metrics-* alias
 
-           :dev                   {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../../clj-otel-api"}}}
+  :metrics-none    {:jvm-opts ["-Dotel.metrics.exporter=none"]}
 
-           }}
+  :metrics-logging {:jvm-opts ["-Dotel.metrics.exporter=logging"]}
+
+
+
+  ;; Used for development of clj-otel-* libraries with the examples
+
+  :dev             {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../../clj-otel-api"}}}
+
+ }}

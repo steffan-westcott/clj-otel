@@ -5,14 +5,15 @@
             [steffan-westcott.clj-otel.propagator.w3c-baggage :as w3c-baggage]
             [steffan-westcott.clj-otel.propagator.w3c-trace-context :as w3c-trace]
             [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.sdk.trace SdkTracerProvider SpanLimits SpanProcessor SdkTracerProviderBuilder)
-           (io.opentelemetry.context.propagation ContextPropagators TextMapPropagator)
-           (io.opentelemetry.sdk.resources Resource)
-           (io.opentelemetry.sdk.trace.samplers Sampler)
-           (io.opentelemetry.sdk.trace.export BatchSpanProcessor SpanExporter SimpleSpanProcessor)
-           (io.opentelemetry.sdk OpenTelemetrySdk)
-           (io.opentelemetry.semconv.resource.attributes ResourceAttributes)
-           (java.util.function Supplier)))
+  (:import
+   (io.opentelemetry.sdk.trace SdkTracerProvider SpanLimits SpanProcessor SdkTracerProviderBuilder)
+   (io.opentelemetry.context.propagation ContextPropagators TextMapPropagator)
+   (io.opentelemetry.sdk.resources Resource)
+   (io.opentelemetry.sdk.trace.samplers Sampler)
+   (io.opentelemetry.sdk.trace.export BatchSpanProcessor SpanExporter SimpleSpanProcessor)
+   (io.opentelemetry.sdk OpenTelemetrySdk)
+   (io.opentelemetry.semconv.resource.attributes ResourceAttributes)
+   (java.util.function Supplier)))
 
 (defn- as-Resource
   [resource]
@@ -21,39 +22,45 @@
     (let [{:keys [attributes schema-url]} resource]
       (Resource/create (attr/->attributes attributes) schema-url))))
 
-(defn- merge-resources-with-default [service-name resources]
+(defn- merge-resources-with-default
+  [service-name resources]
   (let [service-resource {:attributes {ResourceAttributes/SERVICE_NAME service-name}}
-        resources' (cons service-resource resources)]
+        resources'       (cons service-resource resources)]
     (reduce #(.merge ^Resource %1 (as-Resource %2)) (Resource/getDefault) resources')))
 
 (defn- ^SpanLimits as-SpanLimits
   [span-limits]
   (cond
-
-    (instance? SpanLimits span-limits)
-    span-limits
-
+    (instance? SpanLimits span-limits) span-limits
     (map? span-limits)
-    (let [{:keys [max-attrs max-events max-links max-attrs-per-event max-attrs-per-link max-attr-value-len]} span-limits
+    (let [{:keys [max-attrs max-events max-links max-attrs-per-event max-attrs-per-link
+                  max-attr-value-len]}
+          span-limits
+
           builder (cond-> (SpanLimits/builder)
-                          max-attrs (.setMaxNumberOfAttributes max-attrs)
-                          max-events (.setMaxNumberOfEvents max-events)
-                          max-links (.setMaxNumberOfLinks max-links)
-                          max-attrs-per-event (.setMaxNumberOfAttributesPerEvent max-attrs-per-event)
-                          max-attrs-per-link (.setMaxNumberOfAttributesPerLink max-attrs-per-link)
-                          max-attr-value-len (.setMaxAttributeValueLength max-attr-value-len))]
+                    max-attrs          (.setMaxNumberOfAttributes max-attrs)
+                    max-events         (.setMaxNumberOfEvents max-events)
+                    max-links          (.setMaxNumberOfLinks max-links)
+                    max-attrs-per-event (.setMaxNumberOfAttributesPerEvent max-attrs-per-event)
+                    max-attrs-per-link (.setMaxNumberOfAttributesPerLink max-attrs-per-link)
+                    max-attr-value-len (.setMaxAttributeValueLength max-attr-value-len))]
       (.build builder))))
 
 (declare as-Sampler)
 
 (defn- map->ParentBasedSampler
-  [{:keys [root remote-parent-sampled remote-parent-not-sampled local-parent-sampled local-parent-not-sampled]
+  [{:keys [root remote-parent-sampled remote-parent-not-sampled local-parent-sampled
+           local-parent-not-sampled]
     :or   {root (Sampler/alwaysOn)}}]
   (let [builder (cond-> (Sampler/parentBasedBuilder (as-Sampler root))
-                        remote-parent-sampled (.setRemoteParentSampled (as-Sampler remote-parent-sampled))
-                        remote-parent-not-sampled (.setLocalParentNotSampled (as-Sampler remote-parent-not-sampled))
-                        local-parent-sampled (.setLocalParentSampled (as-Sampler local-parent-sampled))
-                        local-parent-not-sampled (.setLocalParentNotSampled (as-Sampler local-parent-not-sampled)))]
+                  remote-parent-sampled     (.setRemoteParentSampled (as-Sampler
+                                                                      remote-parent-sampled))
+                  remote-parent-not-sampled (.setLocalParentNotSampled (as-Sampler
+                                                                        remote-parent-not-sampled))
+                  local-parent-sampled      (.setLocalParentSampled (as-Sampler
+                                                                     local-parent-sampled))
+                  local-parent-not-sampled  (.setLocalParentNotSampled (as-Sampler
+                                                                        local-parent-not-sampled)))]
     (.build builder)))
 
 (defn ^:no-doc as-Sampler
@@ -68,66 +75,69 @@
   (if (instance? Sampler sampler)
     sampler
     (let [{:keys [always ratio parent-based]} sampler]
-      (cond
-        always (case always
-                 :on (Sampler/alwaysOn)
-                 :off (Sampler/alwaysOff))
-        ratio (Sampler/traceIdRatioBased ratio)
-        parent-based (map->ParentBasedSampler parent-based)))))
+      (cond always       (case always
+                           :on  (Sampler/alwaysOn)
+                           :off (Sampler/alwaysOff))
+            ratio        (Sampler/traceIdRatioBased ratio)
+            parent-based (map->ParentBasedSampler parent-based)))))
 
 (defn- as-SpanProcessor
   [span-processor]
   (if (instance? SpanProcessor span-processor)
     span-processor
-    (let [{:keys [^Iterable exporters batch? schedule-delay exporter-timeout max-queue-size max-export-batch-size]
-           :or   {batch? true}} span-processor
+    (let [{:keys [^Iterable exporters batch? schedule-delay exporter-timeout max-queue-size
+                  max-export-batch-size]
+           :or   {batch? true}}
+          span-processor
+
           composite-exporter (SpanExporter/composite exporters)]
       (if batch?
         (let [builder (cond-> (BatchSpanProcessor/builder composite-exporter)
-                              schedule-delay (.setScheduleDelay (util/duration schedule-delay))
-                              exporter-timeout (.setExporterTimeout (util/duration exporter-timeout))
-                              max-queue-size (.setMaxQueueSize max-queue-size)
-                              max-export-batch-size (.setMaxExportBatchSize max-export-batch-size))]
+                        schedule-delay        (.setScheduleDelay (util/duration schedule-delay))
+                        exporter-timeout      (.setExporterTimeout (util/duration exporter-timeout))
+                        max-queue-size        (.setMaxQueueSize max-queue-size)
+                        max-export-batch-size (.setMaxExportBatchSize max-export-batch-size))]
           (.build builder))
         (SimpleSpanProcessor/create composite-exporter)))))
 
 (defn- ^SdkTracerProviderBuilder set-span-limits
   [^SdkTracerProviderBuilder builder span-limits]
-  (if-let [^SpanLimits span-limits' (cond
-                                      (instance? SpanLimits span-limits) span-limits
-                                      (map? span-limits) (as-SpanLimits span-limits))]
+  (if-let [^SpanLimits span-limits' (cond (instance? SpanLimits span-limits) span-limits
+                                          (map? span-limits) (as-SpanLimits span-limits))]
     (.setSpanLimits builder span-limits')
-    (if-let [^Supplier supplier (cond
-                                  (instance? Supplier span-limits) span-limits
-                                  (fn? span-limits) (reify Supplier
-                                                      (get [_]
-                                                        (as-SpanLimits (span-limits)))))]
+    (if-let [^Supplier supplier (cond (instance? Supplier span-limits) span-limits
+                                      (fn? span-limits) (reify
+                                                         Supplier
+                                                           (get [_]
+                                                             (as-SpanLimits (span-limits)))))]
       (.setSpanLimits builder supplier)
       builder)))
 
 (defn- get-sdk-tracer-provider
   [{:keys [span-processors span-limits sampler resource id-generator clock]
     :or   {span-processors []}}]
-  (let [^SdkTracerProviderBuilder bb (reduce #(.addSpanProcessor ^SdkTracerProviderBuilder %1 (as-SpanProcessor %2))
+  (let [^SdkTracerProviderBuilder bb (reduce #(.addSpanProcessor ^SdkTracerProviderBuilder %1
+                                                                 (as-SpanProcessor %2))
                                              (SdkTracerProvider/builder)
                                              span-processors)
         builder (cond-> bb
-                        span-limits (set-span-limits span-limits)
-                        sampler (.setSampler (as-Sampler sampler))
-                        resource (.setResource (as-Resource resource))
-                        id-generator (.setIdGenerator id-generator)
-                        clock (.setClock clock))]
+                  span-limits  (set-span-limits span-limits)
+                  sampler      (.setSampler (as-Sampler sampler))
+                  resource     (.setResource (as-Resource resource))
+                  id-generator (.setIdGenerator id-generator)
+                  clock        (.setClock clock))]
     (.build builder)))
 
 (defn- get-open-telemetry-sdk
   [{:keys [tracer-provider ^Iterable text-map-propagators]}]
   (let [propagators (ContextPropagators/create (TextMapPropagator/composite text-map-propagators))
-        builder (doto (OpenTelemetrySdk/builder)
-                  (.setPropagators propagators)
-                  (.setTracerProvider tracer-provider))]
+        builder     (doto (OpenTelemetrySdk/builder)
+                     (.setPropagators propagators)
+                     (.setTracerProvider tracer-provider))]
     (.build builder)))
 
-(def ^:private sdk-tracer-provider (atom nil))
+(def ^:private sdk-tracer-provider
+  (atom nil))
 
 (defn init-otel-sdk!
   "Configure an `OpenTelemetrySdk` instance and set as the global
@@ -196,12 +206,14 @@
   |`:remote-parent-not-sampled`| Option map (see `:sampler` table above) or `Sampler` to use when there is a remote parent that was not sampled (default: same as `{:always :off}`).
   |`:local-parent-sampled`     | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was sampled (default: same as `{:always :on}`).
   |`:local-parent-not-sampled` | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was not sampled (default: same as `{:always :off}`)."
-  [service-name {:keys [resources tracer-provider propagators]
-                 :or   {propagators [(w3c-trace/w3c-trace-context-propagator) (w3c-baggage/w3c-baggage-propagator)]}}]
+  [service-name
+   {:keys [resources tracer-provider propagators]
+    :or   {propagators [(w3c-trace/w3c-trace-context-propagator)
+                        (w3c-baggage/w3c-baggage-propagator)]}}]
   (let [resource (merge-resources-with-default service-name resources)
         tracer-provider' (get-sdk-tracer-provider (assoc tracer-provider :resource resource))
-        sdk (get-open-telemetry-sdk {:tracer-provider      tracer-provider'
-                                     :text-map-propagators propagators})]
+        sdk      (get-open-telemetry-sdk {:tracer-provider      tracer-provider'
+                                          :text-map-propagators propagators})]
     (otel/set-global-otel! sdk)
     (reset! sdk-tracer-provider tracer-provider')))
 

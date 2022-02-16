@@ -1,12 +1,13 @@
+;!zprint {:width 140}
+
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure                      {:mvn/version "1.10.3"}
-           ring/ring-core                           {:mvn/version "1.9.5"}
+ :deps    {org.clojure/clojure {:mvn/version "1.10.3"}
+           ring/ring-core      {:mvn/version "1.9.5"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0"}}
 
- :aliases {
-           ;; Used for development of clj-otel-* libraries with the examples
+ :aliases {;; Used for development of clj-otel-* libraries with the examples
 
            :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}}}
 
-           }}
+          }}

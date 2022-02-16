@@ -14,7 +14,8 @@
   [word]
 
   ;; Manually create an internal span that wraps body (lexical scope)
-  (span/with-span! {:name "Calculating length" :attributes {:my-arg word}}
+  (span/with-span! {:name       "Calculating length"
+                    :attributes {:my-arg word}}
 
     (Thread/sleep (+ 50 (rand-int 80)))
 
@@ -23,9 +24,10 @@
     ;; exception event and the span status description is set to the
     ;; exception triage summary.
     (when (= "boom" word)
-      (throw (ex-info "Unable to process word" {:status        500
-                                                :error         ::word-processing-error
-                                                ::problem-word word})))
+      (throw (ex-info "Unable to process word"
+                      {:status        500
+                       :error         ::word-processing-error
+                       ::problem-word word})))
 
     (let [result (count word)]
 
@@ -48,13 +50,16 @@
 
     ;; Simulate a client error for some requests.
     (if (= word "problem")
-      (throw (ex-info "Bad word argument" {:status 400 :error ::bad-word-argument}))
+      (throw (ex-info "Bad word argument"
+                      {:status 400
+                       :error  ::bad-word-argument}))
       (response/response (str (word-length word))))))
 
 
 (defn handler
   "Synchronous Ring handler for all requests."
-  [{:keys [request-method uri] :as request}]
+  [{:keys [request-method uri]
+    :as   request}]
   (case [request-method uri]
     [:get "/length"] (get-length-handler request)
     (response/not-found "Not found")))
@@ -75,4 +80,6 @@
 
 
 (defonce ^{:doc "word-length-service server instance"} server
-         (jetty/run-jetty #'service {:port 8081 :join? false}))
+         (jetty/run-jetty #'service
+                          {:port  8081
+                           :join? false}))

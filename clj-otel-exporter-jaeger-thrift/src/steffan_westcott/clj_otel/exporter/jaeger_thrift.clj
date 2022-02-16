@@ -14,6 +14,6 @@
    (span-exporter {}))
   ([{:keys [endpoint thrift-sender]}]
    (let [builder (cond-> (JaegerThriftSpanExporter/builder)
-                         endpoint (.setEndpoint endpoint)
-                         thrift-sender (.setThriftSender thrift-sender))]
+                   endpoint      (.setEndpoint endpoint)
+                   thrift-sender (.setThriftSender thrift-sender))]
      (.build builder))))
