@@ -146,7 +146,7 @@
 
 (defn lint
   "Lint all clj-otel-* libraries, example applications and tutorial source
-  files using clj-kondo."
+  files using clj-kondo. Assumes a working installation of `clj-kondo` binary."
   [opts]
   (let [src-paths (map #(str % "/src") project-paths)]
     (-> opts
@@ -166,11 +166,16 @@
       (cb/run-task [:antq])))
 
 (defn fmt
-  "Apply formatting to all *.clj and *.edn source files using zprint."
+  "Apply formatting to all *.clj and *.edn source files using zprint. Assumes
+  a working installation of `zprint` executable binary."
   [opts]
   (let [project-files (mapcat #(globs % "src/**.clj" "*.edn" "resources/**.edn") project-paths)
         other-files   (globs "." "*.clj" "*.edn" ".clj-kondo/**.edn" "doc/**.edn")
-        files         (concat project-files other-files)]
+        files         (concat project-files other-files)
+        config-url    (-> ".zprintrc"
+                          io/file
+                          io/as-url
+                          str)]
     (-> opts
-        (assoc :command-args (concat ["zprint" "-fsw"] files))
+        (assoc :command-args (concat ["zprint" "-u" config-url "-fsw"] files))
         b/process)))
