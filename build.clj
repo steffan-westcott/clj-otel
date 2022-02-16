@@ -17,7 +17,7 @@
             [org.corfield.build :as cb])
   (:import (java.nio.file FileSystems)))
 
-(def group-id
+(def ^:private group-id
   "com.github.steffan-westcott")
 
 (def ^:private deploy-version
