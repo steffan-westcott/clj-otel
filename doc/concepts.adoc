@@ -113,7 +113,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://grafana.com/products/cloud/[Grafana Cloud]
 * https://www.aspecto.io/[Aspecto]
 * https://www.datadoghq.com/[Datadog]
-* https://www.elastic.co/apm/[Elastic APM]
+* https://www.elastic.co/observability/application-performance-monitoring[Elastic APM]
 * https://www.splunk.com/en_us/observability.html[Splunk Observability Cloud]
 * https://www.sumologic.com/[Sumo Logic]
 * https://uptrace.dev/[Uptrace]
@@ -267,8 +267,8 @@ OpenTelemetry provides text map propagators for the following protocols:
 * https://www.w3.org/TR/baggage/[W3C baggage header propagation protocol]
 * https://github.com/opentracing/basictracer-python/blob/master/basictracer/text_propagator.py[OpenTracing Basic Tracers protocol]
 * Jaeger propagation protocol
-* https://github.com/openzipkin/b3-propagation>openzipkin/b3-propagation[B3 propagation protocol]
-* https://https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader[AWS X-Ray Trace Header propagation protocol]
+* https://github.com/openzipkin/b3-propagation[B3 propagation protocol]
+* https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader[AWS X-Ray Trace Header propagation protocol]
 
 The *W3C Trace Context* and *W3C baggage header* propagation protocols are the most commonly used protocols for propagation of trace context and baggage.
 
