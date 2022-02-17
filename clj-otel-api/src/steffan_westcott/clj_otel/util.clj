@@ -1,31 +1,46 @@
 (ns steffan-westcott.clj-otel.util
   "General utility functions."
   (:import (java.time Duration Instant)
-           (java.util.concurrent TimeUnit)))
+           (java.util.concurrent TimeUnit)
+           (clojure.lang IPersistentVector Keyword)))
 
-(defn duration
-  "Coerce to a `Duration` instance."
-  [d]
-  (cond
-    (instance? Duration d) d
-    (vector? d) (let [[amount unit] d]
-                  (Duration/of amount unit))))
+(defprotocol AsDuration
+  (duration [d]
+   "Coerce to a `Duration` instance."))
 
-(defn timestamp
-  "Coerce `Instant` to a vector `[amount ^TimeUnit unit]`."
-  [t]
-  (cond
-    (vector? t) t
-    (instance? Instant t) (let [seconds-part (.getEpochSecond ^Instant t)
-                                nanos-part   (.getNano ^Instant t)
-                                nanos        (+ (.toNanos TimeUnit/SECONDS seconds-part)
-                                                nanos-part)]
-                            [nanos TimeUnit/NANOSECONDS])))
+(extend-protocol AsDuration
+ Duration
+   (duration [d]
+     d)
+ IPersistentVector
+   (duration [d]
+     (let [[amount unit] d]
+       (Duration/of amount unit))))
 
-(defn qualified-name
-  "Given a keyword, returns the name qualified with its namespace if it has
-  one. Given anything other than a keyword, returns argument."
-  [x]
-  (if (keyword? x)
-    (str (symbol x))
-    x))
+(defprotocol AsTimestamp
+  (timestamp [t]
+   "Coerce `Instant` to a vector `[amount ^TimeUnit unit]`."))
+
+(extend-protocol AsTimestamp
+ Instant
+   (timestamp [t]
+     (let [seconds-part (.getEpochSecond t)
+           nanos-part   (.getNano t)
+           nanos        (+ (.toNanos TimeUnit/SECONDS seconds-part) nanos-part)]
+       [nanos TimeUnit/NANOSECONDS]))
+ IPersistentVector
+   (timestamp [t]
+     t))
+
+(defprotocol AsQualifiedName
+  (qualified-name [x]
+   "Given a keyword, returns the name qualified with its namespace if it has
+   one. Given anything other than a keyword, returns argument."))
+
+(extend-protocol AsQualifiedName
+ Keyword
+   (qualified-name [x]
+     (str (symbol x)))
+ Object
+   (qualified-name [x]
+     x))
