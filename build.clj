@@ -175,7 +175,7 @@
   a working installation of `zprint` executable binary."
   [opts]
   (let [project-files (mapcat #(globs % "src/**.clj" "*.edn" "resources/**.edn") project-paths)
-        other-files   (globs "." "*.clj" "*.edn" ".clj-kondo/**.edn" "doc/**.edn")
+        other-files   (globs "." "*.clj" "*.edn" ".zprintrc" ".clj-kondo/**.edn" "doc/**.edn")
         files         (concat project-files other-files)
         config-url    (-> ".zprintrc"
                           io/file
