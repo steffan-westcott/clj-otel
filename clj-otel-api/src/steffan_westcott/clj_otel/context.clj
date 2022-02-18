@@ -3,9 +3,9 @@
   (:require [clojure.string :as str]
             [steffan-westcott.clj-otel.api.otel :as otel]
             [steffan-westcott.clj-otel.util :as util])
-  (:import (java.util HashMap Map)
-           (io.opentelemetry.context Context ContextKey ImplicitContextKeyed Scope)
-           (io.opentelemetry.context.propagation TextMapSetter TextMapPropagator TextMapGetter)))
+  (:import (io.opentelemetry.context Context ContextKey ImplicitContextKeyed Scope)
+           (io.opentelemetry.context.propagation TextMapGetter TextMapPropagator TextMapSetter)
+           (java.util HashMap Map)))
 
 (defn current
   "Returns the current context, a thread local `Context` object. If no such

@@ -3,7 +3,7 @@
   `io.opentelemetry.api.baggage.Baggage` objects."
   (:require [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.api.baggage Baggage BaggageEntryMetadata BaggageEntry BaggageBuilder)))
+  (:import (io.opentelemetry.api.baggage Baggage BaggageBuilder BaggageEntry BaggageEntryMetadata)))
 
 (defn get-baggage
   "Gets the baggage from a given context, or the current context if none is

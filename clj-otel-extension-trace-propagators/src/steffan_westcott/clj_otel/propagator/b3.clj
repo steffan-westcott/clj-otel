@@ -1,10 +1,10 @@
 (ns steffan-westcott.clj-otel.propagator.b3
-  "Access to [B3 propagation protocol](https://github.com/openzipkin/b3-propagation>openzipkin/b3-propagation)
+  "Access to [B3 propagation protocol](https://github.com/openzipkin/b3-propagation)
   implementation."
   (:import (io.opentelemetry.extension.trace.propagation B3Propagator)))
 
 (defn b3-propagator
-  "Returns an implementation of the [B3 propagation protocol](https://github.com/openzipkin/b3-propagation>openzipkin/b3-propagation).
+  "Returns an implementation of the [B3 propagation protocol](https://github.com/openzipkin/b3-propagation).
   Takes an option map as follows:
 
   | key            | description |

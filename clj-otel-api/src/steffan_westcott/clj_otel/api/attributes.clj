@@ -2,7 +2,7 @@
   "Conversion functions between maps and
   `io.opentelemetry.api.common.Attributes` objects."
   (:require [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.api.common Attributes AttributeKey AttributeType AttributesBuilder)))
+  (:import (io.opentelemetry.api.common AttributeKey AttributeType Attributes AttributesBuilder)))
 
 (def ^:private type->keyfn
   {AttributeType/BOOLEAN       #(AttributeKey/booleanKey %)

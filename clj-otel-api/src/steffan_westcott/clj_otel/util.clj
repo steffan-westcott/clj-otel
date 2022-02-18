@@ -1,8 +1,8 @@
 (ns steffan-westcott.clj-otel.util
   "General utility functions."
-  (:import (java.time Duration Instant)
-           (java.util.concurrent TimeUnit)
-           (clojure.lang IPersistentVector Keyword)))
+  (:import (clojure.lang IPersistentVector Keyword)
+           (java.time Duration Instant)
+           (java.util.concurrent TimeUnit)))
 
 (defprotocol AsDuration
   (duration [d]
