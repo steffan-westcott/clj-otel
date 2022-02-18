@@ -18,7 +18,7 @@
    (io.opentelemetry.semconv.resource.attributes ResourceAttributes)))
 
 (defprotocol ^:private AsResource
-  (as-Resource [resource]))
+  (^:private as-Resource [resource]))
 
 (extend-protocol AsResource
  Resource
@@ -35,7 +35,7 @@
     (reduce #(.merge ^Resource %1 (as-Resource %2)) (Resource/getDefault) resources')))
 
 (defprotocol ^:private AsSpanLimits
-  (as-SpanLimits [span-limits]))
+  (^:private as-SpanLimits [span-limits]))
 
 (extend-protocol AsSpanLimits
  SpanLimits
@@ -54,7 +54,7 @@
        (.build builder))))
 
 (defprotocol ^:private AsSpanLimitsSupplier
-  (as-SpanLimits-Supplier [supplier]))
+  (^:private as-SpanLimits-Supplier [supplier]))
 
 (extend-protocol AsSpanLimitsSupplier
  Supplier
@@ -99,7 +99,7 @@
            parent-based (map->ParentBasedSampler parent-based))))
 
 (defprotocol ^:private AsSpanProcessor
-  (as-SpanProcessor [span-processor]))
+  (^:private as-SpanProcessor [span-processor]))
 
 (extend-protocol AsSpanProcessor
  SpanProcessor

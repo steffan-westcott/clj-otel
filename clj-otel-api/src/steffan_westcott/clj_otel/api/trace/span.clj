@@ -79,7 +79,7 @@
    (Span/fromContext context)))
 
 (defprotocol ^:private AsSpanContext
-  (span-context [x]))
+  (^:private span-context [x]))
 
 (extend-protocol AsSpanContext
  SpanContext
