@@ -48,12 +48,17 @@
   (memoize (fn [k]
              (ContextKey/named (util/qualified-name k)))))
 
-(defn ^ContextKey context-key
-  "Coerces k to a `ContextKey`."
-  [k]
-  (if (instance? ContextKey k)
-    k
-    (context-key* k)))
+(defprotocol AsContextKey
+  (context-key [k]
+   "Coerces k to a `ContextKey`."))
+
+(extend-protocol AsContextKey
+ ContextKey
+   (context-key [k]
+     k)
+ Object
+   (context-key [k]
+     (context-key* k)))
 
 (defn get-value
   "Returns the value stored in the context for the given context key."
