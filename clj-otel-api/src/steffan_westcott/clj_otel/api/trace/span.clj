@@ -6,10 +6,10 @@
             [steffan-westcott.clj-otel.config :refer [config]]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.api.trace SpanBuilder Span SpanContext StatusCode SpanKind Tracer)
+  (:import (io.opentelemetry.api OpenTelemetry)
+           (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
-           (io.opentelemetry.semconv.trace.attributes SemanticAttributes)
-           (io.opentelemetry.api OpenTelemetry)))
+           (io.opentelemetry.semconv.trace.attributes SemanticAttributes)))
 
 (def ^:private default-library
   (get-in config [:defaults :instrumentation-library]))
@@ -78,15 +78,27 @@
   ([context]
    (Span/fromContext context)))
 
+(defprotocol ^:private AsSpanContext
+  (span-context [x]))
+
+(extend-protocol AsSpanContext
+ SpanContext
+   (span-context [x]
+     x)
+ Span
+   (span-context [x]
+     (.getSpanContext x))
+ Context
+   (span-context [x]
+     (.getSpanContext (get-span x))))
+
 (defn get-span-context
   "Returns the given `SpanContext`, or extracts it from the given span,
   context or current context if no argument is given."
   ([]
    (get-span-context (get-span)))
   ([x]
-   (cond (instance? SpanContext x) x
-         (instance? Span x)        (.getSpanContext ^Span x)
-         (instance? Context x)     (.getSpanContext (get-span ^Context x)))))
+   (span-context x)))
 
 (defn- add-link
   [^SpanBuilder builder [sc attributes]]

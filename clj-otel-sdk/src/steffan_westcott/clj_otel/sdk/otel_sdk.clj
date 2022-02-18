@@ -6,21 +6,27 @@
             [steffan-westcott.clj-otel.propagator.w3c-trace-context :as w3c-trace]
             [steffan-westcott.clj-otel.util :as util])
   (:import
-   (io.opentelemetry.sdk.trace SdkTracerProvider SpanLimits SpanProcessor SdkTracerProviderBuilder)
+   (clojure.lang Fn)
+   (java.util Map)
+   (java.util.function Supplier)
    (io.opentelemetry.context.propagation ContextPropagators TextMapPropagator)
-   (io.opentelemetry.sdk.resources Resource)
-   (io.opentelemetry.sdk.trace.samplers Sampler)
-   (io.opentelemetry.sdk.trace.export BatchSpanProcessor SpanExporter SimpleSpanProcessor)
    (io.opentelemetry.sdk OpenTelemetrySdk)
-   (io.opentelemetry.semconv.resource.attributes ResourceAttributes)
-   (java.util.function Supplier)))
+   (io.opentelemetry.sdk.resources Resource)
+   (io.opentelemetry.sdk.trace SdkTracerProvider SdkTracerProviderBuilder SpanLimits SpanProcessor)
+   (io.opentelemetry.sdk.trace.export BatchSpanProcessor SimpleSpanProcessor SpanExporter)
+   (io.opentelemetry.sdk.trace.samplers Sampler)
+   (io.opentelemetry.semconv.resource.attributes ResourceAttributes)))
 
-(defn- as-Resource
-  [resource]
-  (if (instance? Resource resource)
-    resource
-    (let [{:keys [attributes schema-url]} resource]
-      (Resource/create (attr/->attributes attributes) schema-url))))
+(defprotocol ^:private AsResource
+  (as-Resource [resource]))
+
+(extend-protocol AsResource
+ Resource
+   (as-Resource [resource]
+     resource)
+ Map
+   (as-Resource [{:keys [attributes schema-url]}]
+     (Resource/create (attr/->attributes attributes) schema-url)))
 
 (defn- merge-resources-with-default
   [service-name resources]
@@ -28,25 +34,42 @@
         resources'       (cons service-resource resources)]
     (reduce #(.merge ^Resource %1 (as-Resource %2)) (Resource/getDefault) resources')))
 
-(defn- ^SpanLimits as-SpanLimits
-  [span-limits]
-  (cond
-    (instance? SpanLimits span-limits) span-limits
-    (map? span-limits)
-    (let [{:keys [max-attrs max-events max-links max-attrs-per-event max-attrs-per-link
-                  max-attr-value-len]}
-          span-limits
+(defprotocol ^:private AsSpanLimits
+  (as-SpanLimits [span-limits]))
 
-          builder (cond-> (SpanLimits/builder)
-                    max-attrs          (.setMaxNumberOfAttributes max-attrs)
-                    max-events         (.setMaxNumberOfEvents max-events)
-                    max-links          (.setMaxNumberOfLinks max-links)
-                    max-attrs-per-event (.setMaxNumberOfAttributesPerEvent max-attrs-per-event)
-                    max-attrs-per-link (.setMaxNumberOfAttributesPerLink max-attrs-per-link)
-                    max-attr-value-len (.setMaxAttributeValueLength max-attr-value-len))]
-      (.build builder))))
+(extend-protocol AsSpanLimits
+ SpanLimits
+   (as-SpanLimits [span-limits]
+     span-limits)
+ Map
+   (as-SpanLimits [{:keys [max-attrs max-events max-links max-attrs-per-event max-attrs-per-link
+                           max-attr-value-len]}]
+     (let [builder (cond-> (SpanLimits/builder)
+                     max-attrs          (.setMaxNumberOfAttributes max-attrs)
+                     max-events         (.setMaxNumberOfEvents max-events)
+                     max-links          (.setMaxNumberOfLinks max-links)
+                     max-attrs-per-event (.setMaxNumberOfAttributesPerEvent max-attrs-per-event)
+                     max-attrs-per-link (.setMaxNumberOfAttributesPerLink max-attrs-per-link)
+                     max-attr-value-len (.setMaxAttributeValueLength max-attr-value-len))]
+       (.build builder))))
 
-(declare as-Sampler)
+(defprotocol ^:private AsSpanLimitsSupplier
+  (as-SpanLimits-Supplier [supplier]))
+
+(extend-protocol AsSpanLimitsSupplier
+ Supplier
+   (as-SpanLimits-Supplier [supplier]
+     supplier)
+ Fn
+   (as-SpanLimits-Supplier [supplier]
+     (reify
+      Supplier
+        (get [_]
+          (as-SpanLimits (supplier))))))
+
+(defprotocol ^:no-doc AsSampler
+  (as-Sampler [sampler]
+   "Coerce to `Sampler`. May be given a `:sampler` option map, see [[init-otel-sdk!]]."))
 
 (defn- map->ParentBasedSampler
   [{:keys [root remote-parent-sampled remote-parent-not-sampled local-parent-sampled
@@ -63,55 +86,48 @@
                                                                         local-parent-not-sampled)))]
     (.build builder)))
 
-(defn ^:no-doc as-Sampler
-  "Coerce to [[Sampler]]. May be given a map as follows:
+(extend-protocol AsSampler
+ Sampler
+   (as-Sampler [sampler]
+     sampler)
+ Map
+   (as-Sampler [{:keys [always ratio parent-based]}]
+     (cond always       (case always
+                          :on  (Sampler/alwaysOn)
+                          :off (Sampler/alwaysOff))
+           ratio        (Sampler/traceIdRatioBased ratio)
+           parent-based (map->ParentBasedSampler parent-based))))
 
-  | key           | description |
-  |---------------|-------------|
-  |`:always`      | With value `:on` always record and export all spans. With value `:off` drop all spans.
-  |`:ratio`       | double in range [0.0, 1.0], describing the ratio of spans to be sampled.
-  |`:parent-based`| Option map (see table below), describing sampling decisions based on the parent span."
-  [sampler]
-  (if (instance? Sampler sampler)
-    sampler
-    (let [{:keys [always ratio parent-based]} sampler]
-      (cond always       (case always
-                           :on  (Sampler/alwaysOn)
-                           :off (Sampler/alwaysOff))
-            ratio        (Sampler/traceIdRatioBased ratio)
-            parent-based (map->ParentBasedSampler parent-based)))))
+(defprotocol ^:private AsSpanProcessor
+  (as-SpanProcessor [span-processor]))
 
-(defn- as-SpanProcessor
-  [span-processor]
-  (if (instance? SpanProcessor span-processor)
-    span-processor
-    (let [{:keys [^Iterable exporters batch? schedule-delay exporter-timeout max-queue-size
-                  max-export-batch-size]
-           :or   {batch? true}}
-          span-processor
+(extend-protocol AsSpanProcessor
+ SpanProcessor
+   (as-SpanProcessor [span-processor]
+     span-processor)
+ Map
+   (as-SpanProcessor [span-processor]
+     (let [{:keys [^Iterable exporters batch? schedule-delay exporter-timeout max-queue-size
+                   max-export-batch-size]
+            :or   {batch? true}}
+           span-processor
 
-          composite-exporter (SpanExporter/composite exporters)]
-      (if batch?
-        (let [builder (cond-> (BatchSpanProcessor/builder composite-exporter)
-                        schedule-delay        (.setScheduleDelay (util/duration schedule-delay))
-                        exporter-timeout      (.setExporterTimeout (util/duration exporter-timeout))
-                        max-queue-size        (.setMaxQueueSize max-queue-size)
-                        max-export-batch-size (.setMaxExportBatchSize max-export-batch-size))]
-          (.build builder))
-        (SimpleSpanProcessor/create composite-exporter)))))
+           composite-exporter (SpanExporter/composite exporters)]
+       (if batch?
+         (let [builder (cond-> (BatchSpanProcessor/builder composite-exporter)
+                         schedule-delay        (.setScheduleDelay (util/duration schedule-delay))
+                         exporter-timeout      (.setExporterTimeout (util/duration
+                                                                     exporter-timeout))
+                         max-queue-size        (.setMaxQueueSize max-queue-size)
+                         max-export-batch-size (.setMaxExportBatchSize max-export-batch-size))]
+           (.build builder))
+         (SimpleSpanProcessor/create composite-exporter)))))
 
 (defn- ^SdkTracerProviderBuilder set-span-limits
   [^SdkTracerProviderBuilder builder span-limits]
-  (if-let [^SpanLimits span-limits' (cond (instance? SpanLimits span-limits) span-limits
-                                          (map? span-limits) (as-SpanLimits span-limits))]
-    (.setSpanLimits builder span-limits')
-    (if-let [^Supplier supplier (cond (instance? Supplier span-limits) span-limits
-                                      (fn? span-limits) (reify
-                                                         Supplier
-                                                           (get [_]
-                                                             (as-SpanLimits (span-limits)))))]
-      (.setSpanLimits builder supplier)
-      builder)))
+  (if (satisfies? AsSpanLimits span-limits)
+    (.setSpanLimits builder ^SpanLimits (as-SpanLimits span-limits))
+    (.setSpanLimits builder ^Supplier (as-SpanLimits-Supplier span-limits))))
 
 (defn- get-sdk-tracer-provider
   [{:keys [span-processors span-limits sampler resource id-generator clock]
@@ -223,4 +239,3 @@
   []
   (when-let [^SdkTracerProvider tracer-provider @sdk-tracer-provider]
     (.close tracer-provider)))
-
