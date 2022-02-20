@@ -72,6 +72,13 @@
        (when snapshot?
          "-SNAPSHOT")))
 
+(defn- checked-process
+  [params]
+  (let [result (b/process params)]
+    (if (zero? (:exit result))
+      result
+      (throw (ex-info "Process returned non-zero exit code." (assoc result :params params))))))
+
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
   `Path` arg and false otherwise. If given several patterns, returns true if
@@ -156,7 +163,7 @@
   (let [src-paths (map #(str % "/src") project-paths)]
     (-> opts
         (assoc :command-args (concat ["clj-kondo" "--lint" "build.clj"] src-paths))
-        b/process)))
+        checked-process)))
 
 (defn outdated
   "Check all clj-otel-* libraries, example applications and tutorials for
@@ -183,4 +190,4 @@
                           str)]
     (-> opts
         (assoc :command-args (concat ["zprint" "-u" config-url "-fsw"] files))
-        b/process)))
+        checked-process)))
