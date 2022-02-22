@@ -1,0 +1,41 @@
+name: Deploy clj-otel modules
+
+on:
+  workflow_dispatch:
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up git user
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - name: Install Clojure CLI tools
+        uses: DeLaGuardo/setup-clojure@4.0
+        with:
+          cli: '1.10.3.1075'
+      - name: Cache deps
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.clojure
+            ~/.cpcache
+          key: ${{ runner.os }}-${{ hashFiles('deps.edn') }}-${{ hashFiles('**/deps.edn') }}-deploy
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('deps.edn') }}-${{ hashFiles('**/deps.edn') }}-
+            ${{ runner.os }}-${{ hashFiles('deps.edn') }}-
+            ${{ runner.os }}-
+      - name: Deploy release (and tag release if not *-SNAPSHOT version)
+        run: clojure -J-Dclojure.main.report=stderr -T:build deploy
+        env:
+          CLOJARS_PASSWORD: ${{ secrets.DEPLOY_TOKEN }}
+          CLOJARS_USERNAME: ${{ secrets.DEPLOY_USERNAME }}

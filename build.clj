@@ -20,8 +20,8 @@
 (def ^:private group-id
   "com.github.steffan-westcott")
 
-(def ^:private base-version
-  "0.1.0")
+(def ^:private version
+  "0.1.0-SNAPSHOT")
 
 ;; Later artifacts in this vector may depend on earlier artifacts
 (def ^:private artifact-ids
@@ -66,11 +66,8 @@
 (def ^:private group-artifact-ids
   (map group-artifact-id artifact-ids))
 
-(defn- version
-  [{:keys [snapshot?]}]
-  (str base-version
-       (when snapshot?
-         "-SNAPSHOT")))
+(def ^:private snapshot?
+  (str/ends-with? version "-SNAPSHOT"))
 
 (defn- checked-process
   [params]
@@ -78,6 +75,10 @@
     (if (zero? (:exit result))
       result
       (throw (ex-info "Process returned non-zero exit code." (assoc result :params params))))))
+
+(defn- head-sha-1
+  []
+  (b/git-process {:git-args "rev-parse HEAD"}))
 
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
@@ -111,12 +112,14 @@
   (file-match root (apply glob-match patterns)))
 
 (defn- jar-artifact
-  [{:keys [snapshot?]
-    :as   opts} artifact-id]
+  [opts artifact-id]
   (b/set-project-root! artifact-id)
   (-> opts
       (assoc :lib     (symbol group-id artifact-id)
-             :version (version opts)
+             :version version
+             :tag     (if snapshot?
+                        (head-sha-1)
+                        version)
              :src-pom "template/pom.xml"
              :basis   (b/create-basis {:aliases (when snapshot?
                                                   [:snapshot])}))
@@ -126,21 +129,25 @@
 (defn- install-artifact
   [opts artifact-id]
   (let [opts' (jar-artifact opts artifact-id)]
-    (println (str "Installing " (group-artifact-id artifact-id) "..."))
+    (println (str "Installing " (group-artifact-id artifact-id)))
     (cb/install opts')))
 
 (defn- deploy-artifact
   [opts artifact-id]
   (let [opts' (install-artifact opts artifact-id)]
-    (println (str "Deploying " (group-artifact-id artifact-id) "..."))
+    (println (str "Deploying " (group-artifact-id artifact-id)))
     (cb/deploy opts')))
+
+(defn- tag-release
+  [tag]
+  (println (str "Creating and pushing tag " tag))
+  (checked-process {:command-args ["git" "tag" "-a" "-m" (str "Release " tag) tag]})
+  (checked-process {:command-args ["git" "push" "origin" tag]}))
 
 (defn install
   "Ensure all clj-otel-* library JAR files are built and installed in the local
   Maven repository. The libraries are processed in an order such that later
-  libraries may depend on earlier ones. `opts` is an option map that may take
-  option `:snapshot?`, where true indicates the installed JARs should be
-  `-SNAPSHOT` versions."
+  libraries may depend on earlier ones."
   [opts]
   (doseq [artifact-id artifact-ids]
     (install-artifact opts artifact-id)))
@@ -148,12 +155,15 @@
 (defn deploy
   "Ensure all clj-otel-* library JAR files are built, installed in the local
   Maven repository and deployed to Clojars. The libraries are processed in an
-  order such that later libraries may depend on earlier ones. `opts` is an
-  option map that may take option `:snapshot?`, where true indicates the
-  installed and deployed JARs should be `-SNAPSHOT` versions."
+  order such that later libraries may depend on earlier ones.
+
+  For non-SNAPSHOT versions, a git tag with the version name is created and
+  pushed to the origin repository."
   [opts]
   (doseq [artifact-id artifact-ids]
-    (deploy-artifact opts artifact-id)))
+    (deploy-artifact opts artifact-id))
+  (when-not snapshot?
+    (tag-release version)))
 
 (defn lint
   "Lint all clj-otel-* libraries, example applications and tutorial source
