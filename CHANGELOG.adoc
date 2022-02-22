@@ -1,7 +1,24 @@
 = Changelog
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
 
 All `clj-otel-*` module versions are released in lockstep to Clojars.
 
-== Under development
+`x.y.z` versions listed below do not follow semantic versioning.
+Instead, development proceeds on a linear path where `z` increases for batches of incremental changes and `y` increases (with `z` reset to `0`) when milestones are reached.
+
+Breaking changes will be documented here.
+
+WARNING: Until version `1.0.0` there is a greater possibility of breaking changes.
+
+== `0.x` changes
+
+=== `0.1.0-SNAPSHOT` (in progress)
 
 - Initial release
