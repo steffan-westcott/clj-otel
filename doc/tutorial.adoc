@@ -33,8 +33,8 @@ The `counter-service` application is a simple Jetty HTTP service using Ring that
 
 Initially the application has no instrumentation.
 
-In your favourite development environment, create a project with these two files:
-
+* In your favourite development environment, create a project with these two files:
++
 .`./deps.edn`
 [source,clojure]
 ----
@@ -43,7 +43,7 @@ In your favourite development environment, create a project with these two files
  :deps  {org.clojure/clojure     {:mvn/version "1.10.3"}
          ring/ring-jetty-adapter {:mvn/version "1.9.5"}}}
 ----
-
++
 .`./src/tutorial/counter_service.clj`
 [source,clojure]
 ----
@@ -91,9 +91,10 @@ In your favourite development environment, create a project with these two files
   (jetty/run-jetty #'service {:port 8080 :join? false}))
 ----
 
-In a REPL load the namespace `tutorial.counter-service` to start the server.
-With `counter-service` running, use `curl` to try it out:
+* In a REPL load the namespace `tutorial.counter-service` to start the server.
 
+* With `counter-service` running, use `curl` to try it out:
++
 [source,bash]
 ----
 curl -X PUT "http://localhost:8080/reset?n=3"
@@ -106,17 +107,17 @@ curl -X GET "http://localhost:8080/count"
 
 == Start telemetry backend
 
-Now you will start a telemetry backend that will receive and display telemetry trace data exported by the application.
+You will now start a telemetry backend that will receive and display telemetry trace data exported by the application.
 
-Enter the following command to start a Jaeger instance in a container using Docker:
-
+* Enter the following command to start a Jaeger instance in a container using Docker:
++
 [source,bash]
 ----
 docker run --rm -p 16686:16686 -p 14250:14250 jaegertracing/all-in-one
 ----
 
-Once Jaeger has started, verify you can access the user interface by navigating to http://localhost:16686/search in a web browser.
-
+* Once Jaeger has started, verify you can access the user interface by navigating to http://localhost:16686/search in a web browser.
++
 There is no telemetry data to view yet as the application is not instrumented.
 
 NOTE: When finished, use `CTRL`+`C` to tear down the container.
@@ -125,11 +126,11 @@ NOTE: When finished, use `CTRL`+`C` to tear down the container.
 
 The application uses Jetty, which is supported by the OpenTelemetry instrumentation agent.
 
-Download the file `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[OpenTelemetry instrumentation agent releases page].
+* Download the file `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[OpenTelemetry instrumentation agent releases page].
 Ensure the file is placed in the project root directory (the same directory as `deps.edn`)
 
-Add an alias `:otel`:
-
+* Add an alias `:otel`:
++
 .`./deps.edn`
 [source,clojure]
 ----
@@ -143,11 +144,12 @@ Add an alias `:otel`:
                              "-Dotel.traces.exporter=jaeger"]}}}
 ----
 
-Restart the REPL with the alias `:otel` enabled and reload the `tutorial.counter-service` namespace to run the server with automatic instrumentation.
+* Restart the REPL with the alias `:otel` enabled and reload the `tutorial.counter-service` namespace to run the server with automatic instrumentation.
++
 Now as each request is handled by the application, a server span is exported to Jaeger.
 
-Exercise the server by sending a couple of requests:
-
+* Exercise the server by sending a couple of requests:
++
 [source,bash]
 ----
 curl -X PUT "http://localhost:8080/reset?n=7"
@@ -155,16 +157,17 @@ curl -X GET "http://localhost:8080/count"
 # 7
 ----
 
-In a web browser navigate to the Jaeger search page at http://localhost:16686/search.
+* In a web browser navigate to the Jaeger search page at http://localhost:16686/search.
 In the `Search` options, select `counter-service`  in the `Service` selector and click the `Find Traces` button.
-
++
 image::images/jaeger-search.png[Jaeger search results]
-
++
 You will see a trace corresponding to each request handled by the server.
-Click on the trace for `HTTP GET` to view it, then click on the single span in the trace to expand its details.
 
+* Click on the trace for `HTTP GET` to view it, then click on the single span in the trace to expand its details.
++
 image::images/jaeger-get-trace.png[Jaeger HTTP GET trace]
-
++
 The span's `Tags` attributes describe this as a server span for an HTTP `GET` request for target `/count` with an HTTP response code of 200.
 The span's `Process` attributes describe the instrumented application and its environment such as the service name, runtime JVM, process, OS and host.
 
@@ -172,8 +175,8 @@ The span's `Process` attributes describe the instrumented application and its en
 
 You will now enrich the telemetry detail by adding manual instrumentation on top of the automatic instrumentation.
 
-First, add a dependency `com.github.steffan-westcott/clj-otel-api`:
-
+* Add a dependency `com.github.steffan-westcott/clj-otel-api`:
++
 .`./deps.edn`
 [source,clojure]
 ----
@@ -188,8 +191,10 @@ First, add a dependency `com.github.steffan-westcott/clj-otel-api`:
                              "-Dotel.traces.exporter=jaeger"]}}}
 ----
 
-Update the Ring service definition to add server span support:
+* Restart the REPL (again with the alias `:otel` enabled) to pick up the new dependency.
 
+* Update the Ring service definition to add server span support:
++
 .`./src/tutorial/counter_service.clj`
 [source,clojure]
 ----
@@ -209,8 +214,8 @@ Update the Ring service definition to add server span support:
       (trace-http/wrap-server-span)))
 ----
 
-Update the `get-count-handler` function to add an attribute `counter` to the existing server span as follows:
-
+* Update the `get-count-handler` function to add an attribute `counter` to the existing server span as follows:
++
 [source,clojure]
 ----
 (defn get-count-handler []
@@ -219,8 +224,8 @@ Update the `get-count-handler` function to add an attribute `counter` to the exi
     (response/response (str n))))
 ----
 
-Reload the namespace in the REPL and issue some more requests:
-
+* Reload the namespace in the REPL and issue some more requests:
++
 [source,bash]
 ----
 curl -X PUT "http://localhost:8080/reset?n=5"
@@ -228,15 +233,15 @@ curl -X GET "http://localhost:8080/count"
 # 5
 ----
 
-In the Jaeger UI, navigate back to the search page and click the `Find Traces` button again to display the new traces.
+* In the Jaeger UI, navigate back to the search page and click the `Find Traces` button again to display the new traces.
 Click the most recent `HTTP GET` trace and expand the `Tags` of the single span.
-
++
 image::images/jaeger-get-trace-count.png[Jaeger HTTP GET trace]
-
++
 You will note that the attribute `counter` you added in the code appears in the exported span with value `5`.
 
-Now update the `inc-count-handler` function to add a new span that wraps part of the function body:
-
+* Update the `inc-count-handler` function to add a new span that wraps part of the function body:
++
 [source,clojure]
 ----
 (defn inc-count-handler []
@@ -245,21 +250,21 @@ Now update the `inc-count-handler` function to add a new span that wraps part of
   (response/status 204))
 ----
 
-Reload the namespace once more and exercise the function:
-
+* Reload the namespace once more and exercise the function:
++
 [source,bash]
 ----
 curl -X POST "http://localhost:8080/inc"
 ----
 
-Find the `HTTP POST` trace on the Jaeger search page (remember to refresh with the `Find Traces` button) and click to view its details.
-
+* Find the `HTTP POST` trace on the Jaeger search page (remember to refresh with the `Find Traces` button) and click to view its details.
++
 image::images/jaeger-post-inc.png[Jaeger HTTP POST trace]
-
++
 You will observe this trace has 2 spans; a root server span named `HTTP POST` and a child internal span named `Incrementing counter` that you added to the code.
 
-Now update the function `wrap-exception` to add detail about any caught exceptions to the server span:
-
+* Update the function `wrap-exception` to add detail about any caught exceptions to the server span:
++
 [source,clojure]
 ----
 (defn wrap-exception [handler]
@@ -272,16 +277,16 @@ Now update the function `wrap-exception` to add detail about any caught exceptio
           (response/status resp 500))))))
 ----
 
-After reloading the namespace, issue a malformed request to cause an exception:
-
+* Reload the namespace, then issue a malformed request to cause an exception:
++
 [source,bash]
 ----
 curl -X PUT "http://localhost:8080/reset?bogus=1"
 # Cannot parse null string
 ----
 
-Find the most recent `HTTP PUT` trace on the Jaeger search page.
+* Find the most recent `HTTP PUT` trace on the Jaeger search page.
 You will see that the server span has a `Logs` event that was added by `span/add-exception!`.
 The event attributes include a Clojure triage and stack trace of the caught exception.
-
++
 image::images/jaeger-exception.png[Jaeger exception trace]
