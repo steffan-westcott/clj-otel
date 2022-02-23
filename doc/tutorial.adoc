@@ -119,7 +119,7 @@ Once Jaeger has started, verify you can access the user interface by navigating 
 
 There is no telemetry data to view yet as the application is not instrumented.
 
-NOTE: When finished, use `CRTL`+`C` to tear down the container.
+FNOTE: When finished, use `CTRL`+`C` to tear down the container.
 
 == Add automatic instrumentation
 
