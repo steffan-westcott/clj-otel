@@ -80,6 +80,11 @@
   []
   (b/git-process {:git-args "rev-parse HEAD"}))
 
+(defn- println>
+  [x & args]
+  (apply println args)
+  x)
+
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
   `Path` arg and false otherwise. If given several patterns, returns true if
@@ -128,15 +133,19 @@
 
 (defn- install-artifact
   [opts artifact-id]
-  (let [opts' (jar-artifact opts artifact-id)]
-    (println (str "Installing " (group-artifact-id artifact-id)))
-    (cb/install opts')))
+  (-> opts
+      (jar-artifact artifact-id)
+      (println> (str "Installing " (group-artifact-id artifact-id)))
+      cb/install))
 
 (defn- deploy-artifact
   [opts artifact-id]
-  (let [opts' (install-artifact opts artifact-id)]
-    (println (str "Deploying " (group-artifact-id artifact-id)))
-    (cb/deploy opts')))
+  (-> opts
+      (install-artifact artifact-id)
+      (println> (str "Deploying " (group-artifact-id artifact-id)))
+      (assoc :artifact
+             (str artifact-id "/" (cb/default-jar-file (symbol group-id artifact-id) version)))
+      cb/deploy))
 
 (defn- tag-release
   [tag]
