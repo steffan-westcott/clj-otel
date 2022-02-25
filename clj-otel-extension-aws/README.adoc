@@ -1,6 +1,12 @@
 = `clj-otel-extension-aws`
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-extension-aws?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-extension-aws] image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-extension-aws[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-extension-aws] image:https://img.shields.io/badge/changelog-0.1.0-red[changelog,link=../CHANGELOG.adoc] image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License] image:https://img.shields.io/badge/clojurians-observability-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/observability]
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-extension-aws?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-extension-aws]
+ifndef::env-cljdoc[]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-extension-aws[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-extension-aws]
+endif::[]
+image:https://img.shields.io/badge/changelog-0.1.0-red[changelog,link=../CHANGELOG.adoc]
+image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License]
+image:https://img.shields.io/badge/clojurians-observability-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/observability]
 
 Clojure wrapper of OpenTelemetry API extensions for AWS
 

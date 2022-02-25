@@ -1,6 +1,12 @@
 = `clj-otel`
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api] image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-api[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT] image:https://img.shields.io/badge/changelog-0.1.0-red[changelog,link=CHANGELOG.adoc] image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License] image:https://img.shields.io/badge/clojurians-observability-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/observability]
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api]
+ifndef::env-cljdoc[]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-api[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT]
+endif::[]
+image:https://img.shields.io/badge/changelog-0.1.0-red[changelog,link=CHANGELOG.adoc]
+image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License]
+image:https://img.shields.io/badge/clojurians-observability-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/observability]
 
 `clj-otel` provides a *small idiomatic Clojure API* for adding *telemetry* to your libraries and applications using https://opentelemetry.io/[*OpenTelemetry*], an emerging standard for telemetry in cloud-native software, enabling effective *observability*.
 
