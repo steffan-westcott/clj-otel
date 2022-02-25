@@ -123,7 +123,7 @@ This is a very young project, so now is a good time to provide *feedback* on the
 
 I will be happy to consider pull requests for minor changes, but larger or structural changes may not be accepted while I make a start on some items in the TODO list.
 
-For questions or feedback on `clj-otel`, I can be contacted on `#observability` channel on http://clojurians.net/[Clojurians Slack], user `steffan`.
+For questions or feedback on `clj-otel`, I can be contacted on https://clojurians.slack.com/messages/clj-otel[`#clj-otel`] channel on http://clojurians.net/[Clojurians Slack], user `steffan`.
 
 == Development
 
