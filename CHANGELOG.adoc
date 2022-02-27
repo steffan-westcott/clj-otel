@@ -19,6 +19,6 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
-=== `0.1.0-SNAPSHOT` (in progress)
+=== `0.1.0` (2022-02-27)
 
 - Initial release
