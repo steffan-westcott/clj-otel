@@ -122,9 +122,7 @@
   (-> opts
       (assoc :lib     (symbol group-id artifact-id)
              :version version
-             :tag     (if snapshot?
-                        (head-sha-1)
-                        version)
+             :tag     (head-sha-1)
              :src-pom "template/pom.xml"
              :basis   (b/create-basis {:aliases (when snapshot?
                                                   [:snapshot])}))
