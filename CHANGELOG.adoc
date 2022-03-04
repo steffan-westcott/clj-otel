@@ -21,6 +21,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.1.1` (in progress)
 
+- Bump OpenTelemetry deps to `1.12.0`
+
 === `0.1.0` (2022-02-27)
 
 - Initial release
