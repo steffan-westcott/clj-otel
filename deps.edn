@@ -1,8 +1,7 @@
 ;!zprint {:width 140}
 
 {:deps    {org.clojure/clojure {:mvn/version "1.10.3"}}
- :aliases {:build {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.7.0"
-                                                                  :git/sha "5d2cb60"}}
+ :aliases {:build {:deps       {io.github.seancorfield/build-clj {:git/sha "4d45fdd6c16a560a9d7112cfa4c7d4287dba2131"}}
                    :ns-default build}
            :antq  {:extra-deps {com.github.liquidz/antq {:mvn/version "1.6.0"}
                                 org.slf4j/slf4j-nop     {:mvn/version "1.7.36"}}

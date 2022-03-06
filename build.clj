@@ -141,8 +141,6 @@
   (-> opts
       (install-artifact artifact-id)
       (println> (str "Deploying " (group-artifact-id artifact-id)))
-      (assoc :artifact
-             (str artifact-id "/" (cb/default-jar-file (symbol group-id artifact-id) version)))
       cb/deploy))
 
 (defn- tag-release
