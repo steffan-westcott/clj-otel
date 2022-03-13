@@ -3,26 +3,26 @@
 {:paths ["src"]
 
  :deps {org.clojure/clojure {:mvn/version "1.10.3"}
-        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.1"}
-        com.github.steffan-westcott/clj-otel-sdk {:mvn/version "0.1.1"}
-        com.github.steffan-westcott/clj-otel-sdk-extension-resources {:mvn/version "0.1.1"}}
+        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.2"}
+        com.github.steffan-westcott/clj-otel-sdk {:mvn/version "0.1.2"}
+        com.github.steffan-westcott/clj-otel-sdk-extension-resources {:mvn/version "0.1.2"}}
 
  :aliases
  {;; Select any number of traces-* aliases
 
-  :traces-otlp-grpc {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace {:mvn/version "0.1.1"}}}
+  :traces-otlp-grpc {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace {:mvn/version "0.1.2"}}}
 
-  :traces-otlp-http {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace {:mvn/version "0.1.1"}}}
+  :traces-otlp-http {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace {:mvn/version "0.1.2"}}}
 
-  :traces-jaeger-grpc {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc {:mvn/version "0.1.1"}}}
+  :traces-jaeger-grpc {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc {:mvn/version "0.1.2"}}}
 
-  :traces-jaeger-thrift {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift {:mvn/version "0.1.1"}}}
+  :traces-jaeger-thrift {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift {:mvn/version "0.1.2"}}}
 
-  :traces-zipkin {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-zipkin {:mvn/version "0.1.1"}}}
+  :traces-zipkin {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-zipkin {:mvn/version "0.1.2"}}}
 
-  :traces-logging {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging {:mvn/version "0.1.1"}}}
+  :traces-logging {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging {:mvn/version "0.1.2"}}}
 
-  :traces-logging-otlp {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:mvn/version "0.1.1"}}}
+  :traces-logging-otlp {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:mvn/version "0.1.2"}}}
 
 
 
