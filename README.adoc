@@ -33,7 +33,7 @@ More in-depth information on `clj-otel` can be found in the xref:_documentation[
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.0"}}}
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.1"}}}
 ----
 ** Use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
 +
