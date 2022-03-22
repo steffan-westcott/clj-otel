@@ -24,7 +24,7 @@ Monitoring is oriented to detection of *known types of issues*, as the monitored
 === The goal of observability
 
 *Observability* enables *detection and exploration of issues* as they occur and *assists with root cause analysis*.
-By querying an observable system, *unexpected types of issue* can be detected, classified and monitored as they arise, addressing the problem of "unknown unknowns".
+By querying an observable system, *unexpected types of issue* can be detected, characterised and monitored as they arise, addressing the problem of "unknown unknowns".
 Questions on the actual behaviour of an observable system may be more readily answered:
 
 * "What caused this failure?"
