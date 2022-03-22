@@ -1,6 +1,6 @@
 ;!zprint {:width 140}
 
-{:deps    {org.clojure/clojure {:mvn/version "1.10.3"}}
+{:deps    {org.clojure/clojure {:mvn/version "1.11.0"}}
  :aliases {:build {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.8.0"
                                                                   :git/sha "9bd8b8a"}}
                    :ns-default build}
