@@ -1,14 +1,16 @@
 .calva
+.clj-kondo/.cache
 .cpcache
+.idea
 .lein-*
 .lsp
 .nrepl-history
 .nrepl-port
+.portal
 .rebel_readline_history
 .socket-repl-port
-/.clj-kondo/.cache
 *.iml
-/.idea
+*.jar
+*.swp
 
 /clj-otel-*/target
-*.jar
