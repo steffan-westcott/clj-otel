@@ -139,24 +139,25 @@ The general workflow for using OpenTelemetry with your library or application is
 Instrumenting a library or application involves adding behaviour such that it exports telemetry data as it runs.
 
 [#_automatic_instrumentation]
-*Automatic instrumentation* achieves this by dynamically altering the library or application at runtime.
+*Automatic instrumentation* dynamically alters the library or application at runtime to export telemetry data.
 For the Java platform, automatic instrumentation is performed by the https://github.com/open-telemetry/opentelemetry-java-instrumentation[*OpenTelemetry instrumentation agent*], a Java agent that runs with the application.
 Many https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] are supported by the agent out of the box.
 For example, the agent will create server spans for requests received by a Jetty server, and client spans for requests issued by an Apache HttpClient instance.
 
+TIP: Make use of automatic instrumentation if possible for your application, as this is a quick way to get high quality telemetry with almost no effort.
+
 [#_manual_instrumentation]
-*Manual instrumentation* involves adding program code to the library or application at design time, using the OpenTelemetry API.
+*Manual instrumentation* is the process of adding program code to the library or application at design time to export telemetry data, using the OpenTelemetry API.
 The `clj-otel-api` module in this project wraps the OpenTelemetry API for Java in an idiomatic Clojure facade.
 
 IMPORTANT: Manual instrumentation program code depends on the OpenTelemetry API, never the OpenTelemetry SDK.
 
-It is possible to combine automatic and manual instrumentation.
-For example, attributes and events can be added using manual instrumentation to a span automatically created by the agent.
-Extra spans can also be added using manual instrumentation.
-These are examples of manually enriching the telemetry data produced by automatic instrumentation.
+Any combination of automatic and manual instrumentation may be used:
 
-TIP: Make use of automatic instrumentation if possible for your application, as this is a quick way to get high quality telemetry with almost no effort.
-Use manual instrumentation to enrich the telemetry data, or if your application does not use a framework supported by the agent.
+- Use solely automatic instrumentation to quickly add telemetry without changing any program code.
+- Use solely manual instrumentation if it is not possible to use the instrumentation agent, or the instrumented application does not use a library or framework supported by the agent.
+- Combine automatic and manual instrumentation for enriched telemetry.
+For example, to enrich a span produced by automatic instrumentation, attributes and events may be added to it using manual instrumentation.
 
 == OpenTelemetry data model
 
@@ -174,8 +175,8 @@ Traces provide *context* for system activity performed in spans.
 
 Span data may include a *span kind*, name, attributes, start/end timestamps, links to other spans, a list of events and a status.
 
-* The span kind indicates the relationship between the span and its parent and children in the trace.
 [#_span_kind]
+* The span kind indicates the relationship between the span and its parent and children in the trace.
 The span kind is one of:
 ** `CLIENT` : Covers the client side of issuing a synchronous request, where the client side waits until a response is received.
 ** `SERVER` : Covers the server side of handling a synchronous request, where the remote client waits for a response.
@@ -383,7 +384,7 @@ The following are alternatives to OpenTelemetry in the Clojure ecosystem, which 
 
 * https://riemann.io/[Riemann] : Network event stream processing system, in Clojure
 * https://github.com/jitlogic/micrometer-clj[micrometer-clj] : Clojure wrapper for Java https://micrometer.io/[Micrometer] library
-* https://github.com/metrics-clojure/metrics-clojure[metrics-clojure] : Clojure façade around https://metrics.dropwizard.io/[Dropwizard Metrics] library
+* https://github.com/metrics-clojure/metrics-clojure[metrics-clojure] : Clojure facade around https://metrics.dropwizard.io/[Dropwizard Metrics] library
 * https://github.com/samsara/trackit[TRACKit!] : Clojure wrapper for https://metrics.dropwizard.io/[Dropwizard Metrics] library
 * https://github.com/mrmcc3/aws-metrics-collector[aws-metrics-collector] : Clojure AWS Cloudwatch metric collector
 

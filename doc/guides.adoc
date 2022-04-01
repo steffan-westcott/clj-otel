@@ -121,7 +121,7 @@ By default, the event is added to the span in the current context:
   (notify-watchers job-state))
 ----
 +
-Use the `context:` option to specify the context containing the span to add the event to:
+Use the `:context` option to specify the context containing the span to add the event to:
 +
 [source,clojure]
 ----
@@ -155,7 +155,7 @@ By default, the exception event is added to the span in the current context:
       {:result :parse-error})))
 ----
 +
-Use the `context:` option to specify the context containing the span to add the exception event to:
+Use the `:context` option to specify the context containing the span to add the exception event to:
 +
 [source,clojure]
 ----
@@ -239,7 +239,7 @@ By default, the route data is added to the span in the current context:
 (trace-http/add-route-data! "/rooms/:room-id")
 ----
 +
-Use the `context:` option to specify the context containing the span to add the route data to:
+Use the `:context` option to specify the context containing the span to add the route data to:
 +
 [source,clojure]
 ----
@@ -260,7 +260,7 @@ By default, the HTTP response data is added to the span in the current context:
 (trace-http/add-client-span-response-data! response)
 ----
 +
-Use the `context:` option to specify the context containing the span to add the HTTP response data to:
+Use the `:context` option to specify the context containing the span to add the HTTP response data to:
 +
 [source,clojure]
 ----
@@ -321,7 +321,7 @@ Note that for metrics telemetry data, `otel.metrics.exporter` has default `none`
 * Download the latest version of the OpenTelemetry instrumentation agent JAR, the file `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[releases page].
 The agent JAR includes the SDK and all its dependencies.
 * Configure the agent and SDK, using properties and environment variables.
-See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/agent-config.md[agent and SDK configuration documentation].
+See the https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/[agent and SDK configuration documentation].
 * When running the application, enable the agent with the `-javaagent` JVM flag.
 
 For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC, use an alias like the following:
