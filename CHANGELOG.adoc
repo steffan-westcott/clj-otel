@@ -21,6 +21,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.1.2` (in progress)
 
+- Include `ExceptionInfo` data as attributes in exception span events, by default
 - Bump Clojure deps to `1.11.0`
 - Bump various build deps
 

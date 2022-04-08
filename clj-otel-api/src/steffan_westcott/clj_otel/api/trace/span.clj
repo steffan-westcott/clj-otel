@@ -228,19 +228,22 @@
   |-------------|-------------|
   |`:context`   | Context containing span to add exception event to (default: current context).
   |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
-  |`:attributes`| Map of additional attributes for the event (default: `{}`)."
+  |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([exception]
    (add-exception! exception {}))
   ([exception
     {:keys [context escaping? attributes]
      :or   {context    (context/current)
             escaping?  true
-            attributes {}}}]
-   (let [triage (main/ex-triage (Throwable->map exception))
-         attrs  (merge triage attributes)
-         status (when escaping?
-                  {:code        :error
-                   :description (main/ex-str triage)})]
+            attributes ex-data}}]
+   (let [triage      (main/ex-triage (Throwable->map exception))
+         attributes' (if (fn? attributes)
+                       (attributes exception)
+                       attributes)
+         attrs       (into triage attributes')
+         status      (when escaping?
+                       {:code        :error
+                        :description (main/ex-str triage)})]
      (add-span-data! (cond-> {:context context
                               :ex-data {:exception  exception
                                         :escaping?  escaping?
@@ -257,21 +260,23 @@
   |-------------|-------------|
   |`:context`   | Context containing span to add exception event to (default: current context)
   |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
-  |`:attributes`| Map of additional attributes for the event (default: `{}`)."
+  |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([e]
    (add-interceptor-exception! e {}))
   ([e
     {:keys [context escaping? attributes]
      :or   {context    (context/current)
             escaping?  true
-            attributes {}}}]
+            attributes ex-data}}]
    (let [{:keys [exception interceptor stage]
           :or   {exception e}}
          (ex-data e)
 
-         attrs (merge {:io.pedestal.interceptor.chain/interceptor interceptor
-                       :io.pedestal.interceptor.chain/stage       stage}
-                      attributes)]
+         attrs (into {:io.pedestal.interceptor.chain/interceptor interceptor
+                      :io.pedestal.interceptor.chain/stage       stage}
+                     (if (fn? attributes)
+                       (attributes exception)
+                       attributes))]
      (add-exception! exception
                      {:context    context
                       :escaping?  escaping?
