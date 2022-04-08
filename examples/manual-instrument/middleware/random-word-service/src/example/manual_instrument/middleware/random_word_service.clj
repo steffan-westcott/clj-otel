@@ -33,14 +33,14 @@
     ;; exception triage summary.
     (when (= :fault word-type)
       (throw (ex-info "Processing fault"
-                      {:status 500
-                       :error  ::processing-fault})))
+                      {:http.response/status 500
+                       :error ::processing-fault})))
 
     (let [candidates (or (get words word-type)
                          (throw (ex-info "Unknown word type"
-                                         {:status 400
-                                          :error  ::unknown-word-type
-                                          ::type  word-type})))
+                                         {:http.response/status 400
+                                          :error ::unknown-word-type
+                                          ::type word-type})))
           word       (rand-nth candidates)]
 
       ;; Add more attributes to the internal span

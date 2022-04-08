@@ -59,7 +59,7 @@
         ;; exception event and the span status description is set to the
         ;; exception triage summary.
         (throw (ex-info "Failed to retrieve metric"
-                        {:status  500
+                        {:http.response/status 500
                          :error   ::missing-data
                          ::metric metric}))))))
 
@@ -79,8 +79,8 @@
     ;; Simulate a client error when requesting data on Pluto.
     (if (= planet :pluto)
       (throw (ex-info "Pluto is not a full planet"
-                      {:status 400
-                       :error  ::pluto-not-full-planet}))
+                      {:http.response/status 400
+                       :error ::pluto-not-full-planet}))
       (response/response (str (planet-metric planet metric))))))
 
 

@@ -25,7 +25,7 @@
     ;; exception triage summary.
     (when (= "boom" word)
       (throw (ex-info "Unable to process word"
-                      {:status        500
+                      {:http.response/status 500
                        :error         ::word-processing-error
                        ::problem-word word})))
 
@@ -51,8 +51,8 @@
     ;; Simulate a client error for some requests.
     (if (= word "problem")
       (throw (ex-info "Bad word argument"
-                      {:status 400
-                       :error  ::bad-word-argument}))
+                      {:http.response/status 400
+                       :error ::bad-word-argument}))
       (response/response (str (word-length word))))))
 
 

@@ -69,8 +69,8 @@
         (if (= 200 status)
           (Integer/parseInt (:body response))
           (throw (ex-info (str status " HTTP response")
-                          {:status status
-                           :error  :unexpected-http-response})))))))
+                          {:http.response/status status
+                           :error :unexpected-http-response})))))))
 
 
 (defn divide

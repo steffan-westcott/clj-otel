@@ -4,11 +4,12 @@
 
 
 (defn- exception-response
-  "Converts exception to a response, with status set to `:status` value if
-  exception is an `IExceptionInfo` instance, 500 Server Error otherwise."
+  "Converts exception to a response, with status set to `:http.response/status`
+  value if exception is an `IExceptionInfo` instance, 500 Server Error
+  otherwise."
   [e]
   (let [resp   (response/response (ex-message e))
-        status (:status (ex-data e) 500)]
+        status (:http.response/status (ex-data e) 500)]
     (response/status resp status)))
 
 

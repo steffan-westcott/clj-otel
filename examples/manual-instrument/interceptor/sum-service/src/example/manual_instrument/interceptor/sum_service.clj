@@ -55,8 +55,8 @@
       ;; Simulate a client error when first number argument is zero.
       (if (= 0 (first nums))
         (throw (ex-info "Zero argument"
-                        {:status 400
-                         :error  ::zero-argument}))
+                        {:http.response/status 400
+                         :error ::zero-argument}))
         (response/response (str (sum nums)))))))
 
 
