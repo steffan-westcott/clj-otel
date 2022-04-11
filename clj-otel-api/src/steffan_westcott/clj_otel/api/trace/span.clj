@@ -219,8 +219,9 @@
       ex-data    (add-ex-data! ex-data))))
 
 (defn add-exception!
-  "Adds an event describing `exception` to a span. If the exception is escaping
-  the span's scope, the span's status is also set to `:error` with the
+  "Adds an event describing `exception` to a span. By default, exception data
+  (as per `ex-info`) are added as attributes to the event. If the exception is
+  escaping the span's scope, the span's status is also set to `:error` with the
   exception triage summary as the error description. May take an option map as
   follows:
 
@@ -251,7 +252,9 @@
                        status (assoc :status status))))))
 
 (defn add-interceptor-exception!
-  "Adds an event describing an interceptor exception `e` to a span. If the
+  "Adds an event describing an interceptor exception `e` to a span. Attributes
+  identifying the interceptor and stage are added to the event. Also, by
+  default exception data (as per `ex-info`) are added as attributes. If the
   exception is escaping the span's scope, the span's status is also set to
   `:error` with the wrapped exception triage summary as the error description.
   May take an option map as follows:
