@@ -12,10 +12,10 @@
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(defn get-metric-value
-  "Get a single metric value of a planet."
-  [planet metric]
-  (let [path     (str "/planets/" (name planet) "/" (name metric))
+(defn get-statistic-value
+  "Get a single statistic value of a planet."
+  [planet statistic]
+  (let [path     (str "/planets/" (name planet) "/" (name statistic))
 
         ;; Apache HttpClient request is automatically wrapped in a client span
         ;; created by the OpenTelemetry instrumentation agent. The agent also
@@ -25,65 +25,64 @@
         status   (:status response)]
 
     (if (= 200 status)
-      {metric (Double/parseDouble (:body response))}
+      {statistic (Double/parseDouble (:body response))}
       (throw (ex-info (str status " HTTP response")
                       {:http.response/status status
-                       :error :unexpected-http-response})))))
+                       :service/error        :service.errors/unexpected-http-response})))))
 
 
 
-(defn planet-metrics
-  "Get all metrics of a planet and return single-valued map values of each
-  metric."
+(defn planet-statistics
+  "Get all statistics of a planet and return single-valued map values of each statistic."
   [planet]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-span! {:name       "Getting planet metrics"
-                    :attributes {:planet planet}}
+  (span/with-span! {:name       "Getting planet statistics"
+                    :attributes {:system/planet planet}}
 
     ;; Use `doall` to force lazy sequence to be realized within span
-    (doall (map #(get-metric-value planet %) [:diameter :gravity]))))
+    (doall (map #(get-statistic-value planet %) [:diameter :gravity]))))
 
 
 
 (defn format-report
-  "Returns a report string of the given planet and metric values."
-  [planet metric-values]
+  "Returns a report string of the given planet and statistic values."
+  [planet statistic-values]
 
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! {:name       "Formatting report"
-                    :attributes {:planet planet
-                                 :values metric-values}}
+                    :attributes {:system/planet planet
+                                 :service.solar-system.report/statistic-values statistic-values}}
 
     (Thread/sleep 25)
     (let [planet' (str/capitalize (name planet))
-          {:keys [diameter gravity]} metric-values
+          {:keys [diameter gravity]} statistic-values
           report
           (str "The planet " planet' " has diameter " diameter "km and gravity " gravity "m/s^2.")]
 
       ;; Add more attributes to internal span
-      (span/add-span-data! {:attributes (:report-length (count report))})
+      (span/add-span-data! {:attributes {:service.solar-system.report/length (count report)}})
 
       report)))
 
 
 
 (defn planet-report
-  "Builds a report of planet metrics and returns report string."
+  "Builds a report of planet statistics and returns report string."
   [planet]
-  (let [all-metrics   (planet-metrics planet)
-        metric-values (into {} all-metrics)]
-    (format-report planet metric-values)))
+  (let [all-statistics   (planet-statistics planet)
+        statistic-values (into {} all-statistics)]
+    (format-report planet statistic-values)))
 
 
 
-(defn get-metrics-handler
-  "Synchronous handler for 'GET /metrics' request. Returns an HTTP response
-  containing a formatted report of the planet's metric values."
+(defn get-statistics-handler
+  "Synchronous handler for 'GET /statistics' request. Returns an HTTP response
+  containing a formatted report of the planet's statistic values."
   [{:keys [query-params]}]
 
   ; Add data describing matched route to the server span.
-  (trace-http/add-route-data! "/metrics")
+  (trace-http/add-route-data! "/statistics")
 
   (let [planet (keyword (get query-params :planet))
         report (planet-report planet)]
@@ -107,7 +106,7 @@
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes [[["/" root-interceptors ["/metrics" {:get 'get-metrics-handler}]]]]))
+  (route/expand-routes [[["/" root-interceptors ["/statistics" {:get 'get-statistics-handler}]]]]))
 
 
 

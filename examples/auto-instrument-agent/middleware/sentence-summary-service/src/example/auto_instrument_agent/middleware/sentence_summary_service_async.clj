@@ -58,7 +58,7 @@
           (Integer/parseInt (:body response))
           (throw (ex-info (str status " HTTP response")
                           {:http.response/status status
-                           :error :unexpected-http-response})))))))
+                           :service/error        :service.errors/unexpected-http-response})))))))
 
 
 
@@ -73,7 +73,7 @@
   ;; timeout. Context containing internal span is assigned to `context*`.
   (async'/<with-span-binding [context* {:parent     context
                                         :name       "Getting word lengths"
-                                        :attributes {:words words}}]
+                                        :attributes {:system/words words}}]
     6000
     3
 
@@ -90,7 +90,7 @@
   ;; internal span is assigned to `context*`.
   (span/with-span-binding [context* {:parent     context
                                      :name       "Building sentence summary"
-                                     :attributes {:input-data lengths}}]
+                                     :attributes {:system/word-lengths lengths}}]
 
     (Thread/sleep 25)
     (let [result {:word-count      (count lengths)
@@ -99,7 +99,8 @@
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
-                            :attributes (select-keys result [:word-count])})
+                            :attributes {:service.sentence-summary.summary/word-count (:word-count
+                                                                                       result)}})
 
       result)))
 

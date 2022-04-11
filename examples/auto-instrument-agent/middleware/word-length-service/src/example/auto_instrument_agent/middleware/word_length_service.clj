@@ -15,7 +15,7 @@
 
   ;; Manually create an internal span that wraps body (lexical scope)
   (span/with-span! {:name       "Calculating length"
-                    :attributes {:my-arg word}}
+                    :attributes {:system/word word}}
 
     (Thread/sleep (+ 50 (rand-int 80)))
 
@@ -24,18 +24,15 @@
     ;; exception event and the span status description is set to the
     ;; exception triage summary.
     (when (= "boom" word)
-      (throw (ex-info "Unable to process word"
-                      {:http.response/status 500
-                       :error         ::word-processing-error
-                       ::problem-word word})))
+      (throw (RuntimeException. "Unable to process word")))
 
-    (let [result (count word)]
+    (let [word-length (count word)]
 
       ;; Add an event to the current span with some data attached
-      (span/add-span-data! {:event {:name       "Calculated length"
-                                    :attributes {:my-result result}}})
+      (span/add-span-data! {:event {:name       "Calculated word length"
+                                    :attributes {:system/word-length word-length}}})
 
-      result)))
+      word-length)))
 
 
 (defn get-length-handler
@@ -49,10 +46,12 @@
   (let [word (get query-params "word")]
 
     ;; Simulate a client error for some requests.
+    ;; Exception data is added as attributes to the exception event by default.
     (if (= word "problem")
       (throw (ex-info "Bad word argument"
                       {:http.response/status 400
-                       :error ::bad-word-argument}))
+                       :service/error        :service.word-length.errors/bad-word
+                       :system/word          word}))
       (response/response (str (word-length word))))))
 
 

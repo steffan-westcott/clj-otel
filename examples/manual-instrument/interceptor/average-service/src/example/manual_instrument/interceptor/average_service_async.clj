@@ -70,7 +70,7 @@
           (Integer/parseInt (:body response))
           (throw (ex-info (str status " HTTP response")
                           {:http.response/status status
-                           :error :unexpected-http-response})))))))
+                           :service/error        :service.errors/unexpected-http-response})))))))
 
 
 (defn divide
@@ -81,14 +81,14 @@
   ;; internal span is assigned to `context*`.
   (span/with-span-binding [context* {:parent     context
                                      :name       "Calculating division"
-                                     :attributes {:parameters [x y]}}]
+                                     :attributes {:service.average.divide/parameters [x y]}}]
 
     (Thread/sleep 10)
     (let [result (double (/ x y))]
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
-                            :attributes {:result result}})
+                            :attributes {:service.average.divide/result result}})
 
       result)))
 
@@ -104,7 +104,7 @@
   ;; timeout. Context containing internal span is assigned to `context*`.
   (async'/<with-span-binding [context* {:parent     context
                                         :name       "Calculating average"
-                                        :attributes {:nums nums}}]
+                                        :attributes {:system/nums nums}}]
     3000
     1
 
@@ -125,15 +125,18 @@
         <evens-average (when (seq evens)
                          (<average context evens))]
     (async'/go-try
-      (let [result {:odds  (when <odds-average
-                             (async'/<? <odds-average))
-                    :evens (when <evens-average
-                             (async'/<? <evens-average))}]
+      (let [odds-average  (when <odds-average
+                            (async'/<? <odds-average))
+            evens-average (when <evens-average
+                            (async'/<? <evens-average))
+            result        {:odds  odds-average
+                           :evens evens-average}]
 
         ;; Add event to span
         (span/add-span-data! {:context context
                               :event   {:name       "Finished calculations"
-                                        :attributes result}})
+                                        :attributes {:system.averages/odds  odds-average
+                                                     :system.averages/evens evens-average}}})
 
         result))))
 

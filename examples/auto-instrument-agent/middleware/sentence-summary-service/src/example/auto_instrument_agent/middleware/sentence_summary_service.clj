@@ -28,7 +28,7 @@
       (Integer/parseInt (:body response))
       (throw (ex-info (str status " HTTP response")
                       {:http.response/status status
-                       :error :unexpected-http-response})))))
+                       :service/error        :service.errors/unexpected-http-response})))))
 
 
 
@@ -38,7 +38,7 @@
 
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! {:name       "Getting word lengths"
-                    :attributes {:words words}}
+                    :attributes {:system/words words}}
 
     ;; Use `doall` to force lazy sequence to be realized within span
     (doall (map get-word-length words))))
@@ -51,7 +51,7 @@
 
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! {:name       "Building sentence summary"
-                    :attributes {:input-data lengths}}
+                    :attributes {:system/word-lengths lengths}}
 
     (Thread/sleep 25)
     (let [result {:word-count      (count lengths)
@@ -59,7 +59,8 @@
                   :longest-length  (apply max lengths)}]
 
       ;; Add more attributes to internal span
-      (span/add-span-data! {:attributes (select-keys result [:word-count])})
+      (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:word-count
+                                                                                       result)}})
 
       result)))
 

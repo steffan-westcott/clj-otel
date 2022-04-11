@@ -42,11 +42,11 @@
 
 
 
-(defn <get-metric-value
-  "Get a single metric value of a planet and return a channel of a
-  single-valued map of the metric and its value."
-  [context planet metric]
-  (let [path      (str "/planets/" (name planet) "/" (name metric))
+(defn <get-statistic-value
+  "Get a single statistic value of a planet and return a channel of a
+  single-valued map of the statistic and its value."
+  [context planet statistic]
+  (let [path      (str "/planets/" (name planet) "/" (name statistic))
         <response (<client-request context
                                    {:method :get
                                     :url    (str "http://localhost:8081" path)
@@ -56,16 +56,16 @@
       (let [response (async'/<? <response)
             status   (:status response)]
         (if (= 200 status)
-          {metric (Double/parseDouble (:body response))}
+          {statistic (Double/parseDouble (:body response))}
           (throw (ex-info (str status " HTTP response")
                           {:http.response/status status
-                           :error :unexpected-http-response})))))))
+                           :service/error        :service.errors/unexpected-http-response})))))))
 
 
 
-(defn <planet-metrics
-  "Get all metrics of a planet and return a channel containing a single-valued
-  map values of each metric."
+(defn <planet-statistics
+  "Get all statistics of a planet and return a channel containing a single-valued
+  map values of each statistic."
   [context planet]
 
   ;; Start a new internal span that ends when the source channel (returned by
@@ -73,64 +73,66 @@
   ;; with buffer size 2. Values are piped from source to dest irrespective of
   ;; timeout. Context containing internal span is assigned to `context*`.
   (async'/<with-span-binding [context* {:parent     context
-                                        :name       "Getting planet metrics"
-                                        :attributes {:planet planet}}]
+                                        :name       "Getting planet statistics"
+                                        :attributes {:system/planet planet}}]
     4000
     2
 
-    (let [chs (map #(<get-metric-value context* planet %) [:diameter :gravity])]
+    (let [chs (map #(<get-statistic-value context* planet %) [:diameter :gravity])]
       (async/merge chs))))
 
 
 
 (defn format-report
-  "Returns a report string of the given planet and metric values."
-  [context planet metric-values]
+  "Returns a report string of the given planet and statistic values."
+  [context planet statistic-values]
 
   ;; Wrap synchronous function body with an internal span. Context containing
   ;; internal span is assigned to `context*`.
   (span/with-span-binding [context* {:parent     context
                                      :name       "Formatting report"
-                                     :attributes {:planet planet
-                                                  :values metric-values}}]
+                                     :attributes {:system/planet planet
+                                                  :service.solar-system.report/statistic-values
+                                                  statistic-values}}]
 
     (Thread/sleep 25)
     (let [planet' (str/capitalize (name planet))
-          {:keys [diameter gravity]} metric-values
+          {:keys [diameter gravity]} statistic-values
           report
           (str "The planet " planet' " has diameter " diameter "km and gravity " gravity "m/s^2.")]
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
-                            :attributes (:report-length (count report))})
+                            :attributes {:service.solar-system.report/length (count report)}})
 
       report)))
 
 
 
 (defn <planet-report
-  "Builds a report of planet metrics and results a channel of the report
+  "Builds a report of planet statistics and results a channel of the report
   string."
   [context planet]
-  (let [<all-metrics   (<planet-metrics context planet)
-        <metric-values (async'/<into?? {} <all-metrics)]
+  (let [<all-statistics   (<planet-statistics context planet)
+        <statistic-values (async'/<into?? {} <all-statistics)]
     (async'/go-try
       (try
-        (let [metric-values (async'/<? <metric-values)]
-          (format-report context planet metric-values))
+        (let [statistics-values (async'/<? <statistic-values)]
+          (format-report context planet statistics-values))
         (finally
-          (async'/close-and-drain!! <all-metrics))))))
+          (async'/close-and-drain!! <all-statistics))))))
 
 
 
-(defn <get-metrics
-  "Asynchronous handler for 'GET /metrics' request. Returns a channel of the
-  HTTP response containing a formatted report of the planet's metric values."
+(defn <get-statistics
+  "Asynchronous handler for 'GET /statistics' request. Returns a channel of the
+  HTTP response containing a formatted report of the planet's statistic
+  values."
   [{:keys [io.opentelemetry/server-span-context request]
     :as   ctx}]
 
   ;; Add data describing matched route to the server span.
-  (trace-http/add-route-data! "/metrics" {:context server-span-context})
+  (trace-http/add-route-data! "/statistics" {:context server-span-context})
 
   (let [planet  (keyword (get-in request [:query-params :planet]))
         <report (<planet-report server-span-context planet)]
@@ -140,10 +142,10 @@
 
 
 
-(def get-metrics-interceptor
-  "Interceptor for 'GET /metrics' route."
-  {:name  ::get-metrics
-   :enter <get-metrics})
+(def get-statistics-interceptor
+  "Interceptor for 'GET /statistics' route."
+  {:name  ::get-statistics
+   :enter <get-statistics})
 
 
 
@@ -163,7 +165,8 @@
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes [[["/" root-interceptors ["/metrics" {:get 'get-metrics-interceptor}]]]]))
+  (route/expand-routes [[["/" root-interceptors
+                          ["/statistics" {:get 'get-statistics-interceptor}]]]]))
 
 
 

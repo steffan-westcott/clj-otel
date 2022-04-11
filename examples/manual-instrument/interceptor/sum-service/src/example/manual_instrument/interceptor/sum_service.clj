@@ -17,14 +17,14 @@
 
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! {:name       "Calculating sum"
-                    :attributes {:the-nums nums}}
+                    :attributes {:system/nums nums}}
 
     (Thread/sleep 50)
     (let [result (reduce + 0 nums)]
 
       ;; Add an event to the internal span with some data attached.
       (span/add-span-data! {:event {:name       "Computed sum"
-                                    :attributes {:answer result}}})
+                                    :attributes {:system/sum result}}})
 
       ;; Simulate an intermittent runtime exception when sum is 13.
       ;; An uncaught exception leaving a span's scope is reported as an
@@ -53,10 +53,11 @@
           nums     (map #(Integer/parseInt %) num-strs)]
 
       ;; Simulate a client error when first number argument is zero.
+      ;; Exception data is added as attributes to the exception event by default.
       (if (= 0 (first nums))
         (throw (ex-info "Zero argument"
                         {:http.response/status 400
-                         :error ::zero-argument}))
+                         :system/error         :service.sum.errors/zero-argument}))
         (response/response (str (sum nums)))))))
 
 

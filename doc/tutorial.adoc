@@ -146,7 +146,7 @@ Ensure the file is placed in the project root directory (the same directory as `
 
 * Restart the REPL with the alias `:otel` enabled and reload the `tutorial.counter-service` namespace to run the server with automatic instrumentation.
 +
-Now as each request is handled by the application, a server span is exported to Jaeger.
+Now as each request is handled by the application, a trace is exported to Jaeger.
 
 * Exercise the server by sending a couple of requests:
 +
@@ -214,13 +214,13 @@ You will now enrich the telemetry detail by adding manual instrumentation on top
       (trace-http/wrap-server-span)))
 ----
 
-* Update the `get-count-handler` function to add an attribute `counter` to the existing server span as follows:
+* Update the `get-count-handler` function to add an attribute `service.counter/count` to the existing server span as follows:
 +
 [source,clojure]
 ----
 (defn get-count-handler []
   (let [n @counter]
-    (span/add-span-data! {:attributes {:counter n}})
+    (span/add-span-data! {:attributes {:service.counter/count n}})
     (response/response (str n))))
 ----
 
@@ -238,7 +238,7 @@ Click the most recent `HTTP GET` trace and expand the `Tags` of the single span.
 +
 image::images/jaeger-get-trace-count.png[Jaeger HTTP GET trace]
 +
-You will note that the attribute `counter` you added in the code appears in the exported span with value `5`.
+You will note that the attribute `service.counter/count` you added in the code appears in the exported span with value `5`.
 
 * Update the `inc-count-handler` function to add a new span that wraps part of the function body:
 +

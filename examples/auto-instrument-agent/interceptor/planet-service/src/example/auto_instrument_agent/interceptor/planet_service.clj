@@ -11,8 +11,8 @@
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(def planet-metrics
-  "Map of planets and their metric values. Saturn is missing some data."
+(def planet-statistics
+  "Map of planets and their statistics. Saturn is missing some data."
   {:mercury {:diameter 4879
              :gravity  3.7}
    :venus   {:diameter 12104
@@ -24,7 +24,7 @@
    :jupiter {:diameter 142984
              :gravity  23.1}
    :saturn  {:diameter 120536
-             :gravity  nil}                 ; missing gravity data
+             :gravity  nil}                 ; missing gravity value
    :uranus  {:diameter 51118
              :gravity  8.7}
    :neptune {:diameter 49528
@@ -34,54 +34,52 @@
 
 
 
-(defn planet-metric
-  "Returns a specific metric value for a planet."
-  [planet metric]
+(defn planet-statistic
+  "Returns a specific statistic value for a planet."
+  [planet statistic]
 
   ;; Wrap the synchronous body in a new internal span.
-  (span/with-span! {:name       "Fetching data"
-                    :attributes {:the-planet planet
-                                 :the-metric metric}}
+  (span/with-span! {:name       "Fetching statistic value"
+                    :attributes {:system/planet    planet
+                                 :system/statistic statistic}}
 
     (Thread/sleep 50)
-    (let [path [planet metric]]
+    (let [path [planet statistic]]
 
       ;; Add an event to the current span with some data attached.
       (span/add-span-data! {:event {:name       "Processed query path"
-                                    :attributes {:query-path path}}})
+                                    :attributes {:service.planet/query-path path}}})
 
-      (if-let [result (get-in planet-metrics path)]
+      (if-let [result (get-in planet-statistics path)]
         result
 
         ;; Simulate an intermittent runtime exception when attempt is made
-        ;; to retrieve Saturn's gravity data.
+        ;; to retrieve Saturn's gravity value.
         ;; An uncaught exception leaving a span's scope is reported as an
         ;; exception event and the span status description is set to the
         ;; exception triage summary.
-        (throw (ex-info "Failed to retrieve metric"
-                        {:http.response/status 500
-                         :error   ::missing-data
-                         ::metric metric}))))))
+        (throw (RuntimeException. "Failed to retrieve statistic"))))))
 
 
 
-(defn get-planet-metric-handler
-  "Synchronous handler for 'GET /planets/:planet/:metric' request. Returns an
-  HTTP response containing the requested metric value for a planet."
+(defn get-planet-statistic-handler
+  "Synchronous handler for 'GET /planets/:planet/:statistic' request. Returns an
+  HTTP response containing the requested statistic value for a planet."
   [{:keys [path-params]}]
-  (let [{:keys [planet metric]} path-params
-        planet (keyword planet)
-        metric (keyword metric)]
+  (let [{:keys [planet statistic]} path-params
+        planet    (keyword planet)
+        statistic (keyword statistic)]
 
     ;; Add attributes describing matched route to server span.
-    (trace-http/add-route-data! "/planets/:planet/:metric")
+    (trace-http/add-route-data! "/planets/:planet/:statistic")
 
     ;; Simulate a client error when requesting data on Pluto.
+    ;; Exception data is added as attributes to the exception event by default.
     (if (= planet :pluto)
       (throw (ex-info "Pluto is not a full planet"
                       {:http.response/status 400
-                       :error ::pluto-not-full-planet}))
-      (response/response (str (planet-metric planet metric))))))
+                       :service/error        :service.planet.errors/pluto-not-full-planet}))
+      (response/response (str (planet-statistic planet statistic))))))
 
 
 
@@ -100,11 +98,12 @@
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes [[["/" root-interceptors
-                          ["/planets/:planet/:metric"
-                           ^:constraints
-                           {:planet (re-pattern (str/join "|" (map name (keys planet-metrics))))
-                            :metric #"diameter|gravity"} {:get 'get-planet-metric-handler}]]]]))
+  (route/expand-routes
+   [[["/" root-interceptors
+      ["/planets/:planet/:statistic"
+       ^:constraints
+       {:planet    (re-pattern (str/join "|" (map name (keys planet-statistics))))
+        :statistic #"diameter|gravity"} {:get 'get-planet-statistic-handler}]]]]))
 
 
 (def service-map

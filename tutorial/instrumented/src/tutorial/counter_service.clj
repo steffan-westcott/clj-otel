@@ -35,7 +35,7 @@
   value."
   []
   (let [n @counter]
-    (span/add-span-data! {:attributes {:counter n}})
+    (span/add-span-data! {:attributes {:service.counter/count n}})
     (response/response (str n))))
 
 

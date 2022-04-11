@@ -23,7 +23,7 @@
 
   ;; Wrap the synchronous body in a new internal span.
   (span/with-span! {:name       "Generating word"
-                    :attributes {:word-type word-type}}
+                    :attributes {:system/word-type word-type}}
 
     (Thread/sleep (+ 10 (rand-int 80)))
 
@@ -32,19 +32,22 @@
     ;; exception event and the span status description is set to the
     ;; exception triage summary.
     (when (= :fault word-type)
-      (throw (ex-info "Processing fault"
-                      {:http.response/status 500
-                       :error ::processing-fault})))
+      (throw (RuntimeException. "Processing fault")))
 
     (let [candidates (or (get words word-type)
-                         (throw (ex-info "Unknown word type"
-                                         {:http.response/status 400
-                                          :error ::unknown-word-type
-                                          ::type word-type})))
+
+                         ;; Exception data is added as attributes to the
+                         ;; exception event by default.
+                         (throw
+                          (ex-info "Unknown word type"
+                                   {:http.response/status 400
+                                    :service/error :service.random-word.errors/unknown-word-type
+                                    :system/word-type word-type})))
+
           word       (rand-nth candidates)]
 
       ;; Add more attributes to the internal span
-      (span/add-span-data! {:attributes {:generated-word word}})
+      (span/add-span-data! {:attributes {:system/word word}})
 
       word)))
 

@@ -46,7 +46,7 @@
       (:body response)
       (throw (ex-info (str status " HTTP response")
                       {:http.response/status status
-                       :error :unexpected-http-response})))))
+                       :service/error        :service.errors/unexpected-http-response})))))
 
 
 
@@ -56,7 +56,7 @@
 
   ;; Wrap the synchronous body in a new internal span.
   (span/with-span! {:name       "Getting random words"
-                    :attributes {:word-types word-types}}
+                    :attributes {:system/word-types word-types}}
 
     ;; Use `doall` to force lazy sequence to be realized within span
     (doall (map get-random-word word-types))))
@@ -67,7 +67,7 @@
   "Scrambles a given word."
   [word]
   (span/with-span! {:name       "Scrambling word"
-                    :attributes {:word word}}
+                    :attributes {:system/word word}}
 
     (Thread/sleep 5)
     (let [scrambled-word (->> word
@@ -76,7 +76,7 @@
                               (apply str))]
 
       ;; Add more attributes to internal span
-      (span/add-span-data! {:attributes {:scrambled scrambled-word}})
+      (span/add-span-data! {:attributes {:service.puzzle/scrambled-word scrambled-word}})
 
       scrambled-word)))
 
@@ -91,7 +91,7 @@
 
     ;; Add event to span
     (span/add-span-data! {:event {:name       "Completed setting puzzle"
-                                  :attributes {:puzzle scrambled-words}}})
+                                  :attributes {:system/puzzle scrambled-words}}})
 
     (str/join " " scrambled-words)))
 

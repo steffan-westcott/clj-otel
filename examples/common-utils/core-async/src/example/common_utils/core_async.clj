@@ -113,11 +113,12 @@
 
 
 (defn exception-response
-  "Converts exception to a response, with status set to `:status` if exception
-  is an `IExceptionInfo` instance, 500 Server Error otherwise."
+  "Converts exception to a response, with status set to `:http.response/status`
+  value if exception is an `IExceptionInfo` instance, 500 Server Error
+  otherwise."
   [e]
   (let [resp   (response/response (ex-message e))
-        status (:status (ex-data e) 500)]
+        status (:http.response/status (ex-data e) 500)]
     (response/status resp status)))
 
 
@@ -143,8 +144,7 @@
 (defmacro go-try-response
   "Same as `go` but channel return value is Pedestal interceptor context `ctx`
   with body return value assoc'ed as `:response`. Any exception is converted to
-  a response with status set to `:status` if exception\n  is an
-  `IExceptionInfo` instance, 500 Server Error otherwise."
+  a response."
   [ctx & body]
   `(async/go
      (let [context#  (:io.opentelemetry/server-span-context ~ctx)

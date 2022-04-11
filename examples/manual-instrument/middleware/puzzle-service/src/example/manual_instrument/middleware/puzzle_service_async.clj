@@ -72,7 +72,7 @@
           (:body response)
           (throw (ex-info (str status " HTTP response")
                           {:http.response/status status
-                           :error :unexpected-http-response})))))))
+                           :service/error :service.errors/unexpected-http-response})))))))
 
 
 
@@ -87,7 +87,7 @@
   ;; timeout. Context containing internal span is assigned to `context*`.
   (async'/<with-span-binding [context* {:parent     context
                                         :name       "Getting random words"
-                                        :attributes {:word-types word-types}}]
+                                        :attributes {:system/word-types word-types}}]
     5000
     2
 
@@ -104,7 +104,7 @@
   ;; internal span is assigned to `context*`.
   (span/with-span-binding [context* {:parent     context
                                      :name       "Scrambling word"
-                                     :attributes {:word word}}]
+                                     :attributes {:system/word word}}]
 
     (Thread/sleep 5)
     (let [scrambled-word (->> word
@@ -114,7 +114,7 @@
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
-                            :attributes {:scrambled scrambled-word}})
+                            :attributes {:service.puzzle/scrambled-word scrambled-word}})
 
       scrambled-word)))
 
@@ -135,7 +135,7 @@
               ;; Add event to span
               (span/add-span-data! {:context context
                                     :event   {:name       "Completed setting puzzle"
-                                              :attributes {:puzzle scrambled-words}}})
+                                              :attributes {:system/puzzle scrambled-words}}})
 
               (str/join " " scrambled-words))))
         (finally

@@ -46,7 +46,7 @@
       (Integer/parseInt (:body response))
       (throw (ex-info (str status " HTTP response")
                       {:http.response/status status
-                       :error :unexpected-http-response})))))
+                       :service/error        :service.errors/unexpected-http-response})))))
 
 
 
@@ -56,13 +56,13 @@
 
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! {:name       "Calculating division"
-                    :attributes {:parameters [x y]}}
+                    :attributes {:service.average.divide/parameters [x y]}}
 
     (Thread/sleep 10)
     (let [result (double (/ x y))]
 
       ;; Add more attributes to internal span
-      (span/add-span-data! {:attributes {:result result}})
+      (span/add-span-data! {:attributes {:service.average.divide/result result}})
 
       result)))
 
@@ -91,7 +91,8 @@
 
     ;; Add event to span
     (span/add-span-data! {:event {:name       "Finished calculations"
-                                  :attributes result}})
+                                  :attributes {:system.averages/odds  odds-average
+                                               :system.averages/evens evens-average}}})
 
     result))
 

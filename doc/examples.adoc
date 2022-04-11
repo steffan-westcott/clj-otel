@@ -139,7 +139,7 @@ This starts a `solar-system-service` server on port 8080.
 [source,bash]
 [.small]
 ----
-curl -X GET "http://localhost:8080/metrics?planet=jupiter"
+curl -X GET "http://localhost:8080/statistics?planet=jupiter"
 # The planet Jupiter has diameter 142984.0km and gravity 23.1m/s^2.
 ----
 +
@@ -148,7 +148,7 @@ Simulate a downstream 5xx server error by requesting data on Saturn:
 [source,bash]
 [.small]
 ----
-curl -X GET "http://localhost:8080/metrics?planet=saturn"
+curl -X GET "http://localhost:8080/statistics?planet=saturn"
 # 500 HTTP response
 ----
 +
@@ -157,7 +157,7 @@ Simulate a downstream 4xx client error by requesting data on Pluto:
 [source,bash]
 [.small]
 ----
-curl -X GET "http://localhost:8080/metrics?planet=pluto"
+curl -X GET "http://localhost:8080/statistics?planet=pluto"
 # 400 HTTP response
 ----
 
