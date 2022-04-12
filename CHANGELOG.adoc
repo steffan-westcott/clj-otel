@@ -23,6 +23,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 - Include `ExceptionInfo` data as attributes in exception span events, by default
 - Update examples to use namespaced attributes for spans and events
+- Bump gRPC deps to `1.45.1`
 - Bump Clojure deps to `1.11.1`
 - Bump various build deps
 
