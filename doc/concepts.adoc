@@ -212,6 +212,7 @@ Attributes may be attached to some telemetry data such as spans and resources.
 Attributes are a map where each entry has a string key and a value which is a boolean, long, double, string or an array of one of those types.
 Attributes with `nil` values are dropped.
 
+OpenTelemetry recommends using namespaced attribute names to prevent clashes.
 See the specification for https://opentelemetry.io/docs/reference/specification/common/common/#attributes[attributes] and https://opentelemetry.io/docs/reference/specification/common/attribute-naming/[attribute naming].
 
 [#_resources]

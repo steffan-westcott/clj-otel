@@ -81,7 +81,7 @@ The new context containing the new span is bound to `context*` in this example:
 ----
 (defn user-info [user-id]
   (span/with-span! {:name "Getting user info"
-                    :attributes {:user-id user-id}}
+                    :attributes {:system/user-id user-id}}
     (fetch-user-info user-id)))
 ----
 
@@ -92,7 +92,7 @@ By default, the span in the current context is updated:
 [source,clojure]
 ----
 (defn user-info [user-id]
-  (span/add-span-data! {:attributes {:user-id user-id}})
+  (span/add-span-data! {:attributes {:system/user-id user-id}})
   (fetch-user-info user-id))
 ----
 +
@@ -102,7 +102,7 @@ Use the `:context` option to specify the context containing the span to update:
 ----
 (defn user-info [context user-id]
   (span/add-span-data! {:context context
-                        :attributes {:user-id user-id}})
+                        :attributes {:system/user-id user-id}})
   (fetch-user-info context user-id))
 ----
 
@@ -115,21 +115,21 @@ By default, the event is added to the span in the current context:
 +
 [source,clojure]
 ----
-(defn complete-stage [job-state]
-  (span/add-span-data! {:event {:name "Stage completed"
-                                :attributes (select-keys job-state [:stage :status])}})
-  (notify-watchers job-state))
+(defn complete-stage [job]
+  (span/add-span-data! {:event {:name "Job stage completed"
+                                :attributes {:service.workflow.job/stage (:stage job)}}})
+  (notify-watchers job))
 ----
 +
 Use the `:context` option to specify the context containing the span to add the event to:
 +
 [source,clojure]
 ----
-(defn complete-stage [context job-state]
+(defn complete-stage [context job]
   (span/add-span-data! {:context context
-                        :event {:name "Stage completed"
-                                :attributes (select-keys job-state [:stage :status])}})
-  (notify-watchers context job-state))
+                        :event {:name "Job stage completed"
+                                :attributes {:service.workflow.job/stage (:stage job)}}})
+  (notify-watchers context job))
 ----
 
 ==== Add an exception event to a span
@@ -139,8 +139,9 @@ This applies to synchronous and asynchronous spans.
 For https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-span[`async-span`], exceptions are "thrown" using the `raise` callback function.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-exception![`steffan-westcott.clj-otel.api.trace.span/add-exception!`] to add an event describing an exception to an existing span.
-The exception event may include xref:concepts.adoc#_attributes[attributes].
 Use this function to capture details about caught (non-escaping) exceptions.
++
+The exception event may include xref:concepts.adoc#_attributes[attributes], controlled by the `:attributes` option.
 +
 By default, the exception event is added to the span in the current context:
 +
@@ -151,7 +152,7 @@ By default, the exception event is added to the span in the current context:
     (parse-args args)
     (catch Throwable e
       (span/add-exception! e {:escaping? false
-                              :attributes {:args args}})
+                              :attributes {:app/args args}})
       {:result :parse-error})))
 ----
 +
@@ -165,7 +166,7 @@ Use the `:context` option to specify the context containing the span to add the 
     (catch Throwable e
       (span/add-exception! e {:context context
                               :escaping? false
-                              :attributes {:args args}})
+                              :attributes {:app/args args}})
       {:result :parse-error})))
 ----
 
@@ -271,7 +272,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 NOTE: When an application is run with the OpenTelemetry instrumentation agent, context is *automatically propagated* in HTTP client requests for supported clients.
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.context#\->headers[`steffan-westcott.clj-otel.context/\->headers`] to get headers to merge (inject) with the other headers in the HTTP request to be issued, for the purpose of xref:concepts.adoc#_context_propagation[context propagation].
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.context#\->headers[`steffan-westcott.clj-otel.context/\->headers`] to get headers to merge (inject) with other headers in the HTTP request to be issued, for the purpose of xref:concepts.adoc#_context_propagation[context propagation].
 Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
 +
 By default, the current context is propagated:
@@ -312,8 +313,7 @@ Select this option to export telemetry data from manual instrumentation only; Th
 +
 Select this option to mute all telemetry data.
 
-TIP: Traces telemetry data is muted in the last option, or by setting the property `otel.traces.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration).
-Note that for metrics telemetry data, `otel.metrics.exporter` has default `none`.
+TIP: Traces telemetry data is muted in the last option, or by setting the properties `otel.traces.exporter` and `otel.metrics.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration).
 
 [#_run_with_the_opentelemetry_auto_instrumentation_agent]
 === Run with the OpenTelemetry auto-instrumentation agent
@@ -324,7 +324,7 @@ The agent JAR includes the SDK and all its dependencies.
 See the https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/[agent and SDK configuration documentation].
 * When running the application, enable the agent with the `-javaagent` JVM flag.
 
-For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC, use an alias like the following:
+For an example application `my-app`, with `deps.edn` to export traces only using OTLP over gRPC, use an alias like the following:
 
 .`deps.edn`
 [source,clojure]
@@ -335,6 +335,7 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
    :otel {:jvm-opts ["-javaagent:path/to/opentelemetry-javaagent.jar"
                      "-Dotel.resource.attributes=service.name=my-app"
                      "-Dotel.traces.exporter=otlp"
+                     "-Dotel.metrics.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]}}}
 ----
 
@@ -355,7 +356,7 @@ This is not needed if gRPC is not used by any exporters or the application.
 * Configure the SDK using properties and environment variables.
 See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfigure configuration documentation].
 
-For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC with Netty transport, use an alias like the following:
+For an example application `my-app`, with `deps.edn` to export traces only using OTLP over gRPC with Netty transport, use an alias like the following:
 
 .`deps.edn`
 [source,clojure]
@@ -365,6 +366,7 @@ For an example application `my-app`, with `deps.edn` to export traces using OTLP
  :aliases {
    :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=my-app"
                      "-Dotel.traces.exporter=otlp"
+                     "-Dotel.metrics.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
           :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.12.0-alpha"}
                        io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.12.0"}
@@ -390,7 +392,7 @@ This is not needed if gRPC is not used by any exporters or the application.
 * At application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.clj-otel.sdk.otel-sdk#init-otel-sdk![`steffan-westcott.clj-otel.sdk.otel-sdk/init-otel-sdk!`] to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
 * At application end, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.clj-otel.sdk.otel-sdk#close-otel-sdk![`steffan-westcott.clj-otel.sdk.otel-sdk/close-otel-sdk!`] to close down activities of the SDK instance.
 
-For an example application `my-app`, with `deps.edn` to export traces using OTLP over gRPC with Netty transport, use deps like the following:
+For an example application `my-app`, with `deps.edn` to export traces only using OTLP over gRPC with Netty transport, use deps like the following:
 
 .`deps.edn`
 [source,clojure]
