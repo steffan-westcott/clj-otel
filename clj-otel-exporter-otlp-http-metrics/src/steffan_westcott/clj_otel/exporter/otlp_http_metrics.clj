@@ -1,9 +1,12 @@
 (ns steffan-westcott.clj-otel.exporter.otlp-http-metrics
   "Metric data exporter using OpenTelemetry Protocol via HTTP."
   (:require [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.exporter.otlp.http.metrics OtlpHttpMetricExporter OtlpHttpMetricExporterBuilder)))
+  (:import (io.opentelemetry.exporter.otlp.http.metrics OtlpHttpMetricExporter
+                                                        OtlpHttpMetricExporterBuilder)
+           (java.util.function Function)))
 
-(defn- ^OtlpHttpMetricExporterBuilder add-headers [builder headers]
+(defn- add-headers
+  ^OtlpHttpMetricExporterBuilder [builder headers]
   (reduce-kv #(.addHeader ^OtlpHttpMetricExporterBuilder %1 %2 %3) builder headers))
 
 (defn metric-exporter
@@ -14,18 +17,28 @@
   |---------------------------|-------------|
   |`:endpoint`                | OTLP endpoint, must start with `\"http://\"` or `\"https://\"` and include the full path (default: `\"http://localhost:4318/v1/metrics\"`).
   |`:headers`                 | HTTP headers to add to request (default: `{}`).
-  |`:trusted-certificates-pem`| `^bytes` X.509 certificate chain in PEM format (default: system default trusted certificates).
+  |`:trusted-certificates-pem`| `^bytes` X.509 certificate chain in PEM format for verifying servers when TLS enabled (default: system default trusted certificates).
+  |`:client-private-key-pem`  | `^bytes` private key in PEM format for verifying client when TLS enabled.
+  |`:client-certificates-pem` | `^bytes` X.509 certificate chain in PEM format for verifying client when TLS enabled.
   |`:compression-method`      | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
   |`:timeout`                 | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
-  |`:preferred-temporality`   | `^AggregationTemporality` Preferred aggregation temporality (default: `AggregationTemporality/CUMULATIVE`)."
+  |`:aggregation-temporality` | Function which takes an `InstrumentationType` and returns an `AggregationTemporality` (default: constantly `AggregationTemporality/CUMULATIVE`)."
   ([]
    (metric-exporter {}))
-  ([{:keys [endpoint headers trusted-certificates-pem compression-method timeout preferred-temporality]}]
+  ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
+            compression-method timeout aggregation-temporality]}]
    (let [builder (cond-> (OtlpHttpMetricExporter/builder)
-                         endpoint (.setEndpoint endpoint)
-                         headers (add-headers headers)
-                         trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
-                         compression-method (.setCompression compression-method)
-                         timeout (.setTimeout (util/duration timeout))
-                         preferred-temporality (.setPreferredTemporality preferred-temporality))]
+                   endpoint (.setEndpoint endpoint)
+                   headers (add-headers headers)
+                   trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
+                   (and client-private-key-pem client-certificates-pem) (.setClientTls
+                                                                         client-private-key-pem
+                                                                         client-certificates-pem)
+                   compression-method (.setCompression compression-method)
+                   timeout (.setTimeout (util/duration timeout))
+                   aggregation-temporality (.setAggregationTemporality
+                                            (reify
+                                             Function
+                                               (apply [_ instrumentation]
+                                                 (aggregation-temporality instrumentation)))))]
      (.build builder))))
