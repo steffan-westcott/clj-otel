@@ -368,9 +368,9 @@ For an example application `my-app`, with `deps.edn` to export traces only using
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.12.0-alpha"}
-                       io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.12.0"}
-                       io.opentelemetry/opentelemetry-exporter-otlp-trace         {:mvn/version "1.12.0"}
+          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.13.0-alpha"}
+                       io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.13.0"}
+                       io.opentelemetry/opentelemetry-exporter-otlp-trace         {:mvn/version "1.13.0"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.45.1"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.45.1"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.45.1"}}}}}
