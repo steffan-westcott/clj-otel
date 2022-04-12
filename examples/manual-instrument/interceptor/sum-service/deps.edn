@@ -12,7 +12,7 @@
            org.example/common-utils.interceptor {:local/root "../../../common-utils/interceptor"}}
 
  :aliases
- {;; Include this alias to emit telemetry data
+ {;; Include this alias to export telemetry data
 
   :otel            {:jvm-opts   ["-Dotel.resource.attributes=service.name=sum-service"]
                     :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.12.0-alpha"}

@@ -11,7 +11,7 @@
            org.example/common-utils.middleware {:local/root "../../../common-utils/middleware"}}
 
  :aliases
- {;; Include this alias to emit telemetry data
+ {;; Include this alias to export telemetry data
 
   :otel            {:jvm-opts   ["-Dotel.resource.attributes=service.name=puzzle-service"]
                     :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.12.0-alpha"}
