@@ -49,10 +49,10 @@
   [tracer]
   (reset! default-tracer tracer))
 
-(defn- ^Tracer get-default-tracer!
+(defn- get-default-tracer!
   "Returns the default tracer if not nil. Otherwise, gets a tracer using
   defaults and sets this as the default tracer."
-  []
+  ^Tracer []
   (if-let [tracer @default-tracer]
     tracer
     (set-default-tracer! (get-tracer))))
@@ -69,13 +69,13 @@
    :producer SpanKind/PRODUCER
    :consumer SpanKind/CONSUMER})
 
-(defn ^Span get-span
+(defn get-span
   "Gets the span from a given context, or the current context if none is given.
   If no span is found in the context (or no context is available), a
   non-recording, non-exporting span is returned."
-  ([]
+  (^Span []
    (Span/current))
-  ([context]
+  (^Span [context]
    (Span/fromContext context)))
 
 (defprotocol ^:private AsSpanContext
@@ -108,11 +108,11 @@
       (.addLink builder span-context))
     builder))
 
-(defn- ^SpanBuilder add-links
-  [^SpanBuilder builder links]
+(defn- add-links
+  ^SpanBuilder [^SpanBuilder builder links]
   (reduce add-link builder links))
 
-(defn ^Context new-span!
+(defn new-span!
   "Low level function that starts a new span and returns the context containing
   the new span. Does not mutate the current context. The span must be ended by
   evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
@@ -130,6 +130,7 @@
   |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
   |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
   |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
+  ^Context
   [{:keys [^Tracer tracer name parent links attributes ^Thread thread span-kind timestamp]
     :or   {name       ""
            parent     (context/current)

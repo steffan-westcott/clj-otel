@@ -72,7 +72,7 @@
           (:body response)
           (throw (ex-info (str status " HTTP response")
                           {:http.response/status status
-                           :service/error :service.errors/unexpected-http-response})))))))
+                           :service/error        :service.errors/unexpected-http-response})))))))
 
 
 

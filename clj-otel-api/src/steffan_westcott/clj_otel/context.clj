@@ -13,12 +13,12 @@
   []
   (Context/current))
 
-(defn ^Scope set-current!
+(defn set-current!
   "Sets the current context. The returned `Scope` must be closed to prevent
   broken traces and memory leaks. [[with-context!]] and [[with-value!]] can
   be used instead of this function to ensure the scope is closed when leaving a
   lexical boundary i.e. a body of forms."
-  [^Context context]
+  ^Scope [^Context context]
   (.makeCurrent context))
 
 (defn close-scope!
@@ -65,14 +65,14 @@
   [^Context context key]
   (.get context (context-key key)))
 
-(defn ^Context assoc-value
+(defn assoc-value
   "Associates a key-value with a `context`, returning a new `Context` that
   includes the key-value. Does not use nor affect the current context. Takes
   `key` and `value`, or an `ImplicitContextKeyed` instance which is a value
   that uses a predetermined key."
-  ([^Context context ^ImplicitContextKeyed implicit-context-keyed]
+  (^Context [^Context context ^ImplicitContextKeyed implicit-context-keyed]
    (.with context implicit-context-keyed))
-  ([^Context context key value]
+  (^Context [^Context context key value]
    (.with context (context-key key) value)))
 
 (defn root
@@ -133,7 +133,7 @@
      (.inject text-map-propagator context carrier map-setter)
      (into {} carrier))))
 
-(defn ^Context headers->merged-context
+(defn headers->merged-context
   "Returns a context formed by extracting a propagated context from a map
   `headers` and merging with another context i.e. accept context transfer from
   a remote server. May take an option map as follows:
@@ -144,7 +144,8 @@
   |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in global `OpenTelemetry` instance)."
   ([headers]
    (headers->merged-context headers {}))
-  ([headers
+  (^Context
+   [headers
     {:keys [^Context context ^TextMapPropagator text-map-propagator]
      :or   {context (current)
             text-map-propagator (otel/get-text-map-propagator)}}]

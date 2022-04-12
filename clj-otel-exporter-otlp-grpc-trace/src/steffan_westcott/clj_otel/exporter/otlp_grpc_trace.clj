@@ -3,8 +3,8 @@
   (:require [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.exporter.otlp.trace OtlpGrpcSpanExporter OtlpGrpcSpanExporterBuilder)))
 
-(defn- ^OtlpGrpcSpanExporterBuilder add-headers
-  [builder headers]
+(defn- add-headers
+  ^OtlpGrpcSpanExporterBuilder [builder headers]
   (reduce-kv #(.addHeader ^OtlpGrpcSpanExporterBuilder %1 %2 %3) builder headers))
 
 (defn span-exporter

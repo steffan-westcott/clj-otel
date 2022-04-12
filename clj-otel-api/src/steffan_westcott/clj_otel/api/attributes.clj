@@ -73,12 +73,12 @@
         (map (fn [[^AttributeKey k v]] [(.getKey k) v]))
         (.asMap attributes)))
 
-(defn ^Attributes ->attributes
+(defn ->attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
   keyword, string or `AttributeKey` instance. Each map value may be a boolean,
   long, double, string or a homogenous array of those types. Attributes with
   `nil` values are dropped."
-  [m]
+  ^Attributes [m]
   (let [kvs (keep attribute-key-value m)]
     (if (seq kvs)
       (let [builder (reduce (fn [^AttributesBuilder builder [^AttributeKey k v]]

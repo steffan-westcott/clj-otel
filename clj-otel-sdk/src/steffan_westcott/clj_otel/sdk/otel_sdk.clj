@@ -123,8 +123,8 @@
            (.build builder))
          (SimpleSpanProcessor/create composite-exporter)))))
 
-(defn- ^SdkTracerProviderBuilder set-span-limits
-  [^SdkTracerProviderBuilder builder span-limits]
+(defn- set-span-limits
+  ^SdkTracerProviderBuilder [^SdkTracerProviderBuilder builder span-limits]
   (if (satisfies? AsSpanLimits span-limits)
     (.setSpanLimits builder ^SpanLimits (as-SpanLimits span-limits))
     (.setSpanLimits builder ^Supplier (as-SpanLimits-Supplier span-limits))))

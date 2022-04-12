@@ -4,8 +4,8 @@
   (:import (io.opentelemetry.exporter.otlp.http.trace OtlpHttpSpanExporter
                                                       OtlpHttpSpanExporterBuilder)))
 
-(defn- ^OtlpHttpSpanExporterBuilder add-headers
-  [builder headers]
+(defn- add-headers
+  ^OtlpHttpSpanExporterBuilder [builder headers]
   (reduce-kv #(.addHeader ^OtlpHttpSpanExporterBuilder %1 %2 %3) builder headers))
 
 (defn span-exporter
