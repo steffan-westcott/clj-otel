@@ -114,6 +114,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://www.aspecto.io/[Aspecto]
 * https://www.datadoghq.com/[Datadog]
 * https://www.elastic.co/observability/application-performance-monitoring[Elastic APM]
+* https://logz.io/[Logz.io]
 * https://www.splunk.com/en_us/observability.html[Splunk Observability Cloud]
 * https://www.sumologic.com/[Sumo Logic]
 * https://uptrace.dev/[Uptrace]
