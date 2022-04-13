@@ -313,7 +313,7 @@ Select this option to export telemetry data from manual instrumentation only; Th
 +
 Select this option to mute all telemetry data.
 
-TIP: Traces telemetry data is muted in the last option, or by setting the properties `otel.traces.exporter` and `otel.metrics.exporter` to `none` (the default is `otlp`) when using either of the first two options (autoconfiguration).
+TIP: Traces and metrics telemetry data are muted in the last option, or by setting the autoconfiguration properties `otel.traces.exporter` and `otel.metrics.exporter` to `none` (the defaults are `otlp` for both properties) when using either of the first two options.
 
 [#_run_with_the_opentelemetry_auto_instrumentation_agent]
 === Run with the OpenTelemetry auto-instrumentation agent

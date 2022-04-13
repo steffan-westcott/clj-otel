@@ -25,6 +25,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - Update examples to use namespaced attributes for spans and events
 - Bump deps:
 * OpenTelemetry `1.13.0`
+** The default value for autoconfiguration property `otel.metrics.exporter` has changed from `none` to `otlp`
 * Clojure `1.11.1`
 * gRPC `1.45.1`
 * Various build deps
