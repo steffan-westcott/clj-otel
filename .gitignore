@@ -9,8 +9,10 @@
 .portal
 .rebel_readline_history
 .socket-repl-port
+.vscode
 *.iml
 *.jar
 *.swp
+*.code-workspace
 
 /clj-otel-*/target
