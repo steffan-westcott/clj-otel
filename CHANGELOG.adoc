@@ -19,6 +19,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
+=== `0.1.3` (in progress)
+
 === `0.1.2` (2022-04-13)
 
 - Include `ExceptionInfo` data as attributes in exception span events, by default
