@@ -5,7 +5,7 @@
   <artifactId>clj-otel-exporter-jaeger-grpc</artifactId>
   <version>VERSION</version>
   <name>clj-otel-exporter-jaeger-grpc</name>
-  <description>Clojure wrapper of OpenTelemetry Jaeger gRPC exporter</description>
+  <description>Provides programmatic configuration using Clojure of OpenTelemetry Jaeger gRPC exporter</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

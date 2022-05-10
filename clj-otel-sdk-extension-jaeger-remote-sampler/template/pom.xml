@@ -5,7 +5,7 @@
   <artifactId>clj-otel-sdk-extension-jaeger-remote-sampler</artifactId>
   <version>VERSION</version>
   <name>clj-otel-sdk-extension-jaeger-remote-sampler</name>
-  <description>Clojure wrapper of OpenTelemetry Jaeger remote sampler</description>
+  <description>Provides access using Clojure to an OpenTelemetry Sampler object that implements the Jaeger remote sampler type</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

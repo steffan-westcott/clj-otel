@@ -5,7 +5,7 @@
   <artifactId>clj-otel-extension-aws</artifactId>
   <version>VERSION</version>
   <name>clj-otel-extension-aws</name>
-  <description>Clojure wrapper of OpenTelemetry API extensions for AWS</description>
+  <description>Provides access using Clojure to OpenTelemetry extensions for AWS</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

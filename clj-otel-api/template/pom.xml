@@ -5,7 +5,7 @@
   <artifactId>clj-otel-api</artifactId>
   <version>VERSION</version>
   <name>clj-otel-api</name>
-  <description>Clojure wrapper of OpenTelemetry API</description>
+  <description>An idiomatic Clojure API for adding telemetry to your libraries and applications using OpenTelemetry</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

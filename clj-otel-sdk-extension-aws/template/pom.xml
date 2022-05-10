@@ -5,7 +5,7 @@
   <artifactId>clj-otel-sdk-extension-aws</artifactId>
   <version>VERSION</version>
   <name>clj-otel-sdk-extension-aws</name>
-  <description>Clojure wrapper of OpenTelemetry SDK AWS instrumentation support</description>
+  <description>Provides access using Clojure to OpenTelemetry Resource objects describing the execution environment on the Amazon Web Services (AWS) platform</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

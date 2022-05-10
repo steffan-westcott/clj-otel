@@ -5,7 +5,7 @@
   <artifactId>clj-otel-sdk-extension-resources</artifactId>
   <version>VERSION</version>
   <name>clj-otel-sdk-extension-resources</name>
-  <description>Clojure wrapper of OpenTelemetry SDK resource providers</description>
+  <description>Provides access using Clojure to OpenTelemetry Resource objects which describe the local host and running process</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

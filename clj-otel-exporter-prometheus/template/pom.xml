@@ -5,7 +5,7 @@
   <artifactId>clj-otel-exporter-prometheus</artifactId>
   <version>VERSION</version>
   <name>clj-otel-exporter-prometheus</name>
-  <description>Clojure wrapper of OpenTelemetry Prometheus exporter</description>
+  <description>Provides programmatic configuration using Clojure of OpenTelemetry Prometheus exporter</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

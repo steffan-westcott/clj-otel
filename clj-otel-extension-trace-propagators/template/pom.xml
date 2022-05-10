@@ -5,7 +5,7 @@
   <artifactId>clj-otel-extension-trace-propagators</artifactId>
   <version>VERSION</version>
   <name>clj-otel-extension-trace-propagators</name>
-  <description>Clojure wrapper of OpenTelemetry extension trace propagators</description>
+  <description>Provides access using Clojure to additional OpenTelemetry trace propagators</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

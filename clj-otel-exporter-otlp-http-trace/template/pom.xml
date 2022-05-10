@@ -5,7 +5,7 @@
   <artifactId>clj-otel-exporter-otlp-http-trace</artifactId>
   <version>VERSION</version>
   <name>clj-otel-exporter-otlp-http-trace</name>
-  <description>Clojure wrapper of OpenTelemetry Protocol HTTP trace exporter</description>
+  <description>Provides programmatic configuration using Clojure of OpenTelemetry OTLP HTTP trace exporter</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

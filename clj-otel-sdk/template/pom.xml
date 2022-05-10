@@ -5,7 +5,7 @@
   <artifactId>clj-otel-sdk</artifactId>
   <version>VERSION</version>
   <name>clj-otel-sdk</name>
-  <description>Clojure wrapper of OpenTelemetry SDK</description>
+  <description>Provides programmatic configuration using Clojure of OpenTelemetry SDK</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

@@ -5,7 +5,7 @@
   <artifactId>clj-otel-exporter-logging-otlp</artifactId>
   <version>VERSION</version>
   <name>clj-otel-exporter-logging-otlp</name>
-  <description>Clojure wrapper of OpenTelemetry logging OTLP exporter</description>
+  <description>Provides programmatic configuration using Clojure of OpenTelemetry OTLP JSON logging exporter, intended for debugging only</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>
