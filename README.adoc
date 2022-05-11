@@ -164,7 +164,7 @@ Thank you.
 Without them, I wouldn't have had the idea to make this project.
 * To the OpenTelemetry community and all makers of telemetry backends, for making effective observability of systems a tangible reality.
 Cloud-native software is so complex now, we need all the help we can get to understand how well it is (or is not) working.
-* To https://diataxis.fr/[Diátaxis Framework], for a clear way to structure technical documentation.
+* To the https://diataxis.fr/[Diátaxis Documentation Framework], for a clear way to structure technical documentation.
 
 == License
 
