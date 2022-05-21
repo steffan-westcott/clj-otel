@@ -12,14 +12,14 @@ endif::[]
 
 In this tutorial, you will add trace telemetry to a Clojure HTTP server application and view the traces in https://www.jaegertracing.io/[Jaeger], a telemetry backend.
 
-You will first add automatic instrumentation to quickly get telemetry without changing any application code.
-You then add manual instrumentation to enrich the telemetry data and gain further insight on the application behaviour.
+First, you will add automatic instrumentation to get telemetry without changing any application code.
+You will then add manual instrumentation to enrich the telemetry data and gain further insight into the application behaviour.
 
-The tutorial walks through creation and instrumentation of the application from scratch.
-For reference, the source code of the application before and after instrumentation can be found in the `tutorial` directory of this repository.
+The tutorial walks through the creation and instrumentation of the application from scratch.
+The application source code is in the `tutorial` directory of this repository, showing before and after instrumentation.
 
 The tutorial assumes a Unix-like OS equipped with Docker and a Clojure development environment.
-It is assumed you are comfortable working in a Clojure REPL and are familiar with Ring-based HTTP server development.
+It also assumes you are comfortable working in a Clojure REPL and are familiar with Ring-based HTTP server development.
 
 toc::[]
 
@@ -31,7 +31,7 @@ The `counter-service` application is a simple Jetty HTTP service using Ring that
 * `GET /count` returns the current counter value
 * `POST /inc` increments the counter by 1
 
-Initially the application has no instrumentation.
+The application has no instrumentation initially.
 
 * In your favourite development environment, create a project with these two files:
 +
@@ -147,7 +147,7 @@ Ensure the file is placed in the project root directory (the same directory as `
 
 * Restart the REPL with the alias `:otel` enabled and reload the `tutorial.counter-service` namespace to run the server with automatic instrumentation.
 +
-Now as each request is handled by the application, a trace is exported to Jaeger.
+As the application handles each request, now a trace is exported to Jaeger.
 
 * Exercise the server by sending a couple of requests:
 +
@@ -170,11 +170,11 @@ You will see a trace corresponding to each request handled by the server.
 image::images/jaeger-get-trace.png[Jaeger HTTP GET trace]
 +
 The span's `Tags` attributes describe this as a server span for an HTTP `GET` request for target `/count` with an HTTP response code of 200.
-The span's `Process` attributes describe the instrumented application and its environment such as the service name, runtime JVM, process, OS and host.
+The span's `Process` attributes describe the instrumented application and its environment, such as the service name, runtime JVM, process, OS and host.
 
 == Add manual instrumentation
 
-You will now enrich the telemetry detail by adding manual instrumentation on top of the automatic instrumentation.
+You will now enrich the telemetry detail by adding manual instrumentation in addition to the existing automatic instrumentation.
 
 * Add a dependency `com.github.steffan-westcott/clj-otel-api`:
 +
@@ -262,7 +262,7 @@ curl -X POST "http://localhost:8080/inc"
 +
 image::images/jaeger-post-inc.png[Jaeger HTTP POST trace]
 +
-You will observe this trace has 2 spans; a root server span named `HTTP POST` and a child internal span named `Incrementing counter` that you added to the code.
+Notice the trace has two spans; a root server span named `HTTP POST` and a child internal span named `Incrementing counter` that you added to the code.
 
 * Update the function `wrap-exception` to add detail about any caught exceptions to the server span:
 +
@@ -287,7 +287,7 @@ curl -X PUT "http://localhost:8080/reset?bogus=1"
 ----
 
 * Find the most recent `HTTP PUT` trace on the Jaeger search page.
-You will see that the server span has a `Logs` event that was added by `span/add-exception!`.
-The event attributes include a Clojure triage and stack trace of the caught exception.
+You will see that the server span has a `Logs` event added by `span/add-exception!`.
+The event attributes include a Clojure triage and a stack trace of the caught exception.
 +
 image::images/jaeger-exception.png[Jaeger exception trace]

@@ -23,9 +23,9 @@ toc::[]
 image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api]
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-api[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT]
 
-`clj-otel-api` is the primary module of `clj-otel`.
+`clj-otel-api` is the main module of `clj-otel`.
 It provides an xref:guides.adoc#_add_manual_instrumentation_to_your_library_or_application_code[idiomatic Clojure wrapper of the OpenTelemetry API for manual instrumentation].
-It also offers xref:guides.adoc#_use_ring_middleware_for_server_span_support[support for Ring] and xref:guides.adoc#_use_pedestal_interceptors_for_server_span_support[Pedestal] applications, as well as xref:guides.adoc#_create_an_asynchronous_span[support for asynchronous Clojure code].
+It also offers xref:guides.adoc#_use_ring_middleware_for_server_span_support[support for Ring] and xref:guides.adoc#_use_pedestal_interceptors_for_server_span_support[Pedestal] applications and xref:guides.adoc#_create_an_asynchronous_span[support for asynchronous Clojure code].
 
 == `clj-otel-sdk`
 
@@ -80,7 +80,7 @@ Provides access to `TextMapPropagator` implementations of these protocols:
 [#_exporter_libraries_and_modules]
 == Exporter libraries and modules
 
-These are optional exporters used with the OpenTelemetry SDK, when the SDK is either autoconfigured or programmatically configured.
+These are optional exporters used with the OpenTelemetry SDK when the SDK is either autoconfigured or programmatically configured.
 Use the Java libraries for xref:guides.adoc#_run_with_autoconfigured_sdk[autoconfiguration] or Clojure modules for xref:guides.adoc#_run_with_programmatically_configured_sdk[programmatic configuration in Clojure].
 
 IMPORTANT: These exporters are included in the OpenTelemetry auto-instrumentation agent and should not be added to applications which are run with the agent.

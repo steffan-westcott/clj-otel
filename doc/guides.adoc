@@ -134,9 +134,8 @@ Use the `:context` option to specify the context containing the span to add the 
 
 ==== Add an exception event to a span
 
-NOTE: Events for exceptions thrown in spans which leave (escape) the span's scope are *automatically added* to the span.
-This applies to synchronous and asynchronous spans.
-For https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-span[`async-span`], exceptions are "thrown" using the `raise` callback function.
+NOTE: `clj-otel` automatically adds events to spans for thrown exceptions which leave (escape) the span's scope.
+This behaviour applies to synchronous and asynchronous spans.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-exception![`steffan-westcott.clj-otel.api.trace.span/add-exception!`] to add an event describing an exception to an existing span.
 Use this function to capture details about caught (non-escaping) exceptions.
@@ -181,7 +180,7 @@ The guides in this section describe xref:concepts.adoc#_semantic_conventions[sem
 +
 The enabled support features vary with the selected middleware options.
 The middleware can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
-It also supports both synchronous (1-arity) and asynchronous (3-arity) handlers.
+It also supports synchronous (1-arity) and asynchronous (3-arity) handlers.
 +
 An example using Jetty with server spans created by the agent:
 +
@@ -249,7 +248,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 ==== Manually add HTTP response data to a client span
 
-NOTE: When an application is run with the OpenTelemetry instrumentation agent, HTTP response data is *automatically added* to HTTP client spans for supported clients.
+NOTE: When running an application with the OpenTelemetry instrumentation agent, the agent *automatically adds* HTTP response data to client spans for supported clients.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#add-client-span-response-data![`steffan-westcott.clj-otel.api.trace.http/add-client-span-response-data!`] to add HTTP response data to a client span.
 Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
@@ -270,9 +269,9 @@ Use the `:context` option to specify the context containing the span to add the 
 
 ==== Manually propagate context in an HTTP client request
 
-NOTE: When an application is run with the OpenTelemetry instrumentation agent, context is *automatically propagated* in HTTP client requests for supported clients.
+NOTE: When running an application with the OpenTelemetry instrumentation agent, the agent *automatically propagates* the context in HTTP client requests for supported clients.
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.context#\->headers[`steffan-westcott.clj-otel.context/\->headers`] to get headers to merge (inject) with other headers in the HTTP request to be issued, for the purpose of xref:concepts.adoc#_context_propagation[context propagation].
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.context#\->headers[`steffan-westcott.clj-otel.context/\->headers`] to get headers to merge (inject) with other headers in the HTTP request to be issued for xref:concepts.adoc#_context_propagation[context propagation].
 Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
 +
 By default, the current context is propagated:
@@ -302,7 +301,7 @@ Select one of these options and follow the linked guide:
 
 * <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>>
 +
-Select this option to export telemetry data as a result of automatic and manual instrumentation.
+Select this option to export telemetry data produced by automatic and manual instrumentation.
 * <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>>
 +
 Select this option to export telemetry data from manual instrumentation only; The SDK will be configured using properties or environment variables.
@@ -313,14 +312,14 @@ Select this option to export telemetry data from manual instrumentation only; Th
 +
 Select this option to mute all telemetry data.
 
-TIP: Traces and metrics telemetry data are muted in the last option, or by setting the autoconfiguration properties `otel.traces.exporter` and `otel.metrics.exporter` to `none` (the defaults are `otlp` for both properties) when using either of the first two options.
+TIP: Traces and metrics telemetry data are muted in the last option or by setting the autoconfiguration properties `otel.traces.exporter` and `otel.metrics.exporter` to `none` (the defaults are `otlp` for both properties) when using either of the first two options.
 
 [#_run_with_the_opentelemetry_auto_instrumentation_agent]
 === Run with the OpenTelemetry auto-instrumentation agent
 
 * Download the latest version of the OpenTelemetry instrumentation agent JAR, the file `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[releases page].
 The agent JAR includes the SDK and all its dependencies.
-* Configure the agent and SDK, using properties and environment variables.
+* Configure the agent and SDK using properties and environment variables.
 See the https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/[agent and SDK configuration documentation].
 * When running the application, enable the agent with the `-javaagent` JVM flag.
 
@@ -435,7 +434,7 @@ To configure the SDK at start and close down at end, the application could have 
 [#_run_without_agent_or_sdk]
 === Run without agent or SDK
 
-There are no steps to add dependencies or otherwise configure the application in order to run it without the agent or SDK.
+There are no steps to add dependencies or otherwise configure the application to run without the agent or SDK.
 
 NOTE: An application run without the OpenTelemetry instrumentation agent or SDK will not export any telemetry data.
 Usage of the OpenTelemetry API (manual instrumentation) in the application will invoke no-op implementations.
@@ -452,7 +451,7 @@ See the https://opentelemetry.io/docs/collector/getting-started/[getting started
 
 See the https://opentelemetry.io/docs/collector/configuration/[configuration documentation].
 
-This example Collector configuration has a traces pipeline where:
+This example Collector configuration has a `traces` pipeline where:
 
 * Trace data are received by the Collector as OTLP over gRPC
 * Memory usage in the Collector process is limited

@@ -18,13 +18,13 @@ image::doc/images/lightstep-service-diagram.png[Microservice dependencies displa
 
 == Requirements
 
-`clj-otel` is tested with Clojure 1.11.1 and is based on the reference https://github.com/open-telemetry/opentelemetry-java[OpenTelemetry for Java] implementation which supports Java 8 and higher.
+`clj-otel` is tested with Clojure 1.11.1 and is based on the reference https://github.com/open-telemetry/opentelemetry-java[OpenTelemetry for Java] implementation, which supports Java 8 and higher.
 
 == Quickstart
 
-`clj-otel` may be used in many ways and is highly configurable.
-This quickstart is a brief outline for getting started in a local environment.
-More in-depth information on `clj-otel` can be found in the xref:_documentation[documentation] and xref:_examples[examples].
+`clj-otel` is highly configurable and may be used in many ways.
+This quickstart briefly outlines getting started in a local environment.
+Find more in-depth information on `clj-otel` in the xref:_documentation[documentation] and xref:_examples[examples].
 
 * To add manual instrumentation to your library or application at design time
 ** Add project dependency
@@ -78,7 +78,7 @@ docker run --rm -p 16686:16686 -p 14250:14250 jaegertracing/all-in-one
 [#_examples]
 == Examples
 
-Complete example applications can be found in the `examples` directory.
+Find complete example applications in the `examples` directory.
 The examples aim to show:
 
 * Adding automatic and manual instrumentation to applications
@@ -90,17 +90,18 @@ See more xref:doc/examples.adoc[information on configuring and running the examp
 == Project status
 
 * `clj-otel` is a young, alpha grade project that has yet to be exercised in a production setting.
-Breaking API changes may still be made, but it is sincerely hoped there will be few, if any.
+Breaking API changes may still be made, but there should be few, if any.
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
 ** Trace semantics conventions support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[recording exceptions] is complete.
-Support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] is partial as it is limited by HTTP client/server abstractions and will never be as complete as that provided by automatic instrumentation.
+Support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] is limited by HTTP client/server abstractions and will never be as thorough as that provided by automatic instrumentation.
 ** Support for wrapping asynchronous Clojure code in spans is complete.
 The API is minimal and low-level, supporting any async library that works with callbacks.
-Perhaps with community feedback this will be expanded to add more specialised support for popular async libraries.
+Perhaps with community feedback, this will be expanded to add more specialised support for popular async libraries.
 Code for creating spans around `core.async` channels can be found in the examples, specifically the `<with-span-binding` macro.
-** There is presently no coverage of the Metrics or Logs API, work on these will commence in the near future.
-* Coverage of programmatic configuration of the OpenTelemetry SDK is complete.
+** There is presently no coverage of the Metrics or Logs API.
+Work on these will commence shortly.
+* Coverage of the programmatic configuration of the OpenTelemetry SDK is complete.
 
 == TODO
 
@@ -108,9 +109,8 @@ Code for creating spans around `core.async` channels can be found in the example
 ** Add Metrics and Logs API support.
 ** Consider supporting more https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/trace/semantic_conventions[trace semantics conventions].
 * Maintain parity with the latest version of https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`].
-* Implement integration tests, using https://github.com/javahippie/clj-test-containers[clj-test-containers] or similar.
-* Consider ClojureScript OpenTelemetry support in the browser and node.js using https://github.com/open-telemetry/opentelemetry-js[`opentelemetry-js`].
-It is likely this will be a separate project.
+* Implement integration tests using https://github.com/javahippie/clj-test-containers[clj-test-containers] or similar.
+* Consider ClojureScript OpenTelemetry support in the browser and node.js using https://github.com/open-telemetry/opentelemetry-js[`opentelemetry-js`]; this will likely be a separate project.
 
 == Changelog
 
@@ -118,19 +118,19 @@ See xref:CHANGELOG.adoc[changelog]
 
 == Contributing & contact
 
-The *most needed* type of contribution is *experience reports* of using `clj-otel` in real systems.
-I am keen to hear of places where `clj-otel` is used and of any problems and successes.
-This is a very young project, so now is a good time to provide *feedback* on the API design as improvements can be made freely.
+The *most needed* contribution is *experience reports* of `clj-otel` use in production systems.
+I am keen to hear of usages of `clj-otel` and any problems and successes.
+`clj-otel` is a very young project, so now is an ideal time to provide *feedback* on the API design as improvements can be made freely.
 
-I will be happy to consider pull requests for minor changes, but larger or structural changes may not be accepted while I make a start on some items in the TODO list.
+I will be happy to consider pull requests for minor changes, but I may not accept more significant changes while I make a start on some items in the TODO list.
 
-For questions or feedback on `clj-otel`, I can be contacted on https://clojurians.slack.com/messages/clj-otel[`#clj-otel`] channel on http://clojurians.net/[Clojurians Slack], user `steffan`.
+For questions or feedback on `clj-otel`, contact me on the https://clojurians.slack.com/messages/clj-otel[`#clj-otel`] channel in http://clojurians.net/[Clojurians Slack], user `steffan`.
 
 == Development
 
 === Requirements
 
-The following tools should be installed:
+To develop `clj-otel`, you should first install the following tools:
 
 * https://clojure.org/guides/deps_and_cli[Clojure CLI tools]
 * https://github.com/clj-kondo/clj-kondo/blob/master/doc/install.md[`clj-kondo` executable binary]
@@ -138,15 +138,14 @@ The following tools should be installed:
 
 === Developing
 
-* Enable the `:dev` alias in any REPL session to ensure dependencies on `clj-otel-*` modules use `:local/root` versions.
-This enables development of the modules and their dependents without the need to install the modules for each change to take effect.
-* Use the following command to get information on available build scripts:
+* Enable the `:dev` alias in any REPL session to ensure dependencies on `clj-otel-*` modules use `:local/root` versions; this enables the development of modules and their dependents without installing the modules for each change to take effect.
+* Get information on available build scripts with this command:
 +
 [source,bash]
 ----
 clojure -A:deps -T:build help/doc
 ----
-* Before making any pull requests, please ensure the source code has been linted and formatted:
+* Before making any pull requests, please ensure the source code has been linted and formatted with these commands:
 +
 [source,bash]
 ----
@@ -156,15 +155,15 @@ clojure -T:build fmt
 
 == Acknowledgements
 
-I would like to give thanks:
+I want to thank:
 
-* To you (yes, you) for having the curiosity to look into this project.
+* You (yes, you) for having the curiosity to look into this project.
 Thank you.
-* To my friends Golnaz and Nimmo, who pointed me in the direction of observability and OpenTelemetry.
-Without them, I wouldn't have had the idea to make this project.
-* To the OpenTelemetry community and all makers of telemetry backends, for making effective observability of systems a tangible reality.
+* My friends Golnaz and Nimmo, for pointing me in the direction of observability and OpenTelemetry.
+Without them, I wouldn't have had the idea to do this project.
+* The OpenTelemetry community and all makers of telemetry backends for making the effective observability of systems a tangible reality.
 Cloud-native software is so complex now, we need all the help we can get to understand how well it is (or is not) working.
-* To the https://diataxis.fr/[Diátaxis Documentation Framework], for a clear way to structure technical documentation.
+* The https://diataxis.fr/[Diátaxis Documentation Framework], for a simple way to structure technical documentation.
 
 == License
 
