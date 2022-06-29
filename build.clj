@@ -21,7 +21,7 @@
   "com.github.steffan-westcott")
 
 (def ^:private version
-  "0.1.3")
+  "0.1.4-SNAPSHOT")
 
 ;; Later artifacts in this vector may depend on earlier artifacts
 (def ^:private artifact-ids
