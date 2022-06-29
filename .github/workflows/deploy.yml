@@ -18,9 +18,9 @@ jobs:
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
       - name: Install Clojure CLI tools
-        uses: DeLaGuardo/setup-clojure@5.1
+        uses: DeLaGuardo/setup-clojure@7.0
         with:
-          cli: '1.11.1.1113'
+          cli: '1.11.1.1149'
       - name: Cache deps
         uses: actions/cache@v3
         with:
