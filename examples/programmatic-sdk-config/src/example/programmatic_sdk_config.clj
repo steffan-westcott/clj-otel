@@ -11,8 +11,8 @@
    ;[steffan-westcott.clj-otel.exporter.jaeger-thrift :as jaeger-thrift]
    ;[steffan-westcott.clj-otel.exporter.logging :as logging]
    ;[steffan-westcott.clj-otel.exporter.logging-otlp :as logging-otlp]
-   ;[steffan-westcott.clj-otel.exporter.otlp-grpc-trace :as otlp-grpc-trace]
-   ;[steffan-westcott.clj-otel.exporter.otlp-http-trace :as otlp-http-trace]
+   ;[steffan-westcott.clj-otel.exporter.otlp.grpc.trace :as otlp-grpc-trace]
+   ;[steffan-westcott.clj-otel.exporter.otlp.http.trace :as otlp-http-trace]
    ;[steffan-westcott.clj-otel.exporter.zipkin :as zipkin]
 
    [steffan-westcott.clj-otel.api.trace.span :as span]

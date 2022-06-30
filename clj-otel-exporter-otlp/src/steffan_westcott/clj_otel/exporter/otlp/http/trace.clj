@@ -1,19 +1,20 @@
-(ns steffan-westcott.clj-otel.exporter.otlp-grpc-trace
-  "Span data exporter using OpenTelemetry Protocol via gRPC."
+(ns steffan-westcott.clj-otel.exporter.otlp.http.trace
+  "Span data exporter using OpenTelemetry Protocol via HTTP."
   (:require [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.exporter.otlp.trace OtlpGrpcSpanExporter OtlpGrpcSpanExporterBuilder)))
+  (:import (io.opentelemetry.exporter.otlp.http.trace OtlpHttpSpanExporter
+                                                      OtlpHttpSpanExporterBuilder)))
 
 (defn- add-headers
-  ^OtlpGrpcSpanExporterBuilder [builder headers]
-  (reduce-kv #(.addHeader ^OtlpGrpcSpanExporterBuilder %1 %2 %3) builder headers))
+  ^OtlpHttpSpanExporterBuilder [builder headers]
+  (reduce-kv #(.addHeader ^OtlpHttpSpanExporterBuilder %1 %2 %3) builder headers))
 
 (defn span-exporter
-  "Returns a span exporter that sends span data using OTLP via gRPC, using
+  "Returns a span exporter that sends span data using OTLP via HTTP, using
   OpenTelemetry's protobuf model. May take an option map as follows:
 
   | key                       | description |
   |---------------------------|-------------|
-  |`:endpoint`                | OTLP endpoint, must start with `\"http://\"` or `\"https://\"` (default: `\"http://localhost:4317\"`).
+  |`:endpoint`                | OTLP endpoint, must start with `\"http://\"` or `\"https://\"` and include the full path (default: `\"http://localhost:4318/v1/traces\"`).
   |`:headers`                 | HTTP headers to add to request (default: `{}`).
   |`:trusted-certificates-pem`| `^bytes` X.509 certificate chain in PEM format for verifying servers when TLS enabled (default: system default trusted certificates).
   |`:client-private-key-pem`  | `^bytes` private key in PEM format for verifying client when TLS enabled.
@@ -24,9 +25,8 @@
   ([]
    (span-exporter {}))
   ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
-            compression-method timeout meter-provider]
-     :or   {headers {}}}]
-   (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
+            compression-method timeout meter-provider]}]
+   (let [builder (cond-> (OtlpHttpSpanExporter/builder)
                    endpoint           (.setEndpoint endpoint)
                    headers            (add-headers headers)
                    trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)

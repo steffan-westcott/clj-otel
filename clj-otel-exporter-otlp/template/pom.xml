@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.steffan-westcott</groupId>
-  <artifactId>clj-otel-exporter-otlp-http-metrics</artifactId>
+  <artifactId>clj-otel-exporter-otlp</artifactId>
   <version>VERSION</version>
-  <name>clj-otel-exporter-otlp-http-metrics</name>
-  <description>Provides programmatic configuration using Clojure of OpenTelemetry OTLP HTTP metrics exporter</description>
+  <name>clj-otel-exporter-otlp</name>
+  <description>Provides programmatic configuration using Clojure of OpenTelemetry OTLP exporters</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>

@@ -36,8 +36,7 @@
    "clj-otel-exporter-jaeger-thrift"
    "clj-otel-exporter-logging"
    "clj-otel-exporter-logging-otlp"
-   "clj-otel-exporter-otlp-grpc-trace"
-   "clj-otel-exporter-otlp-http-trace"
+   "clj-otel-exporter-otlp"
    "clj-otel-exporter-zipkin"])
 
 (def ^:private demo-project-paths

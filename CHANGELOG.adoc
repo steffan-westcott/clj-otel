@@ -22,6 +22,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 === `0.1.4` (in progress)
 
 - Bump deps:
+* OpenTelemetry `1.15.0`
+** Modules `clj-otel-exporter-otlp-*` are merged to new module `clj-otel-exporter-otlp`.
 * Various build deps
 
 === `0.1.3` (2022-05-22)

@@ -88,17 +88,11 @@ IMPORTANT: These exporters are included in the OpenTelemetry auto-instrumentatio
 [#_java_exporter_libraries]
 === Java exporter libraries
 
-==== `opentelemetry-exporter-otlp-trace`
+==== `opentelemetry-exporter-otlp`
 
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp-trace[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-otlp-trace]
+image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-otlp]
 
-Configuration of span exporter using OTLP via gRPC.
-
-==== `opentelemetry-exporter-otlp-http-trace`
-
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp-http-trace[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-otlp-http-trace]
-
-Configuration of span exporter using OTLP via HTTP.
+Configuration of span and metrics exporters using OTLP.
 
 ==== `opentelemetry-exporter-jaeger`
 
@@ -135,19 +129,12 @@ Intended for debugging only.
 [#_clojure_exporter_modules]
 === Clojure exporter modules
 
-==== `clj-otel-exporter-otlp-grpc-trace`
+==== `clj-otel-exporter-otlp`
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp-grpc-trace/CURRENT]
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-otlp?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-otlp]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-otlp[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp/CURRENT]
 
-Configuration of span exporter using OTLP via gRPC.
-
-==== `clj-otel-exporter-otlp-http-trace`
-
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp-http-trace/CURRENT]
-
-Configuration of span exporter using OTLP via HTTP.
+Configuration of span and metrics exporters using OTLP.
 
 ==== `clj-otel-exporter-jaeger-grpc`
 
