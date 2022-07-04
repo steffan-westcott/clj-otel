@@ -4,6 +4,6 @@
  :aliases {:build {:deps       {io.github.seancorfield/build-clj {:git/tag "v0.8.3"
                                                                   :git/sha "7ac1f8d"}}
                    :ns-default build}
-           :antq  {:extra-deps {com.github.liquidz/antq {:mvn/version "1.7.804"}
+           :antq  {:extra-deps {com.github.liquidz/antq {:mvn/version "1.8.847"}
                                 org.slf4j/slf4j-nop     {:mvn/version "1.7.36"}}
                    :main-opts  ["-m" "antq.core"]}}}
