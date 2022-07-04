@@ -204,16 +204,24 @@
   before they are sent to the backend, the timeout guarantees the span will
   not be missing from the exported trace. If either `body` throws an exception
   or exception values are put on `<src`, exception events will be added to the
-  span. `span-opts` is the same as for [[new-span!]]. Returns a `<dest` channel
+  span. `span-opts` is the same as for [[new-span!]] except that the default
+  values for `:line`, `:file` and `:ns` for the `:source` option map are set
+  from the place `<with-span-binding` is evaluated. Returns a `<dest` channel
   with buffer size `buf-size`, where values are taken from `<src` and placed on
   `<dest` irrespective of timeout. `<dest` will stop consuming and close when
   `<src` closes."
   [[context span-opts] timeout buf-size & body]
-  `(span/async-span ~span-opts
-                    (fn [context# respond# raise#]
-                      (let [~context context#
-                            <src#    (do
-                                       ~@body)]
-                        (<instrumented-pipe context# <src# ~buf-size ~timeout respond# raise#)))
-                    identity
-                    identity))
+  `(let [span-opts# ~span-opts
+         source#    (into {:line ~(:line (meta &form))
+                           :file ~*file*
+                           :ns   ~(str *ns*)}
+                          (:source span-opts#))
+         span-opts# (assoc span-opts# :source source#)]
+     (span/async-span span-opts#
+                      (fn [context# respond# raise#]
+                        (let [~context context#
+                              <src#    (do
+                                         ~@body)]
+                          (<instrumented-pipe context# <src# ~buf-size ~timeout respond# raise#)))
+                      identity
+                      identity)))
