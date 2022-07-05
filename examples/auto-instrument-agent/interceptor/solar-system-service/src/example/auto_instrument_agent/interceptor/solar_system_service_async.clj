@@ -131,9 +131,6 @@
   [{:keys [io.opentelemetry/server-span-context request]
     :as   ctx}]
 
-  ;; Add data describing matched route to the server span.
-  (trace-http/add-route-data! "/statistics" {:context server-span-context})
-
   (let [planet  (keyword (get-in request [:query-params :planet]))
         <report (<planet-report server-span-context planet)]
     (async'/go-try-response ctx

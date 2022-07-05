@@ -70,9 +70,6 @@
         planet    (keyword planet)
         statistic (keyword statistic)]
 
-    ;; Add attributes describing matched route to server span.
-    (trace-http/add-route-data! "/planets/:planet/:statistic")
-
     ;; Simulate a client error when requesting data on Pluto.
     ;; Exception data is added as attributes to the exception event by default.
     (if (= planet :pluto)

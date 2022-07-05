@@ -81,9 +81,6 @@
   containing a formatted report of the planet's statistic values."
   [{:keys [query-params]}]
 
-  ; Add data describing matched route to the server span.
-  (trace-http/add-route-data! "/statistics")
-
   (let [planet (keyword (get query-params :planet))
         report (planet-report planet)]
     (response/response report)))

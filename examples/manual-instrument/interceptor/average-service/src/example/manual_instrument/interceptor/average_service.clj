@@ -104,9 +104,6 @@
   [request]
   (let [{:keys [query-params]} request]
 
-    ; Add data describing matched route to the server span.
-    (trace-http/add-route-data! "/average")
-
     (let [num-str  (get query-params :nums)
           num-strs (->> (str/split num-str #",")
                         (map str/trim)

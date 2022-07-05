@@ -148,9 +148,6 @@
   [{:keys [io.opentelemetry/server-span-context request]
     :as   ctx}]
 
-  ; Add data describing matched route to the server span.
-  (trace-http/add-route-data! "/average" {:context server-span-context})
-
   (let [num-str  (get-in request [:query-params :nums])
         num-strs (->> (str/split num-str #",")
                       (map str/trim)

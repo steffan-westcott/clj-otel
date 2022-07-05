@@ -228,7 +228,9 @@ An example using Jetty with server spans created by the agent:
   (http/start (http/create-server service-map)))
 ----
 
-==== Add route data to a server span
+==== Manually add route data to a server span
+
+NOTE: Route data is *automatically added* to server spans when using the Pedestal interceptors https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#server-span-interceptors[`steffan-westcott.clj-otel.api.trace.http/server-span-interceptors`]
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#add-route-data![`steffan-westcott.clj-otel.api.trace.http/add-route-data!`] to add the matched route to a server span.
 +

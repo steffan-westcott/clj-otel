@@ -135,9 +135,10 @@
   ([route
     {:keys [context app-root]
      :or   {context (context/current)}}]
-   (span/add-span-data! {:context    context
-                         :name       (str app-root route)
-                         :attributes {SemanticAttributes/HTTP_ROUTE route}})))
+   (when route
+     (span/add-span-data! {:context    context
+                           :name       (str app-root route)
+                           :attributes {SemanticAttributes/HTTP_ROUTE route}}))))
 
 (defn add-client-span-response-data!
   "Adds data about the HTTP `response` to a manually created client span. May
@@ -328,6 +329,14 @@
                                                execution-id}})
             ctx)})
 
+(defn- route-interceptor
+  []
+  {:name  ::route
+   :enter (fn [{:keys [io.opentelemetry/server-span-context route]
+                :as   ctx}]
+            (add-route-data! (:path route) {:context server-span-context})
+            ctx)})
+
 (defn- copy-context-interceptor
   []
   {:name  ::copy-context
@@ -386,5 +395,6 @@
      (not create-span?) (conj (existing-server-span-interceptor))
      server-name        (conj (server-name-interceptor server-name))
      :always            (conj (execution-id-interceptor))
+     :always            (conj (route-interceptor))
      :always            (conj (copy-context-interceptor))
      (and create-span? set-current-context?) (conj (current-context-interceptor)))))

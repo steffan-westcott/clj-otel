@@ -43,9 +43,6 @@
   [request]
   (let [{:keys [query-params]} request]
 
-    ; Add data describing matched route to server span.
-    (trace-http/add-route-data! "/sum")
-
     (let [num-str  (get query-params :nums)
           num-strs (->> (str/split num-str #",")
                         (map str/trim)

@@ -23,6 +23,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 - Add support for including https://opentelemetry.io/docs/reference/specification/trace/semantic_conventions/span-general/#source-code-attributes[source code semantic attributes] when creating spans.
 By default, attributes identifying the namespace, line number and source file path are included in spans created by `with-span!`, `with-span-binding`, and `async-span`.
+- Update Pedestal HTTP server span support to always add route data to server spans
 - Bump deps:
 * OpenTelemetry `1.15.0`
 ** Modules `clj-otel-exporter-otlp-*` are merged to new module `clj-otel-exporter-otlp`
