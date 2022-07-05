@@ -41,21 +41,20 @@
   "Synchronous handler for `GET /sum` request. Returns an HTTP response
   containing the sum of the `nums` query parameters."
   [request]
-  (let [{:keys [query-params]} request]
+  (let [{:keys [query-params]} request
+        num-str  (get query-params :nums)
+        num-strs (->> (str/split num-str #",")
+                      (map str/trim)
+                      (filter seq))
+        nums     (map #(Integer/parseInt %) num-strs)]
 
-    (let [num-str  (get query-params :nums)
-          num-strs (->> (str/split num-str #",")
-                        (map str/trim)
-                        (filter seq))
-          nums     (map #(Integer/parseInt %) num-strs)]
-
-      ;; Simulate a client error when first number argument is zero.
-      ;; Exception data is added as attributes to the exception event by default.
-      (if (= 0 (first nums))
-        (throw (ex-info "Zero argument"
-                        {:http.response/status 400
-                         :system/error         :service.sum.errors/zero-argument}))
-        (response/response (str (sum nums)))))))
+    ;; Simulate a client error when first number argument is zero.
+    ;; Exception data is added as attributes to the exception event by default.
+    (if (= 0 (first nums))
+      (throw (ex-info "Zero argument"
+                      {:http.response/status 400
+                       :system/error         :service.sum.errors/zero-argument}))
+      (response/response (str (sum nums))))))
 
 
 

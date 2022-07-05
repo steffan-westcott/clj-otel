@@ -102,15 +102,14 @@
   "Synchronous handler for 'GET /average' request. Returns an HTTP response
   containing calculated averages of the odd and even numbers."
   [request]
-  (let [{:keys [query-params]} request]
-
-    (let [num-str  (get query-params :nums)
-          num-strs (->> (str/split num-str #",")
-                        (map str/trim)
-                        (filter seq))
-          nums     (map #(Integer/parseInt %) num-strs)
-          avs      (averages nums)]
-      (response/response (str avs)))))
+  (let [{:keys [query-params]} request
+        num-str  (get query-params :nums)
+        num-strs (->> (str/split num-str #",")
+                      (map str/trim)
+                      (filter seq))
+        nums     (map #(Integer/parseInt %) num-strs)
+        avs      (averages nums)]
+    (response/response (str avs))))
 
 
 
