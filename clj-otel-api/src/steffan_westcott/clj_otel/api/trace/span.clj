@@ -311,8 +311,8 @@
       (.end span))))
 
 #_{:clj-kondo/ignore [:missing-docstring]}
-(defmacro with-span-binding'
-  ^:no-doc [[context span-opts] & body]
+(defmacro ^:no-doc with-span-binding'
+  [[context span-opts] & body]
   `(let [~context (new-span! ~span-opts)]
      (try
        ~@body
@@ -362,8 +362,8 @@
          ~@body))))
 
 #_{:clj-kondo/ignore [:missing-docstring]}
-(defn async-span'
-  ^:no-doc [span-opts f respond raise]
+(defn ^:no-doc async-span'
+  [span-opts f respond raise]
   (try
     (let [context (new-span! span-opts)]
       (try
