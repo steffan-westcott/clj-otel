@@ -2,7 +2,7 @@
 
 {:paths   ["src"]
  :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
-           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.4"}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.5"}
            io.opentelemetry/opentelemetry-sdk {:mvn/version "1.15.0"}}
  :aliases {:dev      {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../clj-otel-api"}}}
-           :snapshot {:override-deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.4-SNAPSHOT"}}}}}
+           :snapshot {:override-deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.5-SNAPSHOT"}}}}}

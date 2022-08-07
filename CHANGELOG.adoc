@@ -19,6 +19,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
+=== `0.1.5` (in progress)
+
 === `0.1.4` (2022-07-05)
 
 - Add support for including https://opentelemetry.io/docs/reference/specification/trace/semantic_conventions/span-general/#source-code-attributes[source code semantic attributes] when creating spans.
