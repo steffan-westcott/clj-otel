@@ -23,6 +23,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 - Bump deps:
 * OpenTelemetry `1.17.0`
+* gRPC `1.49.0`
 * Various build deps
 
 === `0.1.4` (2022-07-05)
