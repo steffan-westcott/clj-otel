@@ -2,5 +2,5 @@
 
 {:paths ["src" "resources"]
  :deps  {org.clojure/clojure {:mvn/version "1.11.1"}
-         io.opentelemetry/opentelemetry-api {:mvn/version "1.15.0"}
-         io.opentelemetry/opentelemetry-semconv {:mvn/version "1.15.0-alpha"}}}
+         io.opentelemetry/opentelemetry-api {:mvn/version "1.17.0"}
+         io.opentelemetry/opentelemetry-semconv {:mvn/version "1.17.0-alpha"}}}

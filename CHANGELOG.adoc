@@ -22,6 +22,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 === `0.1.5` (in progress)
 
 - Bump deps:
+* OpenTelemetry `1.17.0`
 * Various build deps
 
 === `0.1.4` (2022-07-05)
