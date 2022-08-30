@@ -190,52 +190,55 @@
 
 (defn- wrap-new-server-span
   [handler create-span-opts]
-  (fn ([request]
-       (span/with-span! (server-span-opts request create-span-opts)
-         (try
-           (let [response (handler request)]
-             (add-server-span-response-data! response)
-             response)
-           (catch Throwable e
-             (add-server-span-response-data! {:status  500
-                                              :headers {}})
-             (throw e)))))
-      ([request respond raise]
-       (span/async-span (server-span-opts request create-span-opts)
-                        (fn [context respond* raise*]
-                          (handler (assoc request :io.opentelemetry/server-span-context context)
-                                   (fn [response]
-                                     (add-server-span-response-data! response {:context context})
-                                     (respond* response))
-                                   (fn [e]
-                                     (add-server-span-response-data! {:status  500
-                                                                      :headers {}}
-                                                                     {:context context})
-                                     (raise* e))))
-                        respond
-                        raise))))
+  (fn
+    ([request]
+     (span/with-span! (server-span-opts request create-span-opts)
+       (try
+         (let [response (handler request)]
+           (add-server-span-response-data! response)
+           response)
+         (catch Throwable e
+           (add-server-span-response-data! {:status  500
+                                            :headers {}})
+           (throw e)))))
+    ([request respond raise]
+     (span/async-span (server-span-opts request create-span-opts)
+                      (fn [context respond* raise*]
+                        (handler (assoc request :io.opentelemetry/server-span-context context)
+                                 (fn [response]
+                                   (add-server-span-response-data! response {:context context})
+                                   (respond* response))
+                                 (fn [e]
+                                   (add-server-span-response-data! {:status  500
+                                                                    :headers {}}
+                                                                   {:context context})
+                                   (raise* e))))
+                      respond
+                      raise))))
 
 (defn- wrap-existing-server-span
   [handler]
-  (fn ([request]
-       (handler request))
-      ([request respond raise]
-       (let [context (context/current)]
-         (handler (assoc request :io.opentelemetry/server-span-context context)
-                  respond
-                  (fn [e]
-                    (span/add-exception! e {:context context})
-                    (raise e)))))))
+  (fn
+    ([request]
+     (handler request))
+    ([request respond raise]
+     (let [context (context/current)]
+       (handler (assoc request :io.opentelemetry/server-span-context context)
+                respond
+                (fn [e]
+                  (span/add-exception! e {:context context})
+                  (raise e)))))))
 
 (defn- wrap-server-name
   [handler server-name]
-  (fn ([request]
-       (add-server-name! server-name)
-       (handler request))
-      ([{:keys [io.opentelemetry/server-span-context]
-         :as   request} respond raise]
-       (add-server-name! server-name {:context server-span-context})
-       (handler request respond raise))))
+  (fn
+    ([request]
+     (add-server-name! server-name)
+     (handler request))
+    ([{:keys [io.opentelemetry/server-span-context]
+       :as   request} respond raise]
+     (add-server-name! server-name {:context server-span-context})
+     (handler request respond raise))))
 
 (defn wrap-server-span
   "Ring middleware to add HTTP server span support. This middleware can be

@@ -196,12 +196,12 @@
   a working installation of `zprint` executable binary."
   [opts]
   (let [project-files (mapcat #(globs % "src/**.clj" "*.edn" "resources/**.edn") project-paths)
-        other-files   (globs "." "*.clj" "*.edn" ".zprintrc" ".clj-kondo/**.edn" "doc/**.edn")
+        other-files   (globs "." "*.clj" "*.edn" ".clj-kondo/**.edn" "doc/**.edn")
         files         (concat project-files other-files)
-        config-url    (-> ".zprintrc"
+        config-url    (-> ".zprint.edn"
                           io/file
                           io/as-url
                           str)]
     (-> opts
-        (assoc :command-args (concat ["zprint" "-u" config-url "-fsw"] files))
+        (assoc :command-args (concat ["zprint" "--url-only" config-url "-fsw"] files))
         checked-process)))

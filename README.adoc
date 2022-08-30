@@ -134,7 +134,7 @@ To develop `clj-otel`, you should first install the following tools:
 
 * https://clojure.org/guides/deps_and_cli[Clojure CLI tools]
 * https://github.com/clj-kondo/clj-kondo/blob/master/doc/install.md[`clj-kondo` executable binary]
-* https://github.com/kkinnear/zprint#get-zprint[`zprint` executable binary]
+* https://github.com/kkinnear/zprint#get-zprint[`zprint` executable binary] (1.2.4 or later)
 
 === Developing
 
