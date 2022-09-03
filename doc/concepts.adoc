@@ -116,7 +116,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://www.datadoghq.com/[Datadog]
 * https://www.elastic.co/observability/application-performance-monitoring[Elastic APM]
 * https://logz.io/[Logz.io]
-* https://www.splunk.com/en_us/observability.html[Splunk Observability Cloud]
+* https://www.splunk.com/en_us/products/observability.html[Splunk Observability Cloud]
 * https://www.sumologic.com/[Sumo Logic]
 * https://uptrace.dev/[Uptrace]
 * https://www.appdynamics.com/[AppDynamics]
@@ -125,7 +125,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://cloud.google.com/trace[Google Cloud Trace]
 * https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview[Azure Application Insights]
 * https://docs.oracle.com/en-us/iaas/application-performance-monitoring/index.html[Oracle Cloud Infrastructure APM]
-* https://tanzu.vmware.com/observability[VMWare Tanzu Observability]
+* https://tanzu.vmware.com/aria-operations-for-applications[VMware Aria Operations for Applications]
 * https://www.logicmonitor.com/[LogicMonitor]
 
 == Using OpenTelemetry
