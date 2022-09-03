@@ -119,6 +119,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://www.splunk.com/en_us/products/observability.html[Splunk Observability Cloud]
 * https://www.sumologic.com/[Sumo Logic]
 * https://uptrace.dev/[Uptrace]
+* https://lumigo.io/[Lumigo]
 * https://www.appdynamics.com/[AppDynamics]
 * https://www.instana.com/[Instana]
 * https://aws.amazon.com/xray/[AWS X-Ray]
@@ -127,6 +128,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://docs.oracle.com/en-us/iaas/application-performance-monitoring/index.html[Oracle Cloud Infrastructure APM]
 * https://tanzu.vmware.com/aria-operations-for-applications[VMware Aria Operations for Applications]
 * https://www.logicmonitor.com/[LogicMonitor]
+* https://www.timescale.com/promscale[Promscale]
 
 == Using OpenTelemetry
 
