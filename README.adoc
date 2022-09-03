@@ -33,7 +33,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.4"}}}
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.5"}}}
 ----
 ** Use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
 +
@@ -89,7 +89,7 @@ See more xref:doc/examples.adoc[information on configuring and running the examp
 
 == Project status
 
-* `clj-otel` is a young, alpha grade project that has yet to be exercised in a production setting.
+* `clj-otel` is a young, alpha grade project with limited use in a production setting.
 Breaking API changes may still be made, but there should be few, if any.
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
