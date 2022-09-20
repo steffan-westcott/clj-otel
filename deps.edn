@@ -5,5 +5,5 @@
                                                                   :git/sha "7ac1f8d"}}
                    :ns-default build}
            :antq  {:extra-deps {com.github.liquidz/antq {:mvn/version "2.1.927"}
-                                org.slf4j/slf4j-nop     {:mvn/version "2.0.0"}}
+                                org.slf4j/slf4j-nop     {:mvn/version "2.0.2"}}
                    :main-opts  ["-m" "antq.core"]}}}
