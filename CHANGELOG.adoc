@@ -21,6 +21,10 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.1.6` (in progress)
 
+- Bump deps:
+* gRPC `1.49.1`
+* Various build deps
+
 === `0.1.5` (2022-09-03)
 
 - Bump deps:
