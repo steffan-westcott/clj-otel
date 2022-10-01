@@ -12,7 +12,8 @@
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.context :as context]))
+            [steffan-westcott.clj-otel.context :as context]
+            [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics]))
 
 
 (defn client-request
@@ -194,6 +195,12 @@
    ::http/type   :jetty
    ::http/port   8080
    ::http/join?  false})
+
+
+
+;; Register measurements that report metrics about the JVM runtime. These measurements cover
+;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
+(runtime-metrics/register!)
 
 
 

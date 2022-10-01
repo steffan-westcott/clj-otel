@@ -37,7 +37,8 @@
    "clj-otel-exporter-logging"
    "clj-otel-exporter-logging-otlp"
    "clj-otel-exporter-otlp"
-   "clj-otel-exporter-zipkin"])
+   "clj-otel-exporter-zipkin"
+   "clj-otel-instrumentation-runtime-metrics"])
 
 (def ^:private demo-project-paths
   ["examples/auto-instrument-agent/interceptor/planet-service"

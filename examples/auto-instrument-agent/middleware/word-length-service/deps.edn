@@ -10,16 +10,16 @@
  :aliases
  {;; Use this alias to run with OpenTelemetry instrumentation agent
 
-  :otel            {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
-                               "-Dotel.resource.attributes=service.name=word-length-service"]}
+  :otel {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
+                    "-Dotel.resource.attributes=service.name=word-length-service"]}
 
 
 
   ;; Select exactly one traces-* alias
 
-  :traces-none     {:jvm-opts ["-Dotel.traces.exporter=none"]}
+  :traces-none {:jvm-opts ["-Dotel.traces.exporter=none"]}
 
-  :traces-zipkin   {:jvm-opts ["-Dotel.traces.exporter=zipkin"]}
+  :traces-zipkin {:jvm-opts ["-Dotel.traces.exporter=zipkin"]}
 
   :traces-jaeger-grpc {:jvm-opts ["-Dotel.traces.exporter=jaeger"]}
 
@@ -46,20 +46,29 @@
                                      "-Dotel.exporter.otlp.traces.endpoint=https://ingest.lightstep.com:443"
                                      "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]}
 
-  :traces-logging  {:jvm-opts ["-Dotel.traces.exporter=logging"]}
+  :traces-logging {:jvm-opts ["-Dotel.traces.exporter=logging"]}
 
 
 
   ;; Select exactly one metrics-* alias
 
-  :metrics-none    {:jvm-opts ["-Dotel.metrics.exporter=none"]}
+  :metrics-none {:jvm-opts ["-Dotel.metrics.exporter=none"]}
 
-  :metrics-logging {:jvm-opts ["-Dotel.metrics.exporter=logging"]}
+  :metrics-collector-grpc {:jvm-opts ["-Dotel.metrics.exporter=otlp"
+                                      "-Dotel.exporter.otlp.metrics.protocol=grpc"
+                                      "-Dotel.metric.export.interval=10000"]}
+
+  :metrics-collector-http {:jvm-opts ["-Dotel.metrics.exporter=otlp"
+                                      "-Dotel.exporter.otlp.metrics.protocol=http/protobuf"
+                                      "-Dotel.metric.export.interval=10000"]}
+
+  :metrics-logging {:jvm-opts ["-Dotel.metrics.exporter=logging"
+                               "-Dotel.metric.export.interval=10000"]}
 
 
 
   ;; Used for development of clj-otel-* libraries with the examples
 
-  :dev             {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../../clj-otel-api"}}}
+  :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../../clj-otel-api"}}}
 
  }}

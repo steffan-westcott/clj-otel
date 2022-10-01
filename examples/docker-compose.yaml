@@ -15,6 +15,16 @@ services:
     ports:
       - "9411:9411"    # Zipkin endpoint and web interface
 
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"    # Prometheus web interface
+    depends_on:
+      - otel-collector
+
   # OpenTelemetry Collector
   otel-collector:
     image: otel/opentelemetry-collector:latest

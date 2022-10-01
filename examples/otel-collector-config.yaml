@@ -39,7 +39,8 @@ exporters:
   # Exports traces to Jaeger via gRPC
   jaeger:
     endpoint: jaeger:14250
-    insecure: true
+    tls:
+      insecure: true
 
   # Exports traces to Zipkin
   zipkin:
@@ -66,6 +67,10 @@ exporters:
     headers:
       "lightstep-access-token": "YOUR_LIGHTSTEP_ACCESS_TOKEN"
 
+  # Exports to Prometheus
+  prometheus:
+    endpoint: "0.0.0.0:9464"
+
 
 
 # Collector extensions components
@@ -91,3 +96,8 @@ service:
       processors: [ memory_limiter, batch ]
       exporters: [ logging, jaeger, zipkin ]    # Select desired exporters (configured above)
 
+    # Enable pipeline of components for metrics
+    metrics:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ prometheus ]                 # Select desired exporters (configured above)
