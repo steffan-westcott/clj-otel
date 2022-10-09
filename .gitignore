@@ -16,3 +16,4 @@
 *.code-workspace
 
 /clj-otel-*/target
+.DS_STORE
