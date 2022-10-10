@@ -1,25 +1,20 @@
 (ns steffan-westcott.clj-otel.api.metrics.counter
-  (:require
-    [steffan-westcott.clj-otel.api.attributes :refer [->attributes]])
-  (:import
-    (io.opentelemetry.api
-      GlobalOpenTelemetry)
-    (io.opentelemetry.api.metrics
-      DoubleCounter
-      LongCounter
-      Meter
-      ObservableDoubleCounter
-      ObservableDoubleMeasurement
-      ObservableLongCounter
-      ObservableLongMeasurement)
-    java.util.function.Consumer))
+  (:require [steffan-westcott.clj-otel.api.attributes :refer [->attributes]])
+  (:import (io.opentelemetry.api GlobalOpenTelemetry)
+           (io.opentelemetry.api.metrics DoubleCounter
+                                         LongCounter
+                                         Meter
+                                         ObservableDoubleCounter
+                                         ObservableDoubleMeasurement
+                                         ObservableLongCounter
+                                         ObservableLongMeasurement)
+           java.util.function.Consumer))
 
 
 (defn long-counter
   "Create a otel counter for long values"
   ^LongCounter
-  ([^Meter meter name]
-   (long-counter meter name nil nil))
+  ([^Meter meter name] (long-counter meter name nil nil))
   ([^Meter meter name description unit]
    (-> meter
        (.counterBuilder name)
@@ -31,8 +26,7 @@
 (defn double-counter
   "Create a otel counter for double values"
   ^DoubleCounter
-  ([^Meter meter name]
-   (double-counter meter name nil nil))
+  ([^Meter meter name] (double-counter meter name nil nil))
   ([^Meter meter name description unit]
    (-> meter
        (.counterBuilder name)
@@ -56,17 +50,16 @@
   The callback should be a 0-arity function which returns
   a long value"
   ^ObservableLongCounter
-  ([^Meter meter name callback]
-   (observable-long-counter meter name callback nil nil))
+  ([^Meter meter name callback] (observable-long-counter meter name callback nil nil))
   ([^Meter meter name callback description unit]
    (-> meter
        (.counterBuilder name)
        (.setUnit unit)
        (.setDescription description)
-       (.buildWithCallback (reify Consumer
-                             (accept
-                               [_ result]
-                               (.record ^ObservableLongMeasurement result (callback))))))))
+       (.buildWithCallback (reify
+                            Consumer
+                              (accept [_ result]
+                                (.record ^ObservableLongMeasurement result (callback))))))))
 
 
 (defn observable-double-counter
@@ -74,30 +67,32 @@
   The callback should be a 0-arity function which returns
   a double value"
   ^ObservableDoubleCounter
-  ([^Meter meter name callback]
-   (observable-double-counter meter name callback nil nil))
+  ([^Meter meter name callback] (observable-double-counter meter name callback nil nil))
   ([^Meter meter name callback description unit]
    (-> meter
        (.counterBuilder name)
        (.ofDoubles)
        (.setUnit unit)
        (.setDescription description)
-       (.buildWithCallback (reify Consumer
-                             (accept
-                               [_ result]
-                               (.record ^ObservableDoubleMeasurement result (callback))))))))
+       (.buildWithCallback (reify
+                            Consumer
+                              (accept [_ result]
+                                (.record ^ObservableDoubleMeasurement result (callback))))))))
 
 
 ;; ─────────────────────────────────── Usage ──────────────────────────────────
 
 (comment
-  (def meter (GlobalOpenTelemetry/getMeter "clj-otel.metrics.test"))
+  (def meter
+    (GlobalOpenTelemetry/getMeter "clj-otel.metrics.test"))
 
-  (def dcounter (double-counter meter "clj-otel.counter.double" "test counter" "kgs"))
+  (def dcounter
+    (double-counter meter "clj-otel.counter.double" "test counter" "kgs"))
 
   (inc-counter! dcounter)
 
-  (def lcounter (long-counter meter "clj-otel.counter.long"))
+  (def lcounter
+    (long-counter meter "clj-otel.counter.long"))
 
   (inc-counter! lcounter 5 {:source :https})
 
@@ -105,5 +100,5 @@
   (def odcounter
     (observable-double-counter meter
                                "clj-otel.observable-counter.double"
-                               (fn [] (double (/ (System/currentTimeMillis) 1000)))))
-  ,)
+                               (fn []
+                                 (double (/ (System/currentTimeMillis) 1000))))))
