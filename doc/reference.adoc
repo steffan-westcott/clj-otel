@@ -34,14 +34,25 @@ image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-sdk[cljdoc,l
 
 `clj-otel-sdk` is an optional module which provides xref:guides.adoc#_run_with_programmatically_configured_sdk[programmatic configuration of the OpenTelemetry SDK in Clojure].
 
+== Instrumentation modules
+
+These are optional modules which implement instrumentation for applications not using the instrumentation agent.
+
+=== `clj-otel-instrumentation-runtime-metrics`
+
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics/CURRENT]
+
+Provide access to OpenTelemetry metrics instrumentation of the JVM runtime.
+
 == Extension modules
 
 These are optional modules used with `clj-otel-sdk` for xref:guides.adoc#_run_with_programmatically_configured_sdk[programmatic configuration of the OpenTelemetry SDK in Clojure].
 
-=== `clj-otel-sdk-extension-resources`
+=== `clj-otel-instrumentation-resources`
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-sdk-extension-resources?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-extension-resources]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-sdk-extension-resources[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-extension-resources/CURRENT]
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-instrumentation-resources?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-resources]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-instrumentation-resources[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-resources/CURRENT]
 
 Provides access to `Resource` objects which describe the local host and running process.
 

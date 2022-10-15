@@ -29,7 +29,6 @@
    "clj-otel-sdk"
    "clj-otel-sdk-extension-aws"
    "clj-otel-sdk-extension-jaeger-remote-sampler"
-   "clj-otel-sdk-extension-resources"
    "clj-otel-extension-aws"
    "clj-otel-extension-trace-propagators"
    "clj-otel-exporter-jaeger-grpc"
@@ -38,6 +37,7 @@
    "clj-otel-exporter-logging-otlp"
    "clj-otel-exporter-otlp"
    "clj-otel-exporter-zipkin"
+   "clj-otel-instrumentation-resources"
    "clj-otel-instrumentation-runtime-metrics"])
 
 (def ^:private demo-project-paths

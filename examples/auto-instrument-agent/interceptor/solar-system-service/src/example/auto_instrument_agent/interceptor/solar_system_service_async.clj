@@ -153,8 +153,7 @@
    ;; As this application is run with the OpenTelemetry instrumentation agent,
    ;; a server span will be provided by the agent and there is no need to
    ;; create another one.
-   (trace-http/server-span-interceptors {:create-span? false
-                                         :server-name  "solar"})
+   (trace-http/server-span-interceptors {:create-span? false})
 
    (interceptor/exception-response-interceptor)))
 

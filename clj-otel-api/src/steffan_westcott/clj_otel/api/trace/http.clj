@@ -53,28 +53,29 @@
   ([request {:keys [app-root captured-request-headers]}]
    (let [{:keys [headers request-method scheme uri query-string protocol remote-addr]} request
          {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
-         request-method' (str/upper-case (name request-method))
-         content-length' (when content-length
-                           (parse-long* content-length))
-         common-attrs    {SemanticAttributes/HTTP_METHOD    request-method'
-                          SemanticAttributes/HTTP_SCHEME    (name scheme)
-                          SemanticAttributes/HTTP_HOST      host
-                          SemanticAttributes/HTTP_TARGET    (if query-string
-                                                              (str uri "?" query-string)
-                                                              uri)
-                          SemanticAttributes/HTTP_FLAVOR    (str/replace (str/upper-case protocol)
-                                                                         #"^HTTP/"
-                                                                         "")
-                          SemanticAttributes/HTTP_CLIENT_IP (client-ip forwarded
-                                                                       x-forwarded-for
-                                                                       remote-addr)
-                          SemanticAttributes/NET_PEER_IP    remote-addr}]
+         [_ host-name host-port] (re-find #"^(.*?)(?::(\d*))?$" host)
+         request-method'         (str/upper-case (name request-method))
+         content-length'         (when content-length
+                                   (parse-long* content-length))
+         common-attrs            {SemanticAttributes/HTTP_METHOD    request-method'
+                                  SemanticAttributes/HTTP_SCHEME    (name scheme)
+                                  SemanticAttributes/NET_HOST_NAME  host-name
+                                  SemanticAttributes/HTTP_TARGET    (if query-string
+                                                                      (str uri "?" query-string)
+                                                                      uri)
+                                  SemanticAttributes/HTTP_FLAVOR    (str/replace (str/upper-case
+                                                                                  protocol)
+                                                                                 #"^HTTP/"
+                                                                                 "")
+                                  SemanticAttributes/HTTP_CLIENT_IP (client-ip forwarded
+                                                                               x-forwarded-for
+                                                                               remote-addr)}]
      {:name       (if app-root
                     (str app-root "/*")
                     (str "HTTP " request-method'))
       :span-kind  :server
       :parent     (context/headers->merged-context headers) ; always merge extracted context with
-                                                            ; current context
+      ; current context
       :attributes (persistent!
                    (cond-> (transient common-attrs)
                      captured-request-headers (merge-headers-attrs! "http.request.header."
@@ -82,7 +83,9 @@
                                                                     headers)
                      user-agent      (assoc! SemanticAttributes/HTTP_USER_AGENT user-agent)
                      content-length' (assoc! SemanticAttributes/HTTP_REQUEST_CONTENT_LENGTH
-                                             content-length')))})))
+                                             content-length')
+                     (seq host-port) (assoc! SemanticAttributes/NET_HOST_PORT
+                                             (parse-long* host-port))))})))
 
 (defn client-span-opts
   "Returns a span options map (a parameter for
@@ -105,22 +108,6 @@
       :span-kind  :client
       :parent     parent
       :attributes {SemanticAttributes/HTTP_METHOD method'}})))
-
-(defn add-server-name!
-  "Adds server name `server-name` (if not nil) to server span data. May take an
-  options map as follows:
-
-  | key       | description |
-  |-----------|-------------|
-  |`:context` | Context containing span to add server name to (default: current context)."
-  ([server-name]
-   (add-server-name! server-name {}))
-  ([server-name
-    {:keys [context]
-     :or   {context (context/current)}}]
-   (when server-name
-     (span/add-span-data! {:context    context
-                           :attributes {SemanticAttributes/HTTP_SERVER_NAME server-name}}))))
 
 (defn add-route-data!
   "Adds data about the matched HTTP `route` to a server span, for example
@@ -229,17 +216,6 @@
                   (span/add-exception! e {:context context})
                   (raise e)))))))
 
-(defn- wrap-server-name
-  [handler server-name]
-  (fn
-    ([request]
-     (add-server-name! server-name)
-     (handler request))
-    ([{:keys [io.opentelemetry/server-span-context]
-       :as   request} respond raise]
-     (add-server-name! server-name {:context server-span-context})
-     (handler request respond raise))))
-
 (defn wrap-server-span
   "Ring middleware to add HTTP server span support. This middleware can be
   configured to either use existing server spans created by the OpenTelemetry
@@ -268,18 +244,16 @@
   | key                       | description |
   |---------------------------|-------------|
   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
-  |`:server-name`             | Primary server name of virtual host of this web application e.g. `\"app.market.com\"` (default: no server name).
   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
   |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([handler]
    (wrap-server-span handler {}))
-  ([handler {:keys [create-span? server-name app-root captured-request-headers]}]
-   (cond-> handler
-     server-name        (wrap-server-name server-name)
-     (not create-span?) (wrap-existing-server-span)
-     create-span?       (wrap-new-server-span {:app-root app-root
-                                               :captured-request-headers
-                                               captured-request-headers}))))
+  ([handler {:keys [create-span? app-root captured-request-headers]}]
+   (if create-span?
+     (wrap-new-server-span handler
+                           {:app-root app-root
+                            :captured-request-headers captured-request-headers})
+     (wrap-existing-server-span handler))))
 
 ;;; Pedestal interceptors
 
@@ -312,14 +286,6 @@
                 :as   ctx} e]
             (span/add-interceptor-exception! e {:context server-span-context})
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
-
-(defn- server-name-interceptor
-  [server-name]
-  {:name  ::server-name
-   :enter (fn [{:keys [io.opentelemetry/server-span-context]
-                :as   ctx}]
-            (add-server-name! server-name {:context server-span-context})
-            ctx)})
 
 (defn- execution-id-interceptor
   []
@@ -383,12 +349,11 @@
   |---------------------------|-------------|
   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
   |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
-  |`:server-name`             | Primary server name of virtual host of this web application e.g. `\"app.market.com\"` (default: no server name).
   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
   |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([]
    (server-span-interceptors {}))
-  ([{:keys [create-span? set-current-context? server-name app-root captured-request-headers]
+  ([{:keys [create-span? set-current-context? app-root captured-request-headers]
      :or   {set-current-context? true}}]
    (cond-> ^:interceptors []
      create-span?       (conj (new-server-span-interceptor {:app-root app-root
@@ -396,7 +361,6 @@
                                                             captured-request-headers}))
      create-span?       (conj (response-data-interceptor))
      (not create-span?) (conj (existing-server-span-interceptor))
-     server-name        (conj (server-name-interceptor server-name))
      :always            (conj (execution-id-interceptor))
      :always            (conj (route-interceptor))
      :always            (conj (copy-context-interceptor))

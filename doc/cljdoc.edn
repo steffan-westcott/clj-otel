@@ -16,8 +16,8 @@
  com.github.steffan-westcott/clj-otel-exporter-zipkin {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-zipkin/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-extension-aws {:cljdoc.doc/tree [["README" {:file "clj-otel-extension-aws/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-extension-trace-propagators {:cljdoc.doc/tree [["README" {:file "clj-otel-extension-trace-propagators/README.adoc"}]]}
+ com.github.steffan-westcott/clj-otel-instrumentation-resources {:cljdoc.doc/tree [["README" {:file "clj-otel-instrumentation-resources/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:cljdoc.doc/tree [["README" {:file "clj-otel-instrumentation-runtime-metrics/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-sdk {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-sdk-extension-aws {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-aws/README.adoc"}]]}
- com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-jaeger-remote-sampler/README.adoc"}]]}
- com.github.steffan-westcott/clj-otel-sdk-extension-resources {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-resources/README.adoc"}]]}}
+ com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-jaeger-remote-sampler/README.adoc"}]]}}

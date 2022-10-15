@@ -1,10 +1,10 @@
 (ns steffan-westcott.clj-otel.resource.resources
   "Provide `Resource` objects describing the local host and running process."
-  (:import (io.opentelemetry.sdk.extension.resources ContainerResource
-                                                     HostResource
-                                                     OsResource
-                                                     ProcessResource
-                                                     ProcessRuntimeResource)))
+  (:import (io.opentelemetry.instrumentation.resources ContainerResource
+                                                       HostResource
+                                                       OsResource
+                                                       ProcessResource
+                                                       ProcessRuntimeResource)))
 
 (defn container-resource
   "Returns a `Resource` with information about the container being run on if

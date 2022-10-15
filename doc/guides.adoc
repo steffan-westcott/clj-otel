@@ -347,7 +347,7 @@ For an example application `my-app`, with `deps.edn` to export traces only using
 ** _Required:_ `io.opentelemetry/opentelemetry-sdk-extension-autoconfigure` for the SDK itself and SDK autoconfiguration.
 ** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any xref:concepts.adoc#_exporters[exporters] referenced in the configuration.
 See xref:reference.adoc#_java_exporter_libraries[Java exporter libraries supported by autoconfiguration].
-** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data.
+** _Optional:_ `io.opentelemetry.instrumentation/opentelemetry-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data.
 ** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-aws` for various resources describing the AWS execution environment to be automatically added to telemetry data.
 ** _Optional:_ `io.opentelemetry/opentelemetry-extension-aws` for text map propagator implementing the AWS X-Ray Trace Header propagation protocol.
 ** _Optional:_ `io.opentelemetry/opentelemetry-extension-trace-propagators` for text map propagators implementing OpenTracing Basic Tracers, Jaeger and B3 propagation protocols.
@@ -369,9 +369,9 @@ For an example application `my-app`, with `deps.edn` to export traces only using
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.18.0-alpha"}
-                       io.opentelemetry/opentelemetry-sdk-extension-resources     {:mvn/version "1.18.0"}
-                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.18.0"}
+          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.19.0-alpha"}
+                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.19.0"}
+                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.19.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.49.1"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.49.1"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.49.1"}}}}}
@@ -400,9 +400,9 @@ For an example application `my-app`, with `deps.edn` to export traces only using
 [.small]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.1.5"}
+ :deps {com.github.steffan-westcott/clj-otel-exporter-otlp            {:mvn/version "0.1.5"}
         com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.1.5"}
-        com.github.steffan-westcott/clj-otel-exporter-otlp            {:mvn/version "0.1.5"}
+        com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.1.5"}
         io.grpc/grpc-netty-shaded                                     {:mvn/version "1.49.1"}
         io.grpc/grpc-protobuf                                         {:mvn/version "1.49.1"}
         io.grpc/grpc-stub                                             {:mvn/version "1.49.1"}}}

@@ -180,8 +180,7 @@
       ;; Wrap request handling of all routes. As this application is not run
       ;; with the OpenTelemetry instrumentation agent, create a server span
       ;; for each request.
-      (trace-http/wrap-server-span {:create-span? true
-                                    :server-name  "puzzle"})))
+      (trace-http/wrap-server-span {:create-span? true})))
 
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover

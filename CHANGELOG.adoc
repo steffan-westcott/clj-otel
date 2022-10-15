@@ -21,8 +21,14 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.1.6` (in progress)
 
+- Add support for Metrics API
+- New module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the instrumentation agent
+- Methods to statically set the server host name attribute on server spans have been removed, as static data is better represented as a resource.
+** The function `add-server-name!` has been removed.
+** The option `:server-name` has been removed from the middleware and interceptors for server span support.
 - Bump deps:
-* OpenTelemetry `1.18.0`
+* OpenTelemetry `1.19.0`
+** Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
 * gRPC `1.49.1`
 * Various build deps
 

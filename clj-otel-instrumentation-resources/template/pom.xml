@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.steffan-westcott</groupId>
-  <artifactId>clj-otel-sdk-extension-resources</artifactId>
+  <artifactId>clj-otel-instrumentation-resources</artifactId>
   <version>VERSION</version>
-  <name>clj-otel-sdk-extension-resources</name>
+  <name>clj-otel-instrumentation-resources</name>
   <description>Provides access using Clojure to OpenTelemetry Resource objects which describe the local host and running process</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>

@@ -68,8 +68,7 @@
    ;; processing for this service is synchronous, the current context is set
    ;; for each request.
    (trace-http/server-span-interceptors {:create-span?         true
-                                         :set-current-context? true
-                                         :server-name          "sum"})
+                                         :set-current-context? true})
 
    (interceptor/exception-response-interceptor)))
 

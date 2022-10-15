@@ -176,8 +176,7 @@
    ;; service uses asynchronous processing, the current context is not set on
    ;; each request.
    (trace-http/server-span-interceptors {:create-span?         true
-                                         :set-current-context? false
-                                         :server-name          "average"})
+                                         :set-current-context? false})
 
    (interceptor/exception-response-interceptor)))
 

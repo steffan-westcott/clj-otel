@@ -73,8 +73,7 @@
       ;; Wrap request handling of all routes. As this application is run with
       ;; the OpenTelemetry instrumentation agent, a server span will be
       ;; provided by the agent and there is no need to create another one.
-      (trace-http/wrap-server-span {:create-span? false
-                                    :server-name  "word-length"})))
+      (trace-http/wrap-server-span {:create-span? false})))
 
 
 
