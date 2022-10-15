@@ -372,9 +372,9 @@ For an example application `my-app`, with `deps.edn` to export traces only using
           :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.19.0-alpha"}
                        io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.19.0"}
                        io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.19.0-alpha"}
-                       io.grpc/grpc-netty-shaded                                  {:mvn/version "1.49.1"}
-                       io.grpc/grpc-protobuf                                      {:mvn/version "1.49.1"}
-                       io.grpc/grpc-stub                                          {:mvn/version "1.49.1"}}}}}
+                       io.grpc/grpc-netty-shaded                                  {:mvn/version "1.50.0"}
+                       io.grpc/grpc-protobuf                                      {:mvn/version "1.50.0"}
+                       io.grpc/grpc-stub                                          {:mvn/version "1.50.0"}}}}}
 ----
 
 [#_run_with_programmatically_configured_sdk]
@@ -403,9 +403,9 @@ For an example application `my-app`, with `deps.edn` to export traces only using
  :deps {com.github.steffan-westcott/clj-otel-exporter-otlp            {:mvn/version "0.1.5"}
         com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.1.5"}
         com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.1.5"}
-        io.grpc/grpc-netty-shaded                                     {:mvn/version "1.49.1"}
-        io.grpc/grpc-protobuf                                         {:mvn/version "1.49.1"}
-        io.grpc/grpc-stub                                             {:mvn/version "1.49.1"}}}
+        io.grpc/grpc-netty-shaded                                     {:mvn/version "1.50.0"}
+        io.grpc/grpc-protobuf                                         {:mvn/version "1.50.0"}
+        io.grpc/grpc-stub                                             {:mvn/version "1.50.0"}}}
 ----
 
 To configure the SDK at start and close down at end, the application could have functions like the following:

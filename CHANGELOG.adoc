@@ -29,7 +29,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - Bump deps:
 * OpenTelemetry `1.19.0`
 ** Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
-* gRPC `1.49.1`
+* gRPC `1.50.0`
 * Various build deps
 
 === `0.1.5` (2022-09-03)
