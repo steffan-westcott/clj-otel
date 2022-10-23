@@ -68,7 +68,7 @@
 (defprotocol Counter
   "Protocol for instruments of type `:counter` or `:up-down-counter` that take
   synchronous measurements."
-  (add [counter delta]
+  (add! [counter delta]
    "Adds a delta to `counter`. `delta` is an option map as follows:
 
    | key         | description |
@@ -86,21 +86,21 @@
 
 (extend-protocol Counter
  LongCounter
-   (add [counter delta]
+   (add! [counter delta]
      (add* counter delta))
  LongUpDownCounter
-   (add [counter delta]
+   (add! [counter delta]
      (add* counter delta))
  DoubleCounter
-   (add [counter delta]
+   (add! [counter delta]
      (add* counter delta))
  DoubleUpDownCounter
-   (add [counter delta]
+   (add! [counter delta]
      (add* counter delta)))
 
 (defprotocol Histogram
   "Protocol for instruments of type `:histogram`."
-  (record [histogram measurement]
+  (record! [histogram measurement]
    "Records a measurement in `histogram`. `measurement` is an option map as follows:
 
    | key         | description |
@@ -118,10 +118,10 @@
 
 (extend-protocol Histogram
  LongHistogram
-   (record [histogram measurement]
+   (record! [histogram measurement]
      (record* histogram measurement))
  DoubleHistogram
-   (record [histogram measurement]
+   (record! [histogram measurement]
      (record* histogram measurement)))
 
 (defmacro ^:private callback*
@@ -229,7 +229,7 @@
   The 1-arity form of [[instrument]] is for building instruments that take
   measurements synchronously. Counter, up-down counter and histogram
   instruments are supported. The built instrument is returned, and measurements
-  are made with the [[add]] or [[record]] functions.
+  are made with the [[add!]] or [[record!]] functions.
 
   The 2-arity form of [[instrument]] is for building instruments that take
   measurements asynchronously. Counter, up-down counter and gauge instruments
