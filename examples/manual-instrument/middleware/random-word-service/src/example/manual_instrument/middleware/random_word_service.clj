@@ -3,8 +3,12 @@
   synchronous Ring HTTP service that is run without the OpenTelemetry
   instrumentation agent."
   (:require [example.common-utils.middleware :as middleware]
+            [muuntaja.core :as m]
+            [reitit.ring :as ring]
+            [reitit.ring.middleware.exception :as exception]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.params :as params]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -42,7 +46,9 @@
                          ;; exception event by default.
                          (throw
                           (ex-info "Unknown word type"
-                                   {:http.response/status 400
+                                   {:type          ::ring/response
+                                    :response      {:status 400
+                                                    :body   "Unknown word type"}
                                     :service/error :service.random-word.errors/unknown-word-type
                                     :system/word-type word-type})))
 
@@ -59,10 +65,6 @@
   "Synchronous Ring handler for 'GET /random-word' request. Returns an HTTP
   response containing a random word of the requested type."
   [{:keys [query-params]}]
-
-  ; Add attributes describing matched route to server span
-  (trace-http/add-route-data! "/random-word")
-
   (let [type   (keyword (get query-params "type"))
         result (random-word type)]
     (Thread/sleep (+ 20 (rand-int 20)))
@@ -70,26 +72,27 @@
 
 
 
-(defn handler
-  "Synchronous Ring handler for all requests."
-  [{:keys [request-method uri]
-    :as   request}]
-  (case [request-method uri]
-    [:get "/random-word"] (get-random-word-handler request)
-    (response/not-found "Not found")))
+(def handler
+  "Ring handler for all requests."
+  (ring/ring-handler (ring/router
+                      ["/random-word"
+                       {:name ::random-word
+                        :get  get-random-word-handler}]
+                      {:data {:muuntaja   m/instance
+                              :middleware [;; Add route data
+                                           middleware/wrap-route
 
+                                           parameters/parameters-middleware
+                                           muuntaja/format-middleware exception/exception-middleware
 
+                                           ;; Add exception event before exception-middleware runs
+                                           middleware/wrap-exception-event]}})
+                     (ring/create-default-handler)
 
-(def service
-  "Ring handler with middleware applied."
-  (-> handler
-      params/wrap-params
-      middleware/wrap-exception
-
-      ;; Wrap request handling of all routes. As this application is not run
-      ;; with the OpenTelemetry instrumentation agent, create a server span
-      ;; for each request.
-      (trace-http/wrap-server-span {:create-span? true})))
+                     ;; Wrap handling of all requests, including those which have no matching
+                     ;; route. As this application is not run with the OpenTelemetry
+                     ;; instrumentation agent, create a server span for each request.
+                     {:middleware [[trace-http/wrap-server-span {:create-span? true}]]}))
 
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
@@ -98,6 +101,6 @@
 
 
 (defonce ^{:doc "random-word-service server instance"} server
-         (jetty/run-jetty #'service
+         (jetty/run-jetty #'handler
                           {:port  8081
                            :join? false}))

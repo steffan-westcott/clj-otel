@@ -3,8 +3,12 @@
   synchronous Ring HTTP service that is run with the OpenTelemetry
   instrumentation agent."
   (:require [example.common-utils.middleware :as middleware]
+            [muuntaja.core :as m]
+            [reitit.ring :as ring]
+            [reitit.ring.middleware.exception :as exception]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.params :as params]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -35,49 +39,52 @@
       word-length)))
 
 
+
 (defn get-length-handler
   "Synchronous Ring handler for 'GET /length' request. Returns an HTTP response
   containing the length of the word in the request."
   [{:keys [query-params]}]
-
-  ; Add attributes describing matched route to server span
-  (trace-http/add-route-data! "/length")
-
   (let [word (get query-params "word")]
 
     ;; Simulate a client error for some requests.
     ;; Exception data is added as attributes to the exception event by default.
     (if (= word "problem")
       (throw (ex-info "Bad word argument"
-                      {:http.response/status 400
-                       :service/error        :service.word-length.errors/bad-word
-                       :system/word          word}))
+                      {:type          ::ring/response
+                       :response      {:status 400
+                                       :body   "Bad word argument"}
+                       :service/error :service.word-length.errors/bad-word
+                       :system/word   word}))
       (response/response (str (word-length word))))))
 
 
-(defn handler
-  "Synchronous Ring handler for all requests."
-  [{:keys [request-method uri]
-    :as   request}]
-  (case [request-method uri]
-    [:get "/length"] (get-length-handler request)
-    (response/not-found "Not found")))
 
+(def handler
+  "Ring handler for all requests."
+  (ring/ring-handler (ring/router
+                      ["/length"
+                       {:name ::length
+                        :get  get-length-handler}]
+                      {:data {:muuntaja   m/instance
+                              :middleware [;; Add route data
+                                           middleware/wrap-route
 
-(def service
-  "Ring handler with middleware applied."
-  (-> handler
-      params/wrap-params
-      middleware/wrap-exception
+                                           parameters/parameters-middleware
+                                           muuntaja/format-middleware exception/exception-middleware
 
-      ;; Wrap request handling of all routes. As this application is run with
-      ;; the OpenTelemetry instrumentation agent, a server span will be
-      ;; provided by the agent and there is no need to create another one.
-      (trace-http/wrap-server-span {:create-span? false})))
+                                           ;; Add exception event
+                                           middleware/wrap-exception-event]}})
+                     (ring/create-default-handler)
+
+                     ;; Wrap handling of all requests, including those which have no matching route.
+                     ;; As this application is run with the OpenTelemetry instrumentation agent, a
+                     ;; server span will be provided by the agent and there is no need to create
+                     ;; another one.
+                     {:middleware [[trace-http/wrap-server-span {:create-span? false}]]}))
 
 
 
 (defonce ^{:doc "word-length-service server instance"} server
-         (jetty/run-jetty #'service
+         (jetty/run-jetty #'handler
                           {:port  8081
                            :join? false}))

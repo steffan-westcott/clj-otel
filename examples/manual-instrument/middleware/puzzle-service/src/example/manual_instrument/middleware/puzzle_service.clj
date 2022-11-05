@@ -5,8 +5,12 @@
   (:require [clj-http.client :as client]
             [clojure.string :as str]
             [example.common-utils.middleware :as middleware]
+            [muuntaja.core :as m]
+            [reitit.ring :as ring]
+            [reitit.ring.middleware.exception :as exception]
+            [reitit.ring.middleware.muuntaja :as muuntaja]
+            [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.params :as params]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -45,9 +49,11 @@
         status   (:status response)]
     (if (= 200 status)
       (:body response)
-      (throw (ex-info (str status " HTTP response")
-                      {:http.response/status status
-                       :service/error        :service.errors/unexpected-http-response})))))
+      (throw (ex-info "Unexpected HTTP response"
+                      {:type          ::ring/response
+                       :response      {:status status
+                                       :body   "Unexpected HTTP response"}
+                       :service/error :service.errors/unexpected-http-response})))))
 
 
 
@@ -102,36 +108,33 @@
   "Synchronous Ring handler for `GET /puzzle` request. Returns an HTTP
   response containing a puzzle of the requested word types."
   [{:keys [query-params]}]
-
-  ;; Add data describing matched route to server span.
-  (trace-http/add-route-data! "/puzzle")
-
   (let [word-types (map keyword (str/split (get query-params "types") #","))
         puzzle     (generate-puzzle word-types)]
     (response/response puzzle)))
 
 
 
-(defn handler
-  "Synchronous Ring handler for all requests."
-  [{:keys [request-method uri]
-    :as   request}]
-  (case [request-method uri]
-    [:get "/puzzle"] (get-puzzle-handler request)
-    (response/not-found "Not found")))
+(def handler
+  "Ring handler for all requests."
+  (ring/ring-handler (ring/router
+                      ["/puzzle"
+                       {:name ::puzzle
+                        :get  get-puzzle-handler}]
+                      {:data {:muuntaja   m/instance
+                              :middleware [;; Add route data
+                                           middleware/wrap-route
 
+                                           parameters/parameters-middleware
+                                           muuntaja/format-middleware exception/exception-middleware
 
+                                           ;; Add exception event
+                                           middleware/wrap-exception-event]}})
+                     (ring/create-default-handler)
 
-(def service
-  "Ring handler with middleware applied."
-  (-> handler
-      params/wrap-params
-      middleware/wrap-exception
-
-      ;; Wrap request handling of all routes. As this application is not run
-      ;; with the OpenTelemetry instrumentation agent, create a server span
-      ;; for each request.
-      (trace-http/wrap-server-span {:create-span? true})))
+                     ;; Wrap handling of all requests, including those which have no matching route.
+                     ;; As this application is not run with the OpenTelemetry instrumentation agent,
+                     ;; create a server span for each request.
+                     {:middleware [[trace-http/wrap-server-span {:create-span? true}]]}))
 
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
@@ -140,6 +143,6 @@
 
 
 (defonce ^{:doc "puzzle-service server instance"} server
-         (jetty/run-jetty #'service
+         (jetty/run-jetty #'handler
                           {:port  8080
                            :join? false}))
