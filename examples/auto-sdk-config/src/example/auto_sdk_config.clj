@@ -14,6 +14,7 @@
 
 ;;;;;;;;;;;;;
 
-(runtime-metrics/register!)
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
+
 (square 9)
 

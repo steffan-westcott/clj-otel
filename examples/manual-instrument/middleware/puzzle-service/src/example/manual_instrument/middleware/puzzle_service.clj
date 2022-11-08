@@ -139,7 +139,7 @@
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(runtime-metrics/register!)
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
 
 
 (defonce ^{:doc "puzzle-service server instance"} server
