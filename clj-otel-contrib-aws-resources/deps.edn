@@ -1,0 +1,5 @@
+;!zprint {:width 140}
+
+{:paths ["src"]
+ :deps  {org.clojure/clojure {:mvn/version "1.11.1"}
+         io.opentelemetry.contrib/opentelemetry-aws-resources {:mvn/version "1.19.1-alpha"}}}

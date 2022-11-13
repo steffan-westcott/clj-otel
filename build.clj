@@ -27,7 +27,7 @@
 (def ^:private artifact-ids
   ["clj-otel-api"
    "clj-otel-sdk"
-   "clj-otel-sdk-extension-aws"
+   "clj-otel-contrib-aws-resources"
    "clj-otel-sdk-extension-jaeger-remote-sampler"
    "clj-otel-extension-aws"
    "clj-otel-extension-trace-propagators"

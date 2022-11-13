@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.steffan-westcott</groupId>
-  <artifactId>clj-otel-sdk-extension-aws</artifactId>
+  <artifactId>clj-otel-contrib-aws-resources</artifactId>
   <version>VERSION</version>
-  <name>clj-otel-sdk-extension-aws</name>
+  <name>clj-otel-contrib-aws-resources</name>
   <description>Provides access using Clojure to OpenTelemetry Resource objects describing the execution environment on the Amazon Web Services (AWS) platform</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>

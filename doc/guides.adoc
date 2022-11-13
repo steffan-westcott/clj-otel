@@ -348,7 +348,7 @@ For an example application `my-app`, with `deps.edn` to export traces only using
 ** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any xref:concepts.adoc#_exporters[exporters] referenced in the configuration.
 See xref:reference.adoc#_java_exporter_libraries[Java exporter libraries supported by autoconfiguration].
 ** _Optional:_ `io.opentelemetry.instrumentation/opentelemetry-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data.
-** _Optional:_ `io.opentelemetry/opentelemetry-sdk-extension-aws` for various resources describing the AWS execution environment to be automatically added to telemetry data.
+** _Optional:_ `io.opentelemetry.contrib/opentelemetry-aws-resources` for various resources describing the AWS execution environment to be automatically added to telemetry data.
 ** _Optional:_ `io.opentelemetry/opentelemetry-extension-aws` for text map propagator implementing the AWS X-Ray Trace Header propagation protocol.
 ** _Optional:_ `io.opentelemetry/opentelemetry-extension-trace-propagators` for text map propagators implementing OpenTracing Basic Tracers, Jaeger and B3 propagation protocols.
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
@@ -385,7 +385,7 @@ For an example application `my-app`, with `deps.edn` to export traces only using
 ** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for Clojure wrapped versions of any xref:concepts.adoc#_exporters[exporters] referenced in the configuration.
 See xref:reference.adoc#_clojure_exporter_modules[Clojure wrapped versions of exporters supported by autoconfiguration].
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various xref:concepts.adoc#_resources[resources] to add to telemetry data.
-** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-aws` for Clojure wrapped versions of resources describing the AWS execution environment.
+** _Optional:_ `com.github.steffan-westcott/clj-otel-contrib-aws-resources` for Clojure wrapped versions of resources describing the AWS execution environment.
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-extension-aws` for Clojure wrapped text map propagator implementing the AWS X-Ray Trace Header propagation protocol.
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-extension-trace-propagators` for Clojure wrapped text map propagators implementing OpenTracing Basic Tracers, Jaeger and B3 propagation protocols.
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).

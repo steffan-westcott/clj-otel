@@ -7,6 +7,7 @@
                    ["Concepts" {:file "doc/concepts.adoc"}]
                    ["Examples" {:file "doc/examples.adoc"}]
                    ["Changelog" {:file "CHANGELOG.adoc"}]]
+ com.github.steffan-westcott/clj-otel-contrib-aws-resources {:cljdoc.doc/tree [["README" {:file "clj-otel-contrib-aws-resources/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-jaeger-grpc/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-jaeger-thrift/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-exporter-logging {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-logging/README.adoc"}]]}
@@ -19,5 +20,4 @@
  com.github.steffan-westcott/clj-otel-instrumentation-resources {:cljdoc.doc/tree [["README" {:file "clj-otel-instrumentation-resources/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:cljdoc.doc/tree [["README" {:file "clj-otel-instrumentation-runtime-metrics/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-sdk {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk/README.adoc"}]]}
- com.github.steffan-westcott/clj-otel-sdk-extension-aws {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-aws/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler {:cljdoc.doc/tree [["README" {:file "clj-otel-sdk-extension-jaeger-remote-sampler/README.adoc"}]]}}
