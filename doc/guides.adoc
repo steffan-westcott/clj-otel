@@ -192,8 +192,7 @@ An example using Jetty with server spans created by the agent:
 
 (def service
   (-> handler
-      (trace-http/wrap-server-span {:create-span? false
-                                    :server-name  "my-server"})))
+      (trace-http/wrap-server-span {:create-span? false})))
 
 (defonce server
   (jetty/run-jetty #'service {:port 8080 :join? false}))
@@ -213,8 +212,7 @@ An example using Jetty with server spans created by the agent:
 ----
 (def routes
   (route/expand-routes
-    [[["/" (trace-http/server-span-interceptors {:create-span? false
-                                                 :server-name  "my-server"})
+    [[["/" (trace-http/server-span-interceptors {:create-span? false})
        ;; ...
        ]]]))
 
@@ -369,9 +367,9 @@ For an example application `my-app`, with `deps.edn` to export traces only using
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.19.0-alpha"}
-                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.19.0"}
-                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.19.0-alpha"}
+          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.20.0-alpha"}
+                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.20.0"}
+                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.19.2-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.50.0"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.50.0"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.50.0"}}}}}

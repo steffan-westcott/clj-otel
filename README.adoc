@@ -138,7 +138,8 @@ To develop `clj-otel`, you should first install the following tools:
 
 === Developing
 
-* Enable the `:dev` alias in any REPL session to ensure dependencies on `clj-otel-*` modules use `:local/root` versions; this enables the development of modules and their dependents without installing the modules for each change to take effect.
+* Enable the `:dev` alias in any REPL session to ensure dependencies on `clj-otel-*` modules use `:local/root` versions.
+This enables the development of modules and their dependents without installing the modules for each change to take effect.
 * Get information on available build scripts with this command:
 +
 [source,bash]

@@ -15,17 +15,19 @@
   |`:read-timeout`        | With the default sender, maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
   |`:sender`              | `zipkin2.reporter.Sender` used to send span data (default: `OkHttpSender` instance with `:endpoint` and `:read-timeout` config).
   |`:encoder`             | `zipkin2.codec.BytesEncoder` Format used to send span data (default: `SpanBytesEncoder/JSON_V2`).
-  |`:local-ip-address-fn` | 0-arg function that returns `nil` or `InetAddress` of local Zipkin endpoint (default: fn that returns local IP address captured when exporter created)."
+  |`:local-ip-address-fn` | 0-arg function that returns `nil` or `InetAddress` of local Zipkin endpoint (default: fn that returns local IP address captured when exporter created).
+  |`:compression`         | Method used to compress payloads. Value is string `\"gzip\"` or `\"none\"` (default: `\"gzip\"`)."
   ([]
    (span-exporter {}))
-  ([{:keys [endpoint read-timeout sender encoder local-ip-address-fn]}]
+  ([{:keys [endpoint read-timeout sender encoder local-ip-address-fn compression]}]
    (let [builder (cond-> (ZipkinSpanExporter/builder)
-                   endpoint     (.setEndpoint endpoint)
-                   read-timeout (.setReadTimeout (util/duration read-timeout))
-                   sender       (.setSender sender)
-                   encoder      (.setEncoder encoder)
+                   endpoint            (.setEndpoint endpoint)
+                   read-timeout        (.setReadTimeout (util/duration read-timeout))
+                   sender              (.setSender sender)
+                   encoder             (.setEncoder encoder)
                    local-ip-address-fn (.setLocalIpAddressSupplier (reify
                                                                     Supplier
                                                                       (get [_]
-                                                                        (local-ip-address-fn)))))]
+                                                                        (local-ip-address-fn))))
+                   compression         (.setCompression compression))]
      (.build builder))))
