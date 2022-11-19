@@ -56,12 +56,12 @@ image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-contrib-aws-
 
 Provides access to `Resource` objects which describe the execution environment on the Amazon Web Services (AWS) platform.
 
-=== `clj-otel-extension-aws`
+=== `clj-otel-contrib-aws-xray-propagator`
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-extension-aws?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-extension-aws]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-extension-aws[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-extension-aws/CURRENT]
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator/CURRENT]
 
-Provides access to a `TextMapPropagator` implementation of the AWS X-Ray Trace Header propagation protocol.
+Provides access to a `TextMapPropagator` implementation of the https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader[AWS X-Ray Trace Header propagation protocol].
 
 === `clj-otel-extension-trace-propagators`
 
@@ -70,9 +70,9 @@ image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-extension-tr
 
 Provides access to `TextMapPropagator` implementations of these protocols:
 
-* OpenTracing Basic Tracers protocol
+* https://github.com/opentracing/basictracer-python/blob/master/basictracer/text_propagator.py[OpenTracing Basic Tracers protocol]
 * Jaeger propagation protocol
-* B3 propagation protocol
+* https://github.com/openzipkin/b3-propagation[B3 propagation protocol]
 
 === `clj-otel-instrumentation-resources`
 

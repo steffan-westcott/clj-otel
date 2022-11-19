@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.steffan-westcott</groupId>
-  <artifactId>clj-otel-extension-aws</artifactId>
+  <artifactId>clj-otel-contrib-aws-xray-propagator</artifactId>
   <version>VERSION</version>
-  <name>clj-otel-extension-aws</name>
-  <description>Provides access using Clojure to OpenTelemetry extensions for AWS</description>
+  <name>clj-otel-contrib-aws-xray-propagator</name>
+  <description>Provides access using Clojure to a TextMapPropagator implementation compatible with the AWS X-Ray Trace Header propagation protocol</description>
   <url>https://github.com/steffan-westcott/clj-otel</url>
   <licenses>
     <license>
       <name>The Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
   <developers>
