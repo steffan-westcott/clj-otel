@@ -31,7 +31,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 ** Module `clj-otel-extension-aws` renamed to `clj-otel-contrib-aws-xray-propagator`
 ** Module `clj-otel-sdk-extension-aws` renamed to `clj-otel-contrib-aws-resources`
 ** Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
-* gRPC `1.50.0`
+* gRPC `1.51.0`
 * Various build deps
 
 === `0.1.5` (2022-09-03)
