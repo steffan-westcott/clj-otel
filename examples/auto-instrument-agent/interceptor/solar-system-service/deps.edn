@@ -9,7 +9,7 @@
            io.pedestal/pedestal.route {:mvn/version "0.5.10"}
            io.pedestal/pedestal.interceptor {:mvn/version "0.5.10"}
            io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
-           org.slf4j/slf4j-simple {:mvn/version "2.0.3"}
+           org.slf4j/slf4j-simple {:mvn/version "2.0.4"}
            clj-http/clj-http {:mvn/version "3.12.3"}
            org.example/common-utils.core-async {:local/root "../../../common-utils/core-async"}
            org.example/common-utils.interceptor {:local/root "../../../common-utils/interceptor"}}
