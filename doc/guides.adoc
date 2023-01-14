@@ -353,7 +353,8 @@ See xref:reference.adoc#_java_exporter_libraries[Java exporter libraries support
 This is not needed if gRPC is not used by any exporters or the application.
 
 * Configure the SDK using properties and environment variables.
-See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfigure configuration documentation].
+** Include the JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`
+** See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfigure configuration documentation] for details on all autoconfiguration options.
 
 For an example application `my-app`, with `deps.edn` to export traces only using OTLP over gRPC with Netty transport, use an alias like the following:
 
@@ -364,12 +365,13 @@ For an example application `my-app`, with `deps.edn` to export traces only using
 {;; ...
  :aliases {
    :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=my-app"
+                     "-Dotel.java.global-autoconfigure.enabled=true"
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.21.0-alpha"}
-                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.21.0"}
-                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.21.0-alpha"}
+          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.22.0-alpha"}
+                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.22.0"}
+                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.22.1-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.51.1"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.51.1"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.51.1"}}}}}
