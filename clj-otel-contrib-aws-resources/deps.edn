@@ -2,4 +2,4 @@
 
 {:paths ["src"]
  :deps  {org.clojure/clojure {:mvn/version "1.11.1"}
-         io.opentelemetry.contrib/opentelemetry-aws-resources {:mvn/version "1.21.0-alpha"}}}
+         io.opentelemetry.contrib/opentelemetry-aws-resources {:mvn/version "1.22.0-alpha"}}}
