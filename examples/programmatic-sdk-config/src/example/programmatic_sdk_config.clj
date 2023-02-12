@@ -7,13 +7,13 @@
   (:require
 
    ;; Require desired span exporters
-   [steffan-westcott.clj-otel.exporter.jaeger-grpc :as jaeger-grpc]
+   [steffan-westcott.clj-otel.exporter.otlp.grpc.trace :as otlp-grpc-trace]
+   ;[steffan-westcott.clj-otel.exporter.otlp.http.trace :as otlp-http-trace]
+   ;[steffan-westcott.clj-otel.exporter.jaeger-grpc :as jaeger-grpc]
    ;[steffan-westcott.clj-otel.exporter.jaeger-thrift :as jaeger-thrift]
+   ;[steffan-westcott.clj-otel.exporter.zipkin :as zipkin]
    ;[steffan-westcott.clj-otel.exporter.logging :as logging]
    ;[steffan-westcott.clj-otel.exporter.logging-otlp :as logging-otlp]
-   ;[steffan-westcott.clj-otel.exporter.otlp.grpc.trace :as otlp-grpc-trace]
-   ;[steffan-westcott.clj-otel.exporter.otlp.http.trace :as otlp-http-trace]
-   ;[steffan-westcott.clj-otel.exporter.zipkin :as zipkin]
 
    [steffan-westcott.clj-otel.api.trace.span :as span]
    [steffan-westcott.clj-otel.resource.resources :as res]
@@ -49,22 +49,22 @@
      ;; Configure selected span exporter(s). See span exporter docstrings for
      ;; further configuration options.
      [{:exporters [
+                   ;; Export spans to locally deployed OpenTelemetry Collector
+                   ;; via gRPC
+                   (otlp-grpc-trace/span-exporter)
+
+                   ;; Export spans to locally deployed OpenTelemetry Collector
+                   ;; via HTTP
+                   ; (otlp-http-trace/span-exporter)
+
                    ;; Export spans to locally deployed Jaeger via gRPC
-                   (jaeger-grpc/span-exporter)
+                   ; (jaeger-grpc/span-exporter)
 
                    ;; Export spans to locally deployed Jaeger via Thrift
                    ; (jaeger-thrift/span-exporter)
 
                    ;; Export spans to locally deployed Zipkin
                    ; (zipkin/span-exporter)
-
-                   ;; Export spans to locally deployed OpenTelemetry Collector
-                   ;; via gRPC
-                   ; (otlp-grpc-trace/span-exporter)
-
-                   ;; Export spans to locally deployed OpenTelemetry Collector
-                   ;; via HTTP
-                   ; (otlp-http-trace/span-exporter)
 
                    ;; Export spans to Honeycomb using OTLP via gRPC
                    ;(otlp-grpc-trace/span-exporter

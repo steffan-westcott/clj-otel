@@ -24,7 +24,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - Add support for Metrics API
 - New module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the instrumentation agent
 - Bump deps:
-* OpenTelemetry `1.22.0`
+* OpenTelemetry `1.23.0`
 ** When using autoconfiguration for a manually instrumented application, include the new JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`
 ** Methods to statically set the server host name attribute on server spans have been removed, as static data is better represented as a resource.
 *** The function `add-server-name!` has been removed.

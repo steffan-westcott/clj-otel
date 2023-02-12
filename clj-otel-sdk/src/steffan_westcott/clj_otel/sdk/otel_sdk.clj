@@ -152,7 +152,7 @@
                      (.setTracerProvider tracer-provider))]
     (.build builder)))
 
-(def ^:private sdk-tracer-provider
+(def ^:private otel-sdk
   (atom nil))
 
 (defn init-otel-sdk!
@@ -230,12 +230,13 @@
         tracer-provider' (get-sdk-tracer-provider (assoc tracer-provider :resource resource))
         sdk      (get-open-telemetry-sdk {:tracer-provider      tracer-provider'
                                           :text-map-propagators propagators})]
-    (otel/set-global-otel! sdk)
-    (reset! sdk-tracer-provider tracer-provider')))
+    (reset! otel-sdk sdk)
+    (otel/set-global-otel! sdk)))
 
 (defn close-otel-sdk!
   "Shut down activities of `OpenTelemetrySdk` instance previously configured
   by [[init-otel-sdk!]]."
   []
-  (when-let [^SdkTracerProvider tracer-provider @sdk-tracer-provider]
-    (.close tracer-provider)))
+  (when-let [^OpenTelemetrySdk sdk @otel-sdk]
+    (.close sdk)
+    (reset! otel-sdk nil)))
