@@ -53,6 +53,9 @@
 
   :traces-logging {:jvm-opts ["-Dotel.traces.exporter=logging"]}
 
+  :traces-logging-otlp {:jvm-opts ["-Dotel.traces.exporter=logging-otlp"
+                                   "-Dotel.traces.export.interval=10000"]}
+
 
 
   ;; Select exactly one metrics-* alias
@@ -69,6 +72,9 @@
 
   :metrics-logging {:jvm-opts ["-Dotel.metrics.exporter=logging"
                                "-Dotel.metric.export.interval=10000"]}
+
+  :metrics-logging-otlp {:jvm-opts ["-Dotel.metrics.exporter=logging-otlp"
+                                    "-Dotel.metric.export.interval=10000"]}
 
 
 
