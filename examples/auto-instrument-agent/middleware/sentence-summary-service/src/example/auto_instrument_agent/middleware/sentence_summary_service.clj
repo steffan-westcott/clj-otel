@@ -99,7 +99,7 @@
                         :get  get-summary-handler}]
                       {:data {:muuntaja   m/instance
                               :middleware [;; Add route data
-                                           middleware/wrap-route
+                                           middleware/wrap-reitit-route
 
                                            parameters/parameters-middleware
                                            muuntaja/format-middleware exception/exception-middleware

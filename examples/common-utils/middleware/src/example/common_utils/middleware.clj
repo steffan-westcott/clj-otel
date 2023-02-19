@@ -30,16 +30,11 @@
          (raise e))))))
 
 
-(defn wrap-route
-  "Ring middleware for adding matched Reitit route to the server span."
+
+(defn wrap-reitit-route
+  "Ring middleware to add matched Reitit route to the server span and Ring
+  request map."
   [handler]
-  (fn
-    ([{{:keys [template]} :reitit.core/match
-       :as request}]
-     (trace-http/add-route-data! template)
-     (handler request))
-    ([{:keys [io.opentelemetry/server-span-context]
-       :as   request
-       {:keys [template]} :reitit.core/match} respond raise]
-     (trace-http/add-route-data! template {:context server-span-context})
-     (handler request respond raise))))
+  (trace-http/wrap-route handler
+                         (fn [request]
+                           (get-in request [:reitit.core/match :template]))))

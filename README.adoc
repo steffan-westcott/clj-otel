@@ -93,20 +93,26 @@ See more xref:doc/examples.adoc[information on configuring and running the examp
 Breaking API changes may still be made, but there should be few, if any.
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
-** Trace semantics conventions support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[recording exceptions] is complete.
+*** Trace semantics conventions support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[recording exceptions] is complete.
 Support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] is limited by HTTP client/server abstractions and will never be as thorough as that provided by automatic instrumentation.
-** Support for wrapping asynchronous Clojure code in spans is complete.
+*** Support for wrapping asynchronous Clojure code in spans is complete.
 The API is minimal and low-level, supporting any async library that works with callbacks.
 Perhaps with community feedback, this will be expanded to add more specialised support for popular async libraries.
 Code for creating spans around `core.async` channels can be found in the examples, specifically the `<with-span-binding` macro.
-** There is presently no coverage of the Metrics or Logs API.
-Work on these will commence shortly.
-* Coverage of the programmatic configuration of the OpenTelemetry SDK is complete.
+** Coverage of the Metrics API is in progress.
+*** Support for creating all types of metrics instruments (counter, up-down counter, gauge and histogram) is in progress.
+*** Documentation and examples for Metrics API are in progress.
+*** Programmatic configuration of `MeterProvider` is planned.
+** There is currently no coverage of the Logs API.
+* For the programmatic configuration of the OpenTelemetry SDK:
+** Coverage of Traces `TracerProvider` is complete.
+** Coverage of Metrics `MeterProvider` is planned.
+** There is currently no coverage of Logging `LoggerProvider`.
 
 == TODO
 
 * For manual instrumentation:
-** Add Metrics and Logs API support.
+** Add Logs API support.
 ** Consider supporting more https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/trace/semantic_conventions[trace semantics conventions].
 * Maintain parity with the latest version of https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`].
 * Implement integration tests using https://github.com/javahippie/clj-test-containers[clj-test-containers] or similar.
@@ -168,5 +174,5 @@ Cloud-native software is so complex now, we need all the help we can get to unde
 
 == License
 
-Copyright © 2021-2022 Steffan Westcott +
+Copyright © 2021-2023 Steffan Westcott +
 Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]

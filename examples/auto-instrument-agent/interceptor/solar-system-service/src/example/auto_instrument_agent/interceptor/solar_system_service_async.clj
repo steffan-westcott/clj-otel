@@ -6,9 +6,10 @@
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common-utils.core-async :as async']
-            [example.common-utils.interceptor :as interceptor]
+            [example.common-utils.interceptor :as utils-interceptor]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
+            [io.pedestal.interceptor :as interceptor]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -146,22 +147,9 @@
 
 
 
-(def root-interceptors
-  "Interceptors for all routes."
-  (conj
-
-   ;; As this application is run with the OpenTelemetry instrumentation agent,
-   ;; a server span will be provided by the agent and there is no need to
-   ;; create another one.
-   (trace-http/server-span-interceptors {:create-span? false})
-
-   (interceptor/exception-response-interceptor)))
-
-
-
 (def routes
   "Route maps for the service."
-  (route/expand-routes [[["/" root-interceptors
+  (route/expand-routes [[["/" ^:interceptors [(utils-interceptor/exception-response-interceptor)]
                           ["/statistics" {:get 'get-statistics-interceptor}]]]]))
 
 
@@ -175,5 +163,32 @@
 
 
 
-(defonce ^{:doc "solar-system-service server instance"} server
-         (http/start (http/create-server service-map)))
+(defn update-default-interceptors
+  "Returns `default-interceptors` with added interceptors for HTTP server
+  span support."
+  [default-interceptors]
+  (map interceptor/interceptor
+       (concat (;; As this application is run with the OpenTelemetry instrumentation agent,
+                ;; a server span will be provided by the agent and there is no need to
+                ;; create another one.
+                trace-http/server-span-interceptors {:create-span? false})
+
+               ;; Default Pedestal interceptor stack
+               default-interceptors
+
+               ;; Adds matched route data to server spans
+               [(trace-http/route-interceptor)])))
+
+
+
+(defn service
+  "Returns an initialised service map ready for creating an HTTP server."
+  [service-map]
+  (-> service-map
+      (http/default-interceptors)
+      (update ::http/interceptors update-default-interceptors)
+      (http/create-server)))
+
+
+
+(defonce ^{:doc "solar-system-service server instance"} server (http/start (service service-map)))

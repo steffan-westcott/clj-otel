@@ -6,10 +6,12 @@
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common-utils.core-async :as async']
-            [example.common-utils.interceptor :as interceptor]
+            [example.common-utils.interceptor :as utils-interceptor]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
+            [io.pedestal.interceptor :as interceptor]
             [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
@@ -167,24 +169,10 @@
 
 
 
-(def root-interceptors
-  "Interceptors for all routes."
-  (conj
-
-   ;; As this application is not run with the OpenTelemetry instrumentation
-   ;; agent, create a server span for each request. Because part of this
-   ;; service uses asynchronous processing, the current context is not set on
-   ;; each request.
-   (trace-http/server-span-interceptors {:create-span?         true
-                                         :set-current-context? false})
-
-   (interceptor/exception-response-interceptor)))
-
-
-
 (def routes
   "Route maps for the service."
-  (route/expand-routes [[["/" root-interceptors ["/average" {:get 'get-averages-interceptor}]]]]))
+  (route/expand-routes [[["/" ^:interceptors [(utils-interceptor/exception-response-interceptor)]
+                          ["/average" {:get 'get-averages-interceptor}]]]]))
 
 
 
@@ -197,11 +185,46 @@
 
 
 
+(defn update-default-interceptors
+  "Returns `default-interceptors` with added interceptors for HTTP server
+  span support."
+  [default-interceptors]
+  (map interceptor/interceptor
+       (concat (;; As this application is not run with the OpenTelemetry instrumentation
+                ;; agent, create a server span for each request. Because part of this
+                ;; service uses asynchronous processing, the current context is not set on
+                ;; each request.
+                trace-http/server-span-interceptors {:create-span?         true
+                                                     :set-current-context? false})
+
+               ;; Add metric that records the number of active HTTP requests
+               [(metrics-http-server/active-requests-interceptor)]
+
+               ;; Default Pedestal interceptor stack
+               default-interceptors
+
+               ;; Adds matched route data to server spans
+               [(trace-http/route-interceptor)]
+
+               ;; Adds metrics that include http.route attribute
+               (metrics-http-server/metrics-by-route-interceptors))))
+
+
+
+(defn service
+  "Returns an initialised service map ready for creating an HTTP server."
+  [service-map]
+  (-> service-map
+      (http/default-interceptors)
+      (update ::http/interceptors update-default-interceptors)
+      (http/create-server)))
+
+
+
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
 (defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
 
 
 
-(defonce ^{:doc "average-service server instance"} server
-         (http/start (http/create-server service-map)))
+(defonce ^{:doc "average-service server instance"} server (http/start (service service-map)))

@@ -67,12 +67,12 @@
                         :get  get-length-handler}]
                       {:data {:muuntaja   m/instance
                               :middleware [;; Add route data
-                                           middleware/wrap-route
+                                           middleware/wrap-reitit-route
 
                                            parameters/parameters-middleware
                                            muuntaja/format-middleware exception/exception-middleware
 
-                                           ;; Add exception event
+                                           ;; Add exception event before exception-middleware runs
                                            middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 

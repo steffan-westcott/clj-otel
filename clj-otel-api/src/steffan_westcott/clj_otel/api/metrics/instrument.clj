@@ -215,7 +215,7 @@
   "Builds an instrument for taking measurements either synchronously or
   asynchronously (but not both).
 
-  The first parameter is an options map as follows:
+  The first parameter `opts` is an options map as follows:
 
   | key                | description |
   |--------------------|-------------|
@@ -233,9 +233,9 @@
 
   The 2-arity form of [[instrument]] is for building instruments that take
   measurements asynchronously. Counter, up-down counter and gauge instruments
-  are supported. `observe` is a 0-arity function that will be called
-  periodically to take measurements. To stop, evaluate `.close` on the
-  `AutoCloseable` that [[instrument]] returns.
+  are supported. The second parameter `observe` is a 0-arity function that will
+  be called periodically to take measurements. To stop, evaluate `.close` on
+  the `AutoCloseable` that [[instrument]] returns.
 
   `observe` should return a map as follows:
 

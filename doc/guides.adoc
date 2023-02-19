@@ -236,14 +236,14 @@ By default, the route data is added to the span in the current context:
 +
 [source,clojure]
 ----
-(trace-http/add-route-data! "/rooms/:room-id")
+(trace-http/add-route-data! :get "/rooms/:room-id")
 ----
 +
 Use the `:context` option to specify the context containing the span to add the route data to:
 +
 [source,clojure]
 ----
-(trace-http/add-route-data! "/rooms/:room-id" {:context context})
+(trace-http/add-route-data! :get "/rooms/:room-id" {:context context})
 ----
 
 ==== Manually add HTTP response data to a client span

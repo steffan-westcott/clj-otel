@@ -14,6 +14,7 @@
             [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
@@ -171,7 +172,10 @@
                         :get  get-puzzle-handler}]
                       {:data {:muuntaja   m/instance
                               :middleware [;; Add route data
-                                           middleware/wrap-route
+                                           middleware/wrap-reitit-route
+
+                                           ;; Add metrics that include http.route attribute
+                                           metrics-http-server/wrap-metrics-by-route
 
                                            parameters/parameters-middleware
                                            muuntaja/format-middleware exception/exception-middleware
@@ -183,7 +187,8 @@
                      ;; Wrap handling of all requests, including those which have no matching
                      ;; route. As this application is not run with the OpenTelemetry
                      ;; instrumentation agent, create a server span for each request.
-                     {:middleware [[trace-http/wrap-server-span {:create-span? true}]]}))
+                     {:middleware [[trace-http/wrap-server-span {:create-span? true}]
+                                   [metrics-http-server/wrap-active-requests]]}))
 
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover

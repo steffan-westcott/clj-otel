@@ -15,23 +15,31 @@ Instead, development proceeds on a linear path where `z` increases for batches o
 
 Breaking changes will be documented here.
 
-WARNING: Until version `1.0.0` there is a greater possibility of breaking changes.
+WARNING: Until version `1.0.0` there is a greater possibility of breaking changes, highlighted with icon:warning[] below.
 
 == `0.x` changes
 
 === `0.1.6` (in progress)
 
 - Add support for Metrics API
-- New module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the instrumentation agent
+- Add implementations of the following https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/http-metrics/[HTTP server metrics] for use by applications not run with the OpenTelemetry instrumentation agent:
+* `http.server.active_requests`
+* `http.server.duration`
+* `http.server.request.size`
+- icon:warning[] The parameters for function `add-route-data!` have changed, there is a new parameter to specify the HTTP request method.
+- icon:warning[] The pattern for using `clj-otel` middleware and interceptors in applications has been revised.
+The revised pattern uses new middleware `wrap-route` and interceptor `route-interceptor` to capture matched routes in HTTP server spans.
+The pattern also ensures all requests are traced, including those which do not match any route.
+- New module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the OpenTelemetry instrumentation agent.
 - Bump deps:
 * OpenTelemetry `1.23.1`
-** When using autoconfiguration for a manually instrumented application, include the new JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`
-** Methods to statically set the server host name attribute on server spans have been removed, as static data is better represented as a resource.
-*** The function `add-server-name!` has been removed.
-*** The option `:server-name` has been removed from the middleware and interceptors for server span support.
-** Module `clj-otel-extension-aws` renamed to `clj-otel-contrib-aws-xray-propagator`
-** Module `clj-otel-sdk-extension-aws` renamed to `clj-otel-contrib-aws-resources`
-** Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
+** icon:warning[] When using autoconfiguration for a manually instrumented application, include the new JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`
+** Methods to statically set the server host name attribute on server spans have been removed, as static data is better represented as an OpenTelemetry resource.
+*** icon:warning[] The function `add-server-name!` has been removed.
+*** icon:warning[] The option `:server-name` has been removed from the middleware and interceptors for server span support.
+** icon:warning[] Module `clj-otel-extension-aws` renamed to `clj-otel-contrib-aws-xray-propagator`
+** icon:warning[] Module `clj-otel-sdk-extension-aws` renamed to `clj-otel-contrib-aws-resources`
+** icon:warning[] Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
 * gRPC `1.51.1`
 * Various build deps
 
