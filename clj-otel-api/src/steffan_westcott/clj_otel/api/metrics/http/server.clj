@@ -86,8 +86,9 @@
                         :attributes (request-duration-or-size-attrs server-request-attrs status)
                         :context    context})))
 
-(defn- record-size!
-  ([server-request-attrs status] (record-size! server-request-attrs status (context/current)))
+(defn- record-request-size!
+  ([server-request-attrs status]
+   (record-request-size! server-request-attrs status (context/current)))
   ([server-request-attrs status context]
    (when-let [size (get server-request-attrs SemanticAttributes/HTTP_REQUEST_CONTENT_LENGTH)]
      (instrument/record! @request-size
@@ -224,29 +225,29 @@
        :as   request}]
      (try
        (let [response (handler request)]
-         (record-size! server-request-attrs (:status response))
+         (record-request-size! server-request-attrs (:status response))
          response)
        (catch Throwable e
-         (record-size! server-request-attrs 500)
+         (record-request-size! server-request-attrs 500)
          (throw e))))
     ([{:keys [io.opentelemetry/server-request-attrs io.opentelemetry/server-span-context]
        :as   request} respond raise]
      (try
        (handler request
                 (fn [response]
-                  (record-size!
+                  (record-request-size!
                    server-request-attrs
                    (:status response)
                    server-span-context)
                   (respond response))
                 (fn [e]
-                  (record-size!
+                  (record-request-size!
                    server-request-attrs
                    500
                    server-span-context)
                   (raise e)))
        (catch Throwable e
-         (record-size! server-request-attrs 500 server-span-context)
+         (record-request-size! server-request-attrs 500 server-span-context)
          (raise e))))))
 
 (defn request-size-interceptor
@@ -258,14 +259,14 @@
    :leave (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
                 :keys [response]
                 :as   ctx}]
-            (record-size!
+            (record-request-size!
              server-request-attrs
              (:status response)
              server-span-context)
             ctx)
    :error (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
                 :as ctx} e]
-            (record-size!
+            (record-request-size!
              server-request-attrs
              500
              server-span-context)
