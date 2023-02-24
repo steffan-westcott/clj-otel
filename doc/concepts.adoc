@@ -199,7 +199,20 @@ See specifications for https://opentelemetry.io/docs/reference/specification/tra
 === Metrics
 
 A metric is a numerical *measurement over a period of time*.
-Metrics are used to indicate quantitative aspects of *system health*, such as resource (memory, disk, compute, network) usage, error rate, message queue length, and request response time.
+Metrics may be used to indicate quantitative aspects of *system health*, such as resource (memory, disk, compute, network) usage, error rate, message queue length, and request response time.
+
+An *instrument* is used to record *measurements*.
+Instruments may support synchronous (invoke) or asynchronous (callback) recording of measurements, depending on the type of instrument.
+Measurements have a value of type long or double, along with context and attributes.
+
+The available types of instrument are:
+
+* Counter (sync or async)
+* Up-down counter (sync or async)
+* Histogram (sync only)
+* Gauge (async only)
+
+See this https://opentelemetry.io/docs/reference/specification/metrics/supplementary-guidelines/#instrument-selection[OpenTelemetry guide] for selecting the appropriate instrument to use.
 
 === Logs
 
@@ -243,7 +256,7 @@ For example, a user identifier is put in the baggage to indicate the principal o
 OpenTelemetry defines a rich set of conventions for telemetry data.
 This semantic unification across vendors and technologies promotes analysis of telemetry data created in heterogeneous, polyglot systems.
 In particular, *semantic attributes* for spans and metrics are defined for base technologies like HTTP, database, RPC, messaging, FaaS (Function as a Service) and others.
-See https://opentelemetry.io/docs/concepts/glossary/#semantic-conventions[OpenTelemetry semantic conventions documentation].
+See https://opentelemetry.io/docs/concepts/semantic-conventions/[OpenTelemetry semantic conventions documentation].
 
 `clj-otel` follows the semantic conventions for areas such as https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[span exception events] and manually created https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP client and server spans].
 

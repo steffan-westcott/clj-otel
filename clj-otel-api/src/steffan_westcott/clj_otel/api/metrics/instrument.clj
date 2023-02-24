@@ -220,7 +220,7 @@
   | key                | description |
   |--------------------|-------------|
   |`:meter`            | `io.opentelemetry.api.metrics.Meter` used to create the instrument (default: default meter, as set by [[set-default-meter!]]; if no default meter has been set, one will be set with default config).
-  |`:name`             | Name of the instrument.
+  |`:name`             | Name of the instrument. Must be 63 or fewer characters including alphanumeric, `_`, `.`, `-`, and start with a letter.
   |`:instrument-type`  | Type of instrument, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge`.
   |`:measurement-type` | Type of measurement value, either `:long` or `:double` (default: `:long`).
   |`:unit`             | String describing the unit of measurement.
