@@ -189,7 +189,8 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"
-                             "-Dotel.traces.exporter=jaeger"]}}}
+                             "-Dotel.traces.exporter=jaeger"
+                             "-Dotel.metrics.exporter=none"]}}}
 ----
 
 * Restart the REPL (again with the alias `:otel` enabled) to pick up the new dependency.
