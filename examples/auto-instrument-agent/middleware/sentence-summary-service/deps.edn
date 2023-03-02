@@ -53,8 +53,7 @@
 
   :traces-logging {:jvm-opts ["-Dotel.traces.exporter=logging"]}
 
-  :traces-logging-otlp {:jvm-opts ["-Dotel.traces.exporter=logging-otlp"
-                                   "-Dotel.traces.export.interval=10000"]}
+  :traces-logging-otlp {:jvm-opts ["-Dotel.traces.exporter=logging-otlp"]}
 
 
 

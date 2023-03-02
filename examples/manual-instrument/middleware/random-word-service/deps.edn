@@ -61,8 +61,7 @@
   :traces-logging {:jvm-opts   ["-Dotel.traces.exporter=logging"]
                    :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.23.1"}}}
 
-  :traces-logging-otlp {:jvm-opts   ["-Dotel.traces.exporter=logging-otlp"
-                                     "-Dotel.traces.export.interval=10000"]
+  :traces-logging-otlp {:jvm-opts   ["-Dotel.traces.exporter=logging-otlp"]
                         :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.23.1"}}}
 
 
