@@ -81,7 +81,6 @@
   "Synchronous handler for 'GET /statistics' request. Returns an HTTP response
   containing a formatted report of the planet's statistic values."
   [{:keys [query-params]}]
-
   (let [planet (keyword (get query-params :planet))
         report (planet-report planet)]
     (response/response report)))

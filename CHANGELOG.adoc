@@ -31,6 +31,9 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 The revised pattern uses new middleware `wrap-route` and interceptor `route-interceptor` to capture matched routes in HTTP server spans.
 The pattern also ensures all requests are traced, including those which do not match any route.
 - New module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the OpenTelemetry instrumentation agent.
+- Added aliases in examples
+** `:metrics-*` to control export of metrics
+** `:logging-*` to control application logging
 - Bump deps:
 * OpenTelemetry `1.23.1`
 ** icon:warning[] When using autoconfiguration for a manually instrumented application, include the new JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`

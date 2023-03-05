@@ -1,6 +1,6 @@
 ;!zprint {:style [:respect-nl] :width 140}
 
-{:paths   ["src"]
+{:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.6"}
@@ -9,7 +9,6 @@
            io.pedestal/pedestal.route {:mvn/version "0.5.10"}
            io.pedestal/pedestal.interceptor {:mvn/version "0.5.10"}
            io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
-           org.slf4j/slf4j-simple {:mvn/version "2.0.6"}
            org.example/common-utils.interceptor {:local/root "../../../common-utils/interceptor"}}
 
  :aliases
@@ -22,7 +21,8 @@
 
 
 
-  ;; Select exactly one traces-* alias
+  ;; -----------------------------
+  ;; Select exactly one traces-* alias for export of traces
 
   :traces-none {:jvm-opts ["-Dotel.traces.exporter=none"]}
 
@@ -60,15 +60,18 @@
   :traces-zipkin {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
                   :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.23.1"}}}
 
+  ;; used for debugging
   :traces-logging {:jvm-opts   ["-Dotel.traces.exporter=logging"]
                    :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.23.1"}}}
 
+  ;; used for debugging
   :traces-logging-otlp {:jvm-opts   ["-Dotel.traces.exporter=logging-otlp"]
                         :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.23.1"}}}
 
 
 
-  ;; Select exactly one metrics-* alias
+  ;; -----------------------------
+  ;; Select exactly one metrics-* alias for export of metrics
 
   :metrics-none {:jvm-opts ["-Dotel.metrics.exporter=none"]}
 
@@ -82,15 +85,33 @@
                                         "-Dotel.metric.export.interval=10000"]
                            :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.23.1"}}}
 
+  ;; used for debugging
   :metrics-logging {:jvm-opts   ["-Dotel.metrics.exporter=logging"
                                  "-Dotel.metric.export.interval=10000"]
                     :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.23.1"}}}
 
+  ;; used for debugging
   :metrics-logging-otlp {:jvm-opts   ["-Dotel.metrics.exporter=logging-otlp"
                                       "-Dotel.metric.export.interval=10000"]
                          :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.23.1"}}}
 
 
+
+  ;; -----------------------------
+  ;; Select exactly one logging-* alias for application logging
+
+  :logging-log4j2 {:jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]
+                   :extra-deps {org.example/common-utils.log4j2            {:local/root "../../../common-utils/log4j2"}
+                                org.apache.logging.log4j/log4j-core        {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.20.0"}}}
+
+
+
+  ;; -----------------------------
   ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
 
   :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.51.1"}
@@ -99,6 +120,7 @@
 
 
 
+  ;; -----------------------------
   ;; Used for development of clj-otel-* libraries with the examples
 
   :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../../clj-otel-api"}
