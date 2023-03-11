@@ -35,7 +35,7 @@ The pattern also ensures all requests are traced, including those which do not m
 ** `:metrics-*` to control export of metrics
 ** `:logging-*` to control application logging
 - Bump deps:
-* OpenTelemetry `1.23.1`
+* OpenTelemetry `1.24.0`
 ** icon:warning[] When using autoconfiguration for a manually instrumented application, include the new JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`
 ** Methods to statically set the server host name attribute on server spans have been removed, as static data is better represented as an OpenTelemetry resource.
 *** icon:warning[] The function `add-server-name!` has been removed.
