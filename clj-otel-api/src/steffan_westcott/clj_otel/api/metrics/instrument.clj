@@ -130,9 +130,13 @@
     Consumer
       (~'accept
         [~'_ ~'measurement]
-        (let [{:keys [~'value ~'attributes]} (~observe)
-              ~(with-meta 'mmt {:tag measurement-class}) ~'measurement]
-          (.record ~'mmt ~'value (attr/->attributes ~'attributes))))))
+        (let [~(with-meta 'mmt {:tag measurement-class}) ~'measurement
+              ~'obs (~observe)]
+          (if (map? ~'obs)
+            (let [{:keys [~'value ~'attributes]} ~'obs]
+              (.record ~'mmt ~'value (attr/->attributes ~'attributes)))
+            (doseq [{:keys [~'value ~'attributes]} ~'obs]
+              (.record ~'mmt ~'value (attr/->attributes ~'attributes))))))))
 
 (defn- callback-long
   [observe]
@@ -234,10 +238,10 @@
   The 2-arity form of [[instrument]] is for building instruments that take
   measurements asynchronously. Counter, up-down counter and gauge instruments
   are supported. The second parameter `observe` is a 0-arity function that will
-  be called periodically to take measurements. To stop, evaluate `.close` on
+  be evaluated periodically to take measurements. To stop, evaluate `.close` on
   the `AutoCloseable` that [[instrument]] returns.
 
-  `observe` should return a map as follows:
+  `observe` should return a single map, or a sequence of maps, as follows:
 
   | key         | description |
   |-------------|-------------|
