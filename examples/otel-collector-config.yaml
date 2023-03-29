@@ -68,10 +68,10 @@ exporters:
       "lightstep-access-token": "YOUR_LIGHTSTEP_ACCESS_TOKEN"
 
   # Exports to Prometheus
-  prometheus:
-    endpoint: "0.0.0.0:9464"
-
-
+  prometheusremotewrite:
+    endpoint: "http://prometheus:9090/api/v1/write"
+    tls:
+      insecure: true
 
 # Collector extensions components
 extensions:
@@ -100,4 +100,4 @@ service:
     metrics:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ prometheus ]                 # Select desired exporters (configured above)
+      exporters: [ prometheusremotewrite ]      # Select desired exporters (configured above)
