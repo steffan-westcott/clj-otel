@@ -11,6 +11,7 @@
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics]))
@@ -22,6 +23,13 @@
    :verb      ["afford" "behave" "ignite" "justify" "race" "sprout" "strain" "wake"]
    :adjective ["cultured" "glorious" "grumpy" "handy" "kind" "lush" "mixed" "shut"]})
 
+
+
+(defonce ^{:doc "Counter that records the number of words requested."} word-count
+         (instrument/instrument {:name        "service.random-word.word-count"
+                                 :instrument-type :counter
+                                 :unit        "{words}"
+                                 :description "The number of words requested"}))
 
 
 (defn random-word
@@ -57,6 +65,11 @@
 
       ;; Add more attributes to the internal span
       (span/add-span-data! {:attributes {:system/word word}})
+
+      ;; Update word-count metric
+      (instrument/add! word-count
+                       {:value      1
+                        :attributes {:word-type word-type}})
 
       word)))
 

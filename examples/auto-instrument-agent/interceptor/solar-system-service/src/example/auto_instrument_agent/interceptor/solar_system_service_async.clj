@@ -11,9 +11,18 @@
             [io.pedestal.http.route :as route]
             [io.pedestal.interceptor :as interceptor]
             [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
+
+
+(defonce ^{:doc "Counter that records the number of planet reports built."} report-count
+         (instrument/instrument {:name        "service.solar-system.planet-report-count"
+                                 :instrument-type :counter
+                                 :unit        "{reports}"
+                                 :description "The number of reports built"}))
+
 
 
 (defn client-request
@@ -105,6 +114,11 @@
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
                             :attributes {:service.solar-system.report/length (count report)}})
+
+      ;; Update report-count metric
+      (instrument/add! report-count
+                       {:context context*
+                        :value   1})
 
       report)))
 

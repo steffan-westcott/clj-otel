@@ -9,9 +9,16 @@
             [io.pedestal.interceptor :as interceptor]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics]))
+
+
+(defonce ^{:doc "Histogram the records the resulting sum value."} sum-result
+         (instrument/instrument {:name        "service.sum.sum-result"
+                                 :instrument-type :histogram
+                                 :description "The resulting sum value"}))
 
 
 (defn sum
@@ -35,6 +42,9 @@
       ;; exception triage summary.
       (when (= 13 result)
         (throw (RuntimeException. "Unlucky 13")))
+
+      ;; Update sum-result metric
+      (instrument/record! sum-result {:value result})
 
       result)))
 

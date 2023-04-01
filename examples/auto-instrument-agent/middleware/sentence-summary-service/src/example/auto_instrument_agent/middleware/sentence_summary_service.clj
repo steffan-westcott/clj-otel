@@ -12,8 +12,18 @@
             [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
+
+
+(defonce ^{:doc "Histogram that records the number of words in each sentence."} words-count
+         (instrument/instrument {:name        "service.sentence-summary.words-count"
+                                 :instrument-type :histogram
+                                 :unit        "{words}"
+                                 :description "The number of words in each sentence"}))
+
+
 
 (defn get-word-length
   "Get the length of `word`."
@@ -67,6 +77,9 @@
       ;; Add more attributes to internal span
       (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:word-count
                                                                                        result)}})
+
+      ;; Update words-count metric
+      (instrument/record! words-count {:value (count lengths)})
 
       result)))
 

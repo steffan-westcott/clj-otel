@@ -8,8 +8,17 @@
             [io.pedestal.http.route :as route]
             [io.pedestal.interceptor :as interceptor]
             [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
+
+
+(defonce ^{:doc "Counter that records the number of statistic look ups."} statistic-lookup-count
+         (instrument/instrument {:name        "service.planet.statistic-lookup-count"
+                                 :instrument-type :counter
+                                 :unit        "{lookups}"
+                                 :description "The number of statistic lookups"}))
+
 
 
 (def planet-statistics
@@ -51,7 +60,13 @@
       (span/add-span-data! {:event {:name       "Processed query path"
                                     :attributes {:service.planet/query-path path}}})
 
+      ;; Update statistic-lookup-count metric
+      (instrument/add! statistic-lookup-count
+                       {:value      1
+                        :attributes {:statistic statistic}})
+
       (if-let [result (get-in planet-statistics path)]
+
         result
 
         ;; Simulate an intermittent runtime exception when attempt is made

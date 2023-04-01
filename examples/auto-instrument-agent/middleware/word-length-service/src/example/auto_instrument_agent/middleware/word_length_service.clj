@@ -10,8 +10,18 @@
             [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
+
+
+(defonce ^{:doc "Counter that records the number of letters counted."} letter-count
+         (instrument/instrument {:name        "service.word-length.letter-count"
+                                 :instrument-type :counter
+                                 :unit        "{letters}"
+                                 :description "The number of letters counted"}))
+
+
 
 (defn word-length
   "Gets the length of the word."
@@ -35,6 +45,9 @@
       ;; Add an event to the current span with some data attached
       (span/add-span-data! {:event {:name       "Calculated word length"
                                     :attributes {:system/word-length word-length}}})
+
+      ;; Update letter-count metric
+      (instrument/add! letter-count {:value word-length})
 
       word-length)))
 

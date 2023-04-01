@@ -15,11 +15,21 @@
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics])
   (:import (clojure.lang PersistentQueue)))
+
+
+(defonce
+ ^{:doc "Histogram that records the number of letters in each generated puzzle."} puzzle-size
+ (instrument/instrument {:name        "service.puzzle.puzzle-size"
+                         :instrument-type :histogram
+                         :unit        "{letters}"
+                         :description "The number of letters in each generated puzzle"}))
+
 
 
 (defn client-request
@@ -144,6 +154,11 @@
               (span/add-span-data! {:context context
                                     :event   {:name       "Completed setting puzzle"
                                               :attributes {:system/puzzle scrambled-words}}})
+
+              ;; Update puzzle-size metric
+              (instrument/record! puzzle-size
+                                  {:context context
+                                   :value   (reduce + (map count scrambled-words))})
 
               (str/join " " scrambled-words))))
         (finally
