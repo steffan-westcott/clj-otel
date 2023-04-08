@@ -26,8 +26,6 @@ services:
       - --enable-feature=exemplar-storage
     ports:
       - "9090:9090"    # Prometheus web interface
-    depends_on:
-      - otel-collector
 
   # OpenTelemetry Collector
   otel-collector:
@@ -43,3 +41,4 @@ services:
     depends_on:
       - jaeger
       - zipkin
+      - prometheus
