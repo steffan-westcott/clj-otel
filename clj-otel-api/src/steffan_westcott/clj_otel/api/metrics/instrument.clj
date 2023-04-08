@@ -1,5 +1,5 @@
 (ns steffan-westcott.clj-otel.api.metrics.instrument
-  "Functions for obtaining instruments and recording measurements."
+  "Functions for creating instruments and recording measurements."
   (:require [steffan-westcott.clj-otel.api.attributes :as attr]
             [steffan-westcott.clj-otel.api.otel :as otel]
             [steffan-westcott.clj-otel.config :refer [config]]
@@ -224,11 +224,11 @@
   | key                | description |
   |--------------------|-------------|
   |`:meter`            | `io.opentelemetry.api.metrics.Meter` used to create the instrument (default: default meter, as set by [[set-default-meter!]]; if no default meter has been set, one will be set with default config).
-  |`:name`             | Name of the instrument. Must be 63 or fewer characters including alphanumeric, `_`, `.`, `-`, and start with a letter.
-  |`:instrument-type`  | Type of instrument, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge`.
+  |`:name`             | Name of the instrument. Must be 63 or fewer characters including alphanumeric, `_`, `.`, `-`, and start with a letter (required).
+  |`:instrument-type`  | Type of instrument, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge` (required).
   |`:measurement-type` | Type of measurement value, either `:long` or `:double` (default: `:long`).
-  |`:unit`             | String describing the unit of measurement.
-  |`:description`      | String describing the instrument.
+  |`:unit`             | String describing the unit of measurement (default: no specified unit).
+  |`:description`      | String describing the instrument (default: no description).
 
   The 1-arity form of [[instrument]] is for building instruments that take
   measurements synchronously. Counter, up-down counter and histogram

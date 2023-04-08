@@ -1,4 +1,12 @@
 = `clj-otel`
+:icons: font
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
 
 image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api]
 ifndef::env-cljdoc[]
@@ -35,7 +43,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 {;; ...
  :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.5"}}}
 ----
-** Use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
+** To add traces telemetry, use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
 +
 [source,clojure]
 ----
@@ -44,10 +52,21 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
                     :attributes {:system/profile-id (:id profile)}}
     (validate profile)))
 ----
+** To add metrics telemetry, use Clojure functions in `steffan-westcott.clj-otel.api.metrics.instrument` to create instruments and take measurements with attributes
++
+[source,clojure]
+----
+(defonce set-password-failure-count
+  (instrument/instrument {:name "app.set-password-failure-count"
+                          :instrument-type :counter}))
+
+(instrument/add! set-password-failure-count {:value 1
+                                             :attributes {:reason :too-short}})
+----
 
 * To export telemetry data (from both manual and automatic instrumentation) from an application at runtime
 ** Download the latest OpenTelemetry instrumentation JAR `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[OpenTelemetry instrumentation agent releases page].
-** Add the following JVM options to your application, assuming export to https://www.jaegertracing.io/[Jaeger]:
+** Add the following JVM options to your application, assuming export of traces telemetry only to https://www.jaegertracing.io/[Jaeger]
 +
 ----
 "-javaagent:opentelemetry-javaagent.jar"
@@ -66,6 +85,8 @@ docker run --rm -p 16686:16686 -p 14250:14250 jaegertracing/all-in-one
 
 * To explore application behaviour described by the received telemetry data
 ** Use telemetry backend features such as the Jaeger user interface at http://localhost:16686/search
+
+NOTE: For demonstration configurations that export traces and metrics telemetry, see the xref:_examples[examples].
 
 [#_documentation]
 == Documentation
@@ -94,15 +115,13 @@ Breaking API changes may still be made, but there should be few, if any.
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
 *** Trace semantics conventions support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[recording exceptions] is complete.
-Support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] is limited by HTTP client/server abstractions and will never be as thorough as that provided by automatic instrumentation.
+*** Trace semantics support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] in applications run without the OpenTelemetry instrumentation agent is limited.
 *** Support for wrapping asynchronous Clojure code in spans is complete.
 The API is minimal and low-level, supporting any async library that works with callbacks.
 Perhaps with community feedback, this will be expanded to add more specialised support for popular async libraries.
 Code for creating spans around `core.async` channels can be found in the examples, specifically the `<with-span-binding` macro.
-** Coverage of the Metrics API is in progress.
-*** Support for creating all types of metrics instruments (counter, up-down counter, gauge and histogram) is in progress.
-*** Documentation and examples for Metrics API are in progress.
-*** Programmatic configuration of `MeterProvider` is planned.
+** Coverage of the Metrics API is complete.
+*** Metrics HTTP semantics support for applications run without the OpenTelemetry instrumentation agent is very limited.
 ** There is currently no coverage of the Logs API.
 * For the programmatic configuration of the OpenTelemetry SDK:
 ** Coverage of Traces `TracerProvider` is complete.

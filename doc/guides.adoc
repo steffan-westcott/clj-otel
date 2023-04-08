@@ -14,12 +14,12 @@ endif::[]
 
 To add telemetry to a library or application, use xref:concepts.adoc#_automatic_instrumentation[automatic instrumentation] and/or xref:concepts.adoc#_manual_instrumentation[manual instrumentation] as described in the following subsections.
 
-=== Add automatic instrumentation when running an application
+=== Add automatic instrumentation to an application at runtime
 
 * Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>> to add automatic instrumentation.
 
 [#_add_manual_instrumentation_to_your_library_or_application_code]
-=== Add manual instrumentation to your library or application code
+=== Add manual instrumentation to your library or application code at design time
 
 * Add project dependency :
 +
@@ -30,7 +30,9 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
  :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.5"}}}
 ----
 
-* Follow the guides in the remainder of this section to make changes to your library or application code to add manual instrumentation.
+* Follow the guides below to add manual traces and metrics instrumentation.
+
+=== Add manual traces instrumentation
 
 ==== Create a synchronous span using the current context
 
@@ -167,6 +169,80 @@ Use the `:context` option to specify the context containing the span to add the 
                               :escaping? false
                               :attributes {:app/args args}})
       {:result :parse-error})))
+----
+
+=== Add manual metrics instrumentation
+
+* See https://opentelemetry.io/docs/reference/specification/metrics/supplementary-guidelines/#instrument-selection[OpenTelemetry guide] to select the appropriate instrument type to use.
+* Follow the instructions below to create the instrument and take measurements synchronously or asynchronously, depending on the type of instrument.
+
+==== Create and use an instrument to take measurements synchronously
+
+NOTE: Counter, up-down counter and histogram instruments support taking measurements synchronously.
+
+* Use `steffan-westcott.clj-otel.api.metrics.instrument/instrument` to create an instrument of the required type
++
+[source,clojure]
+----
+(defonce foo-count
+  (instrument/instrument {:name "app.foo-count"
+                          :instrument-type :counter
+                          :unit "{foo}"
+                          :description "The number of foos counted"}))
+
+(defonce segment-size
+  (instrument/instrument {:name "app.segment-size"
+                          :instrument-type :histogram
+                          :unit "{byte}"
+                          :description "The size of requested segment"}))
+----
+* Use `steffan-westcott.clj-otel.api.metrics.instrument/add!` to add a measurement to a counter or up-down counter.
+The measurement may have attributes and context.
++
+[source,clojure]
+----
+(defn get-red-foo [context args]
+  (instrument/add! foo-count {:context context
+                              :value 1
+                              :attributes {:colour :red}})
+  (red-foo args))
+----
+* Use `steffan-westcott.clj-otel.api.metrics.instrument/record!` to record a measurement in a histogram.
+The measurement may have attributes and context.
++
+[source,clojure]
+----
+(defn allocate-segment [context size]
+  (instrument/record! segment-size {:context context
+                                    :value size
+                                    :attributes {:partition :public
+                                                 :generation :young}})
+  (schedule-segment size))
+----
+
+==== Create and use an instrument to take measurements asynchronously
+
+NOTE: Counter, up-down counter and gauge instruments support taking measurements asynchronously.
+
+* Create a 0-arity function that returns a measurement, or a sequence of measurements.
+The measurement(s) may have attributes.
+* Use `steffan-westcott.clj-otel.api.metrics.instrument/instrument` to create an instrument of the required type.
+The second parameter is the function created in the previous step.
++
+[source,clojure]
+----
+(defn read-temperature []
+  (let [temp (get-core-temp)]
+    {:value temp
+     :attributes {:location :reactor-core}}))
+
+(defonce temperature
+  (instrument/instrument {:name "app.temperature"
+                          :instrument-type :gauge
+                          :measurement-type :long
+                          :unit "{degree Celsius}"
+                          :description "The operating temperature"}
+                         read-temperature))
 ----
 
 === Work with HTTP client and server spans

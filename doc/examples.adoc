@@ -29,10 +29,10 @@ git clone https://github.com/steffan-westcott/clj-otel.git
 Before running any of the examples, the file `opentelemetry-javaagent.jar` must be downloaded and placed in the `examples` directory.
 See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[releases page] for notes and download links.
 
-. *Start Collector and telemetry backend instances*
+. *Start OpenTelemetry Collector and telemetry backend instances*
 +
-`docker-compose.yaml` is a Docker Compose configuration file that can be used to spin up a Collector, Jaeger and Zipkin instances.
-The Collector config in file `otel-collector-config.yaml` is set to forward trace data to both Jaeger and Zipkin.
+`docker-compose.yaml` is a Docker Compose configuration file that can be used to spin up OpenTelemetry Collector, Jaeger, Zipkin and Prometheus instances.
+The Collector config in file `otel-collector-config.yaml` is set to forward trace data to Jaeger and Zipkin, while metrics data is forwarded to Prometheus.
 +
 To start the instances, run the following command in the `examples` directory :
 +
@@ -49,13 +49,13 @@ For example, in `examples/auto-sdk-config`, to export trace data to the Collecto
 
 . *View telemetry data in backend(s)*
 +
-*Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
-+
-*Zipkin* : Navigate to http://localhost:9411/zipkin/ then select search options under the cog icon and click the `Run Query` button.
+* *Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
+* *Zipkin* : Navigate to http://localhost:9411/zipkin/ then select search options under the cog icon and click the `Run Query` button.
+* *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric.
 
-. *Stop Collector and telemetry backend instances*
+. *Stop OpenTelemetry Collector and telemetry backend instances*
 +
-To stop the Collector and backend instances, run the following command in the `examples` directory :
+To stop the OpenTelemetry Collector and telemetry backend instances, run the following command in the `examples` directory :
 +
 [source,bash]
 ----

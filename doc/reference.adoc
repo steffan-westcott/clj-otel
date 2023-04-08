@@ -94,7 +94,7 @@ Provides access to a `Sampler` that implements the Jaeger remote sampler type.
 These are optional exporters used with the OpenTelemetry SDK when the SDK is either autoconfigured or programmatically configured.
 Use the Java libraries for xref:guides.adoc#_run_with_autoconfigured_sdk[autoconfiguration] or Clojure modules for xref:guides.adoc#_run_with_programmatically_configured_sdk[programmatic configuration in Clojure].
 
-IMPORTANT: These exporters are included in the OpenTelemetry auto-instrumentation agent and should not be added to applications which are run with the agent.
+IMPORTANT: These exporters are included in the OpenTelemetry instrumentation agent and should not be added to applications which are run with the agent.
 
 [#_java_exporter_libraries]
 === Java exporter libraries
