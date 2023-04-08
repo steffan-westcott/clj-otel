@@ -18,7 +18,7 @@
 
   :otel {:jvm-opts   ["-Dotel.resource.attributes=service.name=puzzle-service"
                       "-Dotel.java.global-autoconfigure.enabled=true"]
-         :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.24.0-alpha"}
+         :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.25.0-alpha"}
                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.24.0-alpha"}}}
 
 
@@ -30,45 +30,45 @@
 
   :traces-collector-grpc {:jvm-opts   ["-Dotel.traces.exporter=otlp"
                                        "-Dotel.exporter.otlp.traces.protocol=grpc"]
-                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.24.0"}}}
+                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.25.0"}}}
 
   :traces-collector-http {:jvm-opts   ["-Dotel.traces.exporter=otlp"
                                        "-Dotel.exporter.otlp.traces.protocol=http/protobuf"]
-                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.24.0"}}}
+                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.25.0"}}}
 
   :traces-honeycomb-grpc
   {:jvm-opts   ["-Dotel.traces.exporter=otlp"
                 "-Dotel.exporter.otlp.traces.protocol=grpc"
                 "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443"
                 "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]
-   :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.24.0"}}}
+   :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.25.0"}}}
 
   :traces-honeycomb-http
   {:jvm-opts   ["-Dotel.traces.exporter=otlp"
                 "-Dotel.exporter.otlp.traces.protocol=http/protobuf"
                 "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443/v1/traces"
                 "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]
-   :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.24.0"}}}
+   :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.25.0"}}}
 
   :traces-lightstep-grpc {:jvm-opts   ["-Dotel.traces.exporter=otlp"
                                        "-Dotel.exporter.otlp.traces.protocol=grpc"
                                        "-Dotel.exporter.otlp.traces.endpoint=https://ingest.lightstep.com:443"
                                        "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]
-                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.24.0"}}}
+                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.25.0"}}}
 
   :traces-jaeger-grpc {:jvm-opts   ["-Dotel.traces.exporter=jaeger"]
-                       :extra-deps {io.opentelemetry/opentelemetry-exporter-jaeger {:mvn/version "1.24.0"}}}
+                       :extra-deps {io.opentelemetry/opentelemetry-exporter-jaeger {:mvn/version "1.25.0"}}}
 
   :traces-zipkin {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
-                  :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.24.0"}}}
+                  :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.25.0"}}}
 
   ;; used for debugging
   :traces-logging {:jvm-opts   ["-Dotel.traces.exporter=logging"]
-                   :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.24.0"}}}
+                   :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.25.0"}}}
 
   ;; used for debugging
   :traces-logging-otlp {:jvm-opts   ["-Dotel.traces.exporter=logging-otlp"]
-                        :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.24.0"}}}
+                        :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.25.0"}}}
 
 
 
@@ -80,22 +80,22 @@
   :metrics-collector-grpc {:jvm-opts   ["-Dotel.metrics.exporter=otlp"
                                         "-Dotel.exporter.otlp.metrics.protocol=grpc"
                                         "-Dotel.metric.export.interval=10000"]
-                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.24.0"}}}
+                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.25.0"}}}
 
   :metrics-collector-http {:jvm-opts   ["-Dotel.metrics.exporter=otlp"
                                         "-Dotel.exporter.otlp.metrics.protocol=http/protobuf"
                                         "-Dotel.metric.export.interval=10000"]
-                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.24.0"}}}
+                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.25.0"}}}
 
   ;; used for debugging
   :metrics-logging {:jvm-opts   ["-Dotel.metrics.exporter=logging"
                                  "-Dotel.metric.export.interval=10000"]
-                    :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.24.0"}}}
+                    :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.25.0"}}}
 
   ;; used for debugging
   :metrics-logging-otlp {:jvm-opts   ["-Dotel.metrics.exporter=logging-otlp"
                                       "-Dotel.metric.export.interval=10000"]
-                         :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.24.0"}}}
+                         :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.25.0"}}}
 
 
   ;; -----------------------------
