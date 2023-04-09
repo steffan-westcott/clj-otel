@@ -4,8 +4,8 @@
 
  :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
            org.clojure/core.async {:mvn/version "1.6.673"}
-           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.6"}
-           com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.1.6"}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.0"}
+           com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.0"}
            metosin/reitit-ring {:mvn/version "0.6.0"}
            metosin/reitit-middleware {:mvn/version "0.6.0"}
            ring/ring-jetty-adapter {:mvn/version "1.10.0"}
