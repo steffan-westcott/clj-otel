@@ -136,7 +136,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 ==== Add an exception event to a span
 
-NOTE: `clj-otel` automatically adds events to spans for thrown exceptions which leave (escape) the span's scope.
+CAUTION: `clj-otel` *automatically* adds events to spans for thrown exceptions which leave (escape) the span's scope.
 This behaviour applies to synchronous and asynchronous spans.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-exception![`steffan-westcott.clj-otel.api.trace.span/add-exception!`] to add an event describing an exception to an existing span.
@@ -245,6 +245,26 @@ The second parameter is the function created in the previous step.
                          read-temperature))
 ----
 
+==== Add JVM runtime metrics
+
+CAUTION: When running an application with the OpenTelemetry instrumentation agent, the agent *automatically* adds JVM runtime metrics.
+
+* Add project dependency :
++
+.`deps.edn`
+[source,clojure]
+----
+{;; ...
+ :deps {com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.1.5"}}}
+----
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.instrumentation.runtime-metrics#register![`steffan-westcott.clj-otel.instrumentation.runtime-metrics/register!`] to add JVM runtime metrics.
+They are implemented as instruments which take measurements asynchronously.
++
+[source,clojure]
+----
+(defonce _jvm-reg (runtime-metrics/register!))
+----
+
 === Work with HTTP client and server spans
 
 The guides in this section describe xref:concepts.adoc#_semantic_conventions[semantic conventions] support for HTTP xref:concepts.adoc#_span_kind[client and server spans].
@@ -258,39 +278,160 @@ The enabled support features vary with the selected middleware options.
 The middleware can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
 It also supports synchronous (1-arity) and asynchronous (3-arity) handlers.
 +
-An example using Jetty with server spans created by the agent:
+This is an example using Jetty in an application run with the agent
 +
 [source,clojure]
 ----
-(defn handler [request]
+(ns example.service
+  (:require [ring.adapter.jetty :as jetty]
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
+(defn request-handler [request]
   ;; ...
   )
 
-(def service
-  (-> handler
+(def handler
+  (-> request-handler
       (trace-http/wrap-server-span {:create-span? false})))
 
 (defonce server
-  (jetty/run-jetty #'service {:port 8080 :join? false}))
+  (jetty/run-jetty #'handler {:port 8080 :join? false}))
+----
++
+Optionally, to add some HTTP server metrics for applications run without the OpenTelemetry instrumentation agent, add middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#wrap-active-requests[`steffan-westcott.clj-otel.api.metrics.http.server/wrap-active-requests`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#wrap-metrics-by-route[`steffan-westcott.clj-otel.api.metrics.http.server/wrap-metrics-by-route`].
++
+This is the same example as above, for an application run without the agent
++
+[source,clojure]
+----
+(ns example.service
+  (:require [ring.adapter.jetty :as jetty]
+            [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
+(defn request-handler [request]
+  ;; ...
+  )
+
+(def handler
+  (-> request-handler
+      (metrics-http-server/wrap-metrics-by-route)
+      (metrics-http-server/wrap-active-requests)
+      (trace-http/wrap-server-span {:create-span? true})))
+
+(defonce server
+  (jetty/run-jetty #'handler {:port 8080 :join? false}))
+----
+
+* If you use middleware that injects data on the matched route into the Ring request map, add middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#wrap-route[`steffan-westcott.clj-otel.api.trace.http/wrap-route`] to add the route data to HTTP server spans for all matched routes.
++
+This is an example when using https://github.com/metosin/reitit[Reitit], with Jetty in an application run with the agent
++
+[source,clojure]
+----
+(ns example.service
+  (:require [muuntaja.core :as m]
+            [reitit.ring :as ring]
+            [ring.adapter.jetty :as jetty]
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
+(defn wrap-reitit-route [handler]
+  (trace-http/wrap-route handler
+                         (fn [request]
+                           (get-in request [:reitit.core/match :template]))))
+
+(defn foo-handler [request]
+  ;; ...
+  )
+
+(def handler
+  (ring/ring-handler (ring/router
+                      ["/foo" {:name ::foo :get foo-handler}]
+                      {:data {:muuntaja m/instance
+                              :middleware [wrap-reitit-route
+                                           ;; ... other middleware
+                                           ]}})
+                     (ring/create-default-handler)
+
+                     ;; Wrap handling of all requests, including those which have no matching route.
+                     {:middleware [[trace-http/wrap-server-span {:create-span? false}]]}))
+
+(defonce server
+  (jetty/run-jetty #'handler {:port 8080 :join? false}))
+----
++
+Optionally, to add some HTTP server metrics for applications run without the OpenTelemetry instrumentation agent, add middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#wrap-active-requests[`steffan-westcott.clj-otel.api.metrics.http.server/wrap-active-requests`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#wrap-metrics-by-route[`steffan-westcott.clj-otel.api.metrics.http.server/wrap-metrics-by-route`].
++
+This is the same example as above, for an application run without the agent
++
+[source,clojure]
+----
+(ns example.service
+  (:require [muuntaja.core :as m]
+            [reitit.ring :as ring]
+            [ring.adapter.jetty :as jetty]
+            [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
+(defn wrap-reitit-route [handler]
+  (trace-http/wrap-route handler
+                         (fn [request]
+                           (get-in request [:reitit.core/match :template]))))
+
+(defn foo-handler [request]
+  ;; ...
+  )
+
+(def handler
+  (ring/ring-handler (ring/router
+                      ["/foo" {:name ::foo :get foo-handler}]
+                      {:data {:muuntaja m/instance
+                              :middleware [wrap-reitit-route
+                                           metrics-http-server/wrap-metrics-by-route
+                                           ;; ... other middleware
+                                           ]}})
+                     (ring/create-default-handler)
+
+                     ;; Wrap handling of all requests, including those which have no matching route.
+                     {:middleware [[trace-http/wrap-server-span {:create-span? true}]
+                                   [metrics-http-server/wrap-active-requests]]}))
+
+(defonce server
+  (jetty/run-jetty #'handler {:port 8080 :join? false}))
 ----
 
 [#_use_pedestal_interceptors_for_server_span_support]
 ==== Use Pedestal interceptors for server span support
 
-* Use interceptors https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#server-span-interceptors[`steffan-westcott.clj-otel.api.trace.http/server-span-interceptors`] to add HTTP server span support to a Pedestal HTTP service.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#server-span-interceptors[`steffan-westcott.clj-otel.api.trace.http/server-span-interceptors`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#route-interceptor[`steffan-westcott.clj-otel.api.trace.http/route-interceptor`] to add HTTP server span support to a Pedestal HTTP service.
 +
 The enabled support features vary with the selected interceptor options.
 The interceptors can be configured to work in applications that run with or without the OpenTelemetry instrumentation agent.
 +
-An example using Jetty with server spans created by the agent:
+An example using Jetty in an application run with the agent
 +
 [source,clojure]
 ----
+(ns example.service
+  (:require [io.pedestal.http :as http]
+            [io.pedestal.http.route :as route]
+            [io.pedestal.interceptor :as interceptor]
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
 (def routes
-  (route/expand-routes
-    [[["/" (trace-http/server-span-interceptors {:create-span? false})
-       ;; ...
-       ]]]))
+  (route/expand-routes ... ))
+
+(defn update-default-interceptors [default-interceptors]
+  (map interceptor/interceptor
+       (concat (trace-http/server-span-interceptors {:create-span? false})
+               default-interceptors
+               [(trace-http/route-interceptor)])))
+
+(defn service [service-map]
+  (-> service-map
+      (http/default-interceptors)
+      (update ::http/interceptors update-default-interceptors)
+      (http/create-server)))
 
 (def service-map
   {::http/routes routes
@@ -299,12 +440,52 @@ An example using Jetty with server spans created by the agent:
    ::http/join?  false})
 
 (defonce server
-  (http/start (http/create-server service-map)))
+  (http/start (service service-map)))
+----
++
+Optionally, to add some HTTP server metrics for applications run without the OpenTelemetry instrumentation agent, add interceptors https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#active-requests-interceptor[`steffan-westcott.clj-otel.api.metrics.http.server/active-requests-interceptor`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#metrics-by-route-interceptors[`steffan-westcott.clj-otel.api.metrics.http.server/metrics-by-route-interceptors`]
++
+This is the same example as above, for an application run without the agent
++
+[source,clojure]
+----
+(ns example.service
+  (:require [io.pedestal.http :as http]
+            [io.pedestal.http.route :as route]
+            [io.pedestal.interceptor :as interceptor]
+            [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
+(def routes
+  (route/expand-routes ... ))
+
+(defn update-default-interceptors [default-interceptors]
+  (map interceptor/interceptor
+       (concat (trace-http/server-span-interceptors {:create-span? true})
+               [(metrics-http-server/active-requests-interceptor)]
+               default-interceptors
+               [(trace-http/route-interceptor)]
+               (metrics-http-server/metrics-by-route-interceptors))))
+
+(defn service [service-map]
+  (-> service-map
+      (http/default-interceptors)
+      (update ::http/interceptors update-default-interceptors)
+      (http/create-server)))
+
+(def service-map
+  {::http/routes routes
+   ::http/type   :jetty
+   ::http/port   8080
+   ::http/join?  false})
+
+(defonce server
+  (http/start (service service-map)))
 ----
 
 ==== Manually add route data to a server span
 
-NOTE: Route data is *automatically added* to server spans when using the Pedestal interceptors https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#server-span-interceptors[`steffan-westcott.clj-otel.api.trace.http/server-span-interceptors`]
+CAUTION: Route data is *automatically added* to server spans when using the Ring middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#wrap-route[`steffan-westcott.clj-otel.api.trace.http/wrap-route`] or Pedestal interceptor https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#route-interceptor[`steffan-westcott.clj-otel.api.trace.http/route-interceptor`]
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#add-route-data![`steffan-westcott.clj-otel.api.trace.http/add-route-data!`] to add the matched route to a server span.
 +
@@ -324,7 +505,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 ==== Manually add HTTP response data to a client span
 
-NOTE: When running an application with the OpenTelemetry instrumentation agent, the agent *automatically adds* HTTP response data to client spans for supported clients.
+CAUTION: When running an application with the OpenTelemetry instrumentation agent, the agent *automatically adds* HTTP response data to client spans for supported clients.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#add-client-span-response-data![`steffan-westcott.clj-otel.api.trace.http/add-client-span-response-data!`] to add HTTP response data to a client span.
 Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
@@ -345,7 +526,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 ==== Manually propagate context in an HTTP client request
 
-NOTE: When running an application with the OpenTelemetry instrumentation agent, the agent *automatically propagates* the context in HTTP client requests for supported clients.
+CAUTION: When running an application with the OpenTelemetry instrumentation agent, the agent *automatically propagates* the context in HTTP client requests for supported clients.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.context#\->headers[`steffan-westcott.clj-otel.context/\->headers`] to get headers to merge (inject) with other headers in the HTTP request to be issued for xref:concepts.adoc#_context_propagation[context propagation].
 Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.

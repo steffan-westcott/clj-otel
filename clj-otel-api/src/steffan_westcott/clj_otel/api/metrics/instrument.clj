@@ -233,7 +233,7 @@
   The 1-arity form of [[instrument]] is for building instruments that take
   measurements synchronously. Counter, up-down counter and histogram
   instruments are supported. The built instrument is returned, and measurements
-  are made with the [[add!]] or [[record!]] functions.
+  are made with the `add!` or `record!` functions.
 
   The 2-arity form of [[instrument]] is for building instruments that take
   measurements asynchronously. Counter, up-down counter and gauge instruments
