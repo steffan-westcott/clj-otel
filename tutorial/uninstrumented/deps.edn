@@ -3,4 +3,4 @@
 {:paths ["src"]
 
  :deps  {org.clojure/clojure     {:mvn/version "1.11.1"}
-         ring/ring-jetty-adapter {:mvn/version "1.9.6"}}}
+         ring/ring-jetty-adapter {:mvn/version "1.10.0"}}}

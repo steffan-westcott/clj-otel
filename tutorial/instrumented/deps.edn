@@ -3,7 +3,7 @@
 {:paths   ["src"]
 
  :deps    {org.clojure/clojure     {:mvn/version "1.11.1"}
-           ring/ring-jetty-adapter {:mvn/version "1.9.6"}
+           ring/ring-jetty-adapter {:mvn/version "1.10.0"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.1.5"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"

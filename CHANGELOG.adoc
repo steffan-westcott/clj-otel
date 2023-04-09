@@ -44,7 +44,7 @@ The pattern also ensures all requests are recorded, including those which do not
 ** [BREAK] Module `clj-otel-extension-aws` renamed to `clj-otel-contrib-aws-xray-propagator`
 ** [BREAK] Module `clj-otel-sdk-extension-aws` renamed to `clj-otel-contrib-aws-resources`
 ** [BREAK] Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
-* gRPC `1.51.1`
+* gRPC `1.54.0`
 * Various build deps
 
 === `0.1.5` (2022-09-03)
