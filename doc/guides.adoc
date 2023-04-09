@@ -173,7 +173,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 === Add manual metrics instrumentation
 
-* See https://opentelemetry.io/docs/reference/specification/metrics/supplementary-guidelines/#instrument-selection[OpenTelemetry guide] to select the appropriate instrument type to use.
+* See this https://opentelemetry.io/docs/reference/specification/metrics/supplementary-guidelines/#instrument-selection[OpenTelemetry guide] to select the appropriate instrument type to use.
 * Follow the instructions below to create the instrument and take measurements synchronously or asynchronously, depending on the type of instrument.
 
 ==== Create and use an instrument to take measurements synchronously

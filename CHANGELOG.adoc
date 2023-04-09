@@ -28,8 +28,9 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 * `http.server.request.size`
 - [BREAK] The parameters for function `add-route-data!` have changed, there is a new parameter to specify the HTTP request method.
 - [BREAK] The pattern for using `clj-otel` middleware and interceptors in applications has been revised.
-The revised pattern uses new middleware `wrap-route` and interceptor `route-interceptor` to capture matched routes in HTTP server spans.
-The pattern also ensures all requests are traced, including those which do not match any route.
+The revised pattern uses new middleware `wrap-route`, `wrap-active-requests` and
+`wrap-metrics-by-route` and interceptors `route-interceptor`, `active-requests-interceptor` and `metrics-by-route-interceptors` to capture matched routes in HTTP server spans and HTTP server metrics.
+The pattern also ensures all requests are recorded, including those which do not match any route.
 - New module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the OpenTelemetry instrumentation agent.
 - Added aliases in examples
 ** `:metrics-*` to control export of metrics
