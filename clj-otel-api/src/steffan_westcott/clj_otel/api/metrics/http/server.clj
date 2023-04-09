@@ -127,7 +127,7 @@
            (raise e)))))))
 
 (defn active-requests-interceptor
-  "Pedestal interceptor to add support for metric
+  "Returns a Pedestal interceptor to add support for metric
   `http.server.active_requests`. The interceptor should not be used for
   applications run with the OpenTelemetry instrumentation agent."
   []
@@ -189,9 +189,9 @@
            (raise e)))))))
 
 (defn request-duration-interceptor
-  "Pedestal interceptor to add support for metric `http.server.duration`. This
-  interceptor should not be used for applications run with the OpenTelemetry
-  instrumentation agent."
+  "Returns a Pedestal interceptor to add support for metric
+  `http.server.duration`. This interceptor should not be used for applications
+  run with the OpenTelemetry instrumentation agent."
   []
   {:name  ::request-duration
    :enter (fn [ctx]
@@ -251,9 +251,9 @@
          (raise e))))))
 
 (defn request-size-interceptor
-  "Pedestal interceptor to add support for metric `http.server.request.size`.
-  This interceptor should not be used for applications run with the
-  OpenTelemetry instrumentation agent."
+  "Returns a Pedestal interceptor to add support for metric
+  `http.server.request.size`. This interceptor should not be used for
+  applications run with the OpenTelemetry instrumentation agent."
   []
   {:name  ::request-size
    :leave (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
@@ -283,8 +283,9 @@
       wrap-request-duration))
 
 (defn metrics-by-route-interceptors
-  "Returns a vector of interceptors that add support for HTTP server metrics
-  which include the `http.route` attribute. These interceptors should not be
-  used for applications run with the OpenTelemetry instrumentation agent."
+  "Returns a vector of Pedestal interceptors that add support for HTTP server
+  metrics which include the `http.route` attribute. These interceptors should
+  not be used for applications run with the OpenTelemetry instrumentation
+  agent."
   []
   [(request-duration-interceptor) (request-size-interceptor)])

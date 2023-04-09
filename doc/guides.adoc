@@ -180,7 +180,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 NOTE: Counter, up-down counter and histogram instruments support taking measurements synchronously.
 
-* Use `steffan-westcott.clj-otel.api.metrics.instrument/instrument` to create an instrument of the required type
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#instrument[`steffan-westcott.clj-otel.api.metrics.instrument/instrument`] to create an instrument of the required type.
 +
 [source,clojure]
 ----
@@ -196,7 +196,7 @@ NOTE: Counter, up-down counter and histogram instruments support taking measurem
                           :unit "{byte}"
                           :description "The size of requested segment"}))
 ----
-* Use `steffan-westcott.clj-otel.api.metrics.instrument/add!` to add a measurement to a counter or up-down counter.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Counter[`steffan-westcott.clj-otel.api.metrics.instrument/add!`] to add a measurement to a counter or up-down counter.
 The measurement may have attributes and context.
 +
 [source,clojure]
@@ -207,7 +207,7 @@ The measurement may have attributes and context.
                               :attributes {:colour :red}})
   (red-foo args))
 ----
-* Use `steffan-westcott.clj-otel.api.metrics.instrument/record!` to record a measurement in a histogram.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Histogram[`steffan-westcott.clj-otel.api.metrics.instrument/record!`] to record a measurement in a histogram.
 The measurement may have attributes and context.
 +
 [source,clojure]
@@ -226,7 +226,7 @@ NOTE: Counter, up-down counter and gauge instruments support taking measurements
 
 * Create a 0-arity function that returns a measurement, or a sequence of measurements.
 The measurement(s) may have attributes.
-* Use `steffan-westcott.clj-otel.api.metrics.instrument/instrument` to create an instrument of the required type.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#instrument[`steffan-westcott.clj-otel.api.metrics.instrument/instrument`] to create an instrument of the required type.
 The second parameter is the function created in the previous step.
 +
 [source,clojure]
@@ -257,7 +257,7 @@ CAUTION: When running an application with the OpenTelemetry instrumentation agen
 {;; ...
  :deps {com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.1.5"}}}
 ----
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.instrumentation.runtime-metrics#register![`steffan-westcott.clj-otel.instrumentation.runtime-metrics/register!`] to add JVM runtime metrics.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics/CURRENT/api/steffan-westcott.clj-otel.instrumentation.runtime-metrics#register![`steffan-westcott.clj-otel.instrumentation.runtime-metrics/register!`] to add JVM runtime metrics.
 They are implemented as instruments which take measurements asynchronously.
 +
 [source,clojure]

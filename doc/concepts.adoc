@@ -204,7 +204,7 @@ See specifications for https://opentelemetry.io/docs/reference/specification/tra
 
 A metric is a numerical *measurement over a period of time*.
 Metrics may be used to indicate quantitative aspects of *system health*, such as resource (memory, disk, compute, network) usage, error rate, message queue length, and request response time.
-They may also be used to record statistics on application usage, performance and internal operation.
+They may also be used to record *statistics* on application usage, performance and internal operation.
 
 An *instrument* is used to record *measurements*.
 Instruments may support synchronous (invoke) or asynchronous (callback) recording of measurements, depending on the type of instrument.
