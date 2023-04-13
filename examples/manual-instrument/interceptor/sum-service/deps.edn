@@ -1,15 +1,15 @@
 ;!zprint {:style [:respect-nl] :width 140}
 
-{:paths   ["src" "resources"]
+{:paths ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
-           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.1"}
-           com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.1"}
-           io.pedestal/pedestal.service {:mvn/version "0.5.10"}
-           io.pedestal/pedestal.route {:mvn/version "0.5.10"}
-           io.pedestal/pedestal.interceptor {:mvn/version "0.5.10"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
-           org.example/common-utils.interceptor {:local/root "../../../common-utils/interceptor"}}
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.1"}
+        com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.1"}
+        io.pedestal/pedestal.service {:mvn/version "0.5.10"}
+        io.pedestal/pedestal.route {:mvn/version "0.5.10"}
+        io.pedestal/pedestal.interceptor {:mvn/version "0.5.10"}
+        io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
+        org.example/common-utils.interceptor {:local/root "../../../common-utils/interceptor"}}
 
  :aliases
  {;; Include this alias to export telemetry data

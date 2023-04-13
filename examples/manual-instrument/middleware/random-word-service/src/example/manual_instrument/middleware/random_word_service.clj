@@ -1,7 +1,7 @@
 (ns example.manual-instrument.middleware.random-word-service
   "Example application demonstrating using `clj-otel` to add telemetry to a
-  synchronous Ring HTTP service that is run without the OpenTelemetry
-  instrumentation agent."
+   synchronous Ring HTTP service that is run without the OpenTelemetry
+   instrumentation agent."
   (:require [example.common-utils.middleware :as middleware]
             [muuntaja.core :as m]
             [reitit.ring :as ring]
@@ -26,10 +26,10 @@
 
 
 (defonce ^{:doc "Counter that records the number of words requested."} word-count
-         (instrument/instrument {:name        "service.random-word.word-count"
-                                 :instrument-type :counter
-                                 :unit        "{words}"
-                                 :description "The number of words requested"}))
+  (instrument/instrument {:name        "service.random-word.word-count"
+                          :instrument-type :counter
+                          :unit        "{words}"
+                          :description "The number of words requested"}))
 
 
 (defn random-word
@@ -53,13 +53,13 @@
 
                          ;; Exception data is added as attributes to the
                          ;; exception event by default.
-                         (throw
-                          (ex-info "Unknown word type"
-                                   {:type          ::ring/response
-                                    :response      {:status 400
-                                                    :body   "Unknown word type"}
-                                    :service/error :service.random-word.errors/unknown-word-type
-                                    :system/word-type word-type})))
+                         (throw (ex-info
+                                 "Unknown word type"
+                                 {:type          ::ring/response
+                                  :response      {:status 400
+                                                  :body   "Unknown word type"}
+                                  :service/error :service.random-word.errors/unknown-word-type
+                                  :system/word-type word-type})))
 
           word       (rand-nth candidates)]
 
@@ -77,7 +77,7 @@
 
 (defn get-random-word-handler
   "Synchronous Ring handler for 'GET /random-word' request. Returns an HTTP
-  response containing a random word of the requested type."
+   response containing a random word of the requested type."
   [{:keys [query-params]}]
   (let [type   (keyword (get query-params "type"))
         result (random-word type)]
@@ -88,22 +88,24 @@
 
 (def handler
   "Ring handler for all requests."
-  (ring/ring-handler (ring/router
-                      ["/random-word"
-                       {:name ::random-word
-                        :get  get-random-word-handler}]
-                      {:data {:muuntaja   m/instance
-                              :middleware [;; Add route data
-                                           middleware/wrap-reitit-route
+  (ring/ring-handler (ring/router ["/random-word"
+                                   {:name ::random-word
+                                    :get  get-random-word-handler}]
+                                  {:data {:muuntaja   m/instance
+                                          :middleware [;; Add route data
+                                                       middleware/wrap-reitit-route
 
-                                           ;; Add metrics that include http.route attribute
-                                           metrics-http-server/wrap-metrics-by-route
+                                                       ;; Add metrics that include http.route
+                                                       ;; attribute
+                                                       metrics-http-server/wrap-metrics-by-route
 
-                                           parameters/parameters-middleware
-                                           muuntaja/format-middleware exception/exception-middleware
+                                                       parameters/parameters-middleware
+                                                       muuntaja/format-middleware
+                                                       exception/exception-middleware
 
-                                           ;; Add exception event before exception-middleware runs
-                                           middleware/wrap-exception-event]}})
+                                                       ;; Add exception event before
+                                                       ;; exception-middleware runs
+                                                       middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 
                      ;; Wrap handling of all requests, including those which have no matching
@@ -115,10 +117,11 @@
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg
+  (runtime-metrics/register!))
 
 
 (defonce ^{:doc "random-word-service server instance"} server
-         (jetty/run-jetty #'handler
-                          {:port  8081
-                           :join? false}))
+  (jetty/run-jetty #'handler
+                   {:port  8081
+                    :join? false}))

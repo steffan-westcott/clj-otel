@@ -5,10 +5,10 @@
 
 
 (defonce ^{:doc "Counter that records the number of squares calculated."} squares-count
-         (instrument/instrument {:name        "app.square.squares-count"
-                                 :instrument-type :counter
-                                 :unit        "{squares}"
-                                 :description "The number of squares calculated"}))
+  (instrument/instrument {:name        "app.square.squares-count"
+                          :instrument-type :counter
+                          :unit        "{squares}"
+                          :description "The number of squares calculated"}))
 
 (defn square
   "Returns the square of a number."
@@ -22,7 +22,8 @@
 
 ;;;;;;;;;;;;;
 
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg
+  (runtime-metrics/register!))
 
 (square 9)
 

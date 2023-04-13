@@ -1,6 +1,6 @@
 (ns steffan-westcott.clj-otel.api.attributes
   "Conversion functions between maps and
-  `io.opentelemetry.api.common.Attributes` objects."
+   `io.opentelemetry.api.common.Attributes` objects."
   (:require [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.api.common AttributeKey AttributeType Attributes AttributesBuilder)))
 
@@ -38,8 +38,8 @@
         :else        AttributeType/STRING))
 
 (def ^:private attribute-key
-  "Function that returns a (memoized) `AttributeKey` for an attribute with
-  the given type and key name."
+  "Function that returns a (memoized) `AttributeKey` for an attribute with the
+   given type and key name."
   (memoize (fn [attribute-type k]
              ((get type->keyfn attribute-type) k))))
 
@@ -50,9 +50,9 @@
 
 (defn- attribute-key-value
   "Coerce `[k v]` to an `AttributeKey` and value pair. If `k` is not an
-  `AttributeKey` instance, the attribute type is inferred from the type of
-  `v`. In all cases `v` is coerced to an appropriate attribute type, or `nil`
-  is returned if `v` is `nil`."
+   `AttributeKey` instance, the attribute type is inferred from the type of
+   `v`. In all cases `v` is coerced to an appropriate attribute type, or `nil`
+   is returned if `v` is `nil`."
   [[k v]]
   (when (some? v)
     (let [AttributeKey? (instance? AttributeKey k)
@@ -67,7 +67,7 @@
 
 (defn ->map
   "Converts an `Attributes` instance to an attribute map. Each key of the
-  returned map is a string."
+   returned map is a string."
   [^Attributes attributes]
   (into {}
         (map (fn [[^AttributeKey k v]] [(.getKey k) v]))
@@ -75,9 +75,9 @@
 
 (defn ->attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
-  keyword, string or `AttributeKey` instance. Each map value may be a boolean,
-  long, double, string or a homogenous array of those types. Attributes with
-  `nil` values are dropped."
+   keyword, string or `AttributeKey` instance. Each map value may be a boolean,
+   long, double, string or a homogenous array of those types. Attributes with
+   `nil` values are dropped."
   ^Attributes [m]
   (let [kvs (keep attribute-key-value m)]
     (if (seq kvs)

@@ -33,7 +33,7 @@
 
 (defn wrap-reitit-route
   "Ring middleware to add matched Reitit route to the server span and Ring
-  request map."
+   request map."
   [handler]
   (trace-http/wrap-route handler
                          (fn [request]

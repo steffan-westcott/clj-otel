@@ -1,7 +1,7 @@
 (ns example.manual-instrument.middleware.puzzle-service
   "Example application demonstrating using `clj-otel` to add telemetry to a
-  synchronous Ring HTTP service that is run without the OpenTelemetry
-  instrumentation agent."
+   synchronous Ring HTTP service that is run without the OpenTelemetry
+   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.string :as str]
             [example.common-utils.middleware :as middleware]
@@ -20,12 +20,12 @@
             [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics]))
 
 
-(defonce
- ^{:doc "Histogram that records the number of letters in each generated puzzle."} puzzle-size
- (instrument/instrument {:name        "service.puzzle.puzzle-size"
-                         :instrument-type :histogram
-                         :unit        "{letters}"
-                         :description "The number of letters in each generated puzzle"}))
+(defonce ^{:doc "Histogram that records the number of letters in each generated puzzle."}
+         puzzle-size
+  (instrument/instrument {:name        "service.puzzle.puzzle-size"
+                          :instrument-type :histogram
+                          :unit        "{letters}"
+                          :description "The number of letters in each generated puzzle"}))
 
 
 
@@ -102,7 +102,7 @@
 
 (defn generate-puzzle
   "Constructs a puzzle string containing scrambled random words of the
-  requested word types."
+   requested word types."
   [word-types]
   (let [words (random-words word-types)
         scrambled-words (map scramble words)]
@@ -120,7 +120,7 @@
 
 (defn get-puzzle-handler
   "Synchronous Ring handler for `GET /puzzle` request. Returns an HTTP
-  response containing a puzzle of the requested word types."
+   response containing a puzzle of the requested word types."
   [{:keys [query-params]}]
   (let [word-types (map keyword (str/split (get query-params "types") #","))
         puzzle     (generate-puzzle word-types)]
@@ -130,22 +130,23 @@
 
 (def handler
   "Ring handler for all requests."
-  (ring/ring-handler (ring/router
-                      ["/puzzle"
-                       {:name ::puzzle
-                        :get  get-puzzle-handler}]
-                      {:data {:muuntaja   m/instance
-                              :middleware [;; Add route data
-                                           middleware/wrap-reitit-route
+  (ring/ring-handler (ring/router ["/puzzle"
+                                   {:name ::puzzle
+                                    :get  get-puzzle-handler}]
+                                  {:data {:muuntaja   m/instance
+                                          :middleware [;; Add route data
+                                                       middleware/wrap-reitit-route
 
-                                           ;; Add metrics that include http.route attribute
-                                           metrics-http-server/wrap-metrics-by-route
+                                                       ;; Add metrics that include http.route
+                                                       ;; attribute
+                                                       metrics-http-server/wrap-metrics-by-route
 
-                                           parameters/parameters-middleware
-                                           muuntaja/format-middleware exception/exception-middleware
+                                                       parameters/parameters-middleware
+                                                       muuntaja/format-middleware
+                                                       exception/exception-middleware
 
-                                           ;; Add exception event
-                                           middleware/wrap-exception-event]}})
+                                                       ;; Add exception event
+                                                       middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 
                      ;; Wrap handling of all requests, including those which have no matching route.
@@ -157,10 +158,11 @@
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg
+  (runtime-metrics/register!))
 
 
 (defonce ^{:doc "puzzle-service server instance"} server
-         (jetty/run-jetty #'handler
-                          {:port  8080
-                           :join? false}))
+  (jetty/run-jetty #'handler
+                   {:port  8080
+                    :join? false}))

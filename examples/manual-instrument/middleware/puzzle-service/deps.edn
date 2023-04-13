@@ -1,17 +1,17 @@
 ;!zprint {:style [:respect-nl] :width 140}
 
-{:paths   ["src" "resources"]
+{:paths ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
-           org.clojure/core.async {:mvn/version "1.6.673"}
-           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.1"}
-           com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.1"}
-           metosin/reitit-ring {:mvn/version "0.6.0"}
-           metosin/reitit-middleware {:mvn/version "0.6.0"}
-           ring/ring-jetty-adapter {:mvn/version "1.10.0"}
-           clj-http/clj-http {:mvn/version "3.12.3"}
-           org.example/common-utils.core-async {:local/root "../../../common-utils/core-async"}
-           org.example/common-utils.middleware {:local/root "../../../common-utils/middleware"}}
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/core.async {:mvn/version "1.6.673"}
+        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.1"}
+        com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.1"}
+        metosin/reitit-ring {:mvn/version "0.6.0"}
+        metosin/reitit-middleware {:mvn/version "0.6.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.10.0"}
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        org.example/common-utils.core-async {:local/root "../../../common-utils/core-async"}
+        org.example/common-utils.middleware {:local/root "../../../common-utils/middleware"}}
 
  :aliases
  {;; Include this alias to export telemetry data

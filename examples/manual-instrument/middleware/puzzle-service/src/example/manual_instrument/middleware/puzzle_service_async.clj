@@ -1,7 +1,7 @@
 (ns example.manual-instrument.middleware.puzzle-service-async
   "Example application demonstrating using `clj-otel` to add telemetry to an
-  asynchronous Ring HTTP service that is run without the OpenTelemetry
-  instrumentation agent."
+   asynchronous Ring HTTP service that is run without the OpenTelemetry
+   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [clojure.string :as str]
@@ -23,12 +23,12 @@
   (:import (clojure.lang PersistentQueue)))
 
 
-(defonce
- ^{:doc "Histogram that records the number of letters in each generated puzzle."} puzzle-size
- (instrument/instrument {:name        "service.puzzle.puzzle-size"
-                         :instrument-type :histogram
-                         :unit        "{letters}"
-                         :description "The number of letters in each generated puzzle"}))
+(defonce ^{:doc "Histogram that records the number of letters in each generated puzzle."}
+         puzzle-size
+  (instrument/instrument {:name        "service.puzzle.puzzle-size"
+                          :instrument-type :histogram
+                          :unit        "{letters}"
+                          :description "The number of letters in each generated puzzle"}))
 
 
 
@@ -73,7 +73,7 @@
 
 (defn <get-random-word
   "Get a random word string of the requested type and return a channel of the
-  word."
+   word."
   [context word-type]
   (let [<response (<client-request context
                                    {:method       :get
@@ -96,7 +96,7 @@
 
 (defn <random-words
   "Get random words of the requested types and return a channel containing
-  a value for each word."
+   a value for each word."
   [context word-types]
 
   ;; Start a new internal span that ends when the source channel (returned by
@@ -140,7 +140,7 @@
 
 (defn <generate-puzzle
   "Constructs a puzzle string containing scrambled random words of the
-  requested word types and returns a channel of the puzzle string."
+   requested word types and returns a channel of the puzzle string."
   [context word-types]
   (let [<words (<random-words context word-types)]
     (async'/go-try
@@ -168,7 +168,7 @@
 
 (defn get-puzzle-handler
   "Asynchronous Ring handler for `GET /puzzle` request. Returns an HTTP
-  response containing a puzzle of the requested word types."
+   response containing a puzzle of the requested word types."
   [{:keys [query-params io.opentelemetry/server-span-context]} respond raise]
   (let [word-types (map keyword (str/split (get query-params "types") #","))
         <puzzle    (<generate-puzzle server-span-context word-types)]
@@ -181,22 +181,23 @@
 
 (def handler
   "Ring handler for all requests."
-  (ring/ring-handler (ring/router
-                      ["/puzzle"
-                       {:name ::puzzle
-                        :get  get-puzzle-handler}]
-                      {:data {:muuntaja   m/instance
-                              :middleware [;; Add route data
-                                           middleware/wrap-reitit-route
+  (ring/ring-handler (ring/router ["/puzzle"
+                                   {:name ::puzzle
+                                    :get  get-puzzle-handler}]
+                                  {:data {:muuntaja   m/instance
+                                          :middleware [;; Add route data
+                                                       middleware/wrap-reitit-route
 
-                                           ;; Add metrics that include http.route attribute
-                                           metrics-http-server/wrap-metrics-by-route
+                                                       ;; Add metrics that include http.route
+                                                       ;; attribute
+                                                       metrics-http-server/wrap-metrics-by-route
 
-                                           parameters/parameters-middleware
-                                           muuntaja/format-middleware exception/exception-middleware
+                                                       parameters/parameters-middleware
+                                                       muuntaja/format-middleware
+                                                       exception/exception-middleware
 
-                                           ;; Add exception event
-                                           middleware/wrap-exception-event]}})
+                                                       ;; Add exception event
+                                                       middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 
                      ;; Wrap handling of all requests, including those which have no matching
@@ -208,11 +209,12 @@
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg
+  (runtime-metrics/register!))
 
 
 (defonce ^{:doc "puzzle-service server instance"} server
-         (jetty/run-jetty #'handler
-                          {:port   8080
-                           :async? true
-                           :join?  false}))
+  (jetty/run-jetty #'handler
+                   {:port   8080
+                    :async? true
+                    :join?  false}))

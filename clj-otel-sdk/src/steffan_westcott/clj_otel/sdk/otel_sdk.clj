@@ -6,16 +6,16 @@
             [steffan-westcott.clj-otel.propagator.w3c-trace-context :as w3c-trace]
             [steffan-westcott.clj-otel.util :as util])
   (:import
-   (clojure.lang Fn)
-   (java.util Map)
-   (java.util.function Supplier)
-   (io.opentelemetry.context.propagation ContextPropagators TextMapPropagator)
-   (io.opentelemetry.sdk OpenTelemetrySdk)
-   (io.opentelemetry.sdk.resources Resource)
-   (io.opentelemetry.sdk.trace SdkTracerProvider SdkTracerProviderBuilder SpanLimits SpanProcessor)
-   (io.opentelemetry.sdk.trace.export BatchSpanProcessor SimpleSpanProcessor SpanExporter)
-   (io.opentelemetry.sdk.trace.samplers Sampler)
-   (io.opentelemetry.semconv.resource.attributes ResourceAttributes)))
+    (clojure.lang Fn)
+    (java.util Map)
+    (java.util.function Supplier)
+    (io.opentelemetry.context.propagation ContextPropagators TextMapPropagator)
+    (io.opentelemetry.sdk OpenTelemetrySdk)
+    (io.opentelemetry.sdk.resources Resource)
+    (io.opentelemetry.sdk.trace SdkTracerProvider SdkTracerProviderBuilder SpanLimits SpanProcessor)
+    (io.opentelemetry.sdk.trace.export BatchSpanProcessor SimpleSpanProcessor SpanExporter)
+    (io.opentelemetry.sdk.trace.samplers Sampler)
+    (io.opentelemetry.semconv.resource.attributes ResourceAttributes)))
 
 (defprotocol ^:private AsResource
   (^:no-doc as-Resource [resource]))
@@ -148,8 +148,8 @@
   [{:keys [tracer-provider ^Iterable text-map-propagators]}]
   (let [propagators (ContextPropagators/create (TextMapPropagator/composite text-map-propagators))
         builder     (doto (OpenTelemetrySdk/builder)
-                     (.setPropagators propagators)
-                     (.setTracerProvider tracer-provider))]
+                      (.setPropagators propagators)
+                      (.setTracerProvider tracer-provider))]
     (.build builder)))
 
 (def ^:private otel-sdk
@@ -157,71 +157,71 @@
 
 (defn init-otel-sdk!
   "Configure an `OpenTelemetrySdk` instance and set as the global
-  `OpenTelemetry` instance. `service-name` is the service name given to the
-  resource emitting telemetry. This function may be evaluated once only.
-  Attempts to evaluate this more than once will result in error.
+   `OpenTelemetry` instance. `service-name` is the service name given to the
+   resource emitting telemetry. This function may be evaluated once only.
+   Attempts to evaluate this more than once will result in error.
 
-  Takes a nested option map as described in the
-  following sections. Some options can take either an option map or an
-  equivalent fully configured Java object.
+   Takes a nested option map as described in the
+   following sections. Some options can take either an option map or an
+   equivalent fully configured Java object.
 
-  Top level option map
+   Top level option map
 
-  | key              | description |
-  |------------------|-------------|
-  |`:resources`      | Collection of resources to merge with default SDK resource and `service-name` resource. Each resource in the collection is either a `Resource` instance or a map with keys `:attributes` (required) and `:schema-url` (optional). The merged resource describes the source of telemetry and is attached to emitted data (default: nil)
-  |`:tracer-provider`| Required options map (see below) to configure `SdkTracerProvider` instance.
-  |`:propagators`    | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).
+   | key              | description |
+   |------------------|-------------|
+   |`:resources`      | Collection of resources to merge with default SDK resource and `service-name` resource. Each resource in the collection is either a `Resource` instance or a map with keys `:attributes` (required) and `:schema-url` (optional). The merged resource describes the source of telemetry and is attached to emitted data (default: nil)
+   |`:tracer-provider`| Required options map (see below) to configure `SdkTracerProvider` instance.
+   |`:propagators`    | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).
 
-  `:tracer-provider` option map
+   `:tracer-provider` option map
 
-  | key              | description |
-  |------------------|-------------|
-  |`:span-processors`| Collection of option maps (see table below) or `SpanProcessor` instances. Each member specifies a collection of span exporters and batching to apply to those exporters (default: `[]`).
-  |`:span-limits`    | Option map (see table below), `SpanLimits`, `Supplier` or fn which returns span limits (default: same as `{}`).
-  |`:sampler`        | Option map (see table below) or `Sampler` instance, specifies strategy for sampling spans (default: same as `{:parent-based {}}`).
-  |`:id-generator`   | `IdGenerator` instance for generating ids for spans and traces (default: platform specific `IdGenerator`).
-  |`:clock`          | `Clock` instance used for time reading operations (default: system clock).
+   | key              | description |
+   |------------------|-------------|
+   |`:span-processors`| Collection of option maps (see table below) or `SpanProcessor` instances. Each member specifies a collection of span exporters and batching to apply to those exporters (default: `[]`).
+   |`:span-limits`    | Option map (see table below), `SpanLimits`, `Supplier` or fn which returns span limits (default: same as `{}`).
+   |`:sampler`        | Option map (see table below) or `Sampler` instance, specifies strategy for sampling spans (default: same as `{:parent-based {}}`).
+   |`:id-generator`   | `IdGenerator` instance for generating ids for spans and traces (default: platform specific `IdGenerator`).
+   |`:clock`          | `Clock` instance used for time reading operations (default: system clock).
 
-  `:span-processors` member option map
+   `:span-processors` member option map
 
-  | key                    | description |
-  |------------------------|-------------|
-  |`:exporters`            | Collection of `SpanExporter` instances, used to export spans to processing and reporting backends.
-  |`:batch?`               | If true, batches spans for export. If false then export spans individually; generally meant for debug logging exporters only. All options other than `:exporters` are ignored when `:batch` is false (default: `true`).
-  |`:schedule-delay`       | Delay interval between consecutive batched exports. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 5000ms).
-  |`:exporter-timeout`     | Maximum time a batched export will be allowed to run before being cancelled. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 30000ms).
-  |`:max-queue-size`       | Maximum number of spans kept in queue before start dropping (default: 2048).
-  |`:max-export-batch-size`| Maximum batch size for every export, must be smaller or equal to `:max-queue-size` (default: 512).
+   | key                    | description |
+   |------------------------|-------------|
+   |`:exporters`            | Collection of `SpanExporter` instances, used to export spans to processing and reporting backends.
+   |`:batch?`               | If true, batches spans for export. If false then export spans individually; generally meant for debug logging exporters only. All options other than `:exporters` are ignored when `:batch` is false (default: `true`).
+   |`:schedule-delay`       | Delay interval between consecutive batched exports. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 5000ms).
+   |`:exporter-timeout`     | Maximum time a batched export will be allowed to run before being cancelled. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 30000ms).
+   |`:max-queue-size`       | Maximum number of spans kept in queue before start dropping (default: 2048).
+   |`:max-export-batch-size`| Maximum batch size for every export, must be smaller or equal to `:max-queue-size` (default: 512).
 
-  `:span-limits` option map
+   `:span-limits` option map
 
-  | key                  | description |
-  |----------------------|-------------|
-  |`:max-attrs`          | Maximum number of attributes per span (default: 128).
-  |`:max-events`         | Maximum number of events per span (default: 128).
-  |`:max-links`          | Maximum number of links per span (default: 128).
-  |`:max-attrs-per-event`| Maximum number of attributes per event (default: 128).
-  |`:max-attrs-per-link` | Maximum number of attributes per link (default: 128).
-  |`:max-attr-value-len` | Maximum length of string attribute values and each element of string array attribute values (default: no maximum).
+   | key                  | description |
+   |----------------------|-------------|
+   |`:max-attrs`          | Maximum number of attributes per span (default: 128).
+   |`:max-events`         | Maximum number of events per span (default: 128).
+   |`:max-links`          | Maximum number of links per span (default: 128).
+   |`:max-attrs-per-event`| Maximum number of attributes per event (default: 128).
+   |`:max-attrs-per-link` | Maximum number of attributes per link (default: 128).
+   |`:max-attr-value-len` | Maximum length of string attribute values and each element of string array attribute values (default: no maximum).
 
-  `:sampler` option map (one option only)
+   `:sampler` option map (one option only)
 
-  | key           | description |
-  |---------------|-------------|
-  |`:always`      | With value `:on` always record and export all spans. With value `:off` drop all spans.
-  |`:ratio`       | double in range [0.0, 1.0], describing the ratio of spans to be sampled.
-  |`:parent-based`| Option map (see table below), describing sampling decisions based on the parent span.
+   | key           | description |
+   |---------------|-------------|
+   |`:always`      | With value `:on` always record and export all spans. With value `:off` drop all spans.
+   |`:ratio`       | double in range [0.0, 1.0], describing the ratio of spans to be sampled.
+   |`:parent-based`| Option map (see table below), describing sampling decisions based on the parent span.
 
-  `:parent-based` option map
+   `:parent-based` option map
 
-  | key                        | description |
-  |----------------------------|-------------|
-  |`:root`                     | Option map (see `:sampler` table above) or `Sampler` to use when no parent span is present (default: same as `{:always :on}`).
-  |`:remote-parent-sampled`    | Option map (see `:sampler` table above) or `Sampler` to use when there is a remote parent that was sampled (default: same as `{:always :on}`).
-  |`:remote-parent-not-sampled`| Option map (see `:sampler` table above) or `Sampler` to use when there is a remote parent that was not sampled (default: same as `{:always :off}`).
-  |`:local-parent-sampled`     | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was sampled (default: same as `{:always :on}`).
-  |`:local-parent-not-sampled` | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was not sampled (default: same as `{:always :off}`)."
+   | key                        | description |
+   |----------------------------|-------------|
+   |`:root`                     | Option map (see `:sampler` table above) or `Sampler` to use when no parent span is present (default: same as `{:always :on}`).
+   |`:remote-parent-sampled`    | Option map (see `:sampler` table above) or `Sampler` to use when there is a remote parent that was sampled (default: same as `{:always :on}`).
+   |`:remote-parent-not-sampled`| Option map (see `:sampler` table above) or `Sampler` to use when there is a remote parent that was not sampled (default: same as `{:always :off}`).
+   |`:local-parent-sampled`     | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was sampled (default: same as `{:always :on}`).
+   |`:local-parent-not-sampled` | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was not sampled (default: same as `{:always :off}`)."
   [service-name
    {:keys [resources tracer-provider propagators]
     :or   {propagators [(w3c-trace/w3c-trace-context-propagator)
@@ -235,7 +235,7 @@
 
 (defn close-otel-sdk!
   "Shut down activities of `OpenTelemetrySdk` instance previously configured
-  by [[init-otel-sdk!]]."
+   by [[init-otel-sdk!]]."
   []
   (when-let [^OpenTelemetrySdk sdk @otel-sdk]
     (.close sdk)

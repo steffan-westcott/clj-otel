@@ -5,7 +5,8 @@
             [ring.util.response :as response]))
 
 
-(defonce ^{:doc "Counter state"} counter (atom 0))
+(defonce ^{:doc "Counter state"} counter
+  (atom 0))
 
 
 (defn wrap-exception
@@ -29,7 +30,7 @@
 
 (defn get-count-handler
   "Ring handler for 'GET /count' request. Returns an HTTP response with counter
-  value."
+   value."
   []
   (let [n @counter]
     (response/response (str n))))
@@ -61,6 +62,6 @@
 
 
 (defonce ^{:doc "counter-service server instance"} server
-         (jetty/run-jetty #'service
-                          {:port  8080
-                           :join? false}))
+  (jetty/run-jetty #'service
+                   {:port  8080
+                    :join? false}))

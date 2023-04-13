@@ -36,6 +36,5 @@
   "<with-span-binding" :binding
 
   ;; core.async
-  "async/alt!" :pair-fn
   "async/go" :flow-body
   "async/go-loop" :binding}}

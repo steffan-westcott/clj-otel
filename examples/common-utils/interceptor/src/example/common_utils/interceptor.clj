@@ -5,8 +5,8 @@
 
 (defn- exception-response
   "Converts exception to a response, with status set to `:http.response/status`
-  value if exception is an `IExceptionInfo` instance, 500 Server Error
-  otherwise."
+   value if exception is an `IExceptionInfo` instance, 500 Server Error
+   otherwise."
   [e]
   (let [resp   (response/response (ex-message e))
         status (:http.response/status (ex-data e) 500)]
@@ -16,7 +16,7 @@
 
 (defn exception-response-interceptor
   "Returns an interceptor which converts a synchronously thrown exception to a
-  response."
+   response."
   []
   {:name  ::exception-response
    :error (fn [{:keys [io.opentelemetry/server-span-context]

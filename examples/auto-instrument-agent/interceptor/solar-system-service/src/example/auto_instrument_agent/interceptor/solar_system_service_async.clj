@@ -1,7 +1,7 @@
 (ns example.auto-instrument-agent.interceptor.solar-system-service-async
   "Example application demonstrating using `clj-otel` to add telemetry to an
-  asynchronous Pedestal HTTP service that is run with the OpenTelemetry
-  instrumentation agent."
+   asynchronous Pedestal HTTP service that is run with the OpenTelemetry
+   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [clojure.string :as str]
@@ -18,10 +18,10 @@
 
 
 (defonce ^{:doc "Counter that records the number of planet reports built."} report-count
-         (instrument/instrument {:name        "service.solar-system.planet-report-count"
-                                 :instrument-type :counter
-                                 :unit        "{reports}"
-                                 :description "The number of reports built"}))
+  (instrument/instrument {:name        "service.solar-system.planet-report-count"
+                          :instrument-type :counter
+                          :unit        "{reports}"
+                          :description "The number of reports built"}))
 
 
 
@@ -54,7 +54,7 @@
 
 (defn <get-statistic-value
   "Get a single statistic value of a planet and return a channel of a
-  single-valued map of the statistic and its value."
+   single-valued map of the statistic and its value."
   [context planet statistic]
   (let [path      (str "/planets/" (name planet) "/" (name statistic))
         <response (<client-request context
@@ -74,8 +74,8 @@
 
 
 (defn <planet-statistics
-  "Get all statistics of a planet and return a channel containing a single-valued
-  map values of each statistic."
+  "Get all statistics of a planet and return a channel containing a
+   single-valued map values of each statistic."
   [context planet]
 
   ;; Start a new internal span that ends when the source channel (returned by
@@ -126,7 +126,7 @@
 
 (defn <planet-report
   "Builds a report of planet statistics and results a channel of the report
-  string."
+   string."
   [context planet]
   (let [<all-statistics   (<planet-statistics context planet)
         <statistic-values (async'/<into?? {} <all-statistics)]
@@ -141,8 +141,8 @@
 
 (defn <get-statistics
   "Asynchronous handler for 'GET /statistics' request. Returns a channel of the
-  HTTP response containing a formatted report of the planet's statistic
-  values."
+   HTTP response containing a formatted report of the planet's statistic
+   values."
   [{:keys [io.opentelemetry/server-span-context request]
     :as   ctx}]
 
@@ -178,8 +178,8 @@
 
 
 (defn update-default-interceptors
-  "Returns `default-interceptors` with added interceptors for HTTP server
-  span support."
+  "Returns `default-interceptors` with added interceptors for HTTP server span
+   support."
   [default-interceptors]
   (map interceptor/interceptor
        (concat (;; As this application is run with the OpenTelemetry instrumentation agent,
@@ -205,4 +205,5 @@
 
 
 
-(defonce ^{:doc "solar-system-service server instance"} server (http/start (service service-map)))
+(defonce ^{:doc "solar-system-service server instance"} server
+  (http/start (service service-map)))

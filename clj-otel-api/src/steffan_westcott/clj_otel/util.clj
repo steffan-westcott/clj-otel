@@ -35,7 +35,7 @@
 (defprotocol AsQualifiedName
   (qualified-name [x]
    "Given a keyword, returns the name qualified with its namespace if it has
-   one. Given anything other than a keyword, returns argument."))
+    one. Given anything other than a keyword, returns argument."))
 
 (extend-protocol AsQualifiedName
  Keyword

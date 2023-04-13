@@ -2,29 +2,29 @@
 
 (ns example.programmatic_sdk_config
   "An example application demonstrating programmatic configuration,
-  initialisation and shutdown of the OpenTelemetry SDK."
+   initialisation and shutdown of the OpenTelemetry SDK."
   #_{:clj-kondo/ignore [:unsorted-required-namespaces]}
   (:require
 
-   ;; Require desired span exporters
-   [steffan-westcott.clj-otel.exporter.otlp.grpc.trace :as otlp-grpc-trace]
-   ;[steffan-westcott.clj-otel.exporter.otlp.http.trace :as otlp-http-trace]
-   ;[steffan-westcott.clj-otel.exporter.jaeger-grpc :as jaeger-grpc]
-   ;[steffan-westcott.clj-otel.exporter.jaeger-thrift :as jaeger-thrift]
-   ;[steffan-westcott.clj-otel.exporter.zipkin :as zipkin]
-   ;[steffan-westcott.clj-otel.exporter.logging :as logging]
-   ;[steffan-westcott.clj-otel.exporter.logging-otlp :as logging-otlp]
+    ;; Require desired span exporters
+    [steffan-westcott.clj-otel.exporter.otlp.grpc.trace :as otlp-grpc-trace]
+    ;[steffan-westcott.clj-otel.exporter.otlp.http.trace :as otlp-http-trace]
+    ;[steffan-westcott.clj-otel.exporter.jaeger-grpc :as jaeger-grpc]
+    ;[steffan-westcott.clj-otel.exporter.jaeger-thrift :as jaeger-thrift]
+    ;[steffan-westcott.clj-otel.exporter.zipkin :as zipkin]
+    ;[steffan-westcott.clj-otel.exporter.logging :as logging]
+    ;[steffan-westcott.clj-otel.exporter.logging-otlp :as logging-otlp]
 
-   [steffan-westcott.clj-otel.api.trace.span :as span]
-   [steffan-westcott.clj-otel.resource.resources :as res]
-   [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]))
+    [steffan-westcott.clj-otel.api.trace.span :as span]
+    [steffan-westcott.clj-otel.resource.resources :as res]
+    [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]))
 
 (defn init-otel!
   "Configure and initialise the OpenTelemetry SDK as the global OpenTelemetry
-  instance used by the application. This function should be evaluated before
-  performing any OpenTelemetry API operations such as tracing. This function
-  may be evaluated once only, any attempts to evaluate it more than once will
-  result in error."
+   instance used by the application. This function should be evaluated before
+   performing any OpenTelemetry API operations such as tracing. This function
+   may be evaluated once only, any attempts to evaluate it more than once will
+   result in error."
   []
   (sdk/init-otel-sdk!
 
@@ -35,10 +35,10 @@
     ;; to form information about the entity for which telemetry is recorded.
     ;; Here the additional resources provide information on the host, OS,
     ;; process and JVM.
-    :resources       [(res/host-resource)
-                      (res/os-resource)
-                      (res/process-resource)
-                      (res/process-runtime-resource)]
+    :resources [(res/host-resource)
+                (res/os-resource)
+                (res/process-resource)
+                (res/process-runtime-resource)]
 
     ;; Configuration options for the context propagation, sampling, batching
     ;; and export of traces. Here we configure export to a local Jaeger server
@@ -95,7 +95,7 @@
 
 (defn close-otel!
   "Shut down OpenTelemetry SDK processes. This should be called before the
-  application exits."
+   application exits."
   []
   (sdk/close-otel-sdk!))
 
@@ -107,7 +107,7 @@
     (* n n)))
 
 (comment
-  (init-otel!)    ; once only
+  (init-otel!) ; once only
   (square 7)
   (close-otel!)
 )

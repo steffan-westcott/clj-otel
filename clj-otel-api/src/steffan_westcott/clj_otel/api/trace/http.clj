@@ -1,10 +1,10 @@
 (ns steffan-westcott.clj-otel.api.trace.http
   "Support for creating and populating HTTP client and server spans.
 
-  This namespace includes Ring middleware and Pedestal interceptors for
-  working with HTTP server spans. Support is provided for working either with
-  or without the OpenTelemetry instrumentation agent, and for synchronous or
-  asynchronous HTTP request handlers."
+   This namespace includes Ring middleware and Pedestal interceptors for
+   working with HTTP server spans. Support is provided for working either with
+   or without the OpenTelemetry instrumentation agent, and for synchronous or
+   asynchronous HTTP request handlers."
   (:require [clojure.string :as str]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context])
@@ -60,13 +60,13 @@
 
 (defn server-span-opts
   "Returns a span options map (a parameter for
-  [[steffan-westcott.clj-otel.api.trace.span/new-span!]]) for a manually
-  created HTTP server span, initiated by processing an HTTP request specified
-  by Ring-style request map `request`. May take an options map as follows:
+   [[steffan-westcott.clj-otel.api.trace.span/new-span!]]) for a manually
+   created HTTP server span, initiated by processing an HTTP request specified
+   by Ring-style request map `request`. May take an options map as follows:
 
-  | key                       | description |
-  |---------------------------|-------------|
-  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root)."
+   | key                       | description |
+   |---------------------------|-------------|
+   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root)."
   ([request]
    (server-span-opts request {}))
   ([request {:keys [app-root]}]
@@ -82,14 +82,14 @@
 
 (defn client-span-opts
   "Returns a span options map (a parameter for
-  [[steffan-westcott.clj-otel.api.trace.span/new-span!]]) for a manually
-  created HTTP client span, where an HTTP request specified by Ring-style
-  request map `request` is issued in the span scope.  Only `:method` is used in
-  `request` to populate the span. May take an options map as follows:
+   [[steffan-westcott.clj-otel.api.trace.span/new-span!]]) for a manually
+   created HTTP client span, where an HTTP request specified by Ring-style
+   request map `request` is issued in the span scope.  Only `:method` is used in
+   `request` to populate the span. May take an options map as follows:
 
-  | key      | description |
-  |----------|-------------|
-  |`:parent` | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context)."
+   | key      | description |
+   |----------|-------------|
+   |`:parent` | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context)."
   ([request]
    (client-span-opts request {}))
   ([request
@@ -104,17 +104,17 @@
 
 (defn add-route-data!
   "Adds data about the matched HTTP `request-method` and `route` to a server
-  span, for example `\"GET /users/:user-id\"`. `request-method` is a keyword
-  corresponding to an HTTP request method; `route` is a string that may contain
-  path parameters in any format. See also [[wrap-route]] and
-  [[route-interceptor]].
+   span, for example `\"GET /users/:user-id\"`. `request-method` is a keyword
+   corresponding to an HTTP request method; `route` is a string that may contain
+   path parameters in any format. See also [[wrap-route]] and
+   [[route-interceptor]].
 
-  May take an options map as follows:
+   May take an options map as follows:
 
-  | key       | description |
-  |-----------|-------------|
-  |`:context` | Context containing server span (default: current context).
-  |`:app-root`| Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: `nil`)."
+   | key       | description |
+   |-----------|-------------|
+   |`:context` | Context containing server span (default: current context).
+   |`:app-root`| Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: `nil`)."
   ([request-method route]
    (add-route-data! request-method route {}))
   ([request-method route
@@ -128,11 +128,11 @@
 
 (defn add-client-span-response-data!
   "Adds data about the HTTP `response` to a manually created client span. May
-  take an options map as follows:
+   take an options map as follows:
 
-  | key       | description |
-  |-----------|-------------|
-  |`:context` | Context containing span to add response data to (default: current context)."
+   | key       | description |
+   |-----------|-------------|
+   |`:context` | Context containing span to add response data to (default: current context)."
   ([response]
    (add-client-span-response-data! response {}))
   ([response
@@ -153,11 +153,11 @@
 
 (defn add-server-span-response-data!
   "Adds data about the HTTP `response` to a manually created server span. May
-  take an options map as follows:
+   take an options map as follows:
 
-  | key       | description |
-  |-----------|-------------|
-  |`:context` | Context containing span to add response data to (default: current context)."
+   | key       | description |
+   |-----------|-------------|
+   |`:context` | Context containing span to add response data to (default: current context)."
   ([response]
    (add-server-span-response-data! response {}))
   ([response
@@ -231,34 +231,34 @@
 
 (defn wrap-server-span
   "Ring middleware to add HTTP server span support. This middleware can be
-  configured to either use existing server spans created by the OpenTelemetry
-  instrumentation agent or manually create new server spans (when not using the
-  agent). Both synchronous (1-arity) and asynchronous (3-arity) Ring handlers
-  are supported.
+   configured to either use existing server spans created by the OpenTelemetry
+   instrumentation agent or manually create new server spans (when not using the
+   agent). Both synchronous (1-arity) and asynchronous (3-arity) Ring handlers
+   are supported.
 
-  When `:create-span?` is false, for each request it is assumed the current
-  context contains a server span created by the OpenTelemetry instrumentation
-  agent.
+   When `:create-span?` is false, for each request it is assumed the current
+   context contains a server span created by the OpenTelemetry instrumentation
+   agent.
 
-  When `:create-span?` is true, for each request a new context containing a new
-  server span is created, with parent context extracted from the HTTP request
-  headers. For a synchronous handler, the current context is set to the new
-  context during request processing and restored to its original value on
-  completion. Finally, if the HTTP response status code is `5xx` then the span
-  status error description is set to the value of
-  `:io.opentelemetry.api.trace.span.status/description` in the response map.
+   When `:create-span?` is true, for each request a new context containing a new
+   server span is created, with parent context extracted from the HTTP request
+   headers. For a synchronous handler, the current context is set to the new
+   context during request processing and restored to its original value on
+   completion. Finally, if the HTTP response status code is `5xx` then the span
+   status error description is set to the value of
+   `:io.opentelemetry.api.trace.span.status/description` in the response map.
 
-  No matter how the server span is created, for an asynchronous handler the
-  context containing the server span is set as the value of
-  `:io.opentelemetry/server-span-context` in the request map.
+   No matter how the server span is created, for an asynchronous handler the
+   context containing the server span is set as the value of
+   `:io.opentelemetry/server-span-context` in the request map.
 
-  May take an option map as follows:
+   May take an option map as follows:
 
-  | key                       | description |
-  |---------------------------|-------------|
-  |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
-  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
-  |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
+   | key                       | description |
+   |---------------------------|-------------|
+   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
+   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
+   |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([handler]
    (wrap-server-span handler {}))
   ([handler
@@ -271,8 +271,8 @@
 
 (defn wrap-route
   "Ring middleware to add a matched route to the server span data and Ring
-  request map. `route-fn` is a function which given a request returns the
-  matched route as a string."
+   request map. `route-fn` is a function which given a request returns the
+   matched route as a string."
   [handler route-fn]
   (fn
     ([{:keys [request-method]
@@ -356,39 +356,39 @@
 
 (defn server-span-interceptors
   "Returns a vector of Pedestal interceptor maps that add HTTP server span
-  support to subsequent execution of the interceptor chain for an HTTP service.
-  These interceptors can be configured to either use existing server spans
-  created by the OpenTelemetry instrumentation agent or manually create new
-  server spans (when not using the agent).
+   support to subsequent execution of the interceptor chain for an HTTP service.
+   These interceptors can be configured to either use existing server spans
+   created by the OpenTelemetry instrumentation agent or manually create new
+   server spans (when not using the agent).
 
-  The interceptors should prepend any others in the service map to ensure all
-  HTTP requests are traced, including those without a matching route.
+   The interceptors should prepend any others in the service map to ensure all
+   HTTP requests are traced, including those without a matching route.
 
-  When `:create-span?` is false, for each request it is assumed the current
-  context contains a server span created by the OpenTelemetry instrumentation
-  agent. `:set-current-context?` is ignored in this case.
+   When `:create-span?` is false, for each request it is assumed the current
+   context contains a server span created by the OpenTelemetry instrumentation
+   agent. `:set-current-context?` is ignored in this case.
 
-  When `:create-span?` is true, for each request a new context containing a new
-  server span is created, with parent context extracted from the HTTP request
-  headers. In addition, if `:set-current-context?` is true the current context
-  is set to the new context on interceptor entry and its original value is
-  restored on exit; this is only appropriate if all requests are to be
-  processed synchronously. Finally, if the HTTP response status code is `5xx`
-  then the span status error description is set to the value of
-  `:io.opentelemetry.api.trace.span.status/description` in the response map.
+   When `:create-span?` is true, for each request a new context containing a new
+   server span is created, with parent context extracted from the HTTP request
+   headers. In addition, if `:set-current-context?` is true the current context
+   is set to the new context on interceptor entry and its original value is
+   restored on exit; this is only appropriate if all requests are to be
+   processed synchronously. Finally, if the HTTP response status code is `5xx`
+   then the span status error description is set to the value of
+   `:io.opentelemetry.api.trace.span.status/description` in the response map.
 
-  No matter how the server span is created, the context containing the server
-  span is set as the value of `:io.opentelemetry/server-span-context` in both
-  the interceptor context and request maps.
+   No matter how the server span is created, the context containing the server
+   span is set as the value of `:io.opentelemetry/server-span-context` in both
+   the interceptor context and request maps.
 
-  May take an option map as follows:
+   May take an option map as follows:
 
-  | key                       | description |
-  |---------------------------|-------------|
-  |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
-  |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
-  |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
-  |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
+   | key                       | description |
+   |---------------------------|-------------|
+   |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
+   |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
+   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
+   |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([]
    (server-span-interceptors {}))
   ([{:keys [create-span? set-current-context?]
@@ -405,7 +405,7 @@
 
 (defn route-interceptor
   "Returns a Pedestal interceptor that adds a matched route to the server span
-  data and request map."
+   data and request map."
   []
   {:name  ::route
    :enter (fn [{:keys [io.opentelemetry/server-span-context route request]

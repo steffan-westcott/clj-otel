@@ -1,7 +1,7 @@
 (ns example.manual-instrument.interceptor.sum-service
   "Example application demonstrating using `clj-otel` to add telemetry to a
-  synchronous Pedestal HTTP service that is run without the OpenTelemetry
-  instrumentation agent."
+   synchronous Pedestal HTTP service that is run without the OpenTelemetry
+   instrumentation agent."
   (:require [clojure.string :as str]
             [example.common-utils.interceptor :as utils-interceptor]
             [io.pedestal.http :as http]
@@ -16,9 +16,9 @@
 
 
 (defonce ^{:doc "Histogram the records the resulting sum value."} sum-result
-         (instrument/instrument {:name        "service.sum.sum-result"
-                                 :instrument-type :histogram
-                                 :description "The resulting sum value"}))
+  (instrument/instrument {:name        "service.sum.sum-result"
+                          :instrument-type :histogram
+                          :description "The resulting sum value"}))
 
 
 (defn sum
@@ -52,7 +52,7 @@
 
 (defn get-sum-handler
   "Synchronous handler for `GET /sum` request. Returns an HTTP response
-  containing the sum of the `nums` query parameters."
+   containing the sum of the `nums` query parameters."
   [request]
   (let [{:keys [query-params]} request
         num-str  (get query-params :nums)
@@ -89,7 +89,7 @@
 
 (defn update-default-interceptors
   "Returns `default-interceptors` with added interceptors for HTTP server
-  span support."
+   span support."
   [default-interceptors]
   (map interceptor/interceptor
        (concat (;; As this application is not run with the OpenTelemetry instrumentation
@@ -125,8 +125,10 @@
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg
+  (runtime-metrics/register!))
 
 
 
-(defonce ^{:doc "sum-service server instance"} server (http/start (service service-map)))
+(defonce ^{:doc "sum-service server instance"} server
+  (http/start (service service-map)))

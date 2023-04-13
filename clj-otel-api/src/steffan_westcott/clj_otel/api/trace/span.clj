@@ -16,14 +16,14 @@
 
 (defn get-tracer
   "Builds and returns a `io.opentelemetry.api.trace.Tracer` instance. May take
-  an option map as follows:
+   an option map as follows:
 
-  | key             | description |
-  |-----------------|-------------|
-  |`:name`          | Name of the *instrumentation* library, not the *instrumented* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: See `config.edn` resource file).
-  |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
-  |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
-  |`:open-telemetry`| `OpenTelemetry` instance to get tracer from (default: global `OpenTelemetry` instance)."
+   | key             | description |
+   |-----------------|-------------|
+   |`:name`          | Name of the *instrumentation* library, not the *instrumented* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: See `config.edn` resource file).
+   |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
+   |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
+   |`:open-telemetry`| `OpenTelemetry` instance to get tracer from (default: global `OpenTelemetry` instance)."
   ([]
    (get-tracer {}))
   ([{:keys [name version schema-url open-telemetry]
@@ -41,17 +41,18 @@
   []
   (get-tracer {:open-telemetry (otel/get-noop)}))
 
-(defonce ^:private default-tracer (atom nil))
+(defonce ^:private default-tracer
+  (atom nil))
 
 (defn set-default-tracer!
   "Sets the default `io.opentelemetry.api.trace.Tracer` instance used when
-  creating spans. Returns `tracer`. See also [[get-tracer]]."
+   creating spans. Returns `tracer`. See also [[get-tracer]]."
   [tracer]
   (reset! default-tracer tracer))
 
 (defn- get-default-tracer!
   "Returns the default tracer if not nil. Otherwise, gets a tracer using
-  defaults and sets this as the default tracer."
+   defaults and sets this as the default tracer."
   ^Tracer []
   (if-let [tracer @default-tracer]
     tracer
@@ -71,8 +72,8 @@
 
 (defn get-span
   "Gets the span from a given context, or the current context if none is given.
-  If no span is found in the context (or no context is available), a
-  non-recording, non-exporting span is returned."
+   If no span is found in the context (or no context is available), a
+   non-recording, non-exporting span is returned."
   (^Span []
    (Span/current))
   (^Span [context]
@@ -94,7 +95,7 @@
 
 (defn get-span-context
   "Returns the given `SpanContext`, or extracts it from the given span,
-  context or current context if no argument is given."
+   context or current context if no argument is given."
   ([]
    (get-span-context (get-span)))
   ([x]
@@ -114,23 +115,23 @@
 
 (defn new-span!
   "Low level function that starts a new span and returns the context containing
-  the new span. Does not mutate the current context. The span must be ended by
-  evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
-  level helpers [[with-span!]], [[with-span-binding]] and [[async-span]]
-  instead of this function to manage the context and reliably end the span.
-  Takes an options map as follows:
+   the new span. Does not mutate the current context. The span must be ended by
+   evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
+   level helpers [[with-span!]], [[with-span-binding]] and [[async-span]]
+   instead of this function to manage the context and reliably end the span.
+   Takes an options map as follows:
 
-  | key         | description |
-  |-------------|-------------|
-  |`:tracer`    | `io.opentelemetry.api.trace.Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
-  |`:name`      | Span name (default: `\"\"`).
-  |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context).
-  |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
-  |`:attributes`| Map of additional attributes for the span (default: no attributes).
-  |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
-  |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:ns`, `:line` and `:file` (default: {}).
-  |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
-  |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
+   | key         | description |
+   |-------------|-------------|
+   |`:tracer`    | `io.opentelemetry.api.trace.Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
+   |`:name`      | Span name (default: `\"\"`).
+   |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context).
+   |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
+   |`:attributes`| Map of additional attributes for the span (default: no attributes).
+   |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
+   |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:ns`, `:line` and `:file` (default: {}).
+   |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
+   |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
   ^Context
   [{:keys [^Tracer tracer name parent links attributes ^Thread thread source span-kind timestamp]
     :or   {name       ""
@@ -182,41 +183,41 @@
 
 (defn add-span-data!
   "Adds data to a span. All data values documented here are optional unless
-  otherwise noted as required. Takes a top level option map as follows:
+   otherwise noted as required. Takes a top level option map as follows:
 
-  Top level option map
+   Top level option map
 
-  | key         | description |
-  |-------------|-------------|
-  |`:context`   | Context containing span to add data to (default: current context).
-  |`:name`      | Name to set span to.
-  |`:status`    | Option map (see below) describing span status to set.
-  |`:attributes`| Map of additional attributes to merge in the span.
-  |`:event`     | Option map (see below) describing an event to add to the span.
-  |`:ex-data`   | Option map (see below) describing an exception event to add to the span.
+   | key         | description |
+   |-------------|-------------|
+   |`:context`   | Context containing span to add data to (default: current context).
+   |`:name`      | Name to set span to.
+   |`:status`    | Option map (see below) describing span status to set.
+   |`:attributes`| Map of additional attributes to merge in the span.
+   |`:event`     | Option map (see below) describing an event to add to the span.
+   |`:ex-data`   | Option map (see below) describing an exception event to add to the span.
 
-  `:status` option map
+   `:status` option map
 
-  | key          | description |
-  |--------------|-------------|
-  |`:code`       | Status code, either `:ok` or `:error` (required).
-  |`:description`| Status description string, only applicable with `:error` status code.
+   | key          | description |
+   |--------------|-------------|
+   |`:code`       | Status code, either `:ok` or `:error` (required).
+   |`:description`| Status description string, only applicable with `:error` status code.
 
-  `:event` option map
+   `:event` option map
 
-  | key         | description |
-  |-------------|-------------|
-  |`:name`      | Event name (required).
-  |`:attributes`| Map of attributes to attach to event.
-  |`:timestamp` | Event timestamp, value is either an `Instant` or vector `[amount ^TimeUnit unit]`.
+   | key         | description |
+   |-------------|-------------|
+   |`:name`      | Event name (required).
+   |`:attributes`| Map of attributes to attach to event.
+   |`:timestamp` | Event timestamp, value is either an `Instant` or vector `[amount ^TimeUnit unit]`.
 
-  `:ex-data` option map
+   `:ex-data` option map
 
-  | key         | description |
-  |-------------|-------------|
-  |`:exception` | Exception instance (required).
-  |`:escaping?` | Optional value, true if exception is escaping the span's scope, false if exception is caught within the span's scope and not rethrown.
-  |`:attributes`| Map of additional attributes to attach to exception event."
+   | key         | description |
+   |-------------|-------------|
+   |`:exception` | Exception instance (required).
+   |`:escaping?` | Optional value, true if exception is escaping the span's scope, false if exception is caught within the span's scope and not rethrown.
+   |`:attributes`| Map of additional attributes to attach to exception event."
   [{:keys [context name status attributes event ex-data]
     :or   {context (context/current)}}]
   (let [span (get-span context)]
@@ -229,16 +230,16 @@
 
 (defn add-exception!
   "Adds an event describing `exception` to a span. By default, exception data
-  (as per `ex-info`) are added as attributes to the event. If the exception is
-  escaping the span's scope, the span's status is also set to `:error` with the
-  exception triage summary as the error description. May take an option map as
-  follows:
+   (as per `ex-info`) are added as attributes to the event. If the exception is
+   escaping the span's scope, the span's status is also set to `:error` with the
+   exception triage summary as the error description. May take an option map as
+   follows:
 
-  | key         | description |
-  |-------------|-------------|
-  |`:context`   | Context containing span to add exception event to (default: current context).
-  |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
-  |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
+   | key         | description |
+   |-------------|-------------|
+   |`:context`   | Context containing span to add exception event to (default: current context).
+   |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
+   |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([exception]
    (add-exception! exception {}))
   ([exception
@@ -262,17 +263,17 @@
 
 (defn add-interceptor-exception!
   "Adds an event describing an interceptor exception `e` to a span. Attributes
-  identifying the interceptor and stage are added to the event. Also, by
-  default exception data (as per `ex-info`) are added as attributes. If the
-  exception is escaping the span's scope, the span's status is also set to
-  `:error` with the wrapped exception triage summary as the error description.
-  May take an option map as follows:
+   identifying the interceptor and stage are added to the event. Also, by
+   default exception data (as per `ex-info`) are added as attributes. If the
+   exception is escaping the span's scope, the span's status is also set to
+   `:error` with the wrapped exception triage summary as the error description.
+   May take an option map as follows:
 
-  | key         | description |
-  |-------------|-------------|
-  |`:context`   | Context containing span to add exception event to (default: current context)
-  |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
-  |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
+   | key         | description |
+   |-------------|-------------|
+   |`:context`   | Context containing span to add exception event to (default: current context)
+   |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
+   |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([e]
    (add-interceptor-exception! e {}))
   ([e
@@ -296,12 +297,12 @@
 
 (defn end-span!
   "Low level function that ends a span, previously started by [[new-span!]].
-  Does not mutate the current context. Takes an options map as follows:
+   Does not mutate the current context. Takes an options map as follows:
 
-  | key        | description |
-  |------------|-------------|
-  |`:context`  | Context containing span to end (default: current context)
-  |`:timestamp`| Span end timestamp. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
+   | key        | description |
+   |------------|-------------|
+   |`:context`  | Context containing span to end (default: current context)
+   |`:timestamp`| Span end timestamp. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
   [{:keys [context timestamp]
     :or   {context (context/current)}}]
   (let [span (get-span context)]
@@ -324,13 +325,13 @@
 
 (defmacro with-span-binding
   "Starts a new span, binds `context` to the new context containing the span
-  and evaluates `body`. The span is ended on completion of body evaluation.
-  It is expected `body` provides a synchronous result, use [[async-span]]
-  instead for working with asynchronous functions. Does not use nor set the
-  current context. `span-opts` is a span options map, the same as for
-  [[new-span!]], except that the default values for `:line`, `:file` and `:ns`
-  for the `:source` option map are set from the place `with-span-binding` is
-  evaluated. See also [[with-span!]]."
+   and evaluates `body`. The span is ended on completion of body evaluation.
+   It is expected `body` provides a synchronous result, use [[async-span]]
+   instead for working with asynchronous functions. Does not use nor set the
+   current context. `span-opts` is a span options map, the same as for
+   [[new-span!]], except that the default values for `:line`, `:file` and `:ns`
+   for the `:source` option map are set from the place `with-span-binding` is
+   evaluated. See also [[with-span!]]."
   [[context span-opts] & body]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))
@@ -343,13 +344,13 @@
 
 (defmacro with-span!
   "Starts a new span, sets the current context to the new context containing
-  the span and evaluates `body`. The current context is restored to its
-  previous value and the span is ended on completion of body evaluation.
-  It is expected `body` provides a synchronous result, use [[async-span]]
-  instead for working with asynchronous functions. `span-opts` is a span
-  options map, the same as for [[new-span!]], except that the default values
-  for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-  place `with-span!` is evaluated. See also [[with-span-binding]]."
+   the span and evaluates `body`. The current context is restored to its
+   previous value and the span is ended on completion of body evaluation.
+   It is expected `body` provides a synchronous result, use [[async-span]]
+   instead for working with asynchronous functions. `span-opts` is a span
+   options map, the same as for [[new-span!]], except that the default values
+   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
+   place `with-span!` is evaluated. See also [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))
@@ -387,18 +388,18 @@
 
 (defmacro async-span
   "Starts a new span and immediately returns evaluation of function `f`.
-  `respond`/`raise` are callback functions to be evaluated later on a
-  success/failure result. The span is ended just before either callback is
-  evaluated or `f` itself throws an exception. Does not use nor mutate the
-  current context. This is a low-level function intended for adaption for use
-  with any async library that can work with callbacks.
+   `respond`/`raise` are callback functions to be evaluated later on a
+   success/failure result. The span is ended just before either callback is
+   evaluated or `f` itself throws an exception. Does not use nor mutate the
+   current context. This is a low-level function intended for adaption for use
+   with any async library that can work with callbacks.
 
-  `span-opts` is the same as for [[new-span!]], except that the default values
-  for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-  place `async-span` is evaluated. `f` must take arguments `[context respond*
-  raise*]` where `context` is a context containing the new span, `respond*` and
-  `raise*` are callback functions to be used by `f`. All callback functions
-  take a single argument, `raise` and `raise*` take a `Throwable` instance."
+   `span-opts` is the same as for [[new-span!]], except that the default values
+   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
+   place `async-span` is evaluated. `f` must take arguments `[context respond*
+   raise*]` where `context` is a context containing the new span, `respond*` and
+   `raise*` are callback functions to be used by `f`. All callback functions
+   take a single argument, `raise` and `raise*` take a `Throwable` instance."
   [span-opts f respond raise]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))
@@ -410,14 +411,14 @@
 
 (defn span-interceptor
   "Returns a Pedestal interceptor that will on entry start a new span and add
-  the context containing the new span to the interceptor map with key
-  `context-key`. `span-opts-fn` is a function which takes the interceptor
-  context and returns an options map for the new span, as for [[new-span!]].
-  The span is ended on interceptor exit (either `leave` or `error`). Does not
-  use nor set the current context. This is not specific to HTTP service
-  handling, see
-  [[steffan-westcott.clj-otel.api.trace.http/server-span-interceptors]] for
-  adding HTTP server span support to HTTP services."
+   the context containing the new span to the interceptor map with key
+   `context-key`. `span-opts-fn` is a function which takes the interceptor
+   context and returns an options map for the new span, as for [[new-span!]].
+   The span is ended on interceptor exit (either `leave` or `error`). Does not
+   use nor set the current context. This is not specific to HTTP service
+   handling, see
+   [[steffan-westcott.clj-otel.api.trace.http/server-span-interceptors]] for
+   adding HTTP server span support to HTTP services."
   [context-key span-opts-fn]
   {:name  ::span
    :enter (fn [ctx]

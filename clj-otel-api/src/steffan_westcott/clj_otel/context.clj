@@ -9,15 +9,15 @@
 
 (defn current
   "Returns the current context, a thread local `Context` object. If no such
-  context exists, the root context is returned instead."
+   context exists, the root context is returned instead."
   []
   (Context/current))
 
 (defn set-current!
   "Sets the current context. The returned `Scope` must be closed to prevent
-  broken traces and memory leaks. [[with-context!]] and [[with-value!]] can
-  be used instead of this function to ensure the scope is closed when leaving a
-  lexical boundary i.e. a body of forms."
+   broken traces and memory leaks. [[with-context!]] and [[with-value!]] can be
+   used instead of this function to ensure the scope is closed when leaving a
+   lexical boundary i.e. a body of forms."
   ^Scope [^Context context]
   (.makeCurrent context))
 
@@ -28,8 +28,8 @@
 
 (defmacro with-context!
   "Sets the current context to be the provided `context`, then evaluates
-  `body`. The original current context is restored after body evaluation
-  completes."
+   `body`. The original current context is restored after body evaluation
+   completes."
   [context & body]
   `(let [^Context context# ~context]
      (with-open [_scope# (.makeCurrent context#)]
@@ -37,8 +37,8 @@
 
 (defmacro with-value!
   "Make a new current context by associating an `ImplicitContextKeyed` instance
-  `implicit-context-keyed` then evaluate `body`. The original current context
-  is restored after body evaluation completes."
+   `implicit-context-keyed` then evaluate `body`. The original current context
+   is restored after body evaluation completes."
   [implicit-context-keyed & body]
   `(let [^ImplicitContextKeyed value# ~implicit-context-keyed]
      (with-open [_scope# (.makeCurrent value#)]
@@ -67,9 +67,9 @@
 
 (defn assoc-value
   "Associates a key-value with a `context`, returning a new `Context` that
-  includes the key-value. Does not use nor affect the current context. Takes
-  `key` and `value`, or an `ImplicitContextKeyed` instance which is a value
-  that uses a predetermined key."
+   includes the key-value. Does not use nor affect the current context. Takes
+   `key` and `value`, or an `ImplicitContextKeyed` instance which is a value
+   that uses a predetermined key."
   (^Context [^Context context ^ImplicitContextKeyed implicit-context-keyed]
    (.with context implicit-context-keyed))
   (^Context [^Context context key value]
@@ -82,10 +82,10 @@
 
 (defn current-context-interceptor
   "Returns a Pedestal interceptor that will on entry set the current context to
-  the value that has key `context-key` in the interceptor context map. The
-  original value of current context is restored on evaluation on interceptor
-  exit (either `leave` or `error`). The `Scope` of the set context is stored
-  in the interceptor context map with key `scope-key`."
+   the value that has key `context-key` in the interceptor context map. The
+   original value of current context is restored on evaluation on interceptor
+   exit (either `leave` or `error`). The `Scope` of the set context is stored
+   in the interceptor context map with key `scope-key`."
   [context-key scope-key]
   {:name  ::current-context
    :enter (fn [ctx]
@@ -117,13 +117,13 @@
 
 (defn ->headers
   "Returns a map to merge into the headers of an HTTP request for the purpose
-  of context propagation i.e. transfer context to a remote server. May take an
-  optional map argument as follows:
+   of context propagation i.e. transfer context to a remote server. May take an
+   optional map argument as follows:
 
-  | key                  | description |
-  |----------------------|-------------|
-  |`:context`            | Context to propagate (default: current context).
-  |`:text-map-propagator`| Propagator used to create headers map entries (default: propagator set in global `OpenTelemetry` instance)."
+   | key                  | description |
+   |----------------------|-------------|
+   |`:context`            | Context to propagate (default: current context).
+   |`:text-map-propagator`| Propagator used to create headers map entries (default: propagator set in global `OpenTelemetry` instance)."
   ([]
    (->headers {}))
   ([{:keys [^Context context ^TextMapPropagator text-map-propagator]
@@ -135,13 +135,13 @@
 
 (defn headers->merged-context
   "Returns a context formed by extracting a propagated context from a map
-  `headers` and merging with another context i.e. accept context transfer from
-  a remote server. May take an option map as follows:
+   `headers` and merging with another context i.e. accept context transfer from
+   a remote server. May take an option map as follows:
 
-  | key                  | description |
-  |----------------------|-------------|
-  |`:context`            | Context to merge with (default: current context).
-  |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in global `OpenTelemetry` instance)."
+   | key                  | description |
+   |----------------------|-------------|
+   |`:context`            | Context to merge with (default: current context).
+   |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in global `OpenTelemetry` instance)."
   ([headers]
    (headers->merged-context headers {}))
   (^Context

@@ -1,7 +1,7 @@
 (ns example.manual-instrument.interceptor.average-service
   "Example application demonstrating using `clj-otel` to add telemetry to a
-  synchronous Pedestal HTTP service that is run without the OpenTelemetry
-  instrumentation agent."
+   synchronous Pedestal HTTP service that is run without the OpenTelemetry
+   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.string :as str]
             [example.common-utils.interceptor :as utils-interceptor]
@@ -18,9 +18,9 @@
 
 
 (defonce ^{:doc "Histogram that records the resulting averages."} average-result
-         (instrument/instrument {:name        "service.average.average-result"
-                                 :instrument-type :histogram
-                                 :description "The resulting averages"}))
+  (instrument/instrument {:name        "service.average.average-result"
+                          :instrument-type :histogram
+                          :description "The resulting averages"}))
 
 
 
@@ -89,7 +89,7 @@
 
 (defn averages
   "Calculates the averages of the odd numbers and the even numbers of nums and
-  returns a channel of the result."
+   returns a channel of the result."
   [nums]
   (let [odds          (filter odd? nums)
         evens         (filter even? nums)
@@ -118,7 +118,7 @@
 
 (defn get-averages-handler
   "Synchronous handler for 'GET /average' request. Returns an HTTP response
-  containing calculated averages of the odd and even numbers."
+   containing calculated averages of the odd and even numbers."
   [request]
   (let [{:keys [query-params]} request
         num-str  (get query-params :nums)
@@ -149,7 +149,7 @@
 
 (defn update-default-interceptors
   "Returns `default-interceptors` with added interceptors for HTTP server
-  span support."
+   span support."
   [default-interceptors]
   (map interceptor/interceptor
        (concat (;; As this application is not run with the OpenTelemetry instrumentation
@@ -185,8 +185,10 @@
 
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg (runtime-metrics/register!))
+(defonce ^{:doc "JVM metrics registration"} _jvm-reg
+  (runtime-metrics/register!))
 
 
 
-(defonce ^{:doc "average-service server instance"} server (http/start (service service-map)))
+(defonce ^{:doc "average-service server instance"} server
+  (http/start (service service-map)))

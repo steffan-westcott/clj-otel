@@ -29,14 +29,14 @@
 
 (defn get-meter
   "Builds and returns a `io.opentelemetry.api.metrics.Meter` instance. May take
-  an option map as follows:
+   an option map as follows:
 
-  | key             | description |
-  |-----------------|-------------|
-  |`:name`          | Name of the *instrumentation* library, not the *instrumented* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: See `config.edn` resource file).
-  |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
-  |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
-  |`:open-telemetry`| `OpenTelemetry` instance to get meter from (default: global `OpenTelemetry` instance)."
+   | key             | description |
+   |-----------------|-------------|
+   |`:name`          | Name of the *instrumentation* library, not the *instrumented* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: See `config.edn` resource file).
+   |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
+   |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
+   |`:open-telemetry`| `OpenTelemetry` instance to get meter from (default: global `OpenTelemetry` instance)."
   ([]
    (get-meter {}))
   ([{:keys [name version schema-url open-telemetry]
@@ -49,17 +49,18 @@
                    schema-url (.setSchemaUrl schema-url))]
      (.build builder))))
 
-(defonce ^:private default-meter (atom nil))
+(defonce ^:private default-meter
+  (atom nil))
 
 (defn set-default-meter!
   "Sets the default `io.opentelemetry.api.metrics.Meter` instance used when
-  creating instruments. Returns `meter`. See also [[get-meter]]."
+   creating instruments. Returns `meter`. See also [[get-meter]]."
   [meter]
   (reset! default-meter meter))
 
 (defn get-default-meter!
   "Returns the default meter if not nil. Otherwise, gets a meter using
-  defaults and sets this as the default meter."
+   defaults and sets this as the default meter."
   ^Meter []
   (if-let [meter @default-meter]
     meter
@@ -67,15 +68,15 @@
 
 (defprotocol Counter
   "Protocol for instruments of type `:counter` or `:up-down-counter` that take
-  synchronous measurements."
+   synchronous measurements."
   (add! [counter delta]
    "Adds a delta to `counter`. `delta` is an option map as follows:
 
-   | key         | description |
-   |-------------|-------------|
-   |`:context`   | Context to associate with delta (default: current context).
-   |`:value`     | `long` or `double` value to add to `counter` (required). Must not be negative for `:counter` instruments.
-   |`:attributes`| Map of attributes to attach to delta (default: no attributes)."))
+    | key         | description |
+    |-------------|-------------|
+    |`:context`   | Context to associate with delta (default: current context).
+    |`:value`     | `long` or `double` value to add to `counter` (required). Must not be negative for `:counter` instruments.
+    |`:attributes`| Map of attributes to attach to delta (default: no attributes)."))
 
 (defmacro ^:private add*
   [counter delta]
@@ -101,13 +102,14 @@
 (defprotocol Histogram
   "Protocol for instruments of type `:histogram`."
   (record! [histogram measurement]
-   "Records a measurement in `histogram`. `measurement` is an option map as follows:
+   "Records a measurement in `histogram`. `measurement` is an option map as
+    follows:
 
-   | key         | description |
-   |-------------|-------------|
-   |`:context`   | Context to associate with measurement (default: current context).
-   |`:value`     | `long` or `double` value to record in `histogram` (required).
-   |`:attributes`| Map of attributes to attach to measurement (default: no attributes)."))
+    | key         | description |
+    |-------------|-------------|
+    |`:context`   | Context to associate with measurement (default: current context).
+    |`:value`     | `long` or `double` value to record in `histogram` (required).
+    |`:attributes`| Map of attributes to attach to measurement (default: no attributes)."))
 
 (defmacro ^:private record*
   [histogram measurement]
@@ -217,36 +219,36 @@
 
 (defn instrument
   "Builds an instrument for taking measurements either synchronously or
-  asynchronously (but not both).
+   asynchronously (but not both).
 
-  The first parameter `opts` is an options map as follows:
+   The first parameter `opts` is an options map as follows:
 
-  | key                | description |
-  |--------------------|-------------|
-  |`:meter`            | `io.opentelemetry.api.metrics.Meter` used to create the instrument (default: default meter, as set by [[set-default-meter!]]; if no default meter has been set, one will be set with default config).
-  |`:name`             | Name of the instrument. Must be 63 or fewer characters including alphanumeric, `_`, `.`, `-`, and start with a letter (required).
-  |`:instrument-type`  | Type of instrument, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge` (required).
-  |`:measurement-type` | Type of measurement value, either `:long` or `:double` (default: `:long`).
-  |`:unit`             | String describing the unit of measurement (default: no specified unit).
-  |`:description`      | String describing the instrument (default: no description).
+   | key                | description |
+   |--------------------|-------------|
+   |`:meter`            | `io.opentelemetry.api.metrics.Meter` used to create the instrument (default: default meter, as set by [[set-default-meter!]]; if no default meter has been set, one will be set with default config).
+   |`:name`             | Name of the instrument. Must be 63 or fewer characters including alphanumeric, `_`, `.`, `-`, and start with a letter (required).
+   |`:instrument-type`  | Type of instrument, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge` (required).
+   |`:measurement-type` | Type of measurement value, either `:long` or `:double` (default: `:long`).
+   |`:unit`             | String describing the unit of measurement (default: no specified unit).
+   |`:description`      | String describing the instrument (default: no description).
 
-  The 1-arity form of [[instrument]] is for building instruments that take
-  measurements synchronously. Counter, up-down counter and histogram
-  instruments are supported. The built instrument is returned, and measurements
-  are made with the `add!` or `record!` functions.
+   The 1-arity form of [[instrument]] is for building instruments that take
+   measurements synchronously. Counter, up-down counter and histogram
+   instruments are supported. The built instrument is returned, and measurements
+   are made with the `add!` or `record!` functions.
 
-  The 2-arity form of [[instrument]] is for building instruments that take
-  measurements asynchronously. Counter, up-down counter and gauge instruments
-  are supported. The second parameter `observe` is a 0-arity function that will
-  be evaluated periodically to take measurements. To stop, evaluate `.close` on
-  the `AutoCloseable` that [[instrument]] returns.
+   The 2-arity form of [[instrument]] is for building instruments that take
+   measurements asynchronously. Counter, up-down counter and gauge instruments
+   are supported. The second parameter `observe` is a 0-arity function that will
+   be evaluated periodically to take measurements. To stop, evaluate `.close` on
+   the `AutoCloseable` that [[instrument]] returns.
 
-  `observe` should return a single map, or a sequence of maps, as follows:
+   `observe` should return a single map, or a sequence of maps, as follows:
 
-  | key         | description |
-  |-------------|-------------|
-  |`:value`     | `long` or `double` value to add or record (required).
-  |`:attributes`| Map of attributes to attach to measurement (default: no attributes)."
+   | key         | description |
+   |-------------|-------------|
+   |`:value`     | `long` or `double` value to add or record (required).
+   |`:attributes`| Map of attributes to attach to measurement (default: no attributes)."
   ([opts]
    (instrument opts nil))
   ([{:keys [^Meter meter name instrument-type measurement-type unit description]

@@ -1,7 +1,7 @@
 (ns example.auto-instrument-agent.interceptor.planet-service
   "Example application demonstrating using `clj-otel` to add telemetry to a
-  synchronous Pedestal HTTP service that is run with the OpenTelemetry
-  instrumentation agent."
+   synchronous Pedestal HTTP service that is run with the OpenTelemetry
+   instrumentation agent."
   (:require [clojure.string :as str]
             [example.common-utils.interceptor :as utils-interceptor]
             [io.pedestal.http :as http]
@@ -14,10 +14,10 @@
 
 
 (defonce ^{:doc "Counter that records the number of statistic look ups."} statistic-lookup-count
-         (instrument/instrument {:name        "service.planet.statistic-lookup-count"
-                                 :instrument-type :counter
-                                 :unit        "{lookups}"
-                                 :description "The number of statistic lookups"}))
+  (instrument/instrument {:name        "service.planet.statistic-lookup-count"
+                          :instrument-type :counter
+                          :unit        "{lookups}"
+                          :description "The number of statistic lookups"}))
 
 
 
@@ -34,7 +34,7 @@
    :jupiter {:diameter 142984
              :gravity  23.1}
    :saturn  {:diameter 120536
-             :gravity  nil}                 ; missing gravity value
+             :gravity  nil} ; missing gravity value
    :uranus  {:diameter 51118
              :gravity  8.7}
    :neptune {:diameter 49528
@@ -79,8 +79,8 @@
 
 
 (defn get-planet-statistic-handler
-  "Synchronous handler for 'GET /planets/:planet/:statistic' request. Returns an
-  HTTP response containing the requested statistic value for a planet."
+  "Synchronous handler for 'GET /planets/:planet/:statistic' request. Returns
+   an HTTP response containing the requested statistic value for a planet."
   [{:keys [path-params]}]
   (let [{:keys [planet statistic]} path-params
         planet    (keyword planet)
@@ -116,8 +116,8 @@
 
 
 (defn update-default-interceptors
-  "Returns `default-interceptors` with added interceptors for HTTP server
-  span support."
+  "Returns `default-interceptors` with added interceptors for HTTP server span
+   support."
   [default-interceptors]
   (map interceptor/interceptor
        (concat (;; As this application is run with the OpenTelemetry instrumentation agent,
@@ -143,4 +143,5 @@
 
 
 
-(defonce ^{:doc "planet-service server instance"} server (http/start (service service-map)))
+(defonce ^{:doc "planet-service server instance"} server
+  (http/start (service service-map)))

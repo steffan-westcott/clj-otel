@@ -1,7 +1,7 @@
 (ns example.auto-instrument-agent.middleware.word-length-service
   "Example application demonstrating using `clj-otel` to add telemetry to a
-  synchronous Ring HTTP service that is run with the OpenTelemetry
-  instrumentation agent."
+   synchronous Ring HTTP service that is run with the OpenTelemetry
+   instrumentation agent."
   (:require [example.common-utils.middleware :as middleware]
             [muuntaja.core :as m]
             [reitit.ring :as ring]
@@ -16,10 +16,10 @@
 
 
 (defonce ^{:doc "Counter that records the number of letters counted."} letter-count
-         (instrument/instrument {:name        "service.word-length.letter-count"
-                                 :instrument-type :counter
-                                 :unit        "{letters}"
-                                 :description "The number of letters counted"}))
+  (instrument/instrument {:name        "service.word-length.letter-count"
+                          :instrument-type :counter
+                          :unit        "{letters}"
+                          :description "The number of letters counted"}))
 
 
 
@@ -55,7 +55,7 @@
 
 (defn get-length-handler
   "Synchronous Ring handler for 'GET /length' request. Returns an HTTP response
-  containing the length of the word in the request."
+   containing the length of the word in the request."
   [{:keys [query-params]}]
   (let [word (get query-params "word")]
 
@@ -74,19 +74,20 @@
 
 (def handler
   "Ring handler for all requests."
-  (ring/ring-handler (ring/router
-                      ["/length"
-                       {:name ::length
-                        :get  get-length-handler}]
-                      {:data {:muuntaja   m/instance
-                              :middleware [;; Add route data
-                                           middleware/wrap-reitit-route
+  (ring/ring-handler (ring/router ["/length"
+                                   {:name ::length
+                                    :get  get-length-handler}]
+                                  {:data {:muuntaja   m/instance
+                                          :middleware [;; Add route data
+                                                       middleware/wrap-reitit-route
 
-                                           parameters/parameters-middleware
-                                           muuntaja/format-middleware exception/exception-middleware
+                                                       parameters/parameters-middleware
+                                                       muuntaja/format-middleware
+                                                       exception/exception-middleware
 
-                                           ;; Add exception event before exception-middleware runs
-                                           middleware/wrap-exception-event]}})
+                                                       ;; Add exception event before
+                                                       ;; exception-middleware runs
+                                                       middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 
                      ;; Wrap handling of all requests, including those which have no matching route.
@@ -98,6 +99,6 @@
 
 
 (defonce ^{:doc "word-length-service server instance"} server
-         (jetty/run-jetty #'handler
-                          {:port  8081
-                           :join? false}))
+  (jetty/run-jetty #'handler
+                   {:port  8081
+                    :join? false}))

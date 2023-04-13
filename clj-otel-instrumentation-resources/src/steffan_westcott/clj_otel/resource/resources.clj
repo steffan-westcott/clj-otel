@@ -8,7 +8,7 @@
 
 (defn container-resource
   "Returns a `Resource` with information about the container being run on if
-  any."
+   any."
   []
   (ContainerResource/get))
 

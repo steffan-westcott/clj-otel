@@ -1,7 +1,7 @@
 (ns example.auto-instrument-agent.middleware.sentence-summary-service
   "Example application demonstrating using `clj-otel` to add telemetry to a
-  synchronous Ring HTTP service that is run with the OpenTelemetry
-  instrumentation agent."
+   synchronous Ring HTTP service that is run with the OpenTelemetry
+   instrumentation agent."
   (:require [clj-http.client :as client]
             [clojure.string :as str]
             [example.common-utils.middleware :as middleware]
@@ -18,10 +18,10 @@
 
 
 (defonce ^{:doc "Histogram that records the number of words in each sentence."} words-count
-         (instrument/instrument {:name        "service.sentence-summary.words-count"
-                                 :instrument-type :histogram
-                                 :unit        "{words}"
-                                 :description "The number of words in each sentence"}))
+  (instrument/instrument {:name        "service.sentence-summary.words-count"
+                          :instrument-type :histogram
+                          :unit        "{words}"
+                          :description "The number of words in each sentence"}))
 
 
 
@@ -96,7 +96,7 @@
 
 (defn get-summary-handler
   "Synchronous Ring handler for `GET /summary` request. Returns an HTTP
-  response containing a summary of the words in the given sentence."
+   response containing a summary of the words in the given sentence."
   [{:keys [query-params]}]
   (let [sentence (get query-params "sentence")
         summary  (build-summary sentence)]
@@ -106,19 +106,19 @@
 
 (def handler
   "Ring handler for all requests."
-  (ring/ring-handler (ring/router
-                      ["/summary"
-                       {:name ::summary
-                        :get  get-summary-handler}]
-                      {:data {:muuntaja   m/instance
-                              :middleware [;; Add route data
-                                           middleware/wrap-reitit-route
+  (ring/ring-handler (ring/router ["/summary"
+                                   {:name ::summary
+                                    :get  get-summary-handler}]
+                                  {:data {:muuntaja   m/instance
+                                          :middleware [;; Add route data
+                                                       middleware/wrap-reitit-route
 
-                                           parameters/parameters-middleware
-                                           muuntaja/format-middleware exception/exception-middleware
+                                                       parameters/parameters-middleware
+                                                       muuntaja/format-middleware
+                                                       exception/exception-middleware
 
-                                           ;; Add exception event
-                                           middleware/wrap-exception-event]}})
+                                                       ;; Add exception event
+                                                       middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 
                      ;; Wrap handling of all requests, including those which have no matching route.
@@ -130,6 +130,6 @@
 
 
 (defonce ^{:doc "sentence-summary-service server instance"} server
-         (jetty/run-jetty #'handler
-                          {:port  8080
-                           :join? false}))
+  (jetty/run-jetty #'handler
+                   {:port  8080
+                    :join? false}))

@@ -29,8 +29,8 @@
 
 (defn <concat
   "Returns a channel which has all values from first input channel, then all
-  from the next input channel and so on. The returned channel is closed after
-  all input channels have been drained and closed."
+   from the next input channel and so on. The returned channel is closed after
+   all input channels have been drained and closed."
   [chs]
   (let [res (async/chan)]
     (async/go-loop [chs chs]
@@ -76,8 +76,8 @@
 
 (defn <reduce??
   "Same as async/reduce but immediately returns any exception taken from
-  channel 'ch' (or thrown during evaluation of `f`) as the reduced value.
-  Returns a channel containing a single reduced value."
+   channel 'ch' (or thrown during evaluation of `f`) as the reduced value.
+   Returns a channel containing a single reduced value."
   [f init ch]
   (async/go
     (catch-all
@@ -94,7 +94,7 @@
 
 (defn <into??
   "Same as async/into but returned channel will contain a single exception
-  value instead of the collection if an exception is taken from channel 'ch'."
+   value instead of the collection if an exception is taken from channel 'ch'."
   [coll ch]
   (<reduce?? conj coll ch))
 
@@ -102,7 +102,7 @@
 
 (defn ch->respond-raise
   "Takes a single value from channel `<ch` and invokes a callback function
-  `respond` or `raise`."
+   `respond` or `raise`."
   [<ch respond raise]
   (async/take! <ch
                (fn [x]
@@ -114,8 +114,8 @@
 
 (defn exception-response
   "Converts exception to a response, with status set to `:http.response/status`
-  value if exception is an `IExceptionInfo` instance, 500 Server Error
-  otherwise."
+   value if exception is an `IExceptionInfo` instance, 500 Server Error
+   otherwise."
   [e]
   (let [resp   (response/response (ex-message e))
         status (:http.response/status (ex-data e) 500)]
@@ -125,8 +125,8 @@
 
 (defmacro catch-response
   "Evaluate body but catch any exception and return as response instead. The
-  caught exception will also be added as an event to the span in the given
-  context."
+   caught exception will also be added as an event to the span in the given
+   context."
   [context & body]
   `(try
      ~@body
@@ -143,8 +143,8 @@
 
 (defmacro go-try-response
   "Same as `go` but channel return value is Pedestal interceptor context `ctx`
-  with body return value assoc'ed as `:response`. Any exception is converted to
-  a response."
+   with body return value assoc'ed as `:response`. Any exception is converted to
+   a response."
   [ctx & body]
   `(async/go
      (let [context#  (:io.opentelemetry/server-span-context ~ctx)
@@ -170,22 +170,21 @@
     (async/go-loop [timer-running? true
                     v nil]
       (if (nil? v)
-        (async/alt!
-          <timeout  (do
-                      (raise (ex-info "Truncating span due to channel timeout"
-                                      {::error :src-take-timeout}))
-                      (recur false nil))
-          <src      ([x]
-                     (if (some? x)
-                       (do
-                         (when (and timer-running? (throwable? x))
-                           (span/add-exception! x {:context context}))
-                         (recur timer-running? x))
-                       (do
-                         (async/close! <dest)
-                         (when timer-running?
-                           (respond nil)))))
-          :priority true)
+        (async/alt! <timeout  (do
+                                (raise (ex-info "Truncating span due to channel timeout"
+                                                {::error :src-take-timeout}))
+                                (recur false nil))
+                    <src      ([x]
+                               (if (some? x)
+                                 (do
+                                   (when (and timer-running? (throwable? x))
+                                     (span/add-exception! x {:context context}))
+                                   (recur timer-running? x))
+                                 (do
+                                   (async/close! <dest)
+                                   (when timer-running?
+                                     (respond nil)))))
+                    :priority true)
         (async/alt! <timeout    (do
                                   (raise (ex-info "Truncating span due to channel timeout"
                                                   {::error :dest-put-timeout}))
@@ -198,18 +197,18 @@
 
 (defmacro <with-span-binding
   "Starts a new span, binds `context` to the context containing the span and
-  evaluates `body` which should return a `<src` channel. The span is ended
-  when a close operation on `<src` completes (after values on `<src` have been
-  consumed) or `timeout` milliseconds have elapsed. Because spans must be ended
-  before they are sent to the backend, the timeout guarantees the span will
-  not be missing from the exported trace. If either `body` throws an exception
-  or exception values are put on `<src`, exception events will be added to the
-  span. `span-opts` is the same as for [[new-span!]] except that the default
-  values for `:line`, `:file` and `:ns` for the `:source` option map are set
-  from the place `<with-span-binding` is evaluated. Returns a `<dest` channel
-  with buffer size `buf-size`, where values are taken from `<src` and placed on
-  `<dest` irrespective of timeout. `<dest` will stop consuming and close when
-  `<src` closes."
+   evaluates `body` which should return a `<src` channel. The span is ended
+   when a close operation on `<src` completes (after values on `<src` have been
+   consumed) or `timeout` milliseconds have elapsed. Because spans must be ended
+   before they are sent to the backend, the timeout guarantees the span will
+   not be missing from the exported trace. If either `body` throws an exception
+   or exception values are put on `<src`, exception events will be added to the
+   span. `span-opts` is the same as for [[new-span!]] except that the default
+   values for `:line`, `:file` and `:ns` for the `:source` option map are set
+   from the place `<with-span-binding` is evaluated. Returns a `<dest` channel
+   with buffer size `buf-size`, where values are taken from `<src` and placed on
+   `<dest` irrespective of timeout. `<dest` will stop consuming and close when
+   `<src` closes."
   [[context span-opts] timeout buf-size & body]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))
