@@ -1,6 +1,6 @@
 (ns steffan-westcott.clj-otel.util
   "General utility functions."
-  (:import (clojure.lang IPersistentVector Keyword)
+  (:import (clojure.lang IPersistentVector Named)
            (java.time Duration Instant)
            (java.util.concurrent TimeUnit)))
 
@@ -34,13 +34,17 @@
 
 (defprotocol AsQualifiedName
   (qualified-name [x]
-   "Given a keyword, returns the name qualified with its namespace if it has
-    one. Given anything other than a keyword, returns argument."))
+   "Given a keyword or symbol, returns the name qualified with its namespace if
+    it has one. The namespace and name are separated by '.' to follow the
+    OpenTelemetry specification. Given any other type of argument, returns it
+    as a string."))
 
 (extend-protocol AsQualifiedName
- Keyword
+ Named
    (qualified-name [x]
-     (str (symbol x)))
+     (if-let [ns (namespace x)]
+       (str ns "." (name x))
+       (name x)))
  Object
    (qualified-name [x]
-     x))
+     (str x)))
