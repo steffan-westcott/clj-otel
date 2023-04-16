@@ -3,18 +3,18 @@
 (ns build
   "Build scripts for clj-otel-* libraries, examples and tutorials.
 
-  For example, to lint all clj-otel-* libraries:
+For example, to lint all clj-otel-* libraries:
 
-  clojure -T:build lint
+clojure -T:build lint
 
-  To see a description of all build scripts:
+To see a description of all build scripts:
 
-  clojure -A:deps -T:build help/doc
-  "
+clojure -A:deps -T:build help/doc"
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.tools.build.api :as b]
-            [org.corfield.build :as cb])
+            [clojure.tools.deps :as t]
+            [deps-deploy.deps-deploy :as dd])
   (:import (java.nio.file FileSystems)))
 
 (def ^:private group-id
@@ -69,21 +69,24 @@
 (def ^:private snapshot?
   (str/ends-with? version "-SNAPSHOT"))
 
-(defn- checked-process
-  [params]
-  (let [result (b/process params)]
-    (if (zero? (:exit result))
-      result
-      (throw (ex-info "Process returned non-zero exit code." (assoc result :params params))))))
-
 (defn- head-sha-1
   []
   (b/git-process {:git-args "rev-parse HEAD"}))
 
-(defn- println>
-  [x & args]
-  (apply println args)
-  x)
+(defn- artifact-opts
+  [artifact-id]
+  {:artifact-id   artifact-id
+   :basis         (b/create-basis {:aliases (when snapshot?
+                                              [:snapshot])})
+   :class-dir     "target/classes"
+   :jar-file      (format "target/%s-%s.jar" artifact-id version)
+   :lib           (symbol group-id artifact-id)
+   :resource-dirs ["resources"]
+   :scm           {:tag (head-sha-1)}
+   :src-dirs      ["src"]
+   :src-pom       "template/pom.xml"
+   :target-dir    "target"
+   :version       version})
 
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
@@ -116,57 +119,92 @@
   [root & patterns]
   (file-match root (apply glob-match patterns)))
 
+(defn- checked-process
+  [params]
+  (let [result (b/process params)]
+    (if (zero? (:exit result))
+      result
+      (throw (ex-info "Process returned non-zero exit code" (assoc result :params params))))))
+
+(defn- run-task
+  "Run a task based on aliases."
+  [{:keys [main-opts]} aliases]
+  (let [task     (str/join ", " (map name aliases))
+        _ (println "Running task for:" task)
+        basis    (b/create-basis {:aliases aliases})
+        combined (t/combine-aliases basis aliases)
+        command  (b/java-command
+                  {:basis     basis
+                   :java-opts (:jvm-opts combined)
+                   :main      'clojure.main
+                   :main-args (into (:main-opts combined) main-opts)})]
+    (checked-process command)))
+
+(defn- clean-artifact
+  [{:keys [target-dir]}]
+  (println "Cleaning target ...")
+  (b/delete {:path target-dir}))
+
 (defn- jar-artifact
-  [opts artifact-id]
-  (b/set-project-root! artifact-id)
-  (-> opts
-      (assoc :lib     (symbol group-id artifact-id)
-             :version version
-             :tag     (head-sha-1)
-             :src-pom "template/pom.xml"
-             :basis   (b/create-basis {:aliases (when snapshot?
-                                                  [:snapshot])}))
-      cb/clean
-      cb/jar))
+  [{:keys [class-dir jar-file resource-dirs src-dirs]
+    :as   opts}]
+  (clean-artifact opts)
+  (println "Writing pom.xml ...")
+  (b/write-pom opts)
+  (println "Building jar" jar-file "...")
+  (b/copy-dir {:src-dirs   (into src-dirs resource-dirs)
+               :target-dir class-dir})
+  (b/jar opts))
 
 (defn- install-artifact
-  [opts artifact-id]
-  (-> opts
-      (jar-artifact artifact-id)
-      (println> (str "Installing " (group-artifact-id artifact-id)))
-      cb/install))
+  [{:keys [artifact-id]
+    :as   opts}]
+  (jar-artifact opts)
+  (println "Installing" (group-artifact-id artifact-id) "...")
+  (b/install opts))
 
 (defn- deploy-artifact
-  [opts artifact-id]
-  (-> opts
-      (install-artifact artifact-id)
-      (println> (str "Deploying " (group-artifact-id artifact-id)))
-      cb/deploy))
+  [{:keys [artifact-id jar-file]
+    :as   opts}]
+  (install-artifact opts)
+  (println "Deploying" (group-artifact-id artifact-id) "...")
+  (dd/deploy {:artifact  (b/resolve-path jar-file)
+              :installer :remote
+              :pom-file  (b/pom-path opts)}))
 
 (defn- tag-release
   [tag]
-  (println (str "Creating and pushing tag " tag))
+  (println "Creating and pushing tag" tag)
   (checked-process {:command-args ["git" "tag" "-a" "-m" (str "Release " tag) tag]})
   (checked-process {:command-args ["git" "push" "origin" tag]}))
 
-(defn install
-  "Ensure all clj-otel-* library JAR files are built and installed in the local
-  Maven repository. The libraries are processed in an order such that later
-  libraries may depend on earlier ones."
-  [opts]
+(defn clean
+  "Delete all clj-otel-* build directories."
+  [_]
   (doseq [artifact-id artifact-ids]
-    (install-artifact opts artifact-id)))
+    (b/set-project-root! artifact-id)
+    (clean-artifact (artifact-opts artifact-id))))
+
+(defn install
+  "Build all clj-otel-* library JAR files then install them in the local Maven
+  repository. The libraries are processed in an order such that later libraries
+  may depend on earlier ones."
+  [_]
+  (doseq [artifact-id artifact-ids]
+    (b/set-project-root! artifact-id)
+    (install-artifact (artifact-opts artifact-id))))
 
 (defn deploy
-  "Ensure all clj-otel-* library JAR files are built, installed in the local
-  Maven repository and deployed to Clojars. The libraries are processed in an
-  order such that later libraries may depend on earlier ones.
+  "Build all clj-otel-* library JAR files, install them in the local Maven
+  repository and deploy them to Clojars. The libraries are processed in an order
+  such that later libraries may depend on earlier ones.
 
   For non-SNAPSHOT versions, a git tag with the version name is created and
   pushed to the origin repository."
-  [opts]
+  [_]
   (doseq [artifact-id artifact-ids]
-    (deploy-artifact opts artifact-id))
+    (b/set-project-root! artifact-id)
+    (deploy-artifact (artifact-opts artifact-id)))
   (when-not snapshot?
     (tag-release version)))
 
@@ -174,28 +212,26 @@
   "Lint all clj-otel-* libraries, example applications and tutorial source
   files using clj-kondo. Assumes a working installation of `clj-kondo`
   executable binary."
-  [opts]
+  [_]
   (let [src-paths (map #(str % "/src") project-paths)]
-    (-> opts
-        (assoc :command-args (concat ["clj-kondo" "--lint" "build.clj"] src-paths))
-        checked-process)))
+    (checked-process {:command-args (concat ["clj-kondo" "--lint" "build.clj"] src-paths)})))
 
 (defn outdated
   "Check all clj-otel-* libraries, example applications and tutorials for
   outdated dependencies using antq. Dependencies on clj-otel-* libraries are
   not checked, as they are not available until after deployment."
-  [opts]
-  (-> opts
-      (assoc :main-opts
+  [_]
+  (run-task {:main-opts
              ["--directory" (str/join ":" project-paths)
               "--skip" "pom"
-              "--exclude" (str/join ":" group-artifact-ids)])
-      (cb/run-task [:antq])))
+              "--exclude" (str/join ":" group-artifact-ids)
+              "--no-changes"]}
+            [:antq]))
 
 (defn fmt
-  "Apply formatting to all *.clj and *.edn source files using zprint. Assumes
-  a working installation of `zprint` executable binary."
-  [opts]
+  "Apply formatting to all *.clj and *.edn source files using zprint. Assumes a
+  working installation of `zprint` executable binary."
+  [_]
   (let [project-files (mapcat #(globs % "src/**.clj" "*.edn" "resources/**.edn") project-paths)
         other-files   (globs "." "*.clj" "*.edn" ".clj-kondo/**.edn" "doc/**.edn")
         files         (concat project-files other-files)
@@ -203,6 +239,4 @@
                           io/file
                           io/as-url
                           str)]
-    (-> opts
-        (assoc :command-args (concat ["zprint" "--url-only" config-url "-fsw"] files))
-        checked-process)))
+    (checked-process {:command-args (concat ["zprint" "--url-only" config-url "-fsw"] files)})))
