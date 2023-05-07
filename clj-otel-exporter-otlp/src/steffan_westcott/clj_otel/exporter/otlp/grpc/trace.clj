@@ -18,22 +18,25 @@
    |`:trusted-certificates-pem`| `^bytes` X.509 certificate chain in PEM format for verifying servers when TLS enabled (default: system default trusted certificates).
    |`:client-private-key-pem`  | `^bytes` private key in PEM format for verifying client when TLS enabled.
    |`:client-certificates-pem` | `^bytes` X.509 certificate chain in PEM format for verifying client when TLS enabled.
+   |`:ssl-context`             | `^SSLContext` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
+   |`:x509-trust-manager`      | `^X509TrustManager` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:compression-method`      | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
    |`:timeout`                 | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected)."
   ([]
    (span-exporter {}))
   ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
-            compression-method timeout meter-provider]}]
+            ssl-context x509-trust-manager compression-method timeout meter-provider]}]
    (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
-                   endpoint           (.setEndpoint endpoint)
-                   headers            (add-headers headers)
+                   endpoint (.setEndpoint endpoint)
+                   headers (add-headers headers)
                    trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
                    (and client-private-key-pem client-certificates-pem)
                    (.setClientTls client-private-key-pem client-certificates-pem)
 
+                   (and ssl-context x509-trust-manager) (.setSslContext ssl-context
+                                                                        x509-trust-manager)
                    compression-method (.setCompression compression-method)
-                   timeout            (.setTimeout (util/duration timeout))
-                   meter-provider     (.setMeterProvider meter-provider))]
+                   timeout (.setTimeout (util/duration timeout))
+                   meter-provider (.setMeterProvider meter-provider))]
      (.build builder))))
-

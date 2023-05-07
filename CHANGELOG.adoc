@@ -13,18 +13,29 @@ All `clj-otel-*` module versions are released in lockstep to Clojars.
 `x.y.z` versions listed below do not follow semantic versioning.
 Instead, development proceeds on a linear path where `z` increases for batches of incremental changes and `y` increases (with `z` reset to `0`) when milestones are reached.
 
-Breaking changes will be documented here.
+The changes are marked as follows:
 
-WARNING: Until version `1.0.0` there is a greater possibility of breaking changes, highlighted with [BREAK] below.
+- [BREAK] is a breaking change in behaviour that requires user action to accommodate for when upgrading from a previous version
+- [ADD] is an addition of a new feature
+- [FIX] is a bug fix
+- [MAINT] is a maintenance change for general improvement and proactive avoidance of potential issues
+
+WARNING: Until version `1.0.0` there is a greater possibility of breaking changes.
 
 == `0.x` changes
 
 === `0.2.1` (in progress)
 
+- [FIX] Use `.` instead of `/` in namespace qualified attribute names
+- [MAINT] Removed deprecated build dep `build-clj`
+- Bump deps:
+* [MAINT] OpenTelemetry `1.26.0`
+* [MAINT] Various build deps
+
 === `0.2.0` (2023-04-10)
 
-- Add support for Metrics API
-- Add implementations of the following https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/http-metrics/[HTTP server metrics] for use by applications not run with the OpenTelemetry instrumentation agent:
+- [ADD] Support for Metrics API
+- [ADD] Implementations of the following https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/http-metrics/[HTTP server metrics] for use by applications not run with the OpenTelemetry instrumentation agent:
 * `http.server.active_requests`
 * `http.server.duration`
 * `http.server.request.size`
@@ -33,12 +44,12 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 The revised pattern adds new middleware `wrap-route`, `wrap-active-requests` and
 `wrap-metrics-by-route` and interceptors `route-interceptor`, `active-requests-interceptor` and `metrics-by-route-interceptors` to capture matched routes in HTTP server spans and HTTP server metrics.
 The pattern also ensures all requests are recorded, including those which do not match any route.
-- New module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the OpenTelemetry instrumentation agent.
-- Added aliases in examples
+- [ADD] Module `clj-otel-instrumentation-runtime-metrics` to provide access to JVM runtime metrics instrumentation for applications not using the OpenTelemetry instrumentation agent.
+- [ADD] Aliases in examples
 ** `:metrics-*` to control export of metrics
 ** `:logging-*` to control application logging
 - Bump deps:
-* OpenTelemetry `1.25.0`
+* [MAINT] OpenTelemetry `1.25.0`
 ** [BREAK] When using autoconfiguration for a manually instrumented application, include the new JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`
 ** Methods to statically set the server host name attribute on server spans have been removed, as static data is better represented as an OpenTelemetry resource.
 *** [BREAK] The function `add-server-name!` has been removed.
@@ -46,51 +57,51 @@ The pattern also ensures all requests are recorded, including those which do not
 ** [BREAK] Module `clj-otel-extension-aws` renamed to `clj-otel-contrib-aws-xray-propagator`
 ** [BREAK] Module `clj-otel-sdk-extension-aws` renamed to `clj-otel-contrib-aws-resources`
 ** [BREAK] Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
-* gRPC `1.54.0`
-* Various build deps
+* [MAINT] gRPC `1.54.0`
+* [MAINT] Various build deps
 
 === `0.1.5` (2022-09-03)
 
 - Bump deps:
-* OpenTelemetry `1.17.0`
-* gRPC `1.49.0`
-* Various build deps
+* [MAINT] OpenTelemetry `1.17.0`
+* [MAINT] gRPC `1.49.0`
+* [MAINT] Various build deps
 
 === `0.1.4` (2022-07-05)
 
-- Add support for including https://opentelemetry.io/docs/reference/specification/trace/semantic_conventions/span-general/#source-code-attributes[source code semantic attributes] when creating spans.
+- [ADD] Support for including https://opentelemetry.io/docs/reference/specification/trace/semantic_conventions/span-general/#source-code-attributes[source code semantic attributes] when creating spans.
 By default, attributes identifying the namespace, line number and source file path are included in spans created by `with-span!`, `with-span-binding`, and `async-span`.
-- Update Pedestal HTTP server span support to always add route data to server spans
+- [ADD] Update Pedestal HTTP server span support to always add route data to server spans
 - Bump deps:
-* OpenTelemetry `1.15.0`
-** Modules `clj-otel-exporter-otlp-*` are merged to new module `clj-otel-exporter-otlp`
-* gRPC `1.47.0`
-* Various build deps
+* [MAINT] OpenTelemetry `1.15.0`
+** [BREAK] Modules `clj-otel-exporter-otlp-*` are merged to new module `clj-otel-exporter-otlp`
+* [MAINT] gRPC `1.47.0`
+* [MAINT] Various build deps
 
 === `0.1.3` (2022-05-22)
 
 - Bump deps:
-* OpenTelemetry `1.14.0`
-* gRPC `1.46.0`
-* Various build deps
+* [MAINT] OpenTelemetry `1.14.0`
+* [MAINT] gRPC `1.46.0`
+* [MAINT] Various build deps
 
 === `0.1.2` (2022-04-13)
 
-- Include `ExceptionInfo` data as attributes in exception span events, by default
-- Update examples to use namespaced attributes for spans and events
+- [ADD] Include `ExceptionInfo` data as attributes in exception span events, by default
+- [FIX] Update examples to use namespaced attributes for spans and events
 - Bump deps:
-* OpenTelemetry `1.13.0`
-** The default value for autoconfiguration property `otel.metrics.exporter` has changed from `none` to `otlp`
-* Clojure `1.11.1`
-* gRPC `1.45.1`
-* Various build deps
+* [MAINT] OpenTelemetry `1.13.0`
+** [BREAK] The default value for autoconfiguration property `otel.metrics.exporter` has changed from `none` to `otlp`
+* [MAINT] Clojure `1.11.1`
+* [MAINT] gRPC `1.45.1`
+* [MAINT] Various build deps
 
 === `0.1.1` (2022-03-13)
 
 - Bump deps:
-* OpenTelemetry `1.12.0`
-* gRPC `1.45.0`
-* Various build deps
+* [MAINT] OpenTelemetry `1.12.0`
+* [MAINT] gRPC `1.45.0`
+* [MAINT] Various build deps
 
 === `0.1.0` (2022-02-27)
 

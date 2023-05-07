@@ -4,7 +4,7 @@
  :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.1"}
            com.github.steffan-westcott/clj-otel-sdk {:mvn/version "0.2.1"}
-           io.opentelemetry/opentelemetry-sdk-extension-jaeger-remote-sampler {:mvn/version "1.25.0"}}
+           io.opentelemetry/opentelemetry-sdk-extension-jaeger-remote-sampler {:mvn/version "1.26.0"}}
  :aliases {:dev      {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../clj-otel-api"}
                                       com.github.steffan-westcott/clj-otel-sdk {:local/root "../clj-otel-sdk"}}}
            :snapshot {:override-deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.1-SNAPSHOT"}

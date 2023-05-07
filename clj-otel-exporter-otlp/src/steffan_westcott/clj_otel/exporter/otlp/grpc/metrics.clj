@@ -21,6 +21,8 @@
    |`:trusted-certificates-pem`        | `^bytes` X.509 certificate chain in PEM format for verifying servers when TLS enabled (default: system default trusted certificates).
    |`:client-private-key-pem`          | `^bytes` private key in PEM format for verifying client when TLS enabled.
    |`:client-certificates-pem`         | `^bytes` X.509 certificate chain in PEM format for verifying client when TLS enabled.
+   |`:ssl-context`                     | `^SSLContext` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
+   |`:x509-trust-manager`              | `^X509TrustManager` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:compression-method`              | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
    |`:timeout`                         | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: same as constantly `AggregationTemporality/CUMULATIVE`).
@@ -28,8 +30,8 @@
   ([]
    (metric-exporter {}))
   ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
-            compression-method timeout aggregation-temporality-selector
-            default-aggregation-selector]}]
+            ssl-context x509-trust-manager compression-method timeout
+            aggregation-temporality-selector default-aggregation-selector]}]
    (let [builder (cond-> (OtlpGrpcMetricExporter/builder)
                    endpoint (.setEndpoint endpoint)
                    headers (add-headers headers)
@@ -37,6 +39,8 @@
                    (and client-private-key-pem client-certificates-pem)
                    (.setClientTls client-private-key-pem client-certificates-pem)
 
+                   (and ssl-context x509-trust-manager) (.setSslContext ssl-context
+                                                                        x509-trust-manager)
                    compression-method (.setCompression compression-method)
                    timeout (.setTimeout (util/duration timeout))
                    aggregation-temporality-selector
