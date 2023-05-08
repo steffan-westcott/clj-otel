@@ -30,6 +30,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - [MAINT] Removed deprecated build dep `build-clj`
 - Bump deps:
 * [MAINT] OpenTelemetry `1.26.0`
+* [MAINT] gRPC `1.54.1`
 * [MAINT] Various build deps
 
 === `0.2.0` (2023-04-10)

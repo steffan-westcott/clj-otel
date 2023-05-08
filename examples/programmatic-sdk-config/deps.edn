@@ -27,9 +27,9 @@
 
   ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
 
-  :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.54.0"}
-                            io.grpc/grpc-protobuf     {:mvn/version "1.54.0"}
-                            io.grpc/grpc-stub         {:mvn/version "1.54.0"}}}
+  :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.54.1"}
+                            io.grpc/grpc-protobuf     {:mvn/version "1.54.1"}
+                            io.grpc/grpc-stub         {:mvn/version "1.54.1"}}}
 
 
 
