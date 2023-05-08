@@ -24,7 +24,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
-=== `0.2.1` (in progress)
+=== `0.2.1` (2023-05-08)
 
 - [FIX] Use `.` instead of `/` in namespace qualified attribute names
 - [MAINT] Removed deprecated build dep `build-clj`

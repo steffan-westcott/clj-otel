@@ -21,7 +21,7 @@ clojure -A:deps -T:build help/doc"
   "com.github.steffan-westcott")
 
 (def ^:private version
-  "0.2.1-SNAPSHOT")
+  "0.2.1")
 
 ;; Later artifacts in this vector may depend on earlier artifacts
 (def ^:private artifact-ids
