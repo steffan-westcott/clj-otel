@@ -141,7 +141,6 @@ Ensure the file is placed in the project root directory (the same directory as `
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"
-                             "-Dotel.traces.exporter=jaeger"
                              "-Dotel.metrics.exporter=none"]}}}
 ----
 
