@@ -26,6 +26,11 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.2` (in progress)
 
+- [FIX] Convert key names of entries added to OpenTelemetry attributes to snake_case.
+This applies to resources, spans and metrics.
+- [FIX] Do not transform key names of entries added to OpenTelemetry context or baggage.
+- [ADD] Function `set-attribute-name-fn!` to override setting of OpenTelemetry attribute key names.
+
 === `0.2.1` (2023-05-08)
 
 - [FIX] Use `.` instead of `/` in namespace qualified attribute names

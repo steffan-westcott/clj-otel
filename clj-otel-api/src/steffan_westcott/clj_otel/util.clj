@@ -1,5 +1,6 @@
 (ns steffan-westcott.clj-otel.util
   "General utility functions."
+  (:require [camel-snake-kebab.core :as csk])
   (:import (clojure.lang IPersistentVector Named)
            (java.time Duration Instant)
            (java.util.concurrent TimeUnit)))
@@ -34,17 +35,18 @@
 
 (defprotocol AsQualifiedName
   (qualified-name [x]
-   "Given a keyword or symbol, returns the name qualified with its namespace if
-    it has one. The namespace and name are separated by '.' to follow the
-    OpenTelemetry specification. Given any other type of argument, returns it
-    as a string."))
+   "Given a keyword or symbol, returns the name converted to follow
+    OpenTelemetry conventions for attribute names; the name is converted to a
+    snake_case string, where namespace and name are separated by `.`. Given any
+    other type of argument, returns it as a snake_case string."))
 
 (extend-protocol AsQualifiedName
  Named
    (qualified-name [x]
-     (if-let [ns (namespace x)]
-       (str ns "." (name x))
-       (name x)))
+     (let [s (csk/->snake_case_string x)]
+       (if-let [ns (namespace x)]
+         (str (csk/->snake_case_string ns) "." s)
+         s)))
  Object
    (qualified-name [x]
-     (str x)))
+     (csk/->snake_case_string (str x))))

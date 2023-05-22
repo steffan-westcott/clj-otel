@@ -37,9 +37,20 @@
         (number? x)  AttributeType/DOUBLE
         :else        AttributeType/STRING))
 
+(def attribute-name
+  "Function that returns a namespace qualified attribute name. May be
+   overridden using [[set-attribute-name-fn!]]."
+  (memoize util/qualified-name))
+
+(defn set-attribute-name-fn!
+  "Sets function for setting attribute names. See default function
+   `steffan-westcott.clj-otel.util/qualified-name`."
+  [f]
+  (alter-var-root #'attribute-name (constantly f)))
+
 (def ^:private attribute-key
-  "Function that returns a (memoized) `AttributeKey` for an attribute with the
-   given type and key name."
+  "Function that returns an `AttributeKey` for an attribute with the given type
+   and key name."
   (memoize (fn [attribute-type k]
              ((get type->keyfn attribute-type) k))))
 
@@ -61,7 +72,7 @@
                            (attribute-type-of v))
           k' (if AttributeKey?
                k
-               (attribute-key attribute-type (util/qualified-name k)))
+               (attribute-key attribute-type (attribute-name k)))
           v' (attribute-value attribute-type v)]
       [k' v'])))
 

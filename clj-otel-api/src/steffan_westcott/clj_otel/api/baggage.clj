@@ -1,8 +1,7 @@
 (ns steffan-westcott.clj-otel.api.baggage
   "Conversion and manipulation functions for
    `io.opentelemetry.api.baggage.Baggage` objects."
-  (:require [steffan-westcott.clj-otel.context :as context]
-            [steffan-westcott.clj-otel.util :as util])
+  (:require [steffan-westcott.clj-otel.context :as context])
   (:import (io.opentelemetry.api.baggage Baggage BaggageBuilder BaggageEntry BaggageEntryMetadata)))
 
 (defn get-baggage
@@ -29,7 +28,7 @@
 
 (defn- put-entry
   [^BaggageBuilder builder k v]
-  (let [k' (util/qualified-name k)]
+  (let [k' (name k)]
     (if (string? v)
       (.put builder k' v)
       (let [[value metadata] v]
@@ -46,7 +45,7 @@
 
 (defn ->baggage
   "Converts a map to a `Baggage` instance. Each key in the map is either a
-   string or a keyword. Each value in the map is either `value` or a vector
+   string or keyword. Each value in the map is either `value` or a vector
    `[value metadata]`, where `value` and `metadata` are strings."
   [m]
   (.build ^BaggageBuilder (reduce-kv put-entry (Baggage/builder) m)))
