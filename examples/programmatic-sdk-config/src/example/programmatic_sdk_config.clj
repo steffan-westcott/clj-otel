@@ -9,8 +9,6 @@
     ;; Require desired span exporters
     [steffan-westcott.clj-otel.exporter.otlp.grpc.trace :as otlp-grpc-trace]
     ;[steffan-westcott.clj-otel.exporter.otlp.http.trace :as otlp-http-trace]
-    ;[steffan-westcott.clj-otel.exporter.jaeger-grpc :as jaeger-grpc]
-    ;[steffan-westcott.clj-otel.exporter.jaeger-thrift :as jaeger-thrift]
     ;[steffan-westcott.clj-otel.exporter.zipkin :as zipkin]
     ;[steffan-westcott.clj-otel.exporter.logging :as logging]
     ;[steffan-westcott.clj-otel.exporter.logging-otlp :as logging-otlp]
@@ -41,8 +39,9 @@
                 (res/process-runtime-resource)]
 
     ;; Configuration options for the context propagation, sampling, batching
-    ;; and export of traces. Here we configure export to a local Jaeger server
-    ;; with default options. The exported spans are batched by default.
+    ;; and export of traces. Here we configure export to a local OpenTelemetry
+    ;; Collector instance with default options. The exported spans are batched
+    ;; by default.
     :tracer-provider
     {:span-processors
 
@@ -56,12 +55,6 @@
                    ;; Export spans to locally deployed OpenTelemetry Collector
                    ;; via HTTP
                    ; (otlp-http-trace/span-exporter)
-
-                   ;; Export spans to locally deployed Jaeger via gRPC
-                   ; (jaeger-grpc/span-exporter)
-
-                   ;; Export spans to locally deployed Jaeger via Thrift
-                   ; (jaeger-thrift/span-exporter)
 
                    ;; Export spans to locally deployed Zipkin
                    ; (zipkin/span-exporter)

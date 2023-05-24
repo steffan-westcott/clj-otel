@@ -113,7 +113,11 @@ You will now start a telemetry backend that will receive and display telemetry t
 +
 [source,bash]
 ----
-docker run --rm -p 16686:16686 -p 14250:14250 jaegertracing/all-in-one
+docker run --rm                     \
+           -p 16686:16686           \
+           -p 4317:4317             \
+           jaegertracing/all-in-one \
+           --collector.otlp.enabled=true
 ----
 
 * Once Jaeger has started, verify you can access the user interface by navigating to http://localhost:16686/search in a web browser.
@@ -141,7 +145,6 @@ Ensure the file is placed in the project root directory (the same directory as `
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"
-                             "-Dotel.traces.exporter=jaeger"
                              "-Dotel.metrics.exporter=none"]}}}
 ----
 
@@ -159,7 +162,7 @@ curl -X GET "http://localhost:8080/count"
 ----
 
 * In a web browser navigate to the Jaeger search page at http://localhost:16686/search.
-In the `Search` options, select `counter-service`  in the `Service` selector and click the `Find Traces` button.
+In the `Search` options, select `counter-service` in the `Service` selector and click the `Find Traces` button.
 +
 image::images/jaeger-search.png[Jaeger search results]
 +
@@ -189,7 +192,6 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"
-                             "-Dotel.traces.exporter=jaeger"
                              "-Dotel.metrics.exporter=none"]}}}
 ----
 
@@ -240,7 +242,7 @@ Click the most recent `HTTP GET` trace and expand the `Tags` of the single span.
 +
 image::images/jaeger-get-trace-count.png[Jaeger HTTP GET trace]
 +
-You will note that the attribute `service.counter/count` you added in the code appears in the exported span with value `5`.
+You will note that the attribute `service.counter.count` you added in the code appears in the exported span with value `5`.
 
 * Update the `inc-count-handler` function to add a new span that wraps part of the function body:
 +

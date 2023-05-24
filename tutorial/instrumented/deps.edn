@@ -8,5 +8,4 @@
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"
-                             "-Dotel.traces.exporter=jaeger"
                              "-Dotel.metrics.exporter=none"]}}}

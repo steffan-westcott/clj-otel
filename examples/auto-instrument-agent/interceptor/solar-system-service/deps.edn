@@ -49,8 +49,6 @@
                                      "-Dotel.exporter.otlp.traces.endpoint=https://ingest.lightstep.com:443"
                                      "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]}
 
-  :traces-jaeger-grpc {:jvm-opts ["-Dotel.traces.exporter=jaeger"]}
-
   :traces-zipkin {:jvm-opts ["-Dotel.traces.exporter=zipkin"]}
 
   ;; used for debugging

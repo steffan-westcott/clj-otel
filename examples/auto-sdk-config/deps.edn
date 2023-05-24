@@ -9,16 +9,16 @@
  :aliases
  {;; Include this alias to export telemetry data
 
-  :otel {:jvm-opts   ["-Dotel.resource.attributes=service.name=example-app"
-                      "-Dotel.java.global-autoconfigure.enabled=true"]
-         :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.26.0-alpha"}
-                      io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.25.1-alpha"}}}
+  :otel            {:jvm-opts   ["-Dotel.resource.attributes=service.name=example-app"
+                                 "-Dotel.java.global-autoconfigure.enabled=true"]
+                    :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.26.0-alpha"}
+                                 io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.25.1-alpha"}}}
 
 
 
   ;; Select exactly one traces-* alias
 
-  :traces-none {:jvm-opts ["-Dotel.traces.exporter=none"]}
+  :traces-none     {:jvm-opts ["-Dotel.traces.exporter=none"]}
 
   :traces-collector-grpc {:jvm-opts   ["-Dotel.traces.exporter=otlp"
                                        "-Dotel.exporter.otlp.traces.protocol=grpc"]
@@ -48,20 +48,17 @@
                                        "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]
                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.26.0"}}}
 
-  :traces-jaeger-grpc {:jvm-opts   ["-Dotel.traces.exporter=jaeger"]
-                       :extra-deps {io.opentelemetry/opentelemetry-exporter-jaeger {:mvn/version "1.26.0"}}}
+  :traces-zipkin   {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
+                    :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.26.0"}}}
 
-  :traces-zipkin {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
-                  :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.26.0"}}}
-
-  :traces-logging {:jvm-opts   ["-Dotel.traces.exporter=logging"]
-                   :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.26.0"}}}
+  :traces-logging  {:jvm-opts   ["-Dotel.traces.exporter=logging"]
+                    :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.26.0"}}}
 
 
 
   ;; Select exactly one metrics-* alias
 
-  :metrics-none {:jvm-opts ["-Dotel.metrics.exporter=none"]}
+  :metrics-none    {:jvm-opts ["-Dotel.metrics.exporter=none"]}
 
   :metrics-collector-grpc {:jvm-opts   ["-Dotel.metrics.exporter=otlp"
                                         "-Dotel.exporter.otlp.metrics.protocol=grpc"
@@ -81,17 +78,17 @@
 
   ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
 
-  :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.54.1"}
-                            io.grpc/grpc-protobuf     {:mvn/version "1.54.1"}
-                            io.grpc/grpc-stub         {:mvn/version "1.54.1"}}}
+  :grpc-netty      {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.54.1"}
+                                 io.grpc/grpc-protobuf     {:mvn/version "1.54.1"}
+                                 io.grpc/grpc-stub         {:mvn/version "1.54.1"}}}
 
 
 
   ;; Used for development of clj-otel-* libraries with the examples
 
-  :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
-                        com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics
-                        {:local/root
-                         "../../clj-otel-instrumentation-runtime-metrics"}}}
+  :dev             {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
+                                    com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics
+                                    {:local/root
+                                     "../../clj-otel-instrumentation-runtime-metrics"}}}
 
  }}

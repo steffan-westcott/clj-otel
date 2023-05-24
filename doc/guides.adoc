@@ -715,7 +715,7 @@ This example Collector configuration has a `traces` pipeline where:
 * Trace data are received by the Collector as OTLP over gRPC
 * Memory usage in the Collector process is limited
 * Traces are batched in the Collector prior to export to the backend
-* Traces are exported by the Collector to the Jaeger backend on host `jaeger`
+* Traces are exported by the Collector as OTLP over gRPC to the Jaeger backend on host `jaeger`
 
 .`otel-collector-config.yaml`
 [source,yaml]
@@ -732,14 +732,15 @@ processors:
   batch:
 
 exporters:
-  jaeger:
-    endpoint: jaeger:14250
-    insecure: true
+  otlp:
+    endpoint: "jaeger:4317"
+    tls:
+      insecure: true
 
 service:
   pipelines:
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ jaeger ]
+      exporters: [ otlp ]
 ----

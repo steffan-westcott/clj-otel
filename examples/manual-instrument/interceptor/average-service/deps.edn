@@ -56,9 +56,6 @@
                                        "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]
                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.26.0"}}}
 
-  :traces-jaeger-grpc {:jvm-opts   ["-Dotel.traces.exporter=jaeger"]
-                       :extra-deps {io.opentelemetry/opentelemetry-exporter-jaeger {:mvn/version "1.26.0"}}}
-
   :traces-zipkin {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
                   :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.26.0"}}}
 

@@ -13,7 +13,7 @@ receivers:
       grpc:
 
       # Enable HTTP receiver
-      http:
+#      http:
 
 
 
@@ -36,32 +36,32 @@ exporters:
   # Logs brief summary of telemetry data to console
   logging:
 
-  # Exports traces to Jaeger via gRPC
-  jaeger:
-    endpoint: jaeger:14250
+  # Exports to Jaeger using OTLP over gRPC
+  otlp/jaeger:
+    endpoint: "jaeger:4317"
     tls:
       insecure: true
 
-  # Exports traces to Zipkin
+  # Exports to Zipkin
   zipkin:
     endpoint: "http://zipkin:9411/api/v2/spans"
     format: proto
 
-  # Exports to Honeycomb via gRPC
+  # Exports to Honeycomb using OTLP over gRPC
   otlp/honeycomb:
     endpoint: "api.honeycomb.io:443"
     headers:
       "x-honeycomb-team": "YOUR_HONEYCOMB_TEAM_API_KEY"
       "x-honeycomb-dataset": "YOUR_HONEYCOMB_DATASET"
 
-  # Exports to Honeycomb via HTTP
+  # Exports to Honeycomb using OTLP over HTTP
   otlphttp/honeycomb:
     endpoint: "https://api.honeycomb.io:443"
     headers:
       "x-honeycomb-team": "YOUR_HONEYCOMB_TEAM_API_KEY"
       "x-honeycomb-dataset": "YOUR_HONEYCOMB_DATASET"
 
-  # Exports to Lightstep via gRPC
+  # Exports to Lightstep using OTLP over gRPC
   otlp/lightstep:
     endpoint: "ingest.lightstep.com:443"
     headers:
@@ -72,6 +72,8 @@ exporters:
     endpoint: "http://prometheus:9090/api/v1/write"
     tls:
       insecure: true
+
+
 
 # Collector extensions components
 extensions:
@@ -93,11 +95,11 @@ service:
     # Enable pipeline of components for traces
     traces:
       receivers: [ otlp ]
-      processors: [ memory_limiter, batch ]
-      exporters: [ logging, jaeger, zipkin ]    # Select desired exporters (configured above)
+      processors: [ memory_limiter, batch ]          # Select desired processors (configured above)
+      exporters: [ logging, otlp/jaeger, zipkin ]    # Select desired exporters (configured above)
 
     # Enable pipeline of components for metrics
     metrics:
       receivers: [ otlp ]
-      processors: [ memory_limiter, batch ]
+      processors: [ memory_limiter, batch ]     # Select desired processors (configured above)
       exporters: [ prometheusremotewrite ]      # Select desired exporters (configured above)

@@ -4,10 +4,10 @@ services:
   # Jaeger
   jaeger:
     image: jaegertracing/all-in-one:latest
+    command:
+      - --collector.otlp.enabled=true
     ports:
-      - "14250:14250"  # gRPC endpoint
-      - "14268:14268"  # Thrift endpoint
-      - "16686:16686"  # Web interface
+      - "16686:16686"  # Jaeger web interface
 
   # Zipkin
   zipkin:
@@ -36,7 +36,7 @@ services:
       - --config=/etc/otel-collector-config.yaml
     ports:
       - "4317:4317"    # OTLP gRPC receiver
-      - "4318:4318"    # OTLP HTTP receiver
+#      - "4318:4318"    # OTLP HTTP receiver
       - "13133:13133"  # health_check extension
     depends_on:
       - jaeger

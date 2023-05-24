@@ -1,51 +1,46 @@
 ;!zprint {:width 140}
 
-{:paths ["src"]
+{:paths   ["src"]
 
- :deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.2"}
-        com.github.steffan-westcott/clj-otel-instrumentation-resources {:mvn/version "0.2.2"}
-        com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.2"}
-        com.github.steffan-westcott/clj-otel-sdk {:mvn/version "0.2.2"}}
+ :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.2"}
+           com.github.steffan-westcott/clj-otel-instrumentation-resources {:mvn/version "0.2.2"}
+           com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.2"}
+           com.github.steffan-westcott/clj-otel-sdk {:mvn/version "0.2.2"}}
 
- :aliases
- {;; Select any number of exporter-* aliases
+ :aliases {;; Select any number of exporter-* aliases
 
-  :exporter-otlp {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp {:mvn/version "0.2.2"}}}
+           :exporter-otlp {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-otlp {:mvn/version "0.2.2"}}}
 
-  :exporter-jaeger-grpc {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc {:mvn/version "0.2.2"}}}
+           :exporter-zipkin {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-zipkin {:mvn/version "0.2.2"}}}
 
-  :exporter-jaeger-thrift {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift {:mvn/version "0.2.2"}}}
+           :exporter-logging {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging {:mvn/version "0.2.2"}}}
 
-  :exporter-zipkin {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-zipkin {:mvn/version "0.2.2"}}}
-
-  :exporter-logging {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging {:mvn/version "0.2.2"}}}
-
-  :exporter-logging-otlp {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:mvn/version "0.2.2"}}}
+           :exporter-logging-otlp {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:mvn/version "0.2.2"}}}
 
 
 
-  ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
+           ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
 
-  :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.54.1"}
-                            io.grpc/grpc-protobuf     {:mvn/version "1.54.1"}
-                            io.grpc/grpc-stub         {:mvn/version "1.54.1"}}}
+           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.54.1"}
+                                     io.grpc/grpc-protobuf     {:mvn/version "1.54.1"}
+                                     io.grpc/grpc-stub         {:mvn/version "1.54.1"}}}
 
 
 
-  ;; Used for development of clj-otel-* libraries with the examples
+           ;; Used for development of clj-otel-* libraries with the examples
 
-  :dev
-  {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
-                   com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc {:local/root "../../clj-otel-exporter-jaeger-grpc"}
-                   com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift {:local/root "../../clj-otel-exporter-jaeger-thrift"}
-                   com.github.steffan-westcott/clj-otel-exporter-logging {:local/root "../../clj-otel-exporter-logging"}
-                   com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:local/root "../../clj-otel-exporter-logging-otlp"}
-                   com.github.steffan-westcott/clj-otel-exporter-otlp {:local/root "../../clj-otel-exporter-otlp"}
-                   com.github.steffan-westcott/clj-otel-exporter-zipkin {:local/root "../../clj-otel-exporter-zipkin"}
-                   com.github.steffan-westcott/clj-otel-instrumentation-resources {:local/root "../../clj-otel-instrumentation-resources"}
-                   com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:local/root
-                                                                                         "../../clj-otel-instrumentation-runtime-metrics"}
-                   com.github.steffan-westcott/clj-otel-sdk {:local/root "../../clj-otel-sdk"}}}
+           :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
+                                 com.github.steffan-westcott/clj-otel-exporter-logging {:local/root "../../clj-otel-exporter-logging"}
+                                 com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:local/root
+                                                                                             "../../clj-otel-exporter-logging-otlp"}
+                                 com.github.steffan-westcott/clj-otel-exporter-otlp {:local/root "../../clj-otel-exporter-otlp"}
+                                 com.github.steffan-westcott/clj-otel-exporter-zipkin {:local/root "../../clj-otel-exporter-zipkin"}
+                                 com.github.steffan-westcott/clj-otel-instrumentation-resources {:local/root
+                                                                                                 "../../clj-otel-instrumentation-resources"}
+                                 com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics
+                                 {:local/root "../../clj-otel-instrumentation-runtime-metrics"}
 
- }}
+                                 com.github.steffan-westcott/clj-otel-sdk {:local/root "../../clj-otel-sdk"}}}
+
+          }}
