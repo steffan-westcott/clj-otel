@@ -71,11 +71,11 @@
    :consumer SpanKind/CONSUMER})
 
 (defn get-span
-  "Gets the span from a given context, or the current context if none is given.
-   If no span is found in the context (or no context is available), a
+  "Gets the span from a given context, or the bound or current context if none
+   is given. If no span is found in the context (or no context is available), a
    non-recording, non-exporting span is returned."
   (^Span []
-   (Span/current))
+   (get-span (context/dyn)))
   (^Span [context]
    (Span/fromContext context)))
 
@@ -94,8 +94,8 @@
      (.getSpanContext (get-span x))))
 
 (defn get-span-context
-  "Returns the given `SpanContext`, or extracts it from the given span,
-   context or current context if no argument is given."
+  "Returns the given `SpanContext`, or extracts it from the given span or
+   context. If no argument is given, extract from the bound or current context."
   ([]
    (get-span-context (get-span)))
   ([x]
@@ -125,7 +125,7 @@
    |-------------|-------------|
    |`:tracer`    | `io.opentelemetry.api.trace.Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
    |`:name`      | Span name (default: `\"\"`).
-   |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context).
+   |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: bound or current context).
    |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
    |`:attributes`| Map of additional attributes for the span (default: no attributes).
    |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
@@ -135,7 +135,7 @@
   ^Context
   [{:keys [^Tracer tracer name parent links attributes ^Thread thread source span-kind timestamp]
     :or   {name       ""
-           parent     (context/current)
+           parent     (context/dyn)
            attributes {}
            thread     (Thread/currentThread)
            source     {}}}]
@@ -189,7 +189,7 @@
 
    | key         | description |
    |-------------|-------------|
-   |`:context`   | Context containing span to add data to (default: current context).
+   |`:context`   | Context containing span to add data to (default: bound or current context).
    |`:name`      | Name to set span to.
    |`:status`    | Option map (see below) describing span status to set.
    |`:attributes`| Map of additional attributes to merge in the span.
@@ -219,7 +219,7 @@
    |`:escaping?` | Optional value, true if exception is escaping the span's scope, false if exception is caught within the span's scope and not rethrown.
    |`:attributes`| Map of additional attributes to attach to exception event."
   [{:keys [context name status attributes event ex-data]
-    :or   {context (context/current)}}]
+    :or   {context (context/dyn)}}]
   (let [span (get-span context)]
     (cond-> span
       name       (.updateName name)
@@ -237,14 +237,14 @@
 
    | key         | description |
    |-------------|-------------|
-   |`:context`   | Context containing span to add exception event to (default: current context).
+   |`:context`   | Context containing span to add exception event to (default: bound or current context).
    |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
    |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([exception]
    (add-exception! exception {}))
   ([exception
     {:keys [context escaping? attributes]
-     :or   {context    (context/current)
+     :or   {context    (context/dyn)
             escaping?  true
             attributes ex-data}}]
    (let [triage      (main/ex-triage (Throwable->map exception))
@@ -271,14 +271,14 @@
 
    | key         | description |
    |-------------|-------------|
-   |`:context`   | Context containing span to add exception event to (default: current context)
+   |`:context`   | Context containing span to add exception event to (default: bound or current context)
    |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
    |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([e]
    (add-interceptor-exception! e {}))
   ([e
     {:keys [context escaping? attributes]
-     :or   {context    (context/current)
+     :or   {context    (context/dyn)
             escaping?  true
             attributes ex-data}}]
    (let [{:keys [exception interceptor stage]
@@ -301,10 +301,10 @@
 
    | key        | description |
    |------------|-------------|
-   |`:context`  | Context containing span to end (default: current context)
+   |`:context`  | Context containing span to end (default: bound or current context)
    |`:timestamp`| Span end timestamp. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
   [{:keys [context timestamp]
-    :or   {context (context/current)}}]
+    :or   {context (context/dyn)}}]
   (let [span (get-span context)]
     (if timestamp
       (let [[amount unit] (util/timestamp timestamp)]
@@ -362,6 +362,27 @@
        (context/with-context! context#
          ~@body))))
 
+(defmacro with-bound-span!
+  "Starts a new span, sets the bound context to the new context containing the
+   span and evaluates `body`. The bound context is restored to its previous
+   value and the span is ended on completion of body evaluation. It is expected
+   `body` provides a synchronous result, use [[async-span]] instead for working
+   with asynchronous functions. Does not use nor set the current context.
+   `span-opts` is a span options map, the same as for [[new-span!]], except that
+   the default values for `:line`, `:file` and `:ns` for the `:source` option
+   map are set from the place `with-span!` is evaluated. See also
+   [[with-span!]]."
+  [span-opts & body]
+  `(let [span-opts# ~span-opts
+         source#    (into {:line ~(:line (meta &form))
+                           :file ~*file*
+                           :ns   ~(str *ns*)}
+                          (:source span-opts#))
+         span-opts# (assoc span-opts# :source source#)]
+     (with-span-binding' [context# span-opts#]
+       (context/bind-context! context#
+         ~@body))))
+
 #_{:clj-kondo/ignore [:missing-docstring]}
 (defn ^:no-doc async-span'
   [span-opts f respond raise]
@@ -408,6 +429,55 @@
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (async-span' span-opts# ~f ~respond ~raise)))
+
+#_{:clj-kondo/ignore [:missing-docstring]}
+(defn ^:no-doc async-bound-span'
+  [span-opts f respond raise]
+  (try
+    (let [context (new-span! span-opts)]
+      (context/bind-context! context
+        (try
+          (f (fn [response]
+               (end-span! {:context context})
+               (respond response))
+             (fn [e]
+               (if (instance? Throwable e)
+                 (add-exception! e {:context context})
+                 (add-span-data! {:context context
+                                  :status  {:code :error}}))
+               (end-span! {:context context})
+               (raise e)))
+          (catch Throwable e
+            (add-exception! e {:context context})
+            (end-span! {:context context})
+            (raise e)))))
+    (catch Throwable e
+      (raise e))))
+
+(defmacro async-bound-span
+  "Starts a new span, sets the bound context to the new context containing the
+   span and immediately returns evaluation of function `f`. The bound context is
+   restored to its original value after `f` is evaluated. `respond`/`raise` are
+   callback functions to be evaluated later on a success/failure result. The
+   span is ended just before either callback is evaluated or `f` itself throws
+   an exception. Does not use nor mutate the current context. This is a
+   low-level function intended for adaption for use with any async library that
+   can work with callbacks.
+
+   `span-opts` is the same as for [[new-span!]], except that the default values
+   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
+   place `async-bound-span` is evaluated. `f` must take arguments `[respond*
+   raise*]` where `respond*` and `raise*` are callback functions to be used by
+   `f`. All callback functions take a single argument, `raise` and `raise*` take
+   a `Throwable` instance."
+  [span-opts f respond raise]
+  `(let [span-opts# ~span-opts
+         source#    (into {:line ~(:line (meta &form))
+                           :file ~*file*
+                           :ns   ~(str *ns*)}
+                          (:source span-opts#))
+         span-opts# (assoc span-opts# :source source#)]
+     (async-bound-span' span-opts# ~f ~respond ~raise)))
 
 (defn span-interceptor
   "Returns a Pedestal interceptor that will on entry start a new span and add

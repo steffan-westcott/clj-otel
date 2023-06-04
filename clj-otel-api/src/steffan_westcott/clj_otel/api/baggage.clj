@@ -5,10 +5,10 @@
   (:import (io.opentelemetry.api.baggage Baggage BaggageBuilder BaggageEntry BaggageEntryMetadata)))
 
 (defn get-baggage
-  "Gets the baggage from a given context, or the current context if none is
-   given. If no baggage is found in the context, empty baggage is returned."
+  "Gets the baggage from a given context, or the bound ot current context if
+   none is given. If no baggage is found in the context, empty baggage is returned."
   ([]
-   (Baggage/current))
+   (get-baggage (context/dyn)))
   ([context]
    (Baggage/fromContext context)))
 

@@ -1,7 +1,8 @@
-(ns example.auto-instrument-agent.middleware.sentence-summary-service-async
+(ns example.auto-instrument-agent.middleware.sentence-summary-service-bound-async
   "Example application demonstrating using `clj-otel` to add telemetry to an
    asynchronous Ring HTTP service that is run with the OpenTelemetry
-   instrumentation agent."
+   instrumentation agent. In this example, the bound context default is used in
+   `clj-otel` functions."
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [clojure.string :as str]
@@ -30,12 +31,12 @@
 
 (defn client-request
   "Make an asynchronous HTTP request using `clj-http`."
-  [context request respond raise]
+  [request respond raise]
 
-  ;; Set the current context just while the client request is created. This
-  ;; ensures the client span created by the agent will have the correct parent
-  ;; context.
-  (context/with-context! context
+  ;; Set the current context to the bound context just while the client request
+  ;; is created. This ensures the client span created by the agent will have the
+  ;; correct parent context.
+  (context/with-bound-context!
 
     ;; Apache HttpClient request is automatically wrapped in a client span
     ;; created by the OpenTelemetry instrumentation agent. The agent also
@@ -47,19 +48,18 @@
 
 (defn <client-request
   "Make an asynchronous HTTP request and return a channel of the response."
-  [context request]
+  [request]
   (let [<ch    (async/chan)
         put-ch #(async/put! <ch %)]
-    (client-request context request put-ch put-ch)
+    (client-request request put-ch put-ch)
     <ch))
 
 
 
 (defn <get-word-length
   "Get the length of `word` and return a channel of the length value."
-  [context word]
-  (let [<response (<client-request context
-                                   {:method       :get
+  [word]
+  (let [<response (<client-request {:method       :get
                                     :url          "http://localhost:8081/length"
                                     :query-params {"word" word}
                                     :async        true
@@ -80,32 +80,28 @@
 (defn <word-lengths
   "Get the word lengths and return a channel containing a value for each word
   length."
-  [context words]
+  [words]
 
   ;; Start a new internal span that ends when the source channel (returned by
   ;; the body) closes or 6000 milliseconds have elapsed. Returns a dest channel
   ;; with buffer size 3. Values are piped from source to dest irrespective of
-  ;; timeout. Context containing internal span is assigned to `context*`.
-  (async'/<with-span-binding [context* {:parent     context
-                                        :name       "Getting word lengths"
-                                        :attributes {:system/words words}}]
-    6000
-    3
+  ;; timeout.
+  (async'/<with-bound-span {:name       "Getting word lengths"
+                            :attributes {:system/words words}}
+                           6000
+                           3
 
-    (let [chs (map #(<get-word-length context* %) words)]
-      (async/merge chs))))
+                           (async/merge (map <get-word-length words))))
 
 
 
 (defn summary
   "Returns a summary of the given word lengths."
-  [context lengths]
+  [lengths]
 
-  ;; Wrap synchronous function body with an internal span. Context containing
-  ;; internal span is assigned to `context*`.
-  (span/with-span-binding [context* {:parent     context
-                                     :name       "Building sentence summary"
-                                     :attributes {:system/word-lengths lengths}}]
+  ;; Wrap synchronous function body with an internal span.
+  (span/with-bound-span! {:name       "Building sentence summary"
+                          :attributes {:system/word-lengths lengths}}
 
     (Thread/sleep 25)
     (let [result {:word-count      (count lengths)
@@ -113,14 +109,11 @@
                   :longest-length  (apply max lengths)}]
 
       ;; Add more attributes to internal span
-      (span/add-span-data! {:context    context*
-                            :attributes {:service.sentence-summary.summary/word-count (:word-count
+      (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:word-count
                                                                                        result)}})
 
       ;; Update words-count metric
-      (instrument/record! words-count
-                          {:context context*
-                           :value   (count lengths)})
+      (instrument/record! words-count {:value (count lengths)})
 
       result)))
 
@@ -129,14 +122,14 @@
 (defn <build-summary
   "Builds a summary of the words in the sentence and returns a channel of the
   summary value."
-  [context sentence]
+  [sentence]
   (let [words        (str/split sentence #"\s+")
-        <all-lengths (<word-lengths context words)
+        <all-lengths (<word-lengths words)
         <lengths     (async'/<into?? [] <all-lengths)]
     (async'/go-try
       (try
         (let [lengths (async'/<? <lengths)]
-          (summary context lengths))
+          (summary lengths))
         (finally
           (async'/close-and-drain!! <all-lengths))))))
 
@@ -145,9 +138,9 @@
 (defn get-summary-handler
   "Asynchronous Ring handler for `GET /summary` request. Returns an HTTP
   response containing a summary of the words in the given sentence."
-  [{:keys [query-params io.opentelemetry/server-span-context]} respond raise]
+  [{:keys [query-params]} respond raise]
   (let [sentence (get query-params "sentence")
-        <summary (<build-summary server-span-context sentence)]
+        <summary (<build-summary sentence)]
     (async'/ch->respond-raise <summary
                               (fn [summary]
                                 (respond (response/response (str summary))))

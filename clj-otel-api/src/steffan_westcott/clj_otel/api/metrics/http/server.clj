@@ -57,7 +57,7 @@
                                    :description "The size of HTTP response messages"})))
 
 (defn- add-active-requests!
-  ([value attrs] (add-active-requests! value attrs (context/current)))
+  ([value attrs] (add-active-requests! value attrs (context/dyn)))
   ([value attrs context]
    (instrument/add! @active-requests
                     {:value      value
@@ -80,7 +80,7 @@
 
 (defn- record-duration!
   ([start-time server-request-attrs status]
-   (record-duration! start-time server-request-attrs status (context/current)))
+   (record-duration! start-time server-request-attrs status (context/dyn)))
   ([start-time server-request-attrs status context]
    (instrument/record! @request-duration
                        {:value      (since-millis! start-time)
@@ -88,8 +88,7 @@
                         :context    context})))
 
 (defn- record-request-size!
-  ([server-request-attrs status]
-   (record-request-size! server-request-attrs status (context/current)))
+  ([server-request-attrs status] (record-request-size! server-request-attrs status (context/dyn)))
   ([server-request-attrs status context]
    (when-let [size (get server-request-attrs SemanticAttributes/HTTP_REQUEST_CONTENT_LENGTH)]
      (instrument/record! @request-size

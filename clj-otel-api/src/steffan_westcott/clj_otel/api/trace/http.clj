@@ -76,7 +76,7 @@
                       (str method " " app-root "/*")
                       method))
       :span-kind  :server
-      ;; always merge extracted context with current context
+      ;; always merge extracted context with bound or current context
       :parent     (context/headers->merged-context headers)
       :attributes server-request-attrs})))
 
@@ -89,12 +89,12 @@
 
    | key      | description |
    |----------|-------------|
-   |`:parent` | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use current context)."
+   |`:parent` | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: use bound or current context)."
   ([request]
    (client-span-opts request {}))
   ([request
     {:keys [parent]
-     :or   {parent (context/current)}}]
+     :or   {parent (context/dyn)}}]
    (let [{:keys [method]} request
          method' (str/upper-case (name method))]
      {:name       method'
@@ -113,13 +113,13 @@
 
    | key       | description |
    |-----------|-------------|
-   |`:context` | Context containing server span (default: current context).
+   |`:context` | Context containing server span (default: bound or current context).
    |`:app-root`| Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: `nil`)."
   ([request-method route]
    (add-route-data! request-method route {}))
   ([request-method route
     {:keys [context app-root]
-     :or   {context (context/current)}}]
+     :or   {context (context/dyn)}}]
    (when route
      (span/add-span-data!
       {:context    context
@@ -132,12 +132,12 @@
 
    | key       | description |
    |-----------|-------------|
-   |`:context` | Context containing span to add response data to (default: current context)."
+   |`:context` | Context containing span to add response data to (default: bound or current context)."
   ([response]
    (add-client-span-response-data! response {}))
   ([response
     {:keys [context]
-     :or   {context (context/current)}}]
+     :or   {context (context/dyn)}}]
    (let [{:keys [status headers]} response
          {:strs [Content-Length]} headers
          Content-Length' (when Content-Length
@@ -157,12 +157,12 @@
 
    | key       | description |
    |-----------|-------------|
-   |`:context` | Context containing span to add response data to (default: current context)."
+   |`:context` | Context containing span to add response data to (default: bound or current context)."
   ([response]
    (add-server-span-response-data! response {}))
   ([response
     {:keys [context]
-     :or   {context (context/current)}}]
+     :or   {context (context/dyn)}}]
    (let [{:keys [status io.opentelemetry.api.trace.span.status/description]} response
          attrs {SemanticAttributes/HTTP_STATUS_CODE status}
          stat  (when (<= 500 status)
@@ -222,12 +222,21 @@
     ([request]
      (handler request))
     ([request respond raise]
-     (let [context (context/current)]
+     (let [context (context/dyn)]
        (handler (assoc request :io.opentelemetry/server-span-context context)
                 respond
                 (fn [e]
                   (span/add-exception! e {:context context})
                   (raise e)))))))
+
+(defn- wrap-bound-context
+  [handler]
+  (fn
+    ([request]
+     (handler request))
+    ([request respond raise]
+     (context/bind-context! (:io.opentelemetry/server-span-context request)
+       (handler request respond raise)))))
 
 (defn wrap-server-span
   "Ring middleware to add HTTP server span support. This middleware can be
@@ -249,8 +258,8 @@
    `:io.opentelemetry.api.trace.span.status/description` in the response map.
 
    No matter how the server span is created, for an asynchronous handler the
-   context containing the server span is set as the value of
-   `:io.opentelemetry/server-span-context` in the request map.
+   bound context and key `:io.opentelemetry/server-span-context` in the request
+   map are set to the context containing the server span.
 
    May take an option map as follows:
 
@@ -265,6 +274,7 @@
     {:keys [create-span?]
      :as   create-span-opts}]
    (cond-> handler
+     :always            (wrap-bound-context)
      create-span?       (wrap-new-server-span create-span-opts)
      create-span?       (wrap-server-request-attrs create-span-opts)
      (not create-span?) (wrap-existing-server-span))))
@@ -325,7 +335,7 @@
   []
   {:name  ::existing-server-span
    :enter (fn [ctx]
-            (assoc ctx :io.opentelemetry/server-span-context (context/current)))
+            (assoc ctx :io.opentelemetry/server-span-context (context/dyn)))
    :error (fn [{:keys [io.opentelemetry/server-span-context]
                 :as   ctx} e]
             (span/add-interceptor-exception! e {:context server-span-context})
@@ -354,6 +364,11 @@
   (context/current-context-interceptor :io.opentelemetry/server-span-context
                                        :io.opentelemetry/server-span-scope))
 
+(defn- bound-context-interceptor
+  []
+  (context/bound-context-interceptor :io.opentelemetry/server-span-context))
+
+
 (defn server-span-interceptors
   "Returns a vector of Pedestal interceptor maps that add HTTP server span
    support to subsequent execution of the interceptor chain for an HTTP service.
@@ -378,8 +393,9 @@
    `:io.opentelemetry.api.trace.span.status/description` in the response map.
 
    No matter how the server span is created, the context containing the server
-   span is set as the value of `:io.opentelemetry/server-span-context` in both
-   the interceptor context and request maps.
+   span is set as the bound context and the value of
+   `:io.opentelemetry/server-span-context` in both the interceptor context and
+   request maps.
 
    May take an option map as follows:
 
@@ -401,7 +417,8 @@
      (not create-span?) (conj (existing-server-span-interceptor))
      :always            (conj (execution-id-interceptor))
      :always            (conj (copy-context-interceptor))
-     (and create-span? set-current-context?) (conj (current-context-interceptor)))))
+     (and create-span? set-current-context?) (conj (current-context-interceptor))
+     :always            (conj (bound-context-interceptor)))))
 
 (defn route-interceptor
   "Returns a Pedestal interceptor that adds a matched route to the server span

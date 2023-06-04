@@ -95,8 +95,10 @@ To start and exercise the Ring middleware example with combined automatic and ma
 . In the first REPL, load namespace `example.auto-instrument-agent.middleware.word-length-service`.
 This starts a `word-length-service` server on port 8081.
 . Start second REPL with chosen aliases in `examples/auto-instrument-agent/middleware/sentence-summary-service/deps.edn`
-. In the second REPL, load namespace `example.auto-instrument-agent.middleware.sentence-summary-service` (synchronous example) or `example.auto-instrument-agent.middleware.sentence-summary-service-async` (asynchronous example).
-This starts a `sentence-summary-service` server on port 8080.
+. In the second REPL, load one of the following namespaces to start a `sentence-summary-service` server on port 8080:
+* `example.auto-instrument-agent.middleware.sentence-summary-service` (synchronous example)
+* `example.auto-instrument-agent.middleware.sentence-summary-service-bound-async` (asynchronous example using bound context)
+* `example.auto-instrument-agent.middleware.sentence-summary-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -132,8 +134,10 @@ To start and exercise the Pedestal interceptor example with combined automatic a
 . In the first REPL, load namespace `example.auto-instrument-agent.interceptor.planet-service`.
 This starts a `planet-service` server on port 8081.
 . Start second REPL with chosen aliases in `examples/auto-instrument-agent/interceptor/solar-system-service/deps.edn`
-. In the second REPL, load namespace `example.auto-instrument-agent.interceptor.solar-system-service` (synchronous example) or `example.auto-instrument-agent.interceptor.solar-system-service-async` (asynchronous example).
-This starts a `solar-system-service` server on port 8080.
+. In the second REPL, load one of the following namespaces to start a `solar-system-service` server on port 8080:
+* `example.auto-instrument-agent.interceptor.solar-system-service` (synchronous example)
+* `example.auto-instrument-agent.interceptor.solar-system-service-bound-async` (asynchronous example using bound context)
+* `example.auto-instrument-agent.interceptor.solar-system-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -177,8 +181,10 @@ To start and exercise the Ring middleware example with manual instrumentation:
 . In the first REPL, load namespace `example.manual-instrument.middleware.random-word-service`.
 This starts a `random-word-service` server on port 8081.
 . Start second REPL with chosen aliases in `examples/manual-instrument/middleware/puzzle-service/deps.edn`
-. In the second REPL, load namespace `example.manual-instrument.middleware.puzzle-service` (synchronous example) or `example.manual-instrument.middleware.puzzle-service-async` (asynchronous example).
-This starts a `puzzle-service` server on port 8080.
+. In the second REPL, load one of the following namespaces to start a `puzzle-service` server on port 8080:
+* `example.manual-instrument.middleware.puzzle-service` (synchronous example)
+* `example.manual-instrument.middleware.puzzle-service-bound-async` (asynchronous example using bound context)
+* `example.manual-instrument.middleware.puzzle-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -214,8 +220,10 @@ To start and exercise the Pedestal interceptor example with manual instrumentati
 . In the first REPL, load namespace `example.manual-instrument.interceptor.sum-service`.
 This starts a `sum-service` server on port 8081.
 . Start second REPL with chosen aliases in `examples/manual-instrument/interceptor/average-service/deps.edn`
-. In the second REPL, load namespace `example.manual-instrument.interceptor.average-service` (synchronous example) or `example.manual-instrument.interceptor.average-service-async` (asynchronous example).
-This starts a `average-service` server on port 8080.
+. In the second REPL, load one of the following namespaces to start an `average-service` server on port 8080:
+* `example.manual-instrument.interceptor.average-service` (synchronous example)
+* `example.manual-instrument.interceptor.average-service-bound-async` (asynchronous example using bound context)
+* `example.manual-instrument.interceptor.average-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]

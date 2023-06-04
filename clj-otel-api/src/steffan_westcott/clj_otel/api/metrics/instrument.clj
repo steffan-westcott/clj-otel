@@ -74,14 +74,14 @@
 
     | key         | description |
     |-------------|-------------|
-    |`:context`   | Context to associate with delta (default: current context).
+    |`:context`   | Context to associate with delta (default: bound or current context).
     |`:value`     | `long` or `double` value to add to `counter` (required). Must not be negative for `:counter` instruments.
     |`:attributes`| Map of attributes to attach to delta (default: no attributes)."))
 
 (defmacro ^:private add*
   [counter delta]
   `(let [{:keys [~'context ~'value ~'attributes]
-          :or   {~'context (context/current)}}
+          :or   {~'context (context/dyn)}}
          ~delta]
      (.add ~counter ~'value (attr/->attributes ~'attributes) ~'context)))
 
@@ -107,14 +107,14 @@
 
     | key         | description |
     |-------------|-------------|
-    |`:context`   | Context to associate with measurement (default: current context).
+    |`:context`   | Context to associate with measurement (default: bound or current context).
     |`:value`     | `long` or `double` value to record in `histogram` (required).
     |`:attributes`| Map of attributes to attach to measurement (default: no attributes)."))
 
 (defmacro ^:private record*
   [histogram measurement]
   `(let [{:keys [~'context ~'value ~'attributes]
-          :or   {~'context (context/current)}}
+          :or   {~'context (context/dyn)}}
          ~measurement]
      (.record ~histogram ~'value (attr/->attributes ~'attributes) ~'context)))
 

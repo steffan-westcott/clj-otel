@@ -1,7 +1,8 @@
-(ns example.auto-instrument-agent.interceptor.solar-system-service-async
+(ns example.auto-instrument-agent.interceptor.solar-system-service-explicit-async
   "Example application demonstrating using `clj-otel` to add telemetry to an
    asynchronous Pedestal HTTP service that is run with the OpenTelemetry
-   instrumentation agent."
+   instrumentation agent. In this example, the context is explicitly passed in
+   as a parameter to `clj-otel` functions."
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [clojure.string :as str]

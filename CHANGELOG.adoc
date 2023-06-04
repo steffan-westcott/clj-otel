@@ -26,6 +26,9 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.2` (in progress)
 
+- [ADD] Opt-in feature xref:doc/concepts.adoc#_bound_context[bound context], a Clojure dynamic var that overrides the default `context` or `parent` parameter value for `clj-otel` functions.
+This feature is intended to simplify asynchronous code by eliminating explicit context passing.
+Existing code that uses the current context or explicit context parameter values is unaffected.
 - [FIX] Convert key names of entries added to OpenTelemetry attributes to snake_case.
 This applies to resources, spans and metrics.
 - [FIX] Do not transform key names of entries added to OpenTelemetry context or baggage.

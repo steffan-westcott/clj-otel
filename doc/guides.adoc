@@ -34,7 +34,9 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 
 === Add manual traces instrumentation
 
-==== Create a synchronous span using the current context
+==== Create synchronous span
+
+===== Create a synchronous span using the current context
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to wrap a body of forms in a xref:concepts.adoc#_traces[span], where the xref:concepts.adoc#_current_context[current context] is used to keep track of (potentially nested) spans:
 +
@@ -45,7 +47,18 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
     (fetch-nums args)))
 ----
 
-==== Create a synchronous span using explicit context
+===== Create a synchronous span using the bound context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-bound-span![`steffan-westcott.clj-otel.api.trace.span/with-bound-span!`] to wrap a body of forms in a span, where the xref:concepts.adoc#_bound_context[bound context] is used to keep track of (potentially nested) spans:
++
+[source,clojure]
+----
+(defn get-nums [args]
+  (span/with-bound-span! {:name "Getting numbers"}
+    (fetch-nums args)))
+----
+
+===== Create a synchronous span using explicit context
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span-binding[`steffan-westcott.clj-otel.api.trace.span/with-span-binding`] to wrap a body of forms in a span, where the context to use is passed in as the `:parent` option.
 The new context containing the new span is bound to `context*` in this example:
@@ -58,10 +71,27 @@ The new context containing the new span is bound to `context*` in this example:
     (fetch-nums context* args)))
 ----
 
-[#_create_an_asynchronous_span]
-==== Create an asynchronous span
+==== Create asynchronous span
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-span[`steffan-westcott.clj-otel.api.trace.span/async-span`] to start a new span that ends when either success/failure callback `respond`/`raise` is evaluated:
+===== Create an asynchronous span using the bound context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-bound-span[`steffan-westcott.clj-otel.api.trace.span/async-bound-span`] to start a new span, where the context to use is the bound context. The new span ends when either success/failure callback `respond`/`raise` is evaluated:
++
+[source,clojure]
+----
+(defn get-nums-async [args respond raise]
+  (span/async-bound-span {:name "Getting numbers"
+                          :kind :client}
+                         (fn [respond* raise*]
+                           (fetch-nums-async args respond* raise*))
+                         respond
+                         raise))
+----
+
+[#_create_an_asynchronous_span]
+===== Create an asynchronous span using explicit context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-span[`steffan-westcott.clj-otel.api.trace.span/async-span`] to start a new span, where the context to use is passed in as the `:parent` option. The new spans ends when either success/failure callback `respond`/`raise` is evaluated:
 +
 [source,clojure]
 ----
@@ -89,7 +119,7 @@ The new context containing the new span is bound to `context*` in this example:
 
 * Alternatively, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-span-data![`steffan-westcott.clj-otel.api.trace.span/add-span-data!`] including the `:attributes` option to add attributes to an existing span.
 +
-By default, the span in the current context is updated:
+By default, the span in the bound or current context is updated:
 +
 [source,clojure]
 ----
@@ -113,7 +143,7 @@ Use the `:context` option to specify the context containing the span to update:
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-span-data![`steffan-westcott.clj-otel.api.trace.span/add-span-data!`] including the `:event` option to add an xref:concepts.adoc#_events[event] to an existing span.
 The event may include xref:concepts.adoc#_attributes[attributes].
 +
-By default, the event is added to the span in the current context:
+By default, the event is added to the span in the bound or current context:
 +
 [source,clojure]
 ----
@@ -144,7 +174,7 @@ Use this function to capture details about caught (non-escaping) exceptions.
 +
 The exception event may include xref:concepts.adoc#_attributes[attributes], controlled by the `:attributes` option.
 +
-By default, the exception event is added to the span in the current context:
+By default, the exception event is added to the span in the bound or current context:
 +
 [source,clojure]
 ----
@@ -198,6 +228,7 @@ NOTE: Counter, up-down counter and histogram instruments support taking measurem
 ----
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Counter[`steffan-westcott.clj-otel.api.metrics.instrument/add!`] to add a measurement to a counter or up-down counter.
 The measurement may have attributes and context.
+By default, the bound or current context is used.
 +
 [source,clojure]
 ----
@@ -209,6 +240,8 @@ The measurement may have attributes and context.
 ----
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Histogram[`steffan-westcott.clj-otel.api.metrics.instrument/record!`] to record a measurement in a histogram.
 The measurement may have attributes and context.
+By default, the bound or current context is used.
+
 +
 [source,clojure]
 ----
@@ -489,7 +522,7 @@ CAUTION: Route data is *automatically added* to server spans when using the Ring
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#add-route-data![`steffan-westcott.clj-otel.api.trace.http/add-route-data!`] to add the matched route to a server span.
 +
-By default, the route data is added to the span in the current context:
+By default, the route data is added to the span in the bound or current context:
 +
 [source,clojure]
 ----
@@ -510,7 +543,7 @@ CAUTION: When running an application with the OpenTelemetry instrumentation agen
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#add-client-span-response-data![`steffan-westcott.clj-otel.api.trace.http/add-client-span-response-data!`] to add HTTP response data to a client span.
 Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
 +
-By default, the HTTP response data is added to the span in the current context:
+By default, the HTTP response data is added to the span in the bound or current context:
 +
 [source,clojure]
 ----
@@ -531,7 +564,7 @@ CAUTION: When running an application with the OpenTelemetry instrumentation agen
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.context#\->headers[`steffan-westcott.clj-otel.context/\->headers`] to get headers to merge (inject) with other headers in the HTTP request to be issued for xref:concepts.adoc#_context_propagation[context propagation].
 Use this function when working with an HTTP client not supported by the OpenTelemetry instrumentation agent.
 +
-By default, the current context is propagated:
+By default, the bound or current context is propagated:
 +
 [source,clojure]
 ----

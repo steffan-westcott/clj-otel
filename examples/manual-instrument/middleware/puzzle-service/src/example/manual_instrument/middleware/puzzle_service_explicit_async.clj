@@ -1,7 +1,8 @@
-(ns example.manual-instrument.middleware.puzzle-service-async
+(ns example.manual-instrument.middleware.puzzle-service-explicit-async
   "Example application demonstrating using `clj-otel` to add telemetry to an
    asynchronous Ring HTTP service that is run without the OpenTelemetry
-   instrumentation agent."
+   instrumentation agent. In this example, the context is explicitly passed in
+   as a parameter to `clj-otel` functions."
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [clojure.string :as str]

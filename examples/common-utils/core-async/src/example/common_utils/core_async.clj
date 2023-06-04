@@ -1,7 +1,8 @@
 (ns example.common-utils.core-async
   (:require [clojure.core.async :as async]
             [ring.util.response :as response]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span]
+            [steffan-westcott.clj-otel.context :as context]))
 
 
 (defn throwable?
@@ -224,3 +225,36 @@
                           (<instrumented-pipe context# <src# ~buf-size ~timeout respond# raise#)))
                       identity
                       identity)))
+
+
+
+(defmacro <with-bound-span
+  "Starts a new span, sets the bound span to the context containing the span and
+   evaluates `body` which should return a `<src` channel. The bound context is
+   restored to its original value after `body` is evaluated. The span is ended
+   when a close operation on `<src` completes (after values on `<src` have been
+   consumed) or `timeout` milliseconds have elapsed. Because spans must be ended
+   before they are sent to the backend, the timeout guarantees the span will
+   not be missing from the exported trace. If either `body` throws an exception
+   or exception values are put on `<src`, exception events will be added to the
+   span. `span-opts` is the same as for [[new-span!]] except that the default
+   values for `:line`, `:file` and `:ns` for the `:source` option map are set
+   from the place `<with-span-binding` is evaluated. Returns a `<dest` channel
+   with buffer size `buf-size`, where values are taken from `<src` and placed on
+   `<dest` irrespective of timeout. `<dest` will stop consuming and close when
+   `<src` closes."
+  [span-opts timeout buf-size & body]
+  `(let [span-opts# ~span-opts
+         source#    (into {:line ~(:line (meta &form))
+                           :file ~*file*
+                           :ns   ~(str *ns*)}
+                          (:source span-opts#))
+         span-opts# (assoc span-opts# :source source#)]
+     (span/async-bound-span
+      span-opts#
+      (fn [respond# raise#]
+        (let [<src# (do
+                      ~@body)]
+          (<instrumented-pipe (context/dyn) <src# ~buf-size ~timeout respond# raise#)))
+      identity
+      identity)))

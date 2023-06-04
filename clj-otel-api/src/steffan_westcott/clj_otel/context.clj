@@ -6,14 +6,17 @@
            (io.opentelemetry.context.propagation TextMapGetter TextMapPropagator TextMapSetter)
            (java.util HashMap Map)))
 
+(def ^:dynamic ^:private *bound-context*
+  nil)
+
 (defn root
   "Returns the root context that all other contexts are derived from."
   []
   (Context/root))
 
 (defn current
-  "Returns the current context, a thread local `Context` object. If no such
-   context exists, the root context is returned instead."
+  "Returns the current context, which is stored in a thread local `Context`
+   object. If no such context exists, the root context is returned instead."
   []
   (Context/current))
 
@@ -30,14 +33,28 @@
   [^Scope scope]
   (.close scope))
 
+(defn dyn
+  "Returns the bound context, which is stored in a Clojure dynamic var.
+   If no context is bound, return the current context instead."
+  []
+  (or *bound-context* (current)))
+
+(defmacro bind-context!
+  "Sets the bound context to be the provided `context`, then evaluates `body`.
+   The original bound context is restored after body evaluation completes."
+  [context & body]
+  `(binding [*bound-context* ~context]
+     ~@body))
+
 (defmacro with-context!
-  "Sets the current context to be the provided `context`, then evaluates
-   `body`. The original current context is restored after body evaluation
+  "Sets the current and bound context to be the provided `context`, then
+   evaluates `body`. The original contexts are restored after body evaluation
    completes."
   [context & body]
   `(let [^Context context# ~context]
-     (with-open [_scope# (.makeCurrent context#)]
-       ~@body)))
+     (bind-context! context#
+       (with-open [_scope# (.makeCurrent context#)]
+         ~@body))))
 
 (def ^:private context-key*
   (memoize (fn [k]
@@ -71,12 +88,19 @@
    (.with context (context-key key) value)))
 
 (defmacro with-value!
-  "Make a new current context by associating an `ImplicitContextKeyed` instance
-   `implicit-context-keyed` then evaluate `body`. The original current context
-   is restored after body evaluation completes."
+  "Associates an `ImplicitContextKeyed` instance `implicit-context-keyed` with
+   the bound context, sets this as the current and bound context, then evaluates
+   `body`. The original contexts are restored after body evaluation completes."
   [implicit-context-keyed & body]
-  `(let [^ImplicitContextKeyed value# ~implicit-context-keyed]
-     (with-open [_scope# (.makeCurrent value#)]
+  `(with-context! (assoc-value (dyn) ~implicit-context-keyed)
+     ~@body))
+
+(defmacro with-bound-context!
+  "Sets the current context to the bound context, then evaluates `body`. The
+   original current context is restored after body evaluation completes."
+  [& body]
+  `(let [^Context context# (dyn)]
+     (with-open [_scope# (.makeCurrent context#)]
        ~@body)))
 
 (defn current-context-interceptor
@@ -96,6 +120,18 @@
    :error (fn [ctx e]
             (close-scope! (get ctx scope-key))
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
+
+(defn bound-context-interceptor
+  "Returns a Pedestal interceptor that will set the bound context to the value
+   that has key `context-key` in the interceptor context map. The bound context
+   (a dynamic var) is set for subsequent interceptors in the chain; the bound
+   context is unset when this interceptor exits (either `leave` or `error`)."
+  [context-key]
+  {:name  ::bound-context
+   :enter (fn [ctx]
+            (update ctx :bindings assoc #'*bound-context* (get ctx context-key)))
+   :leave (fn [ctx]
+            (update ctx :bindings dissoc #'*bound-context*))})
 
 (def ^:private map-setter
   (reify
@@ -121,12 +157,12 @@
 
    | key                  | description |
    |----------------------|-------------|
-   |`:context`            | Context to propagate (default: current context).
+   |`:context`            | Context to propagate (default: bound or current context).
    |`:text-map-propagator`| Propagator used to create headers map entries (default: propagator set in global `OpenTelemetry` instance)."
   ([]
    (->headers {}))
   ([{:keys [^Context context ^TextMapPropagator text-map-propagator]
-     :or   {context (current)
+     :or   {context (dyn)
             text-map-propagator (otel/get-text-map-propagator)}}]
    (let [carrier (HashMap.)]
      (.inject text-map-propagator context carrier map-setter)
@@ -139,13 +175,13 @@
 
    | key                  | description |
    |----------------------|-------------|
-   |`:context`            | Context to merge with (default: current context).
+   |`:context`            | Context to merge with (default: bound or current context).
    |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in global `OpenTelemetry` instance)."
   ([headers]
    (headers->merged-context headers {}))
   (^Context
    [headers
     {:keys [^Context context ^TextMapPropagator text-map-propagator]
-     :or   {context (current)
+     :or   {context (dyn)
             text-map-propagator (otel/get-text-map-propagator)}}]
    (.extract text-map-propagator context headers map-getter)))

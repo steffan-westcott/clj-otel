@@ -22,11 +22,14 @@
   "finally" :flow-body
 
   ;; clj-otel-api
+  "bind-context!" :arg1-body
+  "with-bound-context!" :flow-body
+  "with-bound-span!" :arg1-body
   "with-context!" :arg1-body
-  "with-value!" :arg1-body
   "with-span!" :arg1-body
   "with-span-binding" :binding
   "with-span-binding'" :binding
+  "with-value!" :arg1-body
 
   ;; examples
   "catch-all" :flow-body
@@ -36,5 +39,4 @@
   "<with-span-binding" :binding
 
   ;; core.async
-  "async/go" :flow-body
-  "async/go-loop" :binding}}
+  "go" :flow-body}}

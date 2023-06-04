@@ -268,16 +268,29 @@ See https://opentelemetry.io/docs/concepts/semantic-conventions/[OpenTelemetry s
 A context is an immutable map that holds values transmitted across API boundaries and threads.
 A context may contain a span, baggage and possibly other values.
 A new context is created by adding a key-value association to an existing context.
+A context is automatically created for each new span.
+`opentelemetry-java` implements a context as a `io.opentelemetry.context.Context` object instance.
 
 [#_current_context]
 === Current context
 
-The *current context* is a thread local `io.opentelemetry.context.Context` object.
-It is a default for many functions in this project `clj-otel` and methods of the underlying Java library `opentelemetry-java`.
-The current context is safe to use when manually instrumenting synchronous code.
+The *current context* is a context referenced by a specific thread local variable, defined by `opentelemetry-java`.
+It is the default context value for many functions in `clj-otel` and `opentelemetry-java`.
+The current context is appropriate to use when manually instrumenting synchronous code.
 
-WARNING: Do not use the current context when manually instrumenting asynchronous code.
+CAUTION: Do not use the current context when manually instrumenting asynchronous code.
 See <<_instrumenting_asynchronous_clojure_code,Instrumenting asynchronous Clojure code>>.
+
+[#_bound_context]
+=== Bound context
+
+The *bound context* is a context referenced by a binding of a specific Clojure dynamic var, declared by `clj-otel`.
+Its use is optional for libraries and applications using `clj-otel`.
+It is provided as a convenience when manually instrumenting asynchronous code.
+If used, it overrides the default (current) context used for `clj-otel` functions.
+
+NOTE: https://clojure.org/reference/vars#conveyance[Binding conveyance] is a Clojure feature that conveys dynamic var bindings between blocks of asynchronous code.
+See also `clojure.core` functions https://clojuredocs.org/clojure.core/binding[`binding`], https://clojuredocs.org/clojure.core/bound-fn[`bound-fn`] and https://clojuredocs.org/clojure.core/bound-fn*[`bound-fn*`].
 
 [#_context_propagation]
 === Context propagation
@@ -302,8 +315,18 @@ The *W3C Trace Context* and *W3C baggage header* propagation protocols are the m
 
 When manually instrumenting asynchronous Clojure code with this library `clj-otel`, it is not possible to use the <<_current_context,current context>>.
 This is because async Clojure function evaluations share threads, but each evaluation is associated with a distinct context.
-The async function must instead maintain a reference to the associated context during evaluation, rather than use the current context.
-Some functions in this library `clj-otel` take a `:context` or `:parent` option to indicate the associated context to use, as an alternative to the default current context.
+
+There are two general approaches for correct handling of context in asynchronous code:
+
+=== Use explicit context value
+
+* The async function maintains a reference to the associated context during evaluation.
+* The context is passed as an explicit `:context` or `:parent` value to `clj-otel` functions.
+
+=== Use bound context value
+
+* The bound context value is automatically updated by using appropriate `clj-otel` functions.
+* The bound context is a default `:context` or `:parent` value for `clj-otel` functions.
 
 == Trace sampling
 
