@@ -6,6 +6,11 @@
            (io.opentelemetry.context.propagation TextMapGetter TextMapPropagator TextMapSetter)
            (java.util HashMap Map)))
 
+(defn root
+  "Returns the root context that all other contexts are derived from."
+  []
+  (Context/root))
+
 (defn current
   "Returns the current context, a thread local `Context` object. If no such
    context exists, the root context is returned instead."
@@ -32,15 +37,6 @@
   [context & body]
   `(let [^Context context# ~context]
      (with-open [_scope# (.makeCurrent context#)]
-       ~@body)))
-
-(defmacro with-value!
-  "Make a new current context by associating an `ImplicitContextKeyed` instance
-   `implicit-context-keyed` then evaluate `body`. The original current context
-   is restored after body evaluation completes."
-  [implicit-context-keyed & body]
-  `(let [^ImplicitContextKeyed value# ~implicit-context-keyed]
-     (with-open [_scope# (.makeCurrent value#)]
        ~@body)))
 
 (def ^:private context-key*
@@ -74,10 +70,14 @@
   (^Context [^Context context key value]
    (.with context (context-key key) value)))
 
-(defn root
-  "Returns the root context that all other contexts are derived from."
-  []
-  (Context/root))
+(defmacro with-value!
+  "Make a new current context by associating an `ImplicitContextKeyed` instance
+   `implicit-context-keyed` then evaluate `body`. The original current context
+   is restored after body evaluation completes."
+  [implicit-context-keyed & body]
+  `(let [^ImplicitContextKeyed value# ~implicit-context-keyed]
+     (with-open [_scope# (.makeCurrent value#)]
+       ~@body)))
 
 (defn current-context-interceptor
   "Returns a Pedestal interceptor that will on entry set the current context to
