@@ -39,6 +39,7 @@ See the https://www.jaegertracing.io/docs/1.45/client-libraries/#deprecating-jae
 - Bump deps:
 * [MAINT] OpenTelemetry contrib `1.26.0-alpha`
 * [MAINT] gRPC `1.55.1`
+* [MAINT] Various build deps
 
 === `0.2.1` (2023-05-08)
 
