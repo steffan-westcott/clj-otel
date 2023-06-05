@@ -327,11 +327,13 @@
   "Starts a new span, binds `context` to the new context containing the span
    and evaluates `body`. The span is ended on completion of body evaluation.
    It is expected `body` provides a synchronous result, use [[async-span]]
-   instead for working with asynchronous functions. Does not use nor set the
-   current context. `span-opts` is a span options map, the same as for
-   [[new-span!]], except that the default values for `:line`, `:file` and `:ns`
-   for the `:source` option map are set from the place `with-span-binding` is
-   evaluated. See also [[with-span!]]."
+   or [[async-bound-span]] instead for working with asynchronous functions. Does
+   not use nor set the current context.
+
+   `span-opts` is a span options map, the same as for [[new-span!]], except that
+   the default values for `:line`, `:file` and `:ns` for the `:source` option
+   map are set from the place `with-span-binding` is evaluated. See also
+   [[with-span!]] and [[with-bound-span!]]."
   [[context span-opts] & body]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))
@@ -347,10 +349,12 @@
    the span and evaluates `body`. The current context is restored to its
    previous value and the span is ended on completion of body evaluation.
    It is expected `body` provides a synchronous result, use [[async-span]]
-   instead for working with asynchronous functions. `span-opts` is a span
-   options map, the same as for [[new-span!]], except that the default values
-   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-   place `with-span!` is evaluated. See also [[with-span-binding]]."
+   or [[async-bound-span]] instead for working with asynchronous functions.
+
+   `span-opts` is a span options map, the same as for [[new-span!]], except that
+   the default values for `:line`, `:file` and `:ns` for the `:source` option
+   map are set from the place `with-span!` is evaluated. See also
+   [[with-bound-span!]] and [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))
@@ -366,12 +370,14 @@
   "Starts a new span, sets the bound context to the new context containing the
    span and evaluates `body`. The bound context is restored to its previous
    value and the span is ended on completion of body evaluation. It is expected
-   `body` provides a synchronous result, use [[async-span]] instead for working
-   with asynchronous functions. Does not use nor set the current context.
+   `body` provides a synchronous result, use [[async-span]] or
+   [[async-bound-span]] instead for working with asynchronous functions. Does
+   not use nor set the current context.
+
    `span-opts` is a span options map, the same as for [[new-span!]], except that
    the default values for `:line`, `:file` and `:ns` for the `:source` option
-   map are set from the place `with-span!` is evaluated. See also
-   [[with-span!]]."
+   map are set from the place `with-span!` is evaluated. See also [[with-span!]]
+   and [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))

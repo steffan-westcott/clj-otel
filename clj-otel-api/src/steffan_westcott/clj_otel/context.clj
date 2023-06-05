@@ -34,8 +34,8 @@
   (.close scope))
 
 (defn dyn
-  "Returns the bound context, which is stored in a Clojure dynamic var.
-   If no context is bound, return the current context instead."
+  "Returns the bound context, which is stored in a Clojure dynamic var. If no
+   context is bound, the current context is returned instead."
   []
   (or *bound-context* (current)))
 
@@ -89,8 +89,9 @@
 
 (defmacro with-value!
   "Associates an `ImplicitContextKeyed` instance `implicit-context-keyed` with
-   the bound context, sets this as the current and bound context, then evaluates
-   `body`. The original contexts are restored after body evaluation completes."
+   the bound or current context, sets this as the current and bound context,
+   then evaluates `body`. The original contexts are restored after body
+   evaluation completes."
   [implicit-context-keyed & body]
   `(with-context! (assoc-value (dyn) ~implicit-context-keyed)
      ~@body))

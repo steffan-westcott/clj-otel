@@ -75,7 +75,7 @@ The new context containing the new span is bound to `context*` in this example:
 
 ===== Create an asynchronous span using the bound context
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-bound-span[`steffan-westcott.clj-otel.api.trace.span/async-bound-span`] to start a new span, where the context to use is the bound context. The new span ends when either success/failure callback `respond`/`raise` is evaluated:
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-bound-span[`steffan-westcott.clj-otel.api.trace.span/async-bound-span`] to start a new span, where the context to use is the xref:concepts.adoc#_bound_context[bound context]. The new span ends when either success/failure callback `respond`/`raise` is evaluated:
 +
 [source,clojure]
 ----

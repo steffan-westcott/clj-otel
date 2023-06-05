@@ -276,7 +276,7 @@ A context is automatically created for each new span.
 
 The *current context* is a context referenced by a specific thread local variable, defined by `opentelemetry-java`.
 It is the default context value for many functions in `clj-otel` and `opentelemetry-java`.
-The current context is appropriate to use when manually instrumenting synchronous code.
+The current context should be used when manually instrumenting synchronous code.
 
 CAUTION: Do not use the current context when manually instrumenting asynchronous code.
 See <<_instrumenting_asynchronous_clojure_code,Instrumenting asynchronous Clojure code>>.
