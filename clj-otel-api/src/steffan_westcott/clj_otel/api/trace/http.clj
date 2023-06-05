@@ -51,7 +51,7 @@
                                                  uri)
              SemanticAttributes/HTTP_FLAVOR    (str/replace (str/upper-case protocol) #"^HTTP/" "")
              SemanticAttributes/HTTP_CLIENT_IP (client-ip forwarded x-forwarded-for remote-addr)}
-      user-agent      (assoc SemanticAttributes/HTTP_USER_AGENT user-agent)
+      user-agent      (assoc SemanticAttributes/USER_AGENT_ORIGINAL user-agent)
       content-length  (assoc SemanticAttributes/HTTP_REQUEST_CONTENT_LENGTH
                              (parse-long* content-length))
       (seq host-port) (assoc SemanticAttributes/NET_HOST_PORT (parse-long* host-port))
