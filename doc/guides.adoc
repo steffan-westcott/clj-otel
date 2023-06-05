@@ -27,7 +27,7 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.1"}}}
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.2"}}}
 ----
 
 * Follow the guides below to add manual traces and metrics instrumentation.
@@ -288,7 +288,7 @@ CAUTION: When running an application with the OpenTelemetry instrumentation agen
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.1"}}}
+ :deps {com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.2"}}}
 ----
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics/CURRENT/api/steffan-westcott.clj-otel.instrumentation.runtime-metrics#register![`steffan-westcott.clj-otel.instrumentation.runtime-metrics/register!`] to add JVM runtime metrics.
 They are implemented as instruments which take measurements asynchronously.
@@ -690,9 +690,9 @@ For an example application `my-app`, with `deps.edn` to export traces only using
 [.small]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-exporter-otlp            {:mvn/version "0.2.1"}
-        com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.2.1"}
-        com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.2.1"}
+ :deps {com.github.steffan-westcott/clj-otel-exporter-otlp            {:mvn/version "0.2.2"}
+        com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.2.2"}
+        com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.2.2"}
         io.grpc/grpc-netty-shaded                                     {:mvn/version "1.55.1"}
         io.grpc/grpc-protobuf                                         {:mvn/version "1.55.1"}
         io.grpc/grpc-stub                                             {:mvn/version "1.55.1"}}}

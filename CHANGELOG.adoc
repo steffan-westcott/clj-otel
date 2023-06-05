@@ -24,7 +24,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
-=== `0.2.2` (in progress)
+=== `0.2.2` (2023-06-05)
 
 - [ADD] Opt-in feature xref:doc/concepts.adoc#_bound_context[bound context], a Clojure dynamic var that overrides the default `context` or `parent` parameter value for `clj-otel` functions.
 This feature is intended to simplify asynchronous code by eliminating explicit context passing.
