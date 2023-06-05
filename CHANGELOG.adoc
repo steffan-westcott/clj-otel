@@ -36,6 +36,9 @@ This applies to resources, spans and metrics.
 - [MAINT] Remove Jaeger exporters from examples, since they will be deprecated soon.
 The Jaeger Collector now accepts OTLP directly.
 See the https://www.jaegertracing.io/docs/1.45/client-libraries/#deprecating-jaeger-clients[Jaeger clients deprecation notice].
+- Bump deps:
+* [MAINT] OpenTelemetry contrib `1.26.0-alpha`
+* [MAINT] gRPC `1.55.1`
 
 === `0.2.1` (2023-05-08)
 

@@ -17,7 +17,7 @@
   :otel {:jvm-opts   ["-Dotel.resource.attributes=service.name=sum-service"
                       "-Dotel.java.global-autoconfigure.enabled=true"]
          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.26.0-alpha"}
-                      io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.25.1-alpha"}}}
+                      io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.26.0-alpha"}}}
 
 
 
@@ -111,9 +111,9 @@
   ;; -----------------------------
   ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
 
-  :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.54.1"}
-                            io.grpc/grpc-protobuf     {:mvn/version "1.54.1"}
-                            io.grpc/grpc-stub         {:mvn/version "1.54.1"}}}
+  :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.55.1"}
+                            io.grpc/grpc-protobuf     {:mvn/version "1.55.1"}
+                            io.grpc/grpc-stub         {:mvn/version "1.55.1"}}}
 
 
 
