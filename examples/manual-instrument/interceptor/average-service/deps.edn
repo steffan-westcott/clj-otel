@@ -3,8 +3,8 @@
 {:paths ["src" "resources"]
 
  :deps {clj-http/clj-http {:mvn/version "3.12.3"}
-        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.2"}
-        com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.2"}
+        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.3"}
+        com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics {:mvn/version "0.2.3"}
         io.pedestal/pedestal.interceptor {:mvn/version "0.5.10"}
         io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
         io.pedestal/pedestal.route {:mvn/version "0.5.10"}
