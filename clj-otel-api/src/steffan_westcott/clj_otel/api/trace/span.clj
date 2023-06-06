@@ -376,8 +376,8 @@
 
    `span-opts` is a span options map, the same as for [[new-span!]], except that
    the default values for `:line`, `:file` and `:ns` for the `:source` option
-   map are set from the place `with-span!` is evaluated. See also [[with-span!]]
-   and [[with-span-binding]]."
+   map are set from the place `with-bound-span!` is evaluated. See also
+   [[with-span!]] and [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# ~span-opts
          source#    (into {:line ~(:line (meta &form))
