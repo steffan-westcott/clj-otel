@@ -8,4 +8,5 @@
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"
-                             "-Dotel.metrics.exporter=none"]}}}
+                             "-Dotel.metrics.exporter=none"
+                             "-Dotel.logs.exporter=none"]}}}

@@ -72,6 +72,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 "-javaagent:opentelemetry-javaagent.jar"
 "-Dotel.resource.attributes=service.name=NAME-OF-YOUR-SERVICE"
 "-Dotel.metrics.exporter=none"
+"-Dotel.logs.exporter=none"
 ----
 
 * To receive exported telemetry data

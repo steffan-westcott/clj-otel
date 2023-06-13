@@ -40,7 +40,7 @@
 
 (defn- server-request-attrs
   [request captured-request-headers]
-  (let [{:keys [headers request-method scheme uri query-string protocol remote-addr]} request
+  (let [{:keys [headers request-method scheme uri query-string remote-addr]} request
         {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
         [_ host-name host-port] (re-find #"^(.*?)(?::(\d*))?$" host)]
     (cond-> {SemanticAttributes/HTTP_METHOD    (str/upper-case (name request-method))
@@ -49,7 +49,6 @@
              SemanticAttributes/HTTP_TARGET    (if query-string
                                                  (str uri "?" query-string)
                                                  uri)
-             SemanticAttributes/HTTP_FLAVOR    (str/replace (str/upper-case protocol) #"^HTTP/" "")
              SemanticAttributes/HTTP_CLIENT_IP (client-ip forwarded x-forwarded-for remote-addr)}
       user-agent      (assoc SemanticAttributes/USER_AGENT_ORIGINAL user-agent)
       content-length  (assoc SemanticAttributes/HTTP_REQUEST_CONTENT_LENGTH

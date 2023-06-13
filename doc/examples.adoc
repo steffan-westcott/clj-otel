@@ -45,7 +45,7 @@ docker-compose up -d
 +
 Select an example from the <<_examples_overview,overview>> below and follow the notes on starting and exercising the application or services.
 See the choice of aliases in the `deps.edn` file to configure telemetry export to an OpenTelemetry Collector or backend of your choice.
-For example, in `examples/auto-sdk-config`, to export trace data to the Collector using gRPC with Netty transport, start a REPL with aliases `otel`, `traces-collector-grpc`, `metrics-none` and `grpc-netty`.
+For example, in `examples/auto-sdk-config`, to export trace data to the Collector using gRPC with Netty transport, start a REPL with aliases `otel`, `traces-collector-grpc`, `metrics-none`, `logs-none` and `grpc-netty`.
 
 . *View telemetry data in backend(s)*
 +

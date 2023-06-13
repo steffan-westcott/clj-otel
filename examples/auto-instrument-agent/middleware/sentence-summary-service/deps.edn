@@ -82,6 +82,13 @@
 
 
   ;; -----------------------------
+  ;; Select exactly one logs-* alias for export of logs
+
+  :logs-none {:jvm-opts ["-Dotel.logs.exporter=none"]}
+
+
+
+  ;; -----------------------------
   ;;Select exactly one logging-* alias for application logging
 
   :logging-log4j2 {:jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"

@@ -26,6 +26,10 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.3` (in progress)
 
+- Bump deps:
+* [MAINT] OpenTelemetry `1.27.0`
+** [BREAK] The default value for autoconfiguration property `otel.logs.exporter` has changed from `none` to `otlp`
+
 === `0.2.2` (2023-06-05)
 
 - [ADD] Opt-in feature xref:doc/concepts.adoc#_bound_context[bound context], a Clojure dynamic var that overrides the default `context` or `parent` parameter value for `clj-otel` functions.

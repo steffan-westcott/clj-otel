@@ -2,4 +2,4 @@
 
 {:paths ["src"]
  :deps  {org.clojure/clojure {:mvn/version "1.11.1"}
-         io.opentelemetry/opentelemetry-exporter-jaeger-thrift {:mvn/version "1.26.0"}}}
+         io.opentelemetry/opentelemetry-exporter-jaeger-thrift {:mvn/version "1.27.0"}}}

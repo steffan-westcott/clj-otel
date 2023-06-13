@@ -602,7 +602,7 @@ Select this option to export telemetry data from manual instrumentation only; Th
 +
 Select this option to mute all telemetry data.
 
-TIP: Traces and metrics telemetry data are muted in the last option or by setting the autoconfiguration properties `otel.traces.exporter` and `otel.metrics.exporter` to `none` (the defaults are `otlp` for both properties) when using either of the first two options.
+TIP: Traces, metrics and logs telemetry data are muted in the last option or by setting the autoconfiguration properties `otel.traces.exporter`, `otel.metrics.exporter` and `otel.logs.exporter` to `none` (the defaults are `otlp` for all properties) when using either of the first two options.
 
 [#_run_with_the_opentelemetry_auto_instrumentation_agent]
 === Run with the OpenTelemetry auto-instrumentation agent
@@ -625,6 +625,7 @@ For an example application `my-app`, with `deps.edn` to export traces only using
                      "-Dotel.resource.attributes=service.name=my-app"
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
+                     "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]}}}
 ----
 
@@ -658,9 +659,10 @@ For an example application `my-app`, with `deps.edn` to export traces only using
                      "-Dotel.java.global-autoconfigure.enabled=true"
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
+                     "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.26.0-alpha"}
-                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.26.0"}
+          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.27.0-alpha"}
+                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.27.0"}
                        io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.26.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.55.1"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.55.1"}

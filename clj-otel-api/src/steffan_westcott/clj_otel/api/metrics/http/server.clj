@@ -67,15 +67,15 @@
 (defn- active-requests-attrs
   [server-request-attrs]
   (select-keys server-request-attrs
-               [SemanticAttributes/HTTP_FLAVOR SemanticAttributes/HTTP_METHOD
-                SemanticAttributes/HTTP_SCHEME SemanticAttributes/NET_HOST_NAME]))
+               [SemanticAttributes/HTTP_METHOD SemanticAttributes/HTTP_SCHEME
+                SemanticAttributes/NET_HOST_NAME]))
 
 (defn- request-duration-or-size-attrs
   [server-request-attrs status]
   (-> (select-keys server-request-attrs
-                   [SemanticAttributes/HTTP_FLAVOR SemanticAttributes/HTTP_METHOD
-                    SemanticAttributes/HTTP_ROUTE SemanticAttributes/HTTP_SCHEME
-                    SemanticAttributes/NET_HOST_NAME SemanticAttributes/NET_HOST_PORT])
+                   [SemanticAttributes/HTTP_METHOD SemanticAttributes/HTTP_ROUTE
+                    SemanticAttributes/HTTP_SCHEME SemanticAttributes/NET_HOST_NAME
+                    SemanticAttributes/NET_HOST_PORT])
       (assoc SemanticAttributes/HTTP_STATUS_CODE status)))
 
 (defn- record-duration!
