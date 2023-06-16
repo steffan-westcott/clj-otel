@@ -19,7 +19,7 @@
   :otel {:jvm-opts   ["-Dotel.resource.attributes=service.name=average-service"
                       "-Dotel.java.global-autoconfigure.enabled=true"]
          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.27.0-alpha"}
-                      io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.26.0-alpha"}}}
+                      io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.27.0-alpha"}}}
 
 
 
