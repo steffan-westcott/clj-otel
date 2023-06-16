@@ -1,6 +1,6 @@
 (ns steffan-westcott.clj-otel.sdk.jaeger-remote-sampler
   "`Sampler` that implements Jaeger remote sampler type."
-  (:require [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]
+  (:require [steffan-westcott.clj-otel.sdk.tracer-provider :as tracer]
             [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.sdk.extension.trace.jaeger.sampler JaegerRemoteSampler)))
 
@@ -31,5 +31,5 @@
                   (and ssl-context x509-trust-manager) (.setSslContext ssl-context
                                                                        x509-trust-manager)
                   polling-interval (.setPollingInterval (util/duration polling-interval))
-                  initial-sampler (.setInitialSampler (sdk/as-Sampler initial-sampler)))]
+                  initial-sampler (.setInitialSampler (tracer/as-Sampler initial-sampler)))]
     (.build builder)))

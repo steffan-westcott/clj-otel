@@ -26,10 +26,11 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.3` (in progress)
 
+- [ADD] Support for programmatic configuration of `MeterProvider` for metrics export.
+- [FIX] `steffan-westcott.clj-otel.util/duration` should convert `[amount ^TimeUnit unit]` to `Duration`
 - Bump deps:
 * [MAINT] OpenTelemetry `1.27.0`
 ** [BREAK] The default value for autoconfiguration property `otel.logs.exporter` has changed from `none` to `otlp`
-- [FIX] `steffan-westcott.clj-otel.util/duration` should convert `[amount ^TimeUnit unit]` to `Duration`
 
 === `0.2.2` (2023-06-05)
 

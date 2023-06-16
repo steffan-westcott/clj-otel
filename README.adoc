@@ -129,7 +129,8 @@ Code for creating spans around `core.async` channels can be found in the example
 ** There is currently no coverage of the Logs API.
 * For the programmatic configuration of the OpenTelemetry SDK:
 ** Coverage of Traces `TracerProvider` is complete.
-** Coverage of Metrics `MeterProvider` is planned.
+** Coverage of Metrics `MeterProvider` is in progress.
+Most configuration options are supported, but some public details of the OpenTelemetry Java SDK are not yet stable.
 ** There is currently no coverage of Logging `LoggerProvider`.
 
 == TODO

@@ -13,9 +13,27 @@
     ;[steffan-westcott.clj-otel.exporter.logging :as logging]
     ;[steffan-westcott.clj-otel.exporter.logging-otlp :as logging-otlp]
 
+    ;; Require desired metric exporters
+    [steffan-westcott.clj-otel.exporter.otlp.grpc.metrics :as otlp-grpc-metrics]
+    ;[steffan-westcott.clj-otel.exporter.otlp.http.metrics :as otlp-http-metrics]
+
+    [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
     [steffan-westcott.clj-otel.api.trace.span :as span]
     [steffan-westcott.clj-otel.resource.resources :as res]
-    [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]))
+    [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]
+    [steffan-westcott.clj-otel.sdk.meter-provider :as meter])
+  (:import (java.util.concurrent TimeUnit)))
+
+(defonce
+  ^{:doc "Delay containing a counter that records the number of squares
+          calculated."}
+  squares-count
+  (delay (instrument/instrument {:name        "app.squares-count"
+                                 :instrument-type :counter
+                                 :unit        "{squares}"
+                                 :description "The number of squares calculated"})))
+
+
 
 (defn init-otel!
   "Configure and initialise the OpenTelemetry SDK as the global OpenTelemetry
@@ -38,10 +56,7 @@
                 (res/process-resource)
                 (res/process-runtime-resource)]
 
-    ;; Configuration options for the context propagation, sampling, batching
-    ;; and export of traces. Here we configure export to a local OpenTelemetry
-    ;; Collector instance with default options. The exported spans are batched
-    ;; by default.
+    ;; Configuration options for the sampling, batching and export of traces.
     :tracer-provider
     {:span-processors
 
@@ -84,7 +99,26 @@
                    ;; (used for debugging only)
                    ;(logging-otlp/span-exporter)
 
-                  ]}]}}))
+                  ]}]}
+
+    ;; Configuration options for transformation, aggregation and export of metrics.
+    :meter-provider
+    {:readers [
+               ;; Export metrics once every 10 seconds to locally deployed
+               ;; OpenTelemetry Collector via gRPC
+               {:metric-reader (meter/periodic-metric-reader
+                                {:interval        [10 TimeUnit/SECONDS]
+                                 :metric-exporter (otlp-grpc-metrics/metric-exporter)})}
+
+               ;; Export metrics once every 10 seconds to locally deployed
+               ;; OpenTelemetry Collector via HTTP
+               ;{:metric-reader (meter/periodic-metric-reader
+               ;                 {:interval        [10 TimeUnit/SECONDS]
+               ;                  :metric-exporter (otlp-http-metrics/metric-exporter)})}
+
+              ]}}))
+
+
 
 (defn close-otel!
   "Shut down OpenTelemetry SDK processes. This should be called before the
@@ -92,12 +126,17 @@
   []
   (sdk/close-otel-sdk!))
 
+
+
 (defn square
   "Returns the square of a number."
   [n]
   (span/with-span! {:name "squaring"}
     (Thread/sleep 500)
+    (instrument/add! @squares-count {:value 1})
     (* n n)))
+
+
 
 (comment
   (init-otel!) ; once only

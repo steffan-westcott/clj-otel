@@ -1,6 +1,7 @@
 ;!zprint {:style [:respect-nl] :width 180}
 
-{:cljdoc.doc/tree [["Introduction" {:file "README.adoc"}]
+{:cljdoc/languages ["clj"]
+ :cljdoc.doc/tree [["Introduction" {:file "README.adoc"}]
                    ["Tutorial" {:file "doc/tutorial.adoc"}]
                    ["Guides" {:file "doc/guides.adoc"}]
                    ["API & Reference" {:file "doc/reference.adoc"}]

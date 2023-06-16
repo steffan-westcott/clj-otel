@@ -1,156 +1,11 @@
 (ns steffan-westcott.clj-otel.sdk.otel-sdk
   "Programmatic configuration of the OpenTelemetry SDK."
-  (:require [steffan-westcott.clj-otel.api.attributes :as attr]
-            [steffan-westcott.clj-otel.api.otel :as otel]
-            [steffan-westcott.clj-otel.propagator.w3c-baggage :as w3c-baggage]
-            [steffan-westcott.clj-otel.propagator.w3c-trace-context :as w3c-trace]
-            [steffan-westcott.clj-otel.util :as util])
-  (:import
-    (clojure.lang Fn)
-    (java.util Map)
-    (java.util.function Supplier)
-    (io.opentelemetry.context.propagation ContextPropagators TextMapPropagator)
-    (io.opentelemetry.sdk OpenTelemetrySdk)
-    (io.opentelemetry.sdk.resources Resource)
-    (io.opentelemetry.sdk.trace SdkTracerProvider SdkTracerProviderBuilder SpanLimits SpanProcessor)
-    (io.opentelemetry.sdk.trace.export BatchSpanProcessor SimpleSpanProcessor SpanExporter)
-    (io.opentelemetry.sdk.trace.samplers Sampler)
-    (io.opentelemetry.semconv.resource.attributes ResourceAttributes)))
-
-(defprotocol ^:private AsResource
-  (^:no-doc as-Resource [resource]))
-
-(extend-protocol AsResource
- Resource
-   (as-Resource [resource]
-     resource)
- Map
-   (as-Resource [{:keys [attributes schema-url]}]
-     (Resource/create (attr/->attributes attributes) schema-url)))
-
-(defn- merge-resources-with-default
-  [service-name resources]
-  (let [service-resource {:attributes {ResourceAttributes/SERVICE_NAME service-name}}
-        resources'       (cons service-resource resources)]
-    (reduce #(.merge ^Resource %1 (as-Resource %2)) (Resource/getDefault) resources')))
-
-(defprotocol ^:private AsSpanLimits
-  (^:no-doc as-SpanLimits [span-limits]))
-
-(extend-protocol AsSpanLimits
- SpanLimits
-   (as-SpanLimits [span-limits]
-     span-limits)
- Map
-   (as-SpanLimits [{:keys [max-attrs max-events max-links max-attrs-per-event max-attrs-per-link
-                           max-attr-value-len]}]
-     (let [builder (cond-> (SpanLimits/builder)
-                     max-attrs          (.setMaxNumberOfAttributes max-attrs)
-                     max-events         (.setMaxNumberOfEvents max-events)
-                     max-links          (.setMaxNumberOfLinks max-links)
-                     max-attrs-per-event (.setMaxNumberOfAttributesPerEvent max-attrs-per-event)
-                     max-attrs-per-link (.setMaxNumberOfAttributesPerLink max-attrs-per-link)
-                     max-attr-value-len (.setMaxAttributeValueLength max-attr-value-len))]
-       (.build builder))))
-
-(defprotocol ^:private AsSpanLimitsSupplier
-  (^:no-doc as-SpanLimits-Supplier [supplier]))
-
-(extend-protocol AsSpanLimitsSupplier
- Supplier
-   (as-SpanLimits-Supplier [supplier]
-     supplier)
- Fn
-   (as-SpanLimits-Supplier [supplier]
-     (reify
-      Supplier
-        (get [_]
-          (as-SpanLimits (supplier))))))
-
-(defprotocol ^:no-doc AsSampler
-  (as-Sampler [sampler]
-   "Coerce to `Sampler`. May be given a `:sampler` option map, see [[init-otel-sdk!]]."))
-
-(defn- map->ParentBasedSampler
-  [{:keys [root remote-parent-sampled remote-parent-not-sampled local-parent-sampled
-           local-parent-not-sampled]
-    :or   {root (Sampler/alwaysOn)}}]
-  (let [builder (cond-> (Sampler/parentBasedBuilder (as-Sampler root))
-                  remote-parent-sampled     (.setRemoteParentSampled (as-Sampler
-                                                                      remote-parent-sampled))
-                  remote-parent-not-sampled (.setLocalParentNotSampled (as-Sampler
-                                                                        remote-parent-not-sampled))
-                  local-parent-sampled      (.setLocalParentSampled (as-Sampler
-                                                                     local-parent-sampled))
-                  local-parent-not-sampled  (.setLocalParentNotSampled (as-Sampler
-                                                                        local-parent-not-sampled)))]
-    (.build builder)))
-
-(extend-protocol AsSampler
- Sampler
-   (as-Sampler [sampler]
-     sampler)
- Map
-   (as-Sampler [{:keys [always ratio parent-based]}]
-     (cond always       (case always
-                          :on  (Sampler/alwaysOn)
-                          :off (Sampler/alwaysOff))
-           ratio        (Sampler/traceIdRatioBased ratio)
-           parent-based (map->ParentBasedSampler parent-based))))
-
-(defprotocol ^:private AsSpanProcessor
-  (^:no-doc as-SpanProcessor [span-processor]))
-
-(extend-protocol AsSpanProcessor
- SpanProcessor
-   (as-SpanProcessor [span-processor]
-     span-processor)
- Map
-   (as-SpanProcessor [span-processor]
-     (let [{:keys [^Iterable exporters batch? schedule-delay exporter-timeout max-queue-size
-                   max-export-batch-size]
-            :or   {batch? true}}
-           span-processor
-
-           composite-exporter (SpanExporter/composite exporters)]
-       (if batch?
-         (let [builder (cond-> (BatchSpanProcessor/builder composite-exporter)
-                         schedule-delay        (.setScheduleDelay (util/duration schedule-delay))
-                         exporter-timeout      (.setExporterTimeout (util/duration
-                                                                     exporter-timeout))
-                         max-queue-size        (.setMaxQueueSize max-queue-size)
-                         max-export-batch-size (.setMaxExportBatchSize max-export-batch-size))]
-           (.build builder))
-         (SimpleSpanProcessor/create composite-exporter)))))
-
-(defn- set-span-limits
-  ^SdkTracerProviderBuilder [^SdkTracerProviderBuilder builder span-limits]
-  (if (satisfies? AsSpanLimits span-limits)
-    (.setSpanLimits builder ^SpanLimits (as-SpanLimits span-limits))
-    (.setSpanLimits builder ^Supplier (as-SpanLimits-Supplier span-limits))))
-
-(defn- get-sdk-tracer-provider
-  [{:keys [span-processors span-limits sampler resource id-generator clock]
-    :or   {span-processors []}}]
-  (let [^SdkTracerProviderBuilder bb (reduce #(.addSpanProcessor ^SdkTracerProviderBuilder %1
-                                                                 (as-SpanProcessor %2))
-                                             (SdkTracerProvider/builder)
-                                             span-processors)
-        builder (cond-> bb
-                  span-limits  (set-span-limits span-limits)
-                  sampler      (.setSampler (as-Sampler sampler))
-                  resource     (.setResource (as-Resource resource))
-                  id-generator (.setIdGenerator id-generator)
-                  clock        (.setClock clock))]
-    (.build builder)))
-
-(defn- get-open-telemetry-sdk
-  [{:keys [tracer-provider ^Iterable text-map-propagators]}]
-  (let [propagators (ContextPropagators/create (TextMapPropagator/composite text-map-propagators))
-        builder     (doto (OpenTelemetrySdk/builder)
-                      (.setPropagators propagators)
-                      (.setTracerProvider tracer-provider))]
-    (.build builder)))
+  (:require [steffan-westcott.clj-otel.api.otel :as otel]
+            [steffan-westcott.clj-otel.sdk.meter-provider :as meter]
+            [steffan-westcott.clj-otel.sdk.propagators :as propagators]
+            [steffan-westcott.clj-otel.sdk.resources :as res]
+            [steffan-westcott.clj-otel.sdk.tracer-provider :as tracer])
+  (:import (io.opentelemetry.sdk OpenTelemetrySdk)))
 
 (def ^:private otel-sdk
   (atom nil))
@@ -159,19 +14,24 @@
   "Configure an `OpenTelemetrySdk` instance and set as the global
    `OpenTelemetry` instance. `service-name` is the service name given to the
    resource emitting telemetry. This function may be evaluated once only.
-   Attempts to evaluate this more than once will result in error.
+   Attempts to evaluate this more than once will result in an error.
 
-   Takes a nested option map as described in the
-   following sections. Some options can take either an option map or an
-   equivalent fully configured Java object.
+   Takes a nested option map as described in the following sections. Some
+   options can take either an option map or an equivalent fully configured Java
+   object.
 
    Top level option map
 
    | key              | description |
    |------------------|-------------|
    |`:resources`      | Collection of resources to merge with default SDK resource and `service-name` resource. Each resource in the collection is either a `Resource` instance or a map with keys `:attributes` (required) and `:schema-url` (optional). The merged resource describes the source of telemetry and is attached to emitted data (default: nil)
-   |`:tracer-provider`| Required options map (see below) to configure `SdkTracerProvider` instance.
-   |`:propagators`    | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).
+   |`:propagators`    | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).\n
+   |`:tracer-provider`| Option map (see below) to configure `SdkTracerProvider` instance (default: `{}`).
+   |`:meter-provider` | Option map (see below) to configure `SdkMeterProvider` instance (default: `{}`).
+
+
+   ====================================================
+
 
    `:tracer-provider` option map
 
@@ -181,7 +41,7 @@
    |`:span-limits`    | Option map (see table below), `SpanLimits`, `Supplier` or fn which returns span limits (default: same as `{}`).
    |`:sampler`        | Option map (see table below) or `Sampler` instance, specifies strategy for sampling spans (default: same as `{:parent-based {}}`).
    |`:id-generator`   | `IdGenerator` instance for generating ids for spans and traces (default: platform specific `IdGenerator`).
-   |`:clock`          | `Clock` instance used for time reading operations (default: system clock).
+   |`:clock`          | `Clock` instance used for all temporal needs (default: system clock).
 
    `:span-processors` member option map
 
@@ -221,15 +81,87 @@
    |`:remote-parent-sampled`    | Option map (see `:sampler` table above) or `Sampler` to use when there is a remote parent that was sampled (default: same as `{:always :on}`).
    |`:remote-parent-not-sampled`| Option map (see `:sampler` table above) or `Sampler` to use when there is a remote parent that was not sampled (default: same as `{:always :off}`).
    |`:local-parent-sampled`     | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was sampled (default: same as `{:always :on}`).
-   |`:local-parent-not-sampled` | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was not sampled (default: same as `{:always :off}`)."
+   |`:local-parent-not-sampled` | Option map (see `:sampler` table above) or `Sampler` to use when there is a local parent that was not sampled (default: same as `{:always :off}`).
+
+
+   ====================================================
+
+
+   `:meter-provider` option map
+
+   | key      | description |
+   |----------|-------------|
+   |`:readers`| Collection of option maps (see table below) for specifying metric readers (default: no readers).
+   |`:views`  | Collection of option maps (see table below) for specifying views that affect exported metrics (default: no views).
+   |`:clock`  | `Clock` instance used for all temporal needs (default: system clock).
+
+   `:readers` member option map
+
+   | key            | description |
+   |----------------|-------------|
+   |`:metric-reader`| A `MetricReader` instance. See `steffan-westcott.clj-otel.sdk.meter-provider/periodic-metric-reader` and `PrometheusHttpServer`.
+
+   `:views` member option map
+
+   | key                  | description |
+   |----------------------|-------------|
+   |`:instrument-selector`| Option map (see table below), describing instrument selection criteria.
+   |`:view`               | Option map (see table below), describing view that configures how measurements are aggregated and exported as metrics.
+
+   `:instrument-selector` option map
+
+   | key               | description |
+   |-------------------|-------------|
+   |`:type`            | Type of instruments to match, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge` (optional).
+   |`:async?`          | True if instruments to match take measurements asynchronously (required if `:type` is specified).
+   |`:name`            | Name of instrument to match (optional).
+   |`:unit`            | Unit of instruments to match (optional).
+   |`:meter-name`      | Name of meter associated with instruments to match (optional).
+   |`:meter-version`   | Version of meter associated with instruments to match (optional).
+   |`:meter-schema-url`| Schema URL of meter associated with instruments to match (optional).
+
+   `:view` option map
+
+   | key               | description |
+   |-------------------|-------------|
+   |`:name`            | Name of resulting metric (default: matched instrument name).
+   |`:description`     | String description of resulting metric (default: matched instrument description).
+   |`:aggregation`     | Option map (see table below) describing a single aggregation to use (default: dependent on instrument type).
+   |`:attribute-filter`| Function which takes a string attribute name, which returns truthy result if attribute should be included (default: all attributes included).
+
+   `:aggregation` option map (one option only)
+
+   | key                                  | description |
+   |--------------------------------------|-------------|
+   |`:drop`                               | (value ignored) Drops all measurements and does not export any metric.
+   |`:sum`                                | (value ignored) Aggregates all measurements to a long or double sum.
+   |`:last-value`                         | (value ignored) Records last value as a gauge.
+   |`:explicit-bucket-histogram`          | Option map (see table below) specifying aggregation of measurements into histogram buckets.
+   |`:base-2-exponential-bucket-histogram`| Option map (see table below) specifying aggregation of measurements into base-2 sized histogram buckets.
+
+   `:explicit-bucket-histogram` option map
+
+   | key                | description |
+   |--------------------|-------------|
+   |`:bucket-boundaries`| Ordered collection of inclusive upper bounds of histogram buckets (default: implementation defined default bucket boundaries).
+
+   `:base-2-exponential-bucket-histogram` option map
+
+   | key                | description |
+   |--------------------|-------------|
+   |`:max-buckets`      | Maximum number of positive and negative buckets (default: implementation defined)
+   |`:max-scale`        | Maximum and initial scale (required if `:max-buckets` is specified)."
   [service-name
-   {:keys [resources tracer-provider propagators]
-    :or   {propagators [(w3c-trace/w3c-trace-context-propagator)
-                        (w3c-baggage/w3c-baggage-propagator)]}}]
-  (let [resource (merge-resources-with-default service-name resources)
-        tracer-provider' (get-sdk-tracer-provider (assoc tracer-provider :resource resource))
-        sdk      (get-open-telemetry-sdk {:tracer-provider      tracer-provider'
-                                          :text-map-propagators propagators})]
+   {:keys [resources propagators tracer-provider meter-provider]
+    :or   {propagators propagators/default}}]
+  (let [resource (res/merge-resources-with-default service-name resources)
+        builder  (doto (OpenTelemetrySdk/builder)
+                   (.setPropagators (propagators/context-propagators propagators))
+                   (.setTracerProvider (tracer/sdk-tracer-provider
+                                        (assoc tracer-provider :resource resource)))
+                   (.setMeterProvider (meter/sdk-meter-provider
+                                       (assoc meter-provider :resource resource))))
+        sdk      (.build builder)]
     (reset! otel-sdk sdk)
     (otel/set-global-otel! sdk)))
 
