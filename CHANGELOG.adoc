@@ -31,6 +31,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - Bump deps:
 * [MAINT] OpenTelemetry `1.27.0`
 ** [BREAK] The default value for autoconfiguration property `otel.logs.exporter` has changed from `none` to `otlp`
+** [BREAK] Module `clj-otel-instrumentation-runtime-metrics` has been renamed and split into modules `clj-otel-instrumentation-runtime-telemetry-java8` and `clj-otel-instrumentation-runtime-telemetry-java17`
 * [MAINT] gRPC `1.56.0`
 * [MAINT] Pedestal `0.6.0`
 

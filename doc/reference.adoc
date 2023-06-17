@@ -38,12 +38,19 @@ image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-sdk[cljdoc,l
 
 These are optional modules which implement instrumentation for applications not using the instrumentation agent.
 
-=== `clj-otel-instrumentation-runtime-metrics`
+=== `clj-otel-instrumentation-runtime-telemetry-java8`
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-metrics/CURRENT]
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/CURRENT]
 
-Provide access to OpenTelemetry metrics instrumentation of the JVM runtime.
+Provide access to OpenTelemetry instrumentation of the JVM runtime for Java 8+.
+
+=== `clj-otel-instrumentation-runtime-telemetry-java17`
+
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17/CURRENT]
+
+Provide access to OpenTelemetry instrumentation of the JVM runtime for Java 17+.
 
 == Extension modules
 

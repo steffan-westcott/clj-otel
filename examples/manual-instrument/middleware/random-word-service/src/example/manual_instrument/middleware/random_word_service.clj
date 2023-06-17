@@ -14,7 +14,8 @@
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics]))
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
+             runtime-telemetry]))
 
 
 (def words
@@ -118,7 +119,7 @@
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
 (defonce ^{:doc "JVM metrics registration"} _jvm-reg
-  (runtime-metrics/register!))
+  (runtime-telemetry/register!))
 
 
 (defonce ^{:doc "random-word-service server instance"} server

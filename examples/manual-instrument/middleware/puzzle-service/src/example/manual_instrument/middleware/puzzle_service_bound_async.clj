@@ -20,7 +20,8 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
-            [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics])
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
+             runtime-telemetry])
   (:import (clojure.lang PersistentQueue)))
 
 (defonce ^{:doc "Histogram that records the number of letters in each generated puzzle."}
@@ -201,7 +202,7 @@
 ;; Register measurements that report metrics about the JVM runtime. These measurements cover
 ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
 (defonce ^{:doc "JVM metrics registration"} _jvm-reg
-  (runtime-metrics/register!))
+  (runtime-telemetry/register!))
 
 
 (defonce ^{:doc "puzzle-service server instance"} server

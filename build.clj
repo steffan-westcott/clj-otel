@@ -38,7 +38,8 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-exporter-otlp"
    "clj-otel-exporter-zipkin"
    "clj-otel-instrumentation-resources"
-   "clj-otel-instrumentation-runtime-metrics"])
+   "clj-otel-instrumentation-runtime-telemetry-java8"
+   "clj-otel-instrumentation-runtime-telemetry-java17"])
 
 (def ^:private demo-project-paths
   ["examples/auto-instrument-agent/interceptor/planet-service"

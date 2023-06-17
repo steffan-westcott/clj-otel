@@ -1,7 +1,8 @@
 (ns example.auto-sdk-config
   (:require [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.instrumentation.runtime-metrics :as runtime-metrics]))
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
+             runtime-telemetry]))
 
 
 (defonce ^{:doc "Counter that records the number of squares calculated."} squares-count
@@ -23,7 +24,7 @@
 ;;;;;;;;;;;;;
 
 (defonce ^{:doc "JVM metrics registration"} _jvm-reg
-  (runtime-metrics/register!))
+  (runtime-telemetry/register!))
 
 (square 9)
 

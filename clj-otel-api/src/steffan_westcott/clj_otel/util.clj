@@ -14,9 +14,8 @@
    (duration [d]
      d)
  IPersistentVector
-   (duration [d]
-     (let [[amount unit] d]
-       (Duration/ofNanos (.toNanos unit amount)))))
+   (duration [[amount ^TimeUnit unit]]
+     (Duration/ofNanos (.toNanos unit amount))))
 
 (defprotocol AsTimestamp
   (timestamp [t]

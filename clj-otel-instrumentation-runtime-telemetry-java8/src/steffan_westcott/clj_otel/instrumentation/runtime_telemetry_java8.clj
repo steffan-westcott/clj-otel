@@ -1,12 +1,12 @@
-(ns steffan-westcott.clj-otel.instrumentation.runtime-metrics
-  "Functions for registering measurements about the JVM runtime."
+(ns steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8
+  "Functions for registering measurements about the JVM runtime on Java 8+."
   (:require [steffan-westcott.clj-otel.api.otel :as otel])
-  (:import (io.opentelemetry.instrumentation.runtimemetrics BufferPools
-                                                            Classes
-                                                            Cpu
-                                                            GarbageCollector
-                                                            MemoryPools
-                                                            Threads)))
+  (:import (io.opentelemetry.instrumentation.runtimemetrics.java8 BufferPools
+                                                                  Classes
+                                                                  Cpu
+                                                                  GarbageCollector
+                                                                  MemoryPools
+                                                                  Threads)))
 
 (defn register-buffer-pools!
   "Registers measurements that generate metrics about buffer pools."
