@@ -16,6 +16,7 @@
     ;; Require desired metric exporters
     [steffan-westcott.clj-otel.exporter.otlp.grpc.metrics :as otlp-grpc-metrics]
     ;[steffan-westcott.clj-otel.exporter.otlp.http.metrics :as otlp-http-metrics]
+    ;[steffan-westcott.clj-otel.exporter.prometheus :as prometheus]
 
     [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
     [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -116,6 +117,8 @@
                ;                 {:interval        [10 TimeUnit/SECONDS]
                ;                  :metric-exporter (otlp-http-metrics/metric-exporter)})}
 
+               ;; Export metrics using in-process Prometheus HTTP server
+               ;{:metric-reader (prometheus/http-server)}
               ]}}))
 
 

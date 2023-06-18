@@ -27,6 +27,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 === `0.2.3` (in progress)
 
 - [ADD] Support for programmatic configuration of `MeterProvider` for metrics export.
+- [ADD] Module `clj-otel-exporter-prometheus` for programmatic configuration of metrics export to Prometheus
 - [FIX] `steffan-westcott.clj-otel.util/duration` should convert `[amount ^TimeUnit unit]` to `Duration`
 - Bump deps:
 * [MAINT] OpenTelemetry `1.27.0`

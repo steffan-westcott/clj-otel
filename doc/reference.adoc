@@ -130,6 +130,12 @@ image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-expo
 
 Configuration of span exporter to Zipkin.
 
+==== `opentelemetry-exporter-prometheus`
+
+image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-prometheus[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-prometheus]
+
+Configuration of metrics exporter to Prometheus.
+
 ==== `opentelemetry-exporter-logging`
 
 image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-logging[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-logging]
@@ -174,6 +180,13 @@ image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-expo
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-zipkin[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-zipkin/CURRENT]
 
 Configuration of span exporter to Zipkin.
+
+==== `clj-otel-exporter-prometheus`
+
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-prometheus?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-prometheus]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-prometheus[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-prometheus/CURRENT]
+
+Configuration of metrics exporter to Prometheus.
 
 ==== `clj-otel-exporter-logging`
 

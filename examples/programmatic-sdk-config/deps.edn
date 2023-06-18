@@ -18,6 +18,7 @@
 
            :exporter-logging-otlp {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:mvn/version "0.2.3"}}}
 
+           :exporter-prometheus {:extra-deps {com.github.steffan-westcott/clj-otel-exporter-prometheus {:mvn/version "0.2.3"}}}
 
 
            ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
@@ -35,9 +36,11 @@
                                  com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:local/root
                                                                                              "../../clj-otel-exporter-logging-otlp"}
                                  com.github.steffan-westcott/clj-otel-exporter-otlp {:local/root "../../clj-otel-exporter-otlp"}
+                                 com.github.steffan-westcott/clj-otel-exporter-prometheus {:local/root "../../clj-otel-exporter-prometheus"}
                                  com.github.steffan-westcott/clj-otel-exporter-zipkin {:local/root "../../clj-otel-exporter-zipkin"}
                                  com.github.steffan-westcott/clj-otel-instrumentation-resources {:local/root
                                                                                                  "../../clj-otel-instrumentation-resources"}
+
                                  com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8
                                  {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}
 
