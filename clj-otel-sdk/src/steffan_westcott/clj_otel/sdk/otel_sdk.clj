@@ -25,7 +25,7 @@
    | key              | description |
    |------------------|-------------|
    |`:resources`      | Collection of resources to merge with default SDK resource and `service-name` resource. Each resource in the collection is either a `Resource` instance or a map with keys `:attributes` (required) and `:schema-url` (optional). The merged resource describes the source of telemetry and is attached to emitted data (default: nil)
-   |`:propagators`    | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).\n
+   |`:propagators`    | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).
    |`:tracer-provider`| Option map (see below) to configure `SdkTracerProvider` instance (default: `{}`).
    |`:meter-provider` | Option map (see below) to configure `SdkMeterProvider` instance (default: `{}`).
 
