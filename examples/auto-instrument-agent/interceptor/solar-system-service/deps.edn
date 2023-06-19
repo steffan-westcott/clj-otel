@@ -22,6 +22,7 @@
 
 
   ;; -----------------------------
+
   ;; Select exactly one traces-* alias for export of traces
 
   :traces-none {:jvm-opts ["-Dotel.traces.exporter=none"]}
@@ -60,6 +61,7 @@
 
 
   ;; -----------------------------
+
   ;; Select exactly one metrics-* alias for export of metrics
 
   :metrics-none {:jvm-opts ["-Dotel.metrics.exporter=none"]}
@@ -83,6 +85,7 @@
 
 
   ;; -----------------------------
+
   ;; Select exactly one logs-* alias for export of logs
 
   :logs-none {:jvm-opts ["-Dotel.logs.exporter=none"]}
@@ -90,6 +93,7 @@
 
 
   ;; -----------------------------
+
   ;; Select exactly one logging-* alias for application logging
 
   :logging-log4j2 {:jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
@@ -104,6 +108,7 @@
 
 
   ;; -----------------------------
+
   ;; Used for development of clj-otel-* libraries with the examples
 
   :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../../clj-otel-api"}}}

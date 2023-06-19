@@ -43,9 +43,8 @@
 
     (Thread/sleep (+ 10 (rand-int 80)))
 
-    ;; Simulate an intermittent runtime exception.
-    ;; An uncaught exception leaving a span's scope is reported as an
-    ;; exception event and the span status description is set to the
+    ;; Simulate an intermittent runtime exception. An uncaught exception leaving a span's scope
+    ;; is reported as an exception event and the span status description is set to the
     ;; exception triage summary.
     (when (= :fault word-type)
       (throw (RuntimeException. "Processing fault")))

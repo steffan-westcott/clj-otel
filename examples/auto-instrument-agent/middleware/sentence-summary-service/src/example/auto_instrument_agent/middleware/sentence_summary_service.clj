@@ -121,10 +121,10 @@
                                                        middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 
-                     ;; Wrap handling of all requests, including those which have no matching route.
-                     ;; As this application is run with the OpenTelemetry instrumentation agent, a
-                     ;; server span will be provided by the agent and there is no need to create
-                     ;; another one.
+                     ;; Wrap handling of all requests, including those which have no matching
+                     ;; route. As this application is run with the OpenTelemetry
+                     ;; instrumentation agent, a server span will be provided by the agent and
+                     ;; there is no need to create another one.
                      {:middleware [[trace-http/wrap-server-span {:create-span? false}]]}))
 
 

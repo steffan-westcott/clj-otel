@@ -62,8 +62,8 @@
                       (filter seq))
         nums     (map #(Integer/parseInt %) num-strs)]
 
-    ;; Simulate a client error when first number argument is zero.
-    ;; Exception data is added as attributes to the exception event by default.
+    ;; Simulate a client error when first number argument is zero. Exception data is added as
+    ;; attributes to the exception event by default.
     (if (= 0 (first nums))
       (throw (ex-info "Zero argument"
                       {:http.response/status 400

@@ -69,11 +69,10 @@
 
         result
 
-        ;; Simulate an intermittent runtime exception when attempt is made
-        ;; to retrieve Saturn's gravity value.
-        ;; An uncaught exception leaving a span's scope is reported as an
-        ;; exception event and the span status description is set to the
-        ;; exception triage summary.
+        ;; Simulate an intermittent runtime exception when attempt is made to retrieve Saturn's
+        ;; gravity value. An uncaught exception leaving a span's scope is reported as an
+        ;; exception event and the span status description is set to the exception triage
+        ;; summary.
         (throw (RuntimeException. "Failed to retrieve statistic"))))))
 
 
@@ -86,8 +85,8 @@
         planet    (keyword planet)
         statistic (keyword statistic)]
 
-    ;; Simulate a client error when requesting data on Pluto.
-    ;; Exception data is added as attributes to the exception event by default.
+    ;; Simulate a client error when requesting data on Pluto. Exception data is added as
+    ;; attributes to the exception event by default.
     (if (= planet :pluto)
       (throw (ex-info "Pluto is not a full planet"
                       {:http.response/status 400

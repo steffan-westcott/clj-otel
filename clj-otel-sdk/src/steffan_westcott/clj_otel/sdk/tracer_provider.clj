@@ -53,15 +53,14 @@
   [{:keys [root remote-parent-sampled remote-parent-not-sampled local-parent-sampled
            local-parent-not-sampled]
     :or   {root (Sampler/alwaysOn)}}]
-  (let [builder (cond-> (Sampler/parentBasedBuilder (as-Sampler root))
-                  remote-parent-sampled     (.setRemoteParentSampled (as-Sampler
-                                                                      remote-parent-sampled))
-                  remote-parent-not-sampled (.setLocalParentNotSampled (as-Sampler
-                                                                        remote-parent-not-sampled))
-                  local-parent-sampled      (.setLocalParentSampled (as-Sampler
-                                                                     local-parent-sampled))
-                  local-parent-not-sampled  (.setLocalParentNotSampled (as-Sampler
-                                                                        local-parent-not-sampled)))]
+  (let [builder
+        (cond-> (Sampler/parentBasedBuilder (as-Sampler root))
+          remote-parent-sampled     (.setRemoteParentSampled (as-Sampler remote-parent-sampled))
+          remote-parent-not-sampled (.setLocalParentNotSampled (as-Sampler
+                                                                remote-parent-not-sampled))
+          local-parent-sampled      (.setLocalParentSampled (as-Sampler local-parent-sampled))
+          local-parent-not-sampled  (.setLocalParentNotSampled (as-Sampler
+                                                                local-parent-not-sampled)))]
     (.build builder)))
 
 (extend-protocol AsSampler

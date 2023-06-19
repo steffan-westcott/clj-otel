@@ -33,9 +33,8 @@
 
     (Thread/sleep (+ 50 (rand-int 80)))
 
-    ;; Simulate an intermittent runtime exception.
-    ;; An uncaught exception leaving a span's scope is reported as an
-    ;; exception event and the span status description is set to the
+    ;; Simulate an intermittent runtime exception. An uncaught exception leaving a span's scope
+    ;; is reported as an exception event and the span status description is set to the
     ;; exception triage summary.
     (when (= "boom" word)
       (throw (RuntimeException. "Unable to process word")))
@@ -59,8 +58,8 @@
   [{:keys [query-params]}]
   (let [word (get query-params "word")]
 
-    ;; Simulate a client error for some requests.
-    ;; Exception data is added as attributes to the exception event by default.
+    ;; Simulate a client error for some requests. Exception data is added as attributes to the
+    ;; exception event by default.
     (if (= word "problem")
       (throw (ex-info "Bad word argument"
                       {:type          ::ring/response
@@ -90,10 +89,10 @@
                                                        middleware/wrap-exception-event]}})
                      (ring/create-default-handler)
 
-                     ;; Wrap handling of all requests, including those which have no matching route.
-                     ;; As this application is run with the OpenTelemetry instrumentation agent, a
-                     ;; server span will be provided by the agent and there is no need to create
-                     ;; another one.
+                     ;; Wrap handling of all requests, including those which have no matching
+                     ;; route. As this application is run with the OpenTelemetry
+                     ;; instrumentation agent, a server span will be provided by the agent and
+                     ;; there is no need to create another one.
                      {:middleware [[trace-http/wrap-server-span {:create-span? false}]]}))
 
 

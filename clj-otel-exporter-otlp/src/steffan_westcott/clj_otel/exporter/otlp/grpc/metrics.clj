@@ -32,28 +32,26 @@
   ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout
             aggregation-temporality-selector default-aggregation-selector]}]
-   (let [builder (cond-> (OtlpGrpcMetricExporter/builder)
-                   endpoint (.setEndpoint endpoint)
-                   headers (add-headers headers)
-                   trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
-                   (and client-private-key-pem client-certificates-pem)
-                   (.setClientTls client-private-key-pem client-certificates-pem)
+   (let [builder
+         (cond-> (OtlpGrpcMetricExporter/builder)
+           endpoint (.setEndpoint endpoint)
+           headers (add-headers headers)
+           trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
+           (and client-private-key-pem client-certificates-pem)
+           (.setClientTls client-private-key-pem client-certificates-pem)
 
-                   (and ssl-context x509-trust-manager) (.setSslContext ssl-context
-                                                                        x509-trust-manager)
-                   compression-method (.setCompression compression-method)
-                   timeout (.setTimeout (util/duration timeout))
-                   aggregation-temporality-selector
-                   (.setAggregationTemporalitySelector
-                    (reify
-                     AggregationTemporalitySelector
-                       (getAggregationTemporality [_ instrument-type]
-                         (aggregation-temporality-selector instrument-type))))
-
-                   default-aggregation-selector (.setDefaultAggregationSelector
-                                                 (reify
-                                                  DefaultAggregationSelector
-                                                    (getDefaultAggregation [_ instrument-type]
-                                                      (default-aggregation-selector
-                                                       instrument-type)))))]
+           (and ssl-context x509-trust-manager) (.setSslContext ssl-context x509-trust-manager)
+           compression-method (.setCompression compression-method)
+           timeout (.setTimeout (util/duration timeout))
+           aggregation-temporality-selector (.setAggregationTemporalitySelector
+                                             (reify
+                                              AggregationTemporalitySelector
+                                                (getAggregationTemporality [_ instrument-type]
+                                                  (aggregation-temporality-selector
+                                                   instrument-type))))
+           default-aggregation-selector (.setDefaultAggregationSelector
+                                         (reify
+                                          DefaultAggregationSelector
+                                            (getDefaultAggregation [_ instrument-type]
+                                              (default-aggregation-selector instrument-type)))))]
      (.build builder))))

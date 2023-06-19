@@ -64,12 +64,10 @@
      ;; Configure selected span exporter(s). See span exporter docstrings for
      ;; further configuration options.
      [{:exporters [
-                   ;; Export spans to locally deployed OpenTelemetry Collector
-                   ;; via gRPC
+                   ;; Export spans to locally deployed OpenTelemetry Collector via gRPC
                    (otlp-grpc-trace/span-exporter)
 
-                   ;; Export spans to locally deployed OpenTelemetry Collector
-                   ;; via HTTP
+                   ;; Export spans to locally deployed OpenTelemetry Collector via HTTP
                    ; (otlp-http-trace/span-exporter)
 
                    ;; Export spans to locally deployed Zipkin
