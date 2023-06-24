@@ -7,7 +7,6 @@
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common-utils.core-async :as async']
-            [example.common-utils.middleware :as middleware]
             [muuntaja.core :as m]
             [reitit.ring :as ring]
             [reitit.ring.middleware.exception :as exception]
@@ -188,7 +187,7 @@
                                     :get  get-puzzle-handler}]
                                   {:data {:muuntaja   m/instance
                                           :middleware [;; Add route data
-                                                       middleware/wrap-reitit-route
+                                                       trace-http/wrap-reitit-route
 
                                                        ;; Add metrics that include http.route
                                                        ;; attribute
@@ -198,8 +197,9 @@
                                                        muuntaja/format-middleware
                                                        exception/exception-middleware
 
-                                                       ;; Add exception event
-                                                       middleware/wrap-exception-event]}})
+                                                       ;; Add exception event before
+                                                       ;; exception-middleware runs
+                                                       trace-http/wrap-exception-event]}})
                      (ring/create-default-handler)
 
                      ;; Wrap handling of all requests, including those which have no matching

@@ -9,8 +9,7 @@
         metosin/reitit-middleware {:mvn/version "0.6.0"}
         ring/ring-jetty-adapter   {:mvn/version "1.10.0"}
         clj-http/clj-http         {:mvn/version "3.12.3"}
-        org.example/common-utils.core-async {:local/root "../../../common-utils/core-async"}
-        org.example/common-utils.middleware {:local/root "../../../common-utils/middleware"}}
+        org.example/common-utils.core-async {:local/root "../../../common-utils/core-async"}}
 
  :aliases
  {;; Use this alias to run with OpenTelemetry instrumentation agent

@@ -219,7 +219,7 @@
   [handler]
   (fn
     ([request]
-     (handler request))
+     (handler request)) ; If an exception is thrown, the agent will add an exception event
     ([request respond raise]
      (let [context (context/dyn)]
        (handler (assoc request :io.opentelemetry/server-span-context context)
@@ -278,9 +278,37 @@
      create-span?       (wrap-server-request-attrs create-span-opts)
      (not create-span?) (wrap-existing-server-span))))
 
+(defn wrap-exception-event
+  "Ring middleware to add an exception event to the server span. This is
+   intended for use by applications which transform the exception to an HTTP
+   response in a subsequent middleware."
+  [handler]
+  (fn
+    ([request]
+     (try
+       (handler request)
+       (catch Throwable e
+         (span/add-exception! e {:escaping? false})
+         (throw e))))
+    ([{:keys [io.opentelemetry/server-span-context]
+       :as   request} respond raise]
+     (try
+       (handler request
+                respond
+                (fn [e]
+                  (span/add-exception! e
+                                       {:context   server-span-context
+                                        :escaping? false})
+                  (raise e)))
+       (catch Throwable e
+         (span/add-exception! e
+                              {:context   server-span-context
+                               :escaping? false})
+         (raise e))))))
+
 (defn wrap-route
-  "Ring middleware to add a matched route to the server span data and Ring
-   request map. `route-fn` is a function which given a request returns the
+  "Ring middleware to add a matched route to the server span data and
+   Ring request map. `route-fn` is a function which given a request returns the
    matched route as a string."
   [handler route-fn]
   (fn
@@ -300,6 +328,15 @@
                  route)
                 respond
                 raise)))))
+
+(defn wrap-reitit-route
+  "Ring middleware to add matched Reitit route to the server span and Ring
+   request map. This assumes `reitit.ring/ring-handler` is used with option
+   `:inject-match?` set to true (which is the default)."
+  [handler]
+  (wrap-route handler
+              (fn [request]
+                (get-in request [:reitit.core/match :template]))))
 
 ;;; Pedestal interceptors
 

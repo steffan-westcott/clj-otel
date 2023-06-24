@@ -6,8 +6,7 @@
         com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.4"}
         metosin/reitit-ring       {:mvn/version "0.6.0"}
         metosin/reitit-middleware {:mvn/version "0.6.0"}
-        ring/ring-jetty-adapter   {:mvn/version "1.10.0"}
-        org.example/common-utils.middleware {:local/root "../../../common-utils/middleware"}}
+        ring/ring-jetty-adapter   {:mvn/version "1.10.0"}}
 
  :aliases
  {;; Use this alias to run with OpenTelemetry instrumentation agent

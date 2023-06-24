@@ -2,8 +2,7 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
    synchronous Ring HTTP service that is run with the OpenTelemetry
    instrumentation agent."
-  (:require [example.common-utils.middleware :as middleware]
-            [muuntaja.core :as m]
+  (:require [muuntaja.core :as m]
             [reitit.ring :as ring]
             [reitit.ring.middleware.exception :as exception]
             [reitit.ring.middleware.muuntaja :as muuntaja]
@@ -78,7 +77,7 @@
                                     :get  get-length-handler}]
                                   {:data {:muuntaja   m/instance
                                           :middleware [;; Add route data
-                                                       middleware/wrap-reitit-route
+                                                       trace-http/wrap-reitit-route
 
                                                        parameters/parameters-middleware
                                                        muuntaja/format-middleware
@@ -86,7 +85,7 @@
 
                                                        ;; Add exception event before
                                                        ;; exception-middleware runs
-                                                       middleware/wrap-exception-event]}})
+                                                       trace-http/wrap-exception-event]}})
                      (ring/create-default-handler)
 
                      ;; Wrap handling of all requests, including those which have no matching
