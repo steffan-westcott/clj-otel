@@ -1,28 +1,14 @@
 (ns example.common-utils.interceptor
-  (:require [ring.util.response :as response]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
-
-
-(defn- exception-response
-  "Converts exception to a response, with status set to `:http.response/status`
-   value if exception is an `IExceptionInfo` instance, 500 Server Error
-   otherwise."
-  [e]
-  (let [resp   (response/response (ex-message e))
-        status (:http.response/status (ex-data e) 500)]
-    (response/status resp status)))
-
+  (:require [ring.util.response :as response]))
 
 
 (defn exception-response-interceptor
-  "Returns an interceptor which converts a synchronously thrown exception to a
-   response."
+  "Returns an interceptor which converts a synchronously thrown exception to an
+   HTTP response."
   []
   {:name  ::exception-response
-   :error (fn [{:keys [io.opentelemetry/server-span-context]
-                :as   ctx} e]
-            (span/add-interceptor-exception! e
-                                             {:context   server-span-context
-                                              :escaping? false})
-            (let [exception (get (ex-data e) :exception e)]
-              (assoc ctx :response (exception-response exception))))})
+   :error (fn [ctx e]
+            (let [exception (get (ex-data e) :exception e)
+                  resp      (response/response (ex-message exception))
+                  status    (:http.response/status (ex-data exception) 500)]
+              (assoc ctx :response (response/status resp status))))})

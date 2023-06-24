@@ -307,8 +307,8 @@
          (raise e))))))
 
 (defn wrap-route
-  "Ring middleware to add a matched route to the server span data and
-   Ring request map. `route-fn` is a function which given a request returns the
+  "Ring middleware to add a matched route to the server span data and Ring
+   request map. `route-fn` is a function which given a request returns the
    matched route as a string."
   [handler route-fn]
   (fn
@@ -469,3 +469,15 @@
                [:request :io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
                path)))})
 
+(defn exception-event-interceptor
+  "Returns an interceptor which adds an exception event to the server span. This
+   is intended for use by applications which transform the exception to an HTTP
+   response in a subsequent interceptor."
+  []
+  {:name  ::exception-event
+   :error (fn [{:keys [io.opentelemetry/server-span-context]
+                :as   ctx} e]
+            (span/add-interceptor-exception! e
+                                             {:context   server-span-context
+                                              :escaping? false})
+            (assoc ctx :io.pedestal.interceptor.chain/error e))})

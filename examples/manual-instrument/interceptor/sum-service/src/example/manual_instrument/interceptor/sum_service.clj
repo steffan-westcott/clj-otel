@@ -74,7 +74,10 @@
 
 (def routes
   "Route maps for the service."
-  (route/expand-routes [[["/" ^:interceptors [(utils-interceptor/exception-response-interceptor)]
+  (route/expand-routes [[["/"
+                          ^:interceptors
+                          [(utils-interceptor/exception-response-interceptor)
+                           (trace-http/exception-event-interceptor)]
                           ["/sum" {:get 'get-sum-handler}]]]]))
 
 

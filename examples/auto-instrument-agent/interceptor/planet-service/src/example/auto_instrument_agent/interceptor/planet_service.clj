@@ -98,7 +98,9 @@
 (def routes
   "Route maps for the service."
   (route/expand-routes
-   [[["/" ^:interceptors [(utils-interceptor/exception-response-interceptor)]
+   [[["/"
+      ^:interceptors
+      [(utils-interceptor/exception-response-interceptor) (trace-http/exception-event-interceptor)]
       ["/planets/:planet/:statistic"
        ^:constraints
        {:planet    (re-pattern (str/join "|" (map name (keys planet-statistics))))

@@ -26,10 +26,12 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.4` (in progress)
 
-- [ADD] Utility middleware (formerly part of the microservices examples)
+- [ADD] New middleware (formerly part of the microservices examples)
 * `wrap-exception-event` adds an exception event to the server span.
 This is intended for use by applications which transform the exception to an HTTP response in a subsequent middleware.
 * `wrap-reitit-route` adds the matched Reitit route to the server span and request map.
+- [ADD] New interceptor `exception-event-interceptor` adds an exception event to the server span.
+This is intended for use by applications which transform the exception to an HTTP response in a subsequent interceptor.
 
 === `0.2.3` (2023-06-18)
 
