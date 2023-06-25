@@ -45,7 +45,7 @@ docker-compose up -d
 +
 Select an example from the <<_examples_overview,overview>> below and follow the notes on starting and exercising the application or services.
 See the choice of aliases in the `deps.edn` file to configure telemetry export to an OpenTelemetry Collector or backend of your choice.
-For example, in `examples/auto-sdk-config`, to export trace data to the Collector using gRPC with Netty transport, start a REPL with aliases `otel`, `traces-collector-grpc`, `metrics-none`, `logs-none` and `grpc-netty`.
+For example, in `examples/square-app`, to export trace data to the Collector using gRPC with Netty transport, start a REPL with aliases `otel`, `traces-collector-grpc`, `metrics-none`, `logs-none` and `grpc-netty`.
 
 . *View telemetry data in backend(s)*
 +
@@ -68,22 +68,22 @@ docker-compose down -v
 === Manually instrumented application run with autoconfigured SDK
 
 * Simplest example; small standalone application
-* Project directory `examples/auto-sdk-config`
+* Project directory `examples/square-app`
 * Manual instrumentation only, no automatic instrumentation
 * Runs with autoconfigured OpenTelemetry SDK
 
 To start and exercise the application:
 
-. Start REPL with chosen aliases in `examples/auto-sdk-config/deps.edn`
-. In the REPL, load namespace `example.auto-sdk-config`
+. Start REPL with chosen aliases in `examples/square-app/deps.edn`
+. In the REPL, load namespace `example.square-app`
 +
 This will create a single span named `squaring` with an event `my event`.
 
 === Microservices run with combined automatic and manual instrumentation
 
 * Two dependent microservices; One microservice has a choice of synchronous and asynchronous implementations
-* Project directories for Ring middleware example in `examples/auto-instrument-agent/middleware`
-* Project directories for Pedestal interceptors example in `examples/auto-instrument-agent/interceptor`
+* Project directories for Ring middleware example in `examples/microservices/auto-instrument/middleware`
+* Project directories for Pedestal interceptors example in `examples/microservices/auto-instrument/interceptor`
 * A combination of automatic and manual instrumentation
 * Runs with OpenTelemetry instrumentation agent
 
@@ -91,14 +91,14 @@ This will create a single span named `squaring` with an event `my event`.
 
 To start and exercise the Ring middleware example with combined automatic and manual instrumentation:
 
-. Start first REPL with chosen aliases in `examples/auto-instrument-agent/middleware/word-length-service/deps.edn`
-. In the first REPL, load namespace `example.auto-instrument-agent.middleware.word-length-service`.
+. Start first REPL with chosen aliases in `examples/microservices/auto-instrument/middleware/word-length-service/deps.edn`
+. In the first REPL, load namespace `example.word-length-service`.
 This starts a `word-length-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/auto-instrument-agent/middleware/sentence-summary-service/deps.edn`
+. Start second REPL with chosen aliases in `examples/microservices/auto-instrument/middleware/sentence-summary-service/deps.edn`
 . In the second REPL, load one of the following namespaces to start a `sentence-summary-service` server on port 8080:
-* `example.auto-instrument-agent.middleware.sentence-summary-service` (synchronous example)
-* `example.auto-instrument-agent.middleware.sentence-summary-service-bound-async` (asynchronous example using bound context)
-* `example.auto-instrument-agent.middleware.sentence-summary-service-explicit-async` (asynchronous example using explicit context)
+* `example.sentence-summary-service` (synchronous example)
+* `example.sentence-summary-service-bound-async` (asynchronous example using bound context)
+* `example.sentence-summary-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -130,14 +130,14 @@ curl -X GET "http://localhost:8080/summary?sentence=User+problem"
 
 To start and exercise the Pedestal interceptor example with combined automatic and manual instrumentation:
 
-. Start first REPL with chosen aliases in `examples/auto-instrument-agent/interceptor/planet-service/deps.edn`
-. In the first REPL, load namespace `example.auto-instrument-agent.interceptor.planet-service`.
+. Start first REPL with chosen aliases in `examples/microservices/auto-instrument/interceptor/planet-service/deps.edn`
+. In the first REPL, load namespace `example.planet-service`.
 This starts a `planet-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/auto-instrument-agent/interceptor/solar-system-service/deps.edn`
+. Start second REPL with chosen aliases in `examples/microservices/auto-instrument/interceptor/solar-system-service/deps.edn`
 . In the second REPL, load one of the following namespaces to start a `solar-system-service` server on port 8080:
-* `example.auto-instrument-agent.interceptor.solar-system-service` (synchronous example)
-* `example.auto-instrument-agent.interceptor.solar-system-service-bound-async` (asynchronous example using bound context)
-* `example.auto-instrument-agent.interceptor.solar-system-service-explicit-async` (asynchronous example using explicit context)
+* `example.solar-system-service` (synchronous example)
+* `example.solar-system-service-bound-async` (asynchronous example using bound context)
+* `example.solar-system-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -168,8 +168,8 @@ curl -X GET "http://localhost:8080/statistics?planet=pluto"
 === Microservices run with manual instrumentation only
 
 * Two dependent microservices; One microservice has a choice of synchronous and asynchronous implementations
-* Project directories for Ring middleware example in `examples/manual-instrument/middleware`
-* Project directories for Pedestal interceptors example in `examples/manual-instrument/interceptor`
+* Project directories for Ring middleware example in `examples/microservices/manual-instrument/middleware`
+* Project directories for Pedestal interceptors example in `examples/microservices/manual-instrument/interceptor`
 * Manual instrumentation only, no automatic instrumentation
 * Runs with autoconfigured OpenTelemetry SDK
 
@@ -177,14 +177,14 @@ curl -X GET "http://localhost:8080/statistics?planet=pluto"
 
 To start and exercise the Ring middleware example with manual instrumentation:
 
-. Start first REPL with chosen aliases in `examples/manual-instrument/middleware/random-word-service/deps.edn`
-. In the first REPL, load namespace `example.manual-instrument.middleware.random-word-service`.
+. Start first REPL with chosen aliases in `examples/microservices/manual-instrument/middleware/random-word-service/deps.edn`
+. In the first REPL, load namespace `example.random-word-service`.
 This starts a `random-word-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/manual-instrument/middleware/puzzle-service/deps.edn`
+. Start second REPL with chosen aliases in `examples/microservices/manual-instrument/middleware/puzzle-service/deps.edn`
 . In the second REPL, load one of the following namespaces to start a `puzzle-service` server on port 8080:
-* `example.manual-instrument.middleware.puzzle-service` (synchronous example)
-* `example.manual-instrument.middleware.puzzle-service-bound-async` (asynchronous example using bound context)
-* `example.manual-instrument.middleware.puzzle-service-explicit-async` (asynchronous example using explicit context)
+* `example.puzzle-service` (synchronous example)
+* `example.puzzle-service-bound-async` (asynchronous example using bound context)
+* `example.puzzle-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -216,14 +216,14 @@ curl -X GET "http://localhost:8080/puzzle?types=bogus,noun"
 
 To start and exercise the Pedestal interceptor example with manual instrumentation:
 
-. Start first REPL with chosen aliases in `examples/manual-instrument/interceptor/sum-service/deps.edn`
-. In the first REPL, load namespace `example.manual-instrument.interceptor.sum-service`.
+. Start first REPL with chosen aliases in `examples/microservices/manual-instrument/interceptor/sum-service/deps.edn`
+. In the first REPL, load namespace `example.sum-service`.
 This starts a `sum-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/manual-instrument/interceptor/average-service/deps.edn`
+. Start second REPL with chosen aliases in `examples/microservices/manual-instrument/interceptor/average-service/deps.edn`
 . In the second REPL, load one of the following namespaces to start an `average-service` server on port 8080:
-* `example.manual-instrument.interceptor.average-service` (synchronous example)
-* `example.manual-instrument.interceptor.average-service-bound-async` (asynchronous example using bound context)
-* `example.manual-instrument.interceptor.average-service-explicit-async` (asynchronous example using explicit context)
+* `example.average-service` (synchronous example)
+* `example.average-service-bound-async` (asynchronous example using bound context)
+* `example.average-service-explicit-async` (asynchronous example using explicit context)
 . Send an HTTP request to exercise the servers:
 +
 [source,bash]
@@ -254,21 +254,21 @@ curl -X GET "http://localhost:8080/average?nums=0,1,2"
 === Manually instrumented application run with programmatic SDK configuration
 
 * Small standalone application
-* Project directory `examples/programmatic-sdk-config`
+* Project directory `examples/factorial-app`
 * Manual instrumentation only, no automatic instrumentation
 * Runs with programmatically configured OpenTelemetry SDK
 
 To start and exercise the application:
 
-. Start REPL with chosen aliases in `examples/programmatic-sdk-config/deps.edn`
-. In the REPL, load namespace `example.programmatic-sdk-config`
+. Start REPL with chosen aliases in `examples/factorial/deps.edn`
+. In the REPL, load namespace `example.factorial-app`
 . Edit and redefine function `init-otel!` to configure the SDK as desired.
 . In the REPL, evaluate the following forms to initialise the SDK, exercise an instrumented function, then close the SDK:
 +
 [source,clojure]
 ----
 (init-otel!)
-(square 7)
+(factorial 7)
 (close-otel!)
 ----
 +

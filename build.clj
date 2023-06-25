@@ -43,19 +43,19 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-instrumentation-runtime-telemetry-java17"])
 
 (def ^:private demo-project-paths
-  ["examples/auto-instrument-agent/interceptor/planet-service"
-   "examples/auto-instrument-agent/interceptor/solar-system-service"
-   "examples/auto-instrument-agent/middleware/sentence-summary-service"
-   "examples/auto-instrument-agent/middleware/word-length-service"
-   "examples/auto-sdk-config"
-   "examples/common-utils/core-async"
-   "examples/common-utils/interceptor"
-   "examples/common-utils/middleware"
-   "examples/manual-instrument/interceptor/average-service"
-   "examples/manual-instrument/interceptor/sum-service"
-   "examples/manual-instrument/middleware/puzzle-service"
-   "examples/manual-instrument/middleware/random-word-service"
-   "examples/programmatic-sdk-config"
+  ["examples/common/core-async.utils"
+   "examples/common/interceptor.utils"
+   "examples/common/log4j2.utils"
+   "examples/factorial-app"
+   "examples/microservices/auto-instrument/interceptor/planet-service"
+   "examples/microservices/auto-instrument/interceptor/solar-system-service"
+   "examples/microservices/auto-instrument/middleware/sentence-summary-service"
+   "examples/microservices/auto-instrument/middleware/word-length-service"
+   "examples/microservices/manual-instrument/interceptor/average-service"
+   "examples/microservices/manual-instrument/interceptor/sum-service"
+   "examples/microservices/manual-instrument/middleware/puzzle-service"
+   "examples/microservices/manual-instrument/middleware/random-word-service"
+   "examples/square-app"
    "tutorial/instrumented"])
 
 (def ^:private project-paths

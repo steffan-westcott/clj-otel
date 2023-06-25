@@ -1,0 +1,141 @@
+;!zprint {:style [:respect-nl] :width 140}
+
+{:paths ["src" "resources"]
+
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/core.async {:mvn/version "1.6.673"}
+        com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.4"}
+        com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8 {:mvn/version "0.2.4"}
+        metosin/reitit-ring {:mvn/version "0.6.0"}
+        metosin/reitit-middleware {:mvn/version "0.6.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.10.0"}
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}}
+
+ :aliases
+ {;; Include this alias to export telemetry data
+
+  :otel {:jvm-opts   ["-Dotel.resource.attributes=service.name=puzzle-service"
+                      "-Dotel.java.global-autoconfigure.enabled=true"]
+         :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.27.0-alpha"}
+                      io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.27.0-alpha"}}}
+
+
+
+  ;; -----------------------------
+
+  ;; Select exactly one traces-* alias for export of traces
+
+  :traces-none {:jvm-opts ["-Dotel.traces.exporter=none"]}
+
+  :traces-collector-grpc {:jvm-opts   ["-Dotel.traces.exporter=otlp"
+                                       "-Dotel.exporter.otlp.traces.protocol=grpc"]
+                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+
+  :traces-collector-http {:jvm-opts   ["-Dotel.traces.exporter=otlp"
+                                       "-Dotel.exporter.otlp.traces.protocol=http/protobuf"]
+                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+
+  :traces-honeycomb-grpc
+  {:jvm-opts   ["-Dotel.traces.exporter=otlp"
+                "-Dotel.exporter.otlp.traces.protocol=grpc"
+                "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443"
+                "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]
+   :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+
+  :traces-honeycomb-http
+  {:jvm-opts   ["-Dotel.traces.exporter=otlp"
+                "-Dotel.exporter.otlp.traces.protocol=http/protobuf"
+                "-Dotel.exporter.otlp.traces.endpoint=https://api.honeycomb.io:443/v1/traces"
+                "-Dotel.exporter.otlp.headers=x-honeycomb-team=YOUR_HONEYCOMB_TEAM_API_KEY,x-honeycomb-dataset=YOUR_HONEYCOMB_DATASET"]
+   :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+
+  :traces-lightstep-grpc {:jvm-opts   ["-Dotel.traces.exporter=otlp"
+                                       "-Dotel.exporter.otlp.traces.protocol=grpc"
+                                       "-Dotel.exporter.otlp.traces.endpoint=https://ingest.lightstep.com:443"
+                                       "-Dotel.exporter.otlp.headers=lightstep-access-token=YOUR_LIGHTSTEP_ACCESS_TOKEN"]
+                          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+
+  :traces-zipkin {:jvm-opts   ["-Dotel.traces.exporter=zipkin"]
+                  :extra-deps {io.opentelemetry/opentelemetry-exporter-zipkin {:mvn/version "1.27.0"}}}
+
+  ;; used for debugging
+  :traces-logging {:jvm-opts   ["-Dotel.traces.exporter=logging"]
+                   :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.27.0"}}}
+
+  ;; used for debugging
+  :traces-logging-otlp {:jvm-opts   ["-Dotel.traces.exporter=logging-otlp"]
+                        :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.27.0"}}}
+
+
+
+  ;; -----------------------------
+
+  ;; Select exactly one metrics-* alias for export of metrics
+
+  :metrics-none {:jvm-opts ["-Dotel.metrics.exporter=none"]}
+
+  :metrics-collector-grpc {:jvm-opts   ["-Dotel.metrics.exporter=otlp"
+                                        "-Dotel.exporter.otlp.metrics.protocol=grpc"
+                                        "-Dotel.metric.export.interval=10000"]
+                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+
+  :metrics-collector-http {:jvm-opts   ["-Dotel.metrics.exporter=otlp"
+                                        "-Dotel.exporter.otlp.metrics.protocol=http/protobuf"
+                                        "-Dotel.metric.export.interval=10000"]
+                           :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+
+  ;; used for debugging
+  :metrics-logging {:jvm-opts   ["-Dotel.metrics.exporter=logging"
+                                 "-Dotel.metric.export.interval=10000"]
+                    :extra-deps {io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.27.0"}}}
+
+  ;; used for debugging
+  :metrics-logging-otlp {:jvm-opts   ["-Dotel.metrics.exporter=logging-otlp"
+                                      "-Dotel.metric.export.interval=10000"]
+                         :extra-deps {io.opentelemetry/opentelemetry-exporter-logging-otlp {:mvn/version "1.27.0"}}}
+
+
+  ;; -----------------------------
+
+  ;; Select exactly one logs-* alias for export of logs
+
+  :logs-none {:jvm-opts ["-Dotel.logs.exporter=none"]}
+
+
+
+  ;; -----------------------------
+
+  ;; Select exactly one logging-* alias for application logging
+
+  :logging-log4j2 {:jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]
+                   :extra-deps {org.example/common.log4j2.utils            {:local/root "../../../../common/log4j2.utils"}
+                                org.apache.logging.log4j/log4j-core        {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.20.0"}
+                                org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.20.0"}}}
+
+
+
+  ;; -----------------------------
+
+  ;; When using gRPC, add this alias to use Netty transport instead of default OkHttp
+
+  :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.56.0"}
+                            io.grpc/grpc-protobuf     {:mvn/version "1.56.0"}
+                            io.grpc/grpc-stub         {:mvn/version "1.56.0"}}}
+
+
+
+  ;; -----------------------------
+
+  ;; Used for development of clj-otel-* libraries with the examples
+
+  :dev {:override-deps {com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
+                        com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8
+                        {:local/root
+                         "../../../../../clj-otel-instrumentation-runtime-telemetry-java8"}}}
+
+ }}
