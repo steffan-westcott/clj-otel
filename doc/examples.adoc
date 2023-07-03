@@ -65,6 +65,9 @@ docker-compose down -v
 [#_examples_overview]
 == Examples overview
 
+WARNING: The examples use `:local/root` to depend on `clj-otel` modules.
+In your own libraries and applications, use `:mvn/version` instead, as shown in the xref:guides.adoc#_add_manual_instrumentation_to_your_library_or_application_code[guides to add manual instrumentation].
+
 === Manually instrumented application run with autoconfigured SDK
 
 * Simplest example; small standalone application

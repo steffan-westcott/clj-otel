@@ -78,8 +78,9 @@ clojure -A:deps -T:build help/doc"
 (defn- artifact-opts
   [artifact-id]
   {:artifact-id   artifact-id
-   :basis         (b/create-basis {:aliases (when snapshot?
-                                              [:snapshot])})
+   :basis         (b/create-basis {:aliases (if snapshot?
+                                              [:snapshot]
+                                              [:release])})
    :class-dir     "target/classes"
    :jar-file      (format "target/%s-%s.jar" artifact-id version)
    :lib           (symbol group-id artifact-id)
