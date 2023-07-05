@@ -11,7 +11,7 @@
  :aliases
  {;; Use this alias to run with OpenTelemetry instrumentation agent
 
-  :otel                 {:jvm-opts ["-javaagent:../../../opentelemetry-javaagent.jar"
+  :otel                 {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
                                     "-Dotel.resource.attributes=service.name=word-length-service"]}
 
 
