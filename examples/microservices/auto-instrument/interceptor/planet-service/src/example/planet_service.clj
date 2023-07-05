@@ -10,14 +10,16 @@
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span])
+  (:gen-class))
 
 
-(defonce ^{:doc "Counter that records the number of statistic look ups."} statistic-lookup-count
-  (instrument/instrument {:name        "service.planet.statistic-lookup-count"
-                          :instrument-type :counter
-                          :unit        "{lookups}"
-                          :description "The number of statistic lookups"}))
+(defonce ^{:doc "Delay containing counter that records the number of statistic look ups."}
+         statistic-lookup-count
+  (delay (instrument/instrument {:name        "service.planet.statistic-lookup-count"
+                                 :instrument-type :counter
+                                 :unit        "{lookups}"
+                                 :description "The number of statistic lookups"})))
 
 
 
@@ -61,7 +63,7 @@
                                     :attributes {:service.planet/query-path path}}})
 
       ;; Update statistic-lookup-count metric
-      (instrument/add! statistic-lookup-count
+      (instrument/add! @statistic-lookup-count
                        {:value      1
                         :attributes {:statistic statistic}})
 
@@ -107,14 +109,6 @@
         :statistic #"diameter|gravity"} {:get 'get-planet-statistic-handler}]]]]))
 
 
-(def service-map
-  "Pedestal service map for planet HTTP service."
-  {::http/routes routes
-   ::http/type   :jetty
-   ::http/port   8081
-   ::http/join?  false})
-
-
 
 (defn update-default-interceptors
   "Returns `default-interceptors` with added interceptors for HTTP server span
@@ -144,5 +138,23 @@
 
 
 
-(defonce ^{:doc "planet-service server instance"} server
-  (http/start (service service-map)))
+(defn server
+  "Starts planet-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8081)))))
+
+
+
+(defn -main
+  "planet-service application entry point."
+  [& _args]
+  (server))
+
+
+
+(comment
+  (server {::http/join? false})
+  ;
+)

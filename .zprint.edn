@@ -39,4 +39,7 @@
   "<with-span-binding" :binding
 
   ;; core.async
-  "go" :flow-body}}
+  "go" :flow-body
+
+  ;; clojure.tools.build.api
+  "with-project-root" :arg1-body}}

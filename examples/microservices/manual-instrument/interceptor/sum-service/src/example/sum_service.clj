@@ -13,13 +13,14 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
-             runtime-telemetry]))
+             runtime-telemetry])
+  (:gen-class))
 
 
-(defonce ^{:doc "Histogram the records the resulting sum value."} sum-result
-  (instrument/instrument {:name        "service.sum.sum-result"
-                          :instrument-type :histogram
-                          :description "The resulting sum value"}))
+(defonce ^{:doc "Delay containing histogram the records the resulting sum value."} sum-result
+  (delay (instrument/instrument {:name        "service.sum.sum-result"
+                                 :instrument-type :histogram
+                                 :description "The resulting sum value"})))
 
 
 (defn sum
@@ -45,7 +46,7 @@
         (throw (RuntimeException. "Unlucky 13")))
 
       ;; Update sum-result metric
-      (instrument/record! sum-result {:value result})
+      (instrument/record! @sum-result {:value result})
 
       result)))
 
@@ -80,14 +81,6 @@
                            (trace-http/exception-event-interceptor)]
                           ["/sum" {:get 'get-sum-handler}]]]]))
 
-
-
-(def service-map
-  "Pedestal service map for sum HTTP service."
-  {::http/routes routes
-   ::http/type   :jetty
-   ::http/port   8081
-   ::http/join?  false})
 
 
 
@@ -127,12 +120,28 @@
 
 
 
-;; Register measurements that report metrics about the JVM runtime. These measurements cover
-;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg
-  (runtime-telemetry/register!))
+(defn server
+  "Starts sum-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+
+   ;; Register measurements that report metrics about the JVM runtime. These measurements cover
+   ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
+   (runtime-telemetry/register!)
+
+   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8081)))))
 
 
 
-(defonce ^{:doc "sum-service server instance"} server
-  (http/start (service service-map)))
+(defn -main
+  "sum-service application entry point."
+  [& _args]
+  (server))
+
+
+
+(comment
+  (server {::http/join? false})
+  ;
+)

@@ -24,12 +24,13 @@
   (:import (clojure.lang PersistentQueue)))
 
 
-(defonce ^{:doc "Histogram that records the number of letters in each generated puzzle."}
-         puzzle-size
-  (instrument/instrument {:name        "service.puzzle.puzzle-size"
-                          :instrument-type :histogram
-                          :unit        "{letters}"
-                          :description "The number of letters in each generated puzzle"}))
+(defonce
+  ^{:doc "Delay containing histogram that records the number of letters in each generated puzzle."}
+  puzzle-size
+  (delay (instrument/instrument {:name        "service.puzzle.puzzle-size"
+                                 :instrument-type :histogram
+                                 :unit        "{letters}"
+                                 :description "The number of letters in each generated puzzle"})))
 
 
 
@@ -157,7 +158,7 @@
                                               :attributes {:system/puzzle scrambled-words}}})
 
               ;; Update puzzle-size metric
-              (instrument/record! puzzle-size
+              (instrument/record! @puzzle-size
                                   {:context context
                                    :value   (reduce + (map count scrambled-words))})
 
@@ -209,14 +210,22 @@
                                    [metrics-http-server/wrap-active-requests]]}))
 
 
-;; Register measurements that report metrics about the JVM runtime. These measurements cover
-;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg
-  (runtime-telemetry/register!))
+
+(defn server
+  "Starts puzzle-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+
+   ;; Register measurements that report metrics about the JVM runtime. These measurements cover
+   ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
+   (runtime-telemetry/register!)
+
+   (jetty/run-jetty #'handler (assoc opts :async? true :port 8080))))
 
 
-(defonce ^{:doc "puzzle-service server instance"} server
-  (jetty/run-jetty #'handler
-                   {:port   8080
-                    :async? true
-                    :join?  false}))
+
+(comment
+  (server {:join? false})
+  ;
+)

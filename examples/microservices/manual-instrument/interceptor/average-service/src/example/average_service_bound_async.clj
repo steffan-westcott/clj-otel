@@ -21,10 +21,10 @@
              runtime-telemetry]))
 
 
-(defonce ^{:doc "Histogram that records the resulting averages."} average-result
-  (instrument/instrument {:name        "service.average.average-result"
-                          :instrument-type :histogram
-                          :description "The resulting averages"}))
+(defonce ^{:doc "Delay containing histogram that records the resulting averages."} average-result
+  (delay (instrument/instrument {:name        "service.average.average-result"
+                                 :instrument-type :histogram
+                                 :description "The resulting averages"})))
 
 
 
@@ -148,7 +148,7 @@
         ;; Update average-result metric
         (doseq [[partition average] result]
           (when average
-            (instrument/record! average-result
+            (instrument/record! @average-result
                                 {:value      average
                                  :attributes {:partition partition}})))
 
@@ -190,15 +190,6 @@
 
 
 
-(def service-map
-  "Pedestal service map for average HTTP service."
-  {::http/routes routes
-   ::http/type   :jetty
-   ::http/port   8080
-   ::http/join?  false})
-
-
-
 (defn update-default-interceptors
   "Returns `default-interceptors` with added interceptors for HTTP server
    span support."
@@ -235,12 +226,21 @@
 
 
 
-;; Register measurements that report metrics about the JVM runtime. These measurements cover
-;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg
-  (runtime-telemetry/register!))
+(defn server
+  "Starts average-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+
+   ;; Register measurements that report metrics about the JVM runtime. These measurements cover
+   ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
+   (runtime-telemetry/register!)
+
+   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8080)))))
 
 
 
-(defonce ^{:doc "average-service server instance"} server
-  (http/start (service service-map)))
+(comment
+  (server {::http/join? false})
+  ;
+)

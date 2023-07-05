@@ -14,17 +14,15 @@ clojure -A:deps -T:build help/doc"
             [clojure.string :as str]
             [clojure.tools.build.api :as b]
             [clojure.tools.deps :as t]
-            [deps-deploy.deps-deploy :as dd])
+            [deps-deploy.deps-deploy :as dd]
+            [org.corfield.log4j2-conflict-handler :refer [log4j2-conflict-handler]])
   (:import (java.nio.file FileSystems)))
-
-(def ^:private group-id
-  "com.github.steffan-westcott")
 
 (def ^:private version
   "0.2.4-SNAPSHOT")
 
 ;; Later artifacts in this vector may depend on earlier artifacts
-(def ^:private artifact-ids
+(def ^:private library-project-paths
   ["clj-otel-api"
    "clj-otel-sdk"
    "clj-otel-contrib-aws-resources"
@@ -42,54 +40,93 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-instrumentation-runtime-telemetry-java8"
    "clj-otel-instrumentation-runtime-telemetry-java17"])
 
-(def ^:private demo-project-paths
-  ["examples/common/core-async.utils"
-   "examples/common/interceptor.utils"
-   "examples/common/log4j2.utils"
-   "examples/factorial-app"
-   "examples/microservices/auto-instrument/interceptor/planet-service"
+(def ^:private uber-demo-project-paths
+  ["examples/microservices/auto-instrument/interceptor/planet-service"
    "examples/microservices/auto-instrument/interceptor/solar-system-service"
    "examples/microservices/auto-instrument/middleware/sentence-summary-service"
    "examples/microservices/auto-instrument/middleware/word-length-service"
    "examples/microservices/manual-instrument/interceptor/average-service"
    "examples/microservices/manual-instrument/interceptor/sum-service"
    "examples/microservices/manual-instrument/middleware/puzzle-service"
-   "examples/microservices/manual-instrument/middleware/random-word-service"
+   "examples/microservices/manual-instrument/middleware/random-word-service"])
+
+(def ^:private other-demo-project-paths
+  ["examples/common/core-async.utils"
+   "examples/common/interceptor.utils"
+   "examples/common/log4j2.utils"
+   "examples/factorial-app"
    "examples/square-app"
    "tutorial/instrumented"])
 
+(defn- library-project?
+  [root-path]
+  (some #{root-path} library-project-paths))
+
+(defn- uber-demo-project?
+  [root-path]
+  (some #{root-path} uber-demo-project-paths))
+
 (def ^:private project-paths
-  (concat artifact-ids demo-project-paths))
+  (concat library-project-paths
+          uber-demo-project-paths
+          other-demo-project-paths))
+
+(defn- group-id
+  [root-path]
+  (if (library-project? root-path)
+    "com.github.steffan-westcott"
+    "org.example"))
+
+(defn- artifact-id
+  [root-path]
+  (re-find #"[^/]+$" root-path))
 
 (defn- group-artifact-id
-  [artifact-id]
+  [group-id artifact-id]
   (str group-id "/" artifact-id))
 
 (def ^:private group-artifact-ids
-  (map group-artifact-id artifact-ids))
+  (map #(group-artifact-id (group-id %) (artifact-id %)) project-paths))
 
 (def ^:private snapshot?
   (str/ends-with? version "-SNAPSHOT"))
 
-(defn- head-sha-1
-  []
+(def ^:private head-sha-1
   (b/git-process {:git-args "rev-parse HEAD"}))
 
 (defn- artifact-opts
-  [artifact-id]
-  {:artifact-id   artifact-id
-   :basis         (b/create-basis {:aliases (if snapshot?
-                                              [:snapshot]
-                                              [:release])})
-   :class-dir     "target/classes"
-   :jar-file      (format "target/%s-%s.jar" artifact-id version)
-   :lib           (symbol group-id artifact-id)
-   :resource-dirs ["resources"]
-   :scm           {:tag (head-sha-1)}
-   :src-dirs      ["src"]
-   :src-pom       "template/pom.xml"
-   :target-dir    "target"
-   :version       version})
+  [{:keys [aliases artifact-id group-id main root-path]}]
+  {:artifact-id       artifact-id
+   :basis             (b/create-basis {:aliases aliases})
+   :class-dir         "target/classes"
+   :conflict-handlers log4j2-conflict-handler
+   :group-id          group-id
+   :jar-file          (format "target/%s-%s.jar" artifact-id version)
+   :lib               (symbol group-id artifact-id)
+   :main              main
+   :resource-dirs     ["resources"]
+   :root-path         root-path
+   :scm               {:tag head-sha-1}
+   :src-dirs          ["src"]
+   :src-pom           "template/pom.xml"
+   :target-dir        "target"
+   :uber-file         (format "target/%s-standalone.jar" artifact-id)
+   :version           version})
+
+(defn- project-artifact-opts
+  [root-path]
+  (artifact-opts {:artifact-id (artifact-id root-path)
+                  :aliases     (cond-> [(if snapshot?
+                                          :snapshot
+                                          :release)]
+                                 (uber-demo-project? root-path) (into [:otel :traces-collector-grpc
+                                                                       :metrics-collector-grpc
+                                                                       :logs-none :logging-log4j2
+                                                                       :grpc-netty]))
+                  :group-id    (group-id root-path)
+                  :main        (when (uber-demo-project? root-path)
+                                 (symbol (str "example." (artifact-id root-path))))
+                  :root-path   root-path}))
 
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
@@ -145,7 +182,7 @@ clojure -A:deps -T:build help/doc"
 
 (defn- clean-artifact
   [{:keys [target-dir]}]
-  (println "Cleaning target ...")
+  (println "Cleaning build dir" target-dir "...")
   (b/delete {:path target-dir}))
 
 (defn- jar-artifact
@@ -160,20 +197,35 @@ clojure -A:deps -T:build help/doc"
   (b/jar opts))
 
 (defn- install-artifact
-  [{:keys [artifact-id]
+  [{:keys [group-id artifact-id]
     :as   opts}]
   (jar-artifact opts)
-  (println "Installing" (group-artifact-id artifact-id) "...")
+  (println "Installing" (group-artifact-id group-id artifact-id) "...")
   (b/install opts))
 
 (defn- deploy-artifact
-  [{:keys [artifact-id jar-file]
+  [{:keys [group-id artifact-id jar-file]
     :as   opts}]
   (install-artifact opts)
-  (println "Deploying" (group-artifact-id artifact-id) "...")
+  (println "Deploying" (group-artifact-id group-id artifact-id) "...")
   (dd/deploy {:artifact  (b/resolve-path jar-file)
               :installer :remote
               :pom-file  (b/pom-path opts)}))
+
+(defn- uberjar-artifact
+  [{:keys [class-dir resource-dirs root-path uber-file]
+    :as   opts}]
+  (clean-artifact opts)
+  (b/copy-dir {:src-dirs   resource-dirs
+               :target-dir class-dir})
+  (println "Compiling project" root-path "...")
+  (b/compile-clj opts)
+  (println "Building uberjar" uber-file "...")
+  (b/uber opts)
+  (println (-> opts
+               :basis
+               :classpath-args
+               :jvm-opts)))
 
 (defn- tag-release
   [tag]
@@ -184,18 +236,19 @@ clojure -A:deps -T:build help/doc"
 (defn clean
   "Delete all clj-otel-* build directories."
   [_]
-  (doseq [artifact-id artifact-ids]
-    (b/set-project-root! artifact-id)
-    (clean-artifact (artifact-opts artifact-id))))
+  (doseq [root-path project-paths]
+    (b/with-project-root root-path
+      (clean-artifact {:target-dir "target"}))))
 
 (defn install
   "Build all clj-otel-* library JAR files then install them in the local Maven
   repository. The libraries are processed in an order such that later libraries
   may depend on earlier ones."
-  [_]
-  (doseq [artifact-id artifact-ids]
-    (b/set-project-root! artifact-id)
-    (install-artifact (artifact-opts artifact-id))))
+  ([_] (install _ library-project-paths))
+  ([_ root-paths]
+   (doseq [root-path root-paths]
+     (b/with-project-root root-path
+       (install-artifact (project-artifact-opts root-path))))))
 
 (defn deploy
   "Build all clj-otel-* library JAR files, install them in the local Maven
@@ -205,9 +258,9 @@ clojure -A:deps -T:build help/doc"
   For non-SNAPSHOT versions, a git tag with the version name is created and
   pushed to the origin repository."
   [_]
-  (doseq [artifact-id artifact-ids]
-    (b/set-project-root! artifact-id)
-    (deploy-artifact (artifact-opts artifact-id)))
+  (doseq [root-path library-project-paths]
+    (b/with-project-root root-path
+      (deploy-artifact (project-artifact-opts root-path))))
   (when-not snapshot?
     (tag-release version)))
 
@@ -221,8 +274,8 @@ clojure -A:deps -T:build help/doc"
 
 (defn outdated
   "Check all clj-otel-* libraries, example applications and tutorials for
-  outdated dependencies using antq. Dependencies on clj-otel-* libraries are
-  not checked, as they are not available until after deployment."
+  outdated dependencies using antq. Dependencies on clj-otel-* projects are
+  not checked."
   [_]
   (run-task {:main-opts
              ["--directory" (str/join ":" project-paths)
@@ -243,3 +296,12 @@ clojure -A:deps -T:build help/doc"
                           io/as-url
                           str)]
     (checked-process {:command-args (concat ["zprint" "--url-only" config-url "-fsw"] files)})))
+
+(defn examples
+  "Given a collection of microservice names, build an uberjar for each."
+  [{:keys [services]
+    :or   {services (map artifact-id uber-demo-project-paths)}}]
+  (doseq [service-name services]
+    (when-let [root-path (some #(and (= service-name (artifact-id %)) %) uber-demo-project-paths)]
+      (b/with-project-root root-path
+        (uberjar-artifact (project-artifact-opts root-path))))))

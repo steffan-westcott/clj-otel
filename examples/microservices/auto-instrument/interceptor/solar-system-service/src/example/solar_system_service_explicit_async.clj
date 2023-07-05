@@ -18,11 +18,12 @@
             [steffan-westcott.clj-otel.context :as context]))
 
 
-(defonce ^{:doc "Counter that records the number of planet reports built."} report-count
-  (instrument/instrument {:name        "service.solar-system.planet-report-count"
-                          :instrument-type :counter
-                          :unit        "{reports}"
-                          :description "The number of reports built"}))
+(defonce ^{:doc "Delay containing counter that records the number of planet reports built."}
+         report-count
+  (delay (instrument/instrument {:name        "service.solar-system.planet-report-count"
+                                 :instrument-type :counter
+                                 :unit        "{reports}"
+                                 :description "The number of reports built"})))
 
 
 
@@ -117,7 +118,7 @@
                             :attributes {:service.solar-system.report/length (count report)}})
 
       ;; Update report-count metric
-      (instrument/add! report-count
+      (instrument/add! @report-count
                        {:context context*
                         :value   1})
 
@@ -172,15 +173,6 @@
 
 
 
-(def service-map
-  "Pedestal service map for solar system HTTP service."
-  {::http/routes routes
-   ::http/type   :jetty
-   ::http/port   8080
-   ::http/join?  false})
-
-
-
 (defn update-default-interceptors
   "Returns `default-interceptors` with added interceptors for HTTP server span
    support."
@@ -209,5 +201,16 @@
 
 
 
-(defonce ^{:doc "solar-system-service server instance"} server
-  (http/start (service service-map)))
+(defn server
+  "Starts solar-system-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8080)))))
+
+
+
+(comment
+  (server {::http/join? false})
+  ;
+)

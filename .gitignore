@@ -15,4 +15,5 @@
 *.swp
 *.code-workspace
 
-/clj-otel-*/target
+/clj-otel-*/target/
+/examples/**/target/

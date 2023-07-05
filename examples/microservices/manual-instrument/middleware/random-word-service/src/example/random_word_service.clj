@@ -14,7 +14,8 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
-             runtime-telemetry]))
+             runtime-telemetry])
+  (:gen-class))
 
 
 (def words
@@ -25,11 +26,11 @@
 
 
 
-(defonce ^{:doc "Counter that records the number of words requested."} word-count
-  (instrument/instrument {:name        "service.random-word.word-count"
-                          :instrument-type :counter
-                          :unit        "{words}"
-                          :description "The number of words requested"}))
+(defonce ^{:doc "Delay containing counter that records the number of words requested."} word-count
+  (delay (instrument/instrument {:name        "service.random-word.word-count"
+                                 :instrument-type :counter
+                                 :unit        "{words}"
+                                 :description "The number of words requested"})))
 
 
 (defn random-word
@@ -66,7 +67,7 @@
       (span/add-span-data! {:attributes {:system/word word}})
 
       ;; Update word-count metric
-      (instrument/add! word-count
+      (instrument/add! @word-count
                        {:value      1
                         :attributes {:word-type word-type}})
 
@@ -114,13 +115,29 @@
                                    [metrics-http-server/wrap-active-requests]]}))
 
 
-;; Register measurements that report metrics about the JVM runtime. These measurements cover
-;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
-(defonce ^{:doc "JVM metrics registration"} _jvm-reg
-  (runtime-telemetry/register!))
+
+(defn server
+  "Starts random-word-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+
+   ;; Register measurements that report metrics about the JVM runtime. These measurements cover
+   ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
+   (runtime-telemetry/register!)
+
+   (jetty/run-jetty #'handler (assoc opts :port 8081))))
 
 
-(defonce ^{:doc "random-word-service server instance"} server
-  (jetty/run-jetty #'handler
-                   {:port  8081
-                    :join? false}))
+
+(defn -main
+  "random-word-service application entry point."
+  [& _args]
+  (server))
+
+
+
+(comment
+  (server {:join? false})
+  ;
+)

@@ -20,11 +20,12 @@
             [steffan-westcott.clj-otel.context :as context]))
 
 
-(defonce ^{:doc "Histogram that records the number of words in each sentence."} words-count
-  (instrument/instrument {:name        "service.sentence-summary.words-count"
-                          :instrument-type :histogram
-                          :unit        "{words}"
-                          :description "The number of words in each sentence"}))
+(defonce ^{:doc "Delay containing histogram that records the number of words in each sentence."}
+         words-count
+  (delay (instrument/instrument {:name        "service.sentence-summary.words-count"
+                                 :instrument-type :histogram
+                                 :unit        "{words}"
+                                 :description "The number of words in each sentence"})))
 
 
 
@@ -112,7 +113,7 @@
                                                                                        result)}})
 
       ;; Update words-count metric
-      (instrument/record! words-count {:value (count lengths)})
+      (instrument/record! @words-count {:value (count lengths)})
 
       result)))
 
@@ -173,8 +174,16 @@
 
 
 
-(defonce ^{:doc "sentence-summary-service server instance"} server
-  (jetty/run-jetty #'handler
-                   {:port   8080
-                    :async? true
-                    :join?  false}))
+(defn server
+  "Starts sentence-summary-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+   (jetty/run-jetty #'handler (assoc opts :async? true :port 8080))))
+
+
+
+(comment
+  (server {:join? false})
+  ;
+)

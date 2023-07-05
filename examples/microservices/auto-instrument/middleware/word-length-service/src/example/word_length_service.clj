@@ -11,14 +11,15 @@
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span])
+  (:gen-class))
 
 
-(defonce ^{:doc "Counter that records the number of letters counted."} letter-count
-  (instrument/instrument {:name        "service.word-length.letter-count"
-                          :instrument-type :counter
-                          :unit        "{letters}"
-                          :description "The number of letters counted"}))
+(defonce ^{:doc "Delay containing counter that records the number of letters counted."} letter-count
+  (delay (instrument/instrument {:name        "service.word-length.letter-count"
+                                 :instrument-type :counter
+                                 :unit        "{letters}"
+                                 :description "The number of letters counted"})))
 
 
 
@@ -45,7 +46,7 @@
                                     :attributes {:system/word-length word-length}}})
 
       ;; Update letter-count metric
-      (instrument/add! letter-count {:value word-length})
+      (instrument/add! @letter-count {:value word-length})
 
       word-length)))
 
@@ -96,7 +97,23 @@
 
 
 
-(defonce ^{:doc "word-length-service server instance"} server
-  (jetty/run-jetty #'handler
-                   {:port  8081
-                    :join? false}))
+(defn server
+  "Starts word-length-service server instance."
+  ([]
+   (server {}))
+  ([opts]
+   (jetty/run-jetty #'handler (assoc opts :port 8081))))
+
+
+
+(defn -main
+  "word-length-service application entry point."
+  [& _args]
+  (server))
+
+
+
+(comment
+  (server {:join? false})
+  ;
+)
