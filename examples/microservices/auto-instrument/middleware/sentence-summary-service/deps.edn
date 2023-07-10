@@ -2,71 +2,40 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {clj-http/clj-http         {:mvn/version "3.12.3"}
+ :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
+           org.clojure/core.async {:mvn/version "1.6.673"}
+
+           ;; clj-http HTTP client
+           clj-http/clj-http {:mvn/version "3.12.3"}
+
+           ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
+
+           ;; Reitit HTTP router
            metosin/reitit-middleware {:mvn/version "0.6.0"}
-           metosin/reitit-ring       {:mvn/version "0.6.0"}
+           metosin/reitit-ring {:mvn/version "0.6.0"}
+
+           ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
+           org.apache.logging.log4j/log4j-core {:mvn/version "2.20.0"}
+           org.apache.logging.log4j/log4j-jcl {:mvn/version "2.20.0"}
+           org.apache.logging.log4j/log4j-jul {:mvn/version "2.20.0"}
+           org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.20.0"}
+
+           ;; Enable JSON formatting of log messages to console/file
+           org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.20.0"}
+
+           ;; Functions for logging strings and maps using Log4j2
+           org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
+
+           ;; Utilities for core.async
            org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}
-           org.clojure/clojure       {:mvn/version "1.11.1"}
-           org.clojure/core.async    {:mvn/version "1.6.673"}
-           ring/ring-jetty-adapter   {:mvn/version "1.10.0"}}
 
- :aliases {;; Required configuration
+           ;; Ring-Jetty web server integration
+           ring/ring-jetty-adapter {:mvn/version "1.10.0"}}
 
-           :otel           {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
-                                       "-Dotel.resource.attributes=service.name=sentence-summary-service"]}
-
-
-
-           ;; -----------------------------
-
-           ;; Select exactly one traces-* alias for export of traces
-
-           :traces-none    {:jvm-opts ["-Dotel.traces.exporter=none"]}
-
-           :traces-collector-grpc {:jvm-opts ["-Dotel.traces.exporter=otlp"
-                                              "-Dotel.exporter.otlp.traces.protocol=grpc"]}
-
-           :traces-collector-http {:jvm-opts ["-Dotel.traces.exporter=otlp"
-                                              "-Dotel.exporter.otlp.traces.protocol=http/protobuf"]}
-
-
-
-           ;; -----------------------------
-
-           ;; Select exactly one metrics-* alias for export of metrics
-
-           :metrics-none   {:jvm-opts ["-Dotel.metrics.exporter=none"]}
-
-           :metrics-collector-grpc {:jvm-opts ["-Dotel.metrics.exporter=otlp"
-                                               "-Dotel.exporter.otlp.metrics.protocol=grpc"
-                                               "-Dotel.metric.export.interval=10000"]}
-
-           :metrics-collector-http {:jvm-opts ["-Dotel.metrics.exporter=otlp"
-                                               "-Dotel.exporter.otlp.metrics.protocol=http/protobuf"
-                                               "-Dotel.metric.export.interval=10000"]}
-
-
-
-           ;; -----------------------------
-
-           ;; Select exactly one logs-* alias for export of logs
-
-           :logs-none      {:jvm-opts ["-Dotel.logs.exporter=none"]}
-
-
-
-           ;; -----------------------------
-
-           ;; Select exactly one logging-* alias for application logging
-
-           :logging-log4j2 {:jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                                         "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]
-                            :extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.20.0"}
-                                         org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.20.0"}
-                                         org.apache.logging.log4j/log4j-jul         {:mvn/version "2.20.0"}
-                                         org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.20.0"}
-                                         org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.20.0"}
-                                         org.example/common.log4j2.utils            {:local/root "../../../../common/log4j2.utils"}}}
-
-          }}
+ :aliases {:otel {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
+                             "-Dotel.resource.attributes=service.name=sentence-summary-service"
+                             "-Dotel.metric.export.interval=10000"
+                             "-Dotel.logs.exporter=none"
+                             "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                             "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}

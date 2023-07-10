@@ -12,7 +12,7 @@
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as
              runtime-telemetry])
   (:gen-class))
 
@@ -130,7 +130,11 @@
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8081)))))
+   (http/start (service (conj {::http/routes routes
+                               ::http/type   :jetty
+                               ::http/host   "0.0.0.0"
+                               ::http/port   8081}
+                              opts)))))
 
 
 

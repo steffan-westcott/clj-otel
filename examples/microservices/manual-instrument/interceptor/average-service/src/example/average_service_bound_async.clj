@@ -17,7 +17,7 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
-            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as
              runtime-telemetry]))
 
 
@@ -25,6 +25,11 @@
   (delay (instrument/instrument {:name        "service.average.average-result"
                                  :instrument-type :histogram
                                  :description "The resulting averages"})))
+
+
+
+(def ^:private config
+  {})
 
 
 
@@ -70,8 +75,9 @@
 (defn <get-sum
   "Get the sum of the nums and return a channel of the result."
   [nums]
-  (let [<response (<client-request {:method       :get
-                                    :url          "http://localhost:8081/sum"
+  (let [endpoint  (get-in config [:endpoints :sum-service] "http://localhost:8081")
+        <response (<client-request {:method       :get
+                                    :url          (str endpoint "/sum")
                                     :query-params {"nums" (str/join "," nums)}
                                     :async        true
                                     :throw-exceptions false})]
@@ -228,19 +234,24 @@
 
 (defn server
   "Starts average-service server instance."
-  ([]
-   (server {}))
-  ([opts]
+  ([conf]
+   (server conf {}))
+  ([conf jetty-opts]
+   (alter-var-root #'config (constantly conf))
 
    ;; Register measurements that report metrics about the JVM runtime. These measurements cover
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8080)))))
+   (http/start (service (conj {::http/routes routes
+                               ::http/type   :jetty
+                               ::http/host   "0.0.0.0"
+                               ::http/port   8080}
+                              jetty-opts)))))
 
 
 
 (comment
-  (server {::http/join? false})
+  (server {} {::http/join? false})
   ;
 )

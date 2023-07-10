@@ -27,6 +27,11 @@
 
 
 
+(def ^:private config
+  {})
+
+
+
 (defn client-request
   "Make an asynchronous HTTP request using `clj-http`."
   [request respond raise]
@@ -58,9 +63,10 @@
   "Get a single statistic value of a planet and return a channel of a
    single-valued map of the statistic and its value."
   [planet statistic]
-  (let [path      (str "/planets/" (name planet) "/" (name statistic))
+  (let [endpoint  (get-in config [:endpoints :planet-service] "http://localhost:8081")
+        path      (str "/planets/" (name planet) "/" (name statistic))
         <response (<client-request {:method :get
-                                    :url    (str "http://localhost:8081" path)
+                                    :url    (str endpoint path)
                                     :async  true
                                     :throw-exceptions false})]
     (async'/go-try
@@ -197,14 +203,19 @@
 
 (defn server
   "Starts solar-system-service server instance."
-  ([]
-   (server {}))
-  ([opts]
-   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8080)))))
+  ([conf]
+   (server conf {}))
+  ([conf jetty-opts]
+   (alter-var-root #'config (constantly conf))
+   (http/start (service (conj {::http/routes routes
+                               ::http/type   :jetty
+                               ::http/host   "0.0.0.0"
+                               ::http/port   8080}
+                              jetty-opts)))))
 
 
 
 (comment
-  (server {::http/join? false})
+  (server {} {::http/join? false})
   ;
 )

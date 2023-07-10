@@ -1,0 +1,61 @@
+version: "3"
+services:
+
+  # Example microservice planet-service
+  planet-service:
+    image: example/planet-service:latest
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_METRIC_EXPORT_INTERVAL: 10000
+      OTEL_LOGS_EXPORTER: none
+    depends_on:
+      - otel-collector
+
+  # Example microservice solar-system-service
+  solar-system-service:
+    image: example/solar-system-service:latest
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_METRIC_EXPORT_INTERVAL: 10000
+      OTEL_LOGS_EXPORTER: none
+      SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
+      PLANET_SERVICE_ENDPOINT: http://planet-service:8081
+    ports:
+      - "8080:8080"      # solar-system-service endpoint
+    depends_on:
+      - planet-service
+      - otel-collector
+
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command:
+      - --config=/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"      # OTLP gRPC receiver
+    depends_on:
+      - jaeger
+      - prometheus
+
+  # Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    command:
+      - --collector.otlp.enabled=true
+    ports:
+      - "16686:16686"    # Jaeger web interface
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus.yaml
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+    ports:
+      - "9090:9090"      # Prometheus web interface
+

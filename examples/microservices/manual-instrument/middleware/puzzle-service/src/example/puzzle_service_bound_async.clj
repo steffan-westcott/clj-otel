@@ -19,7 +19,7 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
-            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as
              runtime-telemetry])
   (:import (clojure.lang PersistentQueue)))
 
@@ -30,6 +30,11 @@
                                  :instrument-type :histogram
                                  :unit        "{letters}"
                                  :description "The number of letters in each generated puzzle"})))
+
+
+
+(def ^:private config
+  {})
 
 
 
@@ -76,8 +81,9 @@
   "Get a random word string of the requested type and return a channel of the
    word."
   [word-type]
-  (let [<response (<client-request {:method       :get
-                                    :url          "http://localhost:8081/random-word"
+  (let [endpoint  (get-in config [:endpoints :random-word-service] "http://localhost:8081")
+        <response (<client-request {:method       :get
+                                    :url          (str endpoint "/random-word")
                                     :query-params {"type" (name word-type)}
                                     :async        true
                                     :throw-exceptions false})]
@@ -203,19 +209,20 @@
 
 (defn server
   "Starts puzzle-service server instance."
-  ([]
-   (server {}))
-  ([opts]
+  ([conf]
+   (server conf {}))
+  ([conf jetty-opts]
+   (alter-var-root #'config (constantly conf))
 
    ;; Register measurements that report metrics about the JVM runtime. These measurements cover
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (jetty/run-jetty #'handler (assoc opts :async? true :port 8080))))
+   (jetty/run-jetty #'handler (assoc jetty-opts :async? true :port 8080))))
 
 
 
 (comment
-  (server {:join? false})
+  (server {} {:join? false})
   ;
 )

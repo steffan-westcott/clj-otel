@@ -29,6 +29,11 @@
 
 
 
+(def ^:private config
+  {})
+
+
+
 (defn client-request
   "Make an asynchronous HTTP request using `clj-http`."
   [context request respond raise]
@@ -59,9 +64,10 @@
 (defn <get-word-length
   "Get the length of `word` and return a channel of the length value."
   [context word]
-  (let [<response (<client-request context
+  (let [endpoint  (get-in config [:endpoints :word-length-service] "http://localhost:8081")
+        <response (<client-request context
                                    {:method       :get
-                                    :url          "http://localhost:8081/length"
+                                    :url          (str endpoint "/length")
                                     :query-params {"word" word}
                                     :async        true
                                     :throw-exceptions false})]
@@ -184,14 +190,15 @@
 
 (defn server
   "Starts sentence-summary-service server instance."
-  ([]
-   (server {}))
-  ([opts]
-   (jetty/run-jetty #'handler (assoc opts :async? true :port 8080))))
+  ([conf]
+   (server conf {}))
+  ([conf jetty-opts]
+   (alter-var-root #'config (constantly conf))
+   (jetty/run-jetty #'handler (assoc jetty-opts :async? true :port 8080))))
 
 
 
 (comment
-  (server {:join? false})
+  (server {} {:join? false})
   ;
 )

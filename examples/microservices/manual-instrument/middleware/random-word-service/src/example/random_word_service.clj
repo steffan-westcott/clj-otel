@@ -13,7 +13,7 @@
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as
              runtime-telemetry])
   (:gen-class))
 

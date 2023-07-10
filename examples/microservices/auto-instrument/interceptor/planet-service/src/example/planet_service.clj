@@ -143,7 +143,11 @@
   ([]
    (server {}))
   ([opts]
-   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8081)))))
+   (http/start (service (conj {::http/routes routes
+                               ::http/type   :jetty
+                               ::http/host   "0.0.0.0"
+                               ::http/port   8081}
+                              opts)))))
 
 
 

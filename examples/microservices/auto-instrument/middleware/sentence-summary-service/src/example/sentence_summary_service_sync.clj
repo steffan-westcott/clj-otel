@@ -25,6 +25,11 @@
 
 
 
+(def ^:private config
+  {})
+
+
+
 (defn get-word-length
   "Get the length of `word`."
   [word]
@@ -33,7 +38,7 @@
   ;; created by the OpenTelemetry instrumentation agent. The agent also
   ;; propagates the context containing the client span to the remote HTTP
   ;; server by injecting headers into the request.
-  (let [response (client/get "http://localhost:8081/length"
+  (let [response (client/get "http://word-length-service:8081/length"
                              {:throw-exceptions false
                               :query-params     {"word" word}})
         status   (:status response)]
@@ -132,14 +137,15 @@
 
 (defn server
   "Starts sentence-summary-service server instance."
-  ([]
-   (server {}))
-  ([opts]
-   (jetty/run-jetty #'handler (assoc opts :port 8080))))
+  ([conf]
+   (server conf {}))
+  ([conf jetty-opts]
+   (alter-var-root #'config (constantly conf))
+   (jetty/run-jetty #'handler (assoc jetty-opts :port 8080))))
 
 
 
 (comment
-  (server {:join? false})
+  (server {} {:join? false})
   ;
 )

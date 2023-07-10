@@ -66,6 +66,10 @@ clojure -A:deps -T:build help/doc"
   [root-path]
   (some #{root-path} uber-demo-project-paths))
 
+(defn- agent-demo-project?
+  [root-path]
+  (re-find #"^examples/.*auto-instrument" root-path))
+
 (def ^:private project-paths
   (concat library-project-paths
           uber-demo-project-paths
@@ -119,10 +123,7 @@ clojure -A:deps -T:build help/doc"
                   :aliases     (cond-> [(if snapshot?
                                           :snapshot
                                           :release)]
-                                 (uber-demo-project? root-path) (into [:otel :traces-collector-grpc
-                                                                       :metrics-collector-grpc
-                                                                       :logs-none :logging-log4j2
-                                                                       :grpc-netty]))
+                                 (uber-demo-project? root-path) (conj :otel))
                   :group-id    (group-id root-path)
                   :main        (when (uber-demo-project? root-path)
                                  (symbol (str "example." (artifact-id root-path))))
@@ -221,11 +222,12 @@ clojure -A:deps -T:build help/doc"
   (println "Compiling project" root-path "...")
   (b/compile-clj opts)
   (println "Building uberjar" uber-file "...")
-  (b/uber opts)
-  (println (-> opts
-               :basis
-               :classpath-args
-               :jvm-opts)))
+  (b/uber opts))
+
+(defn- docker-image-artifact
+  [image-tag]
+  (println "Building Docker image" image-tag)
+  (checked-process {:command-args ["docker" "build" "-t" image-tag "."]}))
 
 (defn- tag-release
   [tag]
@@ -298,10 +300,15 @@ clojure -A:deps -T:build help/doc"
     (checked-process {:command-args (concat ["zprint" "--url-only" config-url "-fsw"] files)})))
 
 (defn examples
-  "Given a collection of microservice names, build an uberjar for each."
+  "Given a collection of microservice names, build an uberjar and Docker image for each."
   [{:keys [services]
     :or   {services (map artifact-id uber-demo-project-paths)}}]
   (doseq [service-name services]
     (when-let [root-path (some #(and (= service-name (artifact-id %)) %) uber-demo-project-paths)]
       (b/with-project-root root-path
-        (uberjar-artifact (project-artifact-opts root-path))))))
+        (uberjar-artifact (project-artifact-opts root-path)))
+      (when (agent-demo-project? root-path)
+        (b/copy-file {:src    "examples/opentelemetry-javaagent.jar"
+                      :target (str root-path "/target/opentelemetry-javaagent.jar")}))
+      (b/with-project-root root-path
+        (docker-image-artifact (str "example/" service-name))))))

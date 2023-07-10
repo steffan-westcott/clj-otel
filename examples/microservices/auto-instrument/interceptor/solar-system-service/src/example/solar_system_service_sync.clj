@@ -23,16 +23,22 @@
 
 
 
+(def ^:private config
+  {})
+
+
+
 (defn get-statistic-value
   "Get a single statistic value of a planet."
   [planet statistic]
-  (let [path     (str "/planets/" (name planet) "/" (name statistic))
+  (let [endpoint (get-in config [:endpoints :planet-service] "http://localhost:8081")
+        path     (str "/planets/" (name planet) "/" (name statistic))
 
         ;; Apache HttpClient request is automatically wrapped in a client span
         ;; created by the OpenTelemetry instrumentation agent. The agent also
         ;; propagates the context containing the client span to the remote HTTP
         ;; server by injecting headers into the request.
-        response (client/get (str "http://localhost:8081" path) {:throw-exceptions false})
+        response (client/get (str endpoint path) {:throw-exceptions false})
         status   (:status response)]
 
     (if (= 200 status)
@@ -141,14 +147,19 @@
 
 (defn server
   "Starts solar-system-service server instance."
-  ([]
-   (server {}))
-  ([opts]
-   (http/start (service (assoc opts ::http/routes routes ::http/type :jetty ::http/port 8080)))))
+  ([conf]
+   (server conf {}))
+  ([conf jetty-opts]
+   (alter-var-root #'config (constantly conf))
+   (http/start (service (conj {::http/routes routes
+                               ::http/type   :jetty
+                               ::http/host   "0.0.0.0"
+                               ::http/port   8080}
+                              jetty-opts)))))
 
 
 
 (comment
-  (server {::http/join? false})
+  (server {} {::http/join? false})
   ;
 )
