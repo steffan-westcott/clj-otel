@@ -3,6 +3,8 @@
    synchronous Ring HTTP service that is run with the OpenTelemetry
    instrumentation agent."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.string :as str]
             [muuntaja.core :as m]
             [reitit.ring :as ring]
@@ -28,6 +30,12 @@
 (def ^:private config
   {})
 
+(def ^:private conn-mgr
+  (delay (conn/make-reusable-conn-manager {})))
+
+(def ^:private sync-client
+  (delay (http-core/build-http-client {} false @conn-mgr)))
+
 
 
 (defn get-word-length
@@ -38,9 +46,12 @@
   ;; created by the OpenTelemetry instrumentation agent. The agent also
   ;; propagates the context containing the client span to the remote HTTP
   ;; server by injecting headers into the request.
-  (let [response (client/get "http://word-length-service:8081/length"
-                             {:throw-exceptions false
-                              :query-params     {"word" word}})
+  (let [endpoint (get-in config [:endpoints :word-length-service] "http://localhost:8081")
+        response (client/get (str endpoint "/length")
+                             {:throw-exceptions   false
+                              :connection-manager @conn-mgr
+                              :http-client        @sync-client
+                              :query-params       {"word" word}})
         status   (:status response)]
 
     (if (= 200 status)
@@ -141,7 +152,10 @@
    (server conf {}))
   ([conf jetty-opts]
    (alter-var-root #'config (constantly conf))
-   (jetty/run-jetty #'handler (assoc jetty-opts :port 8080))))
+   (jetty/run-jetty #'handler
+                    (conj jetty-opts
+                          {:max-threads 16
+                           :port        8080}))))
 
 
 

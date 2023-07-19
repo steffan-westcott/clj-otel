@@ -3,6 +3,8 @@
    synchronous Ring HTTP service that is run without the OpenTelemetry
    instrumentation agent."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.string :as str]
             [muuntaja.core :as m]
             [reitit.ring :as ring]
@@ -33,26 +35,37 @@
 (def ^:private config
   {})
 
+(def ^:private conn-mgr
+  (delay (conn/make-reusable-conn-manager {})))
+
+(def ^:private sync-client
+  (delay (http-core/build-http-client {} false @conn-mgr)))
+
 
 
 (defn client-request
   "Perform a synchronous HTTP request using `clj-http`."
   [request]
 
-  ;; Wrap the synchronous body in a new client span.
-  (span/with-span! (trace-http/client-span-opts request)
+  (let [request (conj request
+                      {:throw-exceptions   false
+                       :connection-manager @conn-mgr
+                       :http-client        @sync-client})]
 
-    (let [;; Propagate context containing client span to remote
-          ;; server by injecting headers. This enables span
-          ;; correlation to make distributed traces.
-          request' (update request :headers merge (context/->headers))
+    ;; Wrap the synchronous body in a new client span.
+    (span/with-span! (trace-http/client-span-opts request)
 
-          response (client/request request')]
+      (let [;; Propagate context containing client span to remote
+            ;; server by injecting headers. This enables span
+            ;; correlation to make distributed traces.
+            request' (update request :headers merge (context/->headers))
 
-      ;; Add HTTP response data to the client span.
-      (trace-http/add-client-span-response-data! response)
+            response (client/request request')]
 
-      response)))
+        ;; Add HTTP response data to the client span.
+        (trace-http/add-client-span-response-data! response)
+
+        response))))
 
 
 
@@ -62,8 +75,7 @@
   (let [endpoint (get-in config [:endpoints :random-word-service] "http://localhost:8081")
         response (client-request {:method       :get
                                   :url          (str endpoint "/random-word")
-                                  :query-params {"type" (name word-type)}
-                                  :throw-exceptions false})
+                                  :query-params {"type" (name word-type)}})
         status   (:status response)]
     (if (= 200 status)
       (:body response)
@@ -176,7 +188,10 @@
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (jetty/run-jetty #'handler (assoc jetty-opts :port 8080))))
+   (jetty/run-jetty #'handler
+                    (conj jetty-opts
+                          {:max-threads 16
+                           :port        8080}))))
 
 
 

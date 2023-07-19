@@ -126,7 +126,10 @@
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (jetty/run-jetty #'handler (assoc opts :port 8081))))
+   (jetty/run-jetty #'handler
+                    (conj opts
+                          {:max-threads 16
+                           :port        8081}))))
 
 
 

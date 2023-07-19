@@ -4,6 +4,8 @@
    instrumentation agent. In this example, the context is explicitly passed in
    as a parameter to `clj-otel` functions."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common.core-async.utils :as async']
@@ -37,34 +39,46 @@
 (def ^:private config
   {})
 
+(def ^:private async-conn-mgr
+  (delay (conn/make-reusable-async-conn-manager {})))
+
+(def ^:private async-client
+  (delay (http-core/build-async-http-client {} @async-conn-mgr)))
+
 
 
 (defn client-request
   "Make an asynchronous HTTP request using `clj-http`."
   [context request respond raise]
 
-  ;; Manually create a client span with `context` as the parent context.
-  ;; Context containing client span is assigned to `context*`. Client span is
-  ;; ended when either a response or exception is returned.
-  (span/async-span
-   (trace-http/client-span-opts request {:parent context})
-   (fn [context* respond* raise*]
+  (let [request (conj request
+                      {:async true
+                       :throw-exceptions false
+                       :connection-manager @async-conn-mgr
+                       :http-client @async-client})]
 
-     (let [;; Propagate context containing client span to remote
-           ;; server by injecting headers. This enables span
-           ;; correlation to make distributed traces.
-           request' (update request :headers merge (context/->headers {:context context*}))]
+    ;; Manually create a client span with `context` as the parent context.
+    ;; Context containing client span is assigned to `context*`. Client span is
+    ;; ended when either a response or exception is returned.
+    (span/async-span
+     (trace-http/client-span-opts request {:parent context})
+     (fn [context* respond* raise*]
 
-       (client/request request'
-                       (fn [response]
+       (let [;; Propagate context containing client span to remote
+             ;; server by injecting headers. This enables span
+             ;; correlation to make distributed traces.
+             request' (update request :headers merge (context/->headers {:context context*}))]
 
-                         ;; Add HTTP response data to the client span.
-                         (trace-http/add-client-span-response-data! response {:context context*})
+         (client/request request'
+                         (fn [response]
 
-                         (respond* response))
-                       raise*)))
-   respond
-   raise))
+                           ;; Add HTTP response data to the client span.
+                           (trace-http/add-client-span-response-data! response {:context context*})
+
+                           (respond* response))
+                         raise*)))
+     respond
+     raise)))
 
 
 
@@ -82,12 +96,11 @@
   "Get a random word string of the requested type and return a channel of the
    word."
   [context word-type]
-  (let [<response (<client-request context
+  (let [endpoint  (get-in config [:endpoints :random-word-service] "http://localhost:8081")
+        <response (<client-request context
                                    {:method       :get
-                                    :url          "http://random-word-service:8081/random-word"
-                                    :query-params {"type" (name word-type)}
-                                    :async        true
-                                    :throw-exceptions false})]
+                                    :url          (str endpoint "/random-word")
+                                    :query-params {"type" (name word-type)}})]
     (async'/go-try
       (let [response (async'/<? <response)
             status   (:status response)]
@@ -227,7 +240,11 @@
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (jetty/run-jetty #'handler (assoc jetty-opts :async? true :port 8080))))
+   (jetty/run-jetty #'handler
+                    (conj jetty-opts
+                          {:async?      true
+                           :max-threads 16
+                           :port        8080}))))
 
 
 

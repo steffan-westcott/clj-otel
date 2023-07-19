@@ -4,6 +4,8 @@
    instrumentation agent. In this example, the context is explicitly passed in
    as a parameter to `clj-otel` functions."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common.core-async.utils :as async']
@@ -32,22 +34,34 @@
 (def ^:private config
   {})
 
+(def ^:private async-conn-mgr
+  (delay (conn/make-reusable-async-conn-manager {})))
+
+(def ^:private async-client
+  (delay (http-core/build-async-http-client {} @async-conn-mgr)))
+
 
 
 (defn client-request
   "Make an asynchronous HTTP request using `clj-http`."
   [context request respond raise]
 
-  ;; Set the current context just while the client request is created. This
-  ;; ensures the client span created by the agent will have the correct parent
-  ;; context.
-  (context/with-context! context
+  (let [request (conj request
+                      {:async true
+                       :throw-exceptions false
+                       :connection-manager @async-conn-mgr
+                       :http-client @async-client})]
 
-    ;; Apache HttpClient request is automatically wrapped in a client span
-    ;; created by the OpenTelemetry instrumentation agent. The agent also
-    ;; propagates the context containing the client span to the remote HTTP
-    ;; server by injecting headers into the request.
-    (client/request request respond raise)))
+    ;; Set the current context just while the client request is created. This
+    ;; ensures the client span created by the agent will have the correct parent
+    ;; context.
+    (context/with-context! context
+
+      ;; Apache HttpClient request is automatically wrapped in a client span
+      ;; created by the OpenTelemetry instrumentation agent. The agent also
+      ;; propagates the context containing the client span to the remote HTTP
+      ;; server by injecting headers into the request.
+      (client/request request respond raise))))
 
 
 
@@ -68,9 +82,7 @@
         <response (<client-request context
                                    {:method       :get
                                     :url          (str endpoint "/length")
-                                    :query-params {"word" word}
-                                    :async        true
-                                    :throw-exceptions false})]
+                                    :query-params {"word" word}})]
     (async'/go-try
       (let [response (async'/<? <response)
             status   (:status response)]
@@ -194,7 +206,11 @@
    (server conf {}))
   ([conf jetty-opts]
    (alter-var-root #'config (constantly conf))
-   (jetty/run-jetty #'handler (assoc jetty-opts :async? true :port 8080))))
+   (jetty/run-jetty #'handler
+                    (conj jetty-opts
+                          {:async?      true
+                           :max-threads 16
+                           :port        8080}))))
 
 
 

@@ -3,6 +3,8 @@
    synchronous Pedestal HTTP service that is run with the OpenTelemetry
    instrumentation agent."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.string :as str]
             [example.common.interceptor.utils :as interceptor-utils]
             [io.pedestal.http :as http]
@@ -26,6 +28,12 @@
 (def ^:private config
   {})
 
+(def ^:private conn-mgr
+  (delay (conn/make-reusable-conn-manager {})))
+
+(def ^:private sync-client
+  (delay (http-core/build-http-client {} false @conn-mgr)))
+
 
 
 (defn get-statistic-value
@@ -38,7 +46,10 @@
         ;; created by the OpenTelemetry instrumentation agent. The agent also
         ;; propagates the context containing the client span to the remote HTTP
         ;; server by injecting headers into the request.
-        response (client/get (str endpoint path) {:throw-exceptions false})
+        response (client/get (str endpoint path)
+                             {:throw-exceptions   false
+                              :connection-manager @conn-mgr
+                              :http-client        @sync-client})
         status   (:status response)]
 
     (if (= 200 status)
@@ -154,7 +165,8 @@
    (http/start (service (conj {::http/routes routes
                                ::http/type   :jetty
                                ::http/host   "0.0.0.0"
-                               ::http/port   8080}
+                               ::http/port   8080
+                               ::http/container-options {:max-threads 16}}
                               jetty-opts)))))
 
 

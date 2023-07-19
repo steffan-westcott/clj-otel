@@ -133,7 +133,8 @@
    (http/start (service (conj {::http/routes routes
                                ::http/type   :jetty
                                ::http/host   "0.0.0.0"
-                               ::http/port   8081}
+                               ::http/port   8081
+                               ::http/container-options {:max-threads 16}}
                               opts)))))
 
 

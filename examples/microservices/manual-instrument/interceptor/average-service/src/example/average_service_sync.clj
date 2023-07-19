@@ -3,6 +3,8 @@
    synchronous Pedestal HTTP service that is run without the OpenTelemetry
    instrumentation agent."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.string :as str]
             [example.common.interceptor.utils :as interceptor-utils]
             [io.pedestal.http :as http]
@@ -28,26 +30,37 @@
 (def ^:private config
   {})
 
+(def ^:private conn-mgr
+  (delay (conn/make-reusable-conn-manager {})))
+
+(def ^:private sync-client
+  (delay (http-core/build-http-client {} false @conn-mgr)))
+
 
 
 (defn client-request
   "Perform a synchronous HTTP request using `clj-http`."
   [request]
 
-  ;; Wrap the synchronous body in a new client span.
-  (span/with-span! (trace-http/client-span-opts request)
+  (let [request (conj request
+                      {:throw-exceptions   false
+                       :connection-manager @conn-mgr
+                       :http-client        @sync-client})]
 
-    (let [;; Propagate context containing client span to remote
-          ;; server by injecting headers. This enables span
-          ;; correlation to make distributed traces.
-          request' (update request :headers merge (context/->headers))
+    ;; Wrap the synchronous body in a new client span.
+    (span/with-span! (trace-http/client-span-opts request)
 
-          response (client/request request')]
+      (let [;; Propagate context containing client span to remote
+            ;; server by injecting headers. This enables span
+            ;; correlation to make distributed traces.
+            request' (update request :headers merge (context/->headers))
 
-      ;; Add HTTP response data to the client span.
-      (trace-http/add-client-span-response-data! response)
+            response (client/request request')]
 
-      response)))
+        ;; Add HTTP response data to the client span.
+        (trace-http/add-client-span-response-data! response)
+
+        response))))
 
 
 
@@ -57,8 +70,7 @@
   (let [endpoint (get-in config [:endpoints :sum-service] "http://localhost:8081")
         response (client-request {:method       :get
                                   :url          (str endpoint "/sum")
-                                  :query-params {"nums" (str/join "," nums)}
-                                  :throw-exceptions false})
+                                  :query-params {"nums" (str/join "," nums)}})
         status   (:status response)]
     (if (= 200 status)
       (Integer/parseInt (:body response))
@@ -199,7 +211,8 @@
    (http/start (service (conj {::http/routes routes
                                ::http/type   :jetty
                                ::http/host   "0.0.0.0"
-                               ::http/port   8080}
+                               ::http/port   8080
+                               ::http/container-options {:max-threads 16}}
                               jetty-opts)))))
 
 

@@ -4,6 +4,8 @@
    instrumentation agent. In this example, the bound context default is used in
    `clj-otel` functions."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common.core-async.utils :as async']
@@ -31,34 +33,47 @@
 (def ^:private config
   {})
 
+(def ^:private async-conn-mgr
+  (delay (conn/make-reusable-async-conn-manager {})))
+
+(def ^:private async-client
+  (delay (http-core/build-async-http-client {} @async-conn-mgr)))
+
 
 
 (defn client-request
   "Make an asynchronous HTTP request using `clj-http`."
   [request respond raise]
 
-  ;; Manually create a client span. The client span is ended when either a
-  ;; response or exception is returned.
-  (span/async-bound-span
-   (trace-http/client-span-opts request)
-   (fn [respond* raise*]
+  (let [request (conj request
+                      {:async true
+                       :throw-exceptions false
+                       :connection-manager @async-conn-mgr
+                       :http-client @async-client})]
 
-     (let [;; Propagate context containing client span to remote
-           ;; server by injecting headers. This enables span
-           ;; correlation to make distributed traces.
-           request' (update request :headers merge (context/->headers))]
+    ;; Manually create a client span. The client span is ended when either a
+    ;; response or exception is returned.
+    (span/async-bound-span (trace-http/client-span-opts request)
+                           (fn [respond* raise*]
 
-       ;; `clj-http` restores bindings before evaluating callback function
-       (client/request request'
-                       (fn [response]
+                             (let [;; Propagate context containing client span to remote
+                                   ;; server by injecting headers. This enables span
+                                   ;; correlation to make distributed traces.
+                                   request' (update request :headers merge (context/->headers))]
 
-                         ;; Add HTTP response data to the client span.
-                         (trace-http/add-client-span-response-data! response)
+                               ;; `clj-http` restores bindings before evaluating callback
+                               ;; function
+                               (client/request request'
+                                               (fn [response]
 
-                         (respond* response))
-                       raise*)))
-   respond
-   raise))
+                                                 ;; Add HTTP response data to the client span.
+                                                 (trace-http/add-client-span-response-data!
+                                                  response)
+
+                                                 (respond* response))
+                                               raise*)))
+                           respond
+                           raise)))
 
 
 
@@ -78,9 +93,7 @@
   (let [endpoint  (get-in config [:endpoints :sum-service] "http://localhost:8081")
         <response (<client-request {:method       :get
                                     :url          (str endpoint "/sum")
-                                    :query-params {"nums" (str/join "," nums)}
-                                    :async        true
-                                    :throw-exceptions false})]
+                                    :query-params {"nums" (str/join "," nums)}})]
     (async'/go-try
       (let [response (async'/<? <response)
             status   (:status response)]
@@ -246,7 +259,8 @@
    (http/start (service (conj {::http/routes routes
                                ::http/type   :jetty
                                ::http/host   "0.0.0.0"
-                               ::http/port   8080}
+                               ::http/port   8080
+                               ::http/container-options {:max-threads 16}}
                               jetty-opts)))))
 
 

@@ -4,6 +4,8 @@
    instrumentation agent. In this example, the bound context default is used in
    `clj-otel` functions."
   (:require [clj-http.client :as client]
+            [clj-http.conn-mgr :as conn]
+            [clj-http.core :as http-core]
             [clojure.core.async :as async]
             [clojure.string :as str]
             [example.common.core-async.utils :as async']
@@ -23,6 +25,7 @@
              runtime-telemetry])
   (:import (clojure.lang PersistentQueue)))
 
+
 (defonce
   ^{:doc "Delay containing histogram that records the number of letters in each generated puzzle."}
   puzzle-size
@@ -31,10 +34,14 @@
                                  :unit        "{letters}"
                                  :description "The number of letters in each generated puzzle"})))
 
-
-
 (def ^:private config
   {})
+
+(def ^:private async-conn-mgr
+  (delay (conn/make-reusable-async-conn-manager {})))
+
+(def ^:private async-client
+  (delay (http-core/build-async-http-client {} @async-conn-mgr)))
 
 
 
@@ -42,28 +49,35 @@
   "Make an asynchronous HTTP request using `clj-http`."
   [request respond raise]
 
-  ;; Manually create a client span. The client span is ended when either a
-  ;; response or exception is returned.
-  (span/async-bound-span
-   (trace-http/client-span-opts request)
-   (fn [respond* raise*]
+  (let [request (conj request
+                      {:async true
+                       :throw-exceptions false
+                       :connection-manager @async-conn-mgr
+                       :http-client @async-client})]
 
-     (let [;; Propagate context containing client span to remote
-           ;; server by injecting headers. This enables span
-           ;; correlation to make distributed traces.
-           request' (update request :headers merge (context/->headers))]
+    ;; Manually create a client span. The client span is ended when either a
+    ;; response or exception is returned.
+    (span/async-bound-span (trace-http/client-span-opts request)
+                           (fn [respond* raise*]
 
-       ;; `clj-http` restores bindings before evaluating callback function
-       (client/request request'
-                       (fn [response]
+                             (let [;; Propagate context containing client span to remote
+                                   ;; server by injecting headers. This enables span
+                                   ;; correlation to make distributed traces.
+                                   request' (update request :headers merge (context/->headers))]
 
-                         ;; Add HTTP response data to the client span.
-                         (trace-http/add-client-span-response-data! response)
+                               ;; `clj-http` restores bindings before evaluating callback
+                               ;; function
+                               (client/request request'
+                                               (fn [response]
 
-                         (respond* response))
-                       raise*)))
-   respond
-   raise))
+                                                 ;; Add HTTP response data to the client span.
+                                                 (trace-http/add-client-span-response-data!
+                                                  response)
+
+                                                 (respond* response))
+                                               raise*)))
+                           respond
+                           raise)))
 
 
 
@@ -84,9 +98,7 @@
   (let [endpoint  (get-in config [:endpoints :random-word-service] "http://localhost:8081")
         <response (<client-request {:method       :get
                                     :url          (str endpoint "/random-word")
-                                    :query-params {"type" (name word-type)}
-                                    :async        true
-                                    :throw-exceptions false})]
+                                    :query-params {"type" (name word-type)}})]
     (async'/go-try
       (let [response (async'/<? <response)
             status   (:status response)]
@@ -218,7 +230,11 @@
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (jetty/run-jetty #'handler (assoc jetty-opts :async? true :port 8080))))
+   (jetty/run-jetty #'handler
+                    (conj jetty-opts
+                          {:async?      true
+                           :max-threads 16
+                           :port        8080}))))
 
 
 
