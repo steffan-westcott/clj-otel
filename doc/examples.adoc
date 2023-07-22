@@ -12,7 +12,7 @@ endif::[]
 
 == Running the examples
 
-These instructions assume a Unix-like environment, with `docker-compose` to spin up backend instances and `curl` to issue HTTP requests.
+These instructions assume a Unix-like environment, with `docker` to spin up backend instances and `curl` to issue HTTP requests.
 All examples use `deps.edn` for project configuration.
 
 . *Clone `clj-otel` repository*
@@ -38,7 +38,7 @@ To start the instances, run the following command in the `examples` directory :
 +
 [source,bash]
 ----
-docker-compose up -d
+docker compose up -d
 ----
 
 . *Load and exercise example*
@@ -59,7 +59,7 @@ To stop the OpenTelemetry Collector and telemetry backend instances, run the fol
 +
 [source,bash]
 ----
-docker-compose down -v
+docker compose down -v
 ----
 
 [#_examples_overview]

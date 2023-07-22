@@ -20,11 +20,17 @@ services:
       OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
       SUM_SERVICE_ENDPOINT: http://sum-service:8081
-    ports:
-      - "8080:8080"      # average-service endpoint
     depends_on:
       - sum-service
       - otel-collector
+
+  # Load generator for average-service
+  average-load-gen:
+    image: example/average-load-gen:latest
+    environment:
+      AVERAGE_SERVICE_ENDPOINT: http://average-service:8080
+    depends_on:
+      - average-service
 
   # OpenTelemetry Collector
   otel-collector:
@@ -33,8 +39,6 @@ services:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command:
       - --config=/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317"      # OTLP gRPC receiver
     depends_on:
       - jaeger
       - prometheus

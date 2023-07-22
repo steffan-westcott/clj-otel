@@ -20,11 +20,17 @@ services:
       OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
       RANDOM_WORD_SERVICE_ENDPOINT: http://random-word-service:8081
-    ports:
-      - "8080:8080"      # puzzle-service endpoint
     depends_on:
       - random-word-service
       - otel-collector
+
+  # Load generator for puzzle-service
+  puzzle-load-gen:
+    image: example/puzzle-load-gen:latest
+    environment:
+      PUZZLE_SERVICE_ENDPOINT: http://puzzle-service:8080
+    depends_on:
+      - puzzle-service
 
   # OpenTelemetry Collector
   otel-collector:
@@ -33,8 +39,6 @@ services:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command:
       - --config=/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317"      # OTLP gRPC receiver
     depends_on:
       - jaeger
       - prometheus

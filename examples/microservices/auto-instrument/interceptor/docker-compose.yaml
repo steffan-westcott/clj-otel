@@ -20,11 +20,17 @@ services:
       OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
       PLANET_SERVICE_ENDPOINT: http://planet-service:8081
-    ports:
-      - "8080:8080"      # solar-system-service endpoint
     depends_on:
       - planet-service
       - otel-collector
+
+  # Load generator for solar-system-service
+  solar-system-load-gen:
+    image: example/solar-system-load-gen:latest
+    environment:
+      SOLAR_SYSTEM_SERVICE_ENDPOINT: http://solar-system-service:8080
+    depends_on:
+      - solar-system-service
 
   # OpenTelemetry Collector
   otel-collector:
@@ -33,8 +39,6 @@ services:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command:
       - --config=/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317"      # OTLP gRPC receiver
     depends_on:
       - jaeger
       - prometheus

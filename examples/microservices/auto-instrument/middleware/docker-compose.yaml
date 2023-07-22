@@ -20,11 +20,17 @@ services:
       OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
       WORD_LENGTH_SERVICE_ENDPOINT: http://word-length-service:8081
-    ports:
-      - "8080:8080"      # sentence-summary-service endpoint
     depends_on:
       - word-length-service
       - otel-collector
+
+  # Load generator for sentence-summary-service
+  sentence-summary-load-gen:
+    image: example/sentence-summary-load-gen:latest
+    environment:
+      SENTENCE_SUMMARY_SERVICE_ENDPOINT: http://sentence-summary-service:8080
+    depends_on:
+      - sentence-summary-service
 
   # OpenTelemetry Collector
   otel-collector:
@@ -33,8 +39,6 @@ services:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command:
       - --config=/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317"      # OTLP gRPC receiver
     depends_on:
       - jaeger
       - prometheus

@@ -42,11 +42,15 @@ clojure -A:deps -T:build help/doc"
 
 (def ^:private uber-demo-project-paths
   ["examples/microservices/auto-instrument/interceptor/planet-service"
+   "examples/microservices/auto-instrument/interceptor/solar-system-load-gen"
    "examples/microservices/auto-instrument/interceptor/solar-system-service"
+   "examples/microservices/auto-instrument/middleware/sentence-summary-load-gen"
    "examples/microservices/auto-instrument/middleware/sentence-summary-service"
    "examples/microservices/auto-instrument/middleware/word-length-service"
+   "examples/microservices/manual-instrument/interceptor/average-load-gen"
    "examples/microservices/manual-instrument/interceptor/average-service"
    "examples/microservices/manual-instrument/interceptor/sum-service"
+   "examples/microservices/manual-instrument/middleware/puzzle-load-gen"
    "examples/microservices/manual-instrument/middleware/puzzle-service"
    "examples/microservices/manual-instrument/middleware/random-word-service"])
 
@@ -300,15 +304,15 @@ clojure -A:deps -T:build help/doc"
     (checked-process {:command-args (concat ["zprint" "--url-only" config-url "-fsw"] files)})))
 
 (defn examples
-  "Given a collection of microservice names, build an uberjar and Docker image for each."
-  [{:keys [services]
-    :or   {services (map artifact-id uber-demo-project-paths)}}]
-  (doseq [service-name services]
-    (when-let [root-path (some #(and (= service-name (artifact-id %)) %) uber-demo-project-paths)]
+  "Given a collection of uber project names, build an uberjar and Docker image for each."
+  [{:keys [projects]
+    :or   {projects (map artifact-id uber-demo-project-paths)}}]
+  (doseq [project-name projects]
+    (when-let [root-path (some #(and (= project-name (artifact-id %)) %) uber-demo-project-paths)]
       (b/with-project-root root-path
         (uberjar-artifact (project-artifact-opts root-path)))
       (when (agent-demo-project? root-path)
         (b/copy-file {:src    "examples/opentelemetry-javaagent.jar"
                       :target (str root-path "/target/opentelemetry-javaagent.jar")}))
       (b/with-project-root root-path
-        (docker-image-artifact (str "example/" service-name))))))
+        (docker-image-artifact (str "example/" project-name))))))
