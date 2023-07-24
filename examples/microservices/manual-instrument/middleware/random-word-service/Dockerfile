@@ -8,3 +8,5 @@ ENTRYPOINT ["java", \
             "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager", \
             "-jar", \
             "/service.jar"]
+HEALTHCHECK --start-period=60s --interval=5s --timeout=1s --retries=2 \
+            CMD wget --spider -q http://localhost:8081/ping || exit 1

@@ -205,12 +205,19 @@
 
 
 
+(defn ping-handler
+  "Handler for ping health check"
+  [_]
+  (response/response nil))
+
+
+
 (def routes
   "Route maps for the service."
   (route/expand-routes [[["/"
                           ^:interceptors
                           [(interceptor-utils/exception-response-interceptor)
-                           (trace-http/exception-event-interceptor)]
+                           (trace-http/exception-event-interceptor)] ["/ping" {:get 'ping-handler}]
                           ["/average" {:get 'get-averages-interceptor}]]]]))
 
 

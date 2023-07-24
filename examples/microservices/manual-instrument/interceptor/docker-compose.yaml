@@ -9,7 +9,8 @@ services:
       OTEL_METRIC_EXPORT_INTERVAL: 10000
       OTEL_LOGS_EXPORTER: none
     depends_on:
-      - otel-collector
+      otel-collector:
+        condition: service_started
 
   # Example microservice average-service
   average-service:
@@ -21,8 +22,10 @@ services:
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
       SUM_SERVICE_ENDPOINT: http://sum-service:8081
     depends_on:
-      - sum-service
-      - otel-collector
+      sum-service:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
 
   # Load generator for average-service
   average-load-gen:
@@ -30,7 +33,8 @@ services:
     environment:
       AVERAGE_SERVICE_ENDPOINT: http://average-service:8080
     depends_on:
-      - average-service
+      average-service:
+        condition: service_healthy
 
   # OpenTelemetry Collector
   otel-collector:
@@ -40,8 +44,10 @@ services:
     command:
       - --config=/etc/otel-collector-config.yaml
     depends_on:
-      - jaeger
-      - prometheus
+      jaeger:
+        condition: service_started
+      prometheus:
+        condition: service_started
 
   # Jaeger
   jaeger:

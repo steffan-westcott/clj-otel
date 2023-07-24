@@ -147,11 +147,21 @@
 
 
 
+(defn ping-handler
+  "Ring handler for ping health check."
+  [_]
+  (response/response nil))
+
+
+
 (def handler
   "Ring handler for all requests."
-  (ring/ring-handler (ring/router ["/puzzle"
-                                   {:name ::puzzle
-                                    :get  get-puzzle-handler}]
+  (ring/ring-handler (ring/router [["/ping"
+                                    {:name ::ping
+                                     :get  ping-handler}]
+                                   ["/puzzle"
+                                    {:name ::puzzle
+                                     :get  get-puzzle-handler}]]
                                   {:data {:muuntaja   m/instance
                                           :middleware [;; Add route data
                                                        trace-http/wrap-reitit-route

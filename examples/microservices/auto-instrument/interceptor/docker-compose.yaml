@@ -9,7 +9,8 @@ services:
       OTEL_METRIC_EXPORT_INTERVAL: 10000
       OTEL_LOGS_EXPORTER: none
     depends_on:
-      - otel-collector
+      otel-collector:
+        condition: service_started
 
   # Example microservice solar-system-service
   solar-system-service:
@@ -21,8 +22,10 @@ services:
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
       PLANET_SERVICE_ENDPOINT: http://planet-service:8081
     depends_on:
-      - planet-service
-      - otel-collector
+      planet-service:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
 
   # Load generator for solar-system-service
   solar-system-load-gen:
@@ -30,7 +33,8 @@ services:
     environment:
       SOLAR_SYSTEM_SERVICE_ENDPOINT: http://solar-system-service:8080
     depends_on:
-      - solar-system-service
+      solar-system-service:
+        condition: service_healthy
 
   # OpenTelemetry Collector
   otel-collector:
@@ -40,8 +44,10 @@ services:
     command:
       - --config=/etc/otel-collector-config.yaml
     depends_on:
-      - jaeger
-      - prometheus
+      jaeger:
+        condition: service_started
+      prometheus:
+        condition: service_started
 
   # Jaeger
   jaeger:

@@ -9,7 +9,8 @@ services:
       OTEL_METRIC_EXPORT_INTERVAL: 10000
       OTEL_LOGS_EXPORTER: none
     depends_on:
-      - otel-collector
+      otel-collector:
+        condition: service_started
 
   # Example microservice sentence-summary-service
   sentence-summary-service:
@@ -21,8 +22,10 @@ services:
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
       WORD_LENGTH_SERVICE_ENDPOINT: http://word-length-service:8081
     depends_on:
-      - word-length-service
-      - otel-collector
+      word-length-service:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
 
   # Load generator for sentence-summary-service
   sentence-summary-load-gen:
@@ -30,7 +33,8 @@ services:
     environment:
       SENTENCE_SUMMARY_SERVICE_ENDPOINT: http://sentence-summary-service:8080
     depends_on:
-      - sentence-summary-service
+      sentence-summary-service:
+        condition: service_healthy
 
   # OpenTelemetry Collector
   otel-collector:
@@ -40,8 +44,10 @@ services:
     command:
       - --config=/etc/otel-collector-config.yaml
     depends_on:
-      - jaeger
-      - prometheus
+      jaeger:
+        condition: service_started
+      prometheus:
+        condition: service_started
 
   # Jaeger
   jaeger:
