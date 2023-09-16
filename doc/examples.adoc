@@ -178,7 +178,7 @@ To build the chosen example, run the following command
 +
 `compose.yaml` is a Docker Compose configuration file that specifies container instances to spin up.
 These containers may include telemetry backends (Jaeger, Prometheus) and the OpenTelemetry Collector.
-When the Collector is present, `otel-collector-config.yaml` is a configuration file that forwards telemetry data to the telemetry backends.
+When the Collector is present, `otel-collector.yaml` is a configuration file that forwards telemetry data to the telemetry backends.
 The microservice examples include instances for each service and a load generator that automatically exercises the head microservice.
 
 * For all microservices examples, run one of the following commands corresponding to your choice of implementation for the head microservice:
