@@ -1,4 +1,5 @@
 FROM eclipse-temurin:17-alpine
+LABEL clj-otel.example="puzzle"
 EXPOSE 8081
 COPY target/random-word-service-standalone.jar /service.jar
 ENTRYPOINT ["java", \

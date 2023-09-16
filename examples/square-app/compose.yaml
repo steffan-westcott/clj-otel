@@ -1,0 +1,34 @@
+services:
+
+  # Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    command:
+      - --collector.otlp.enabled=true
+    ports:
+      - "16686:16686"  # Jaeger web interface
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus.yaml
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+    ports:
+      - "9090:9090"    # Prometheus web interface
+
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    volumes:
+      - ./otel-collector.yaml:/etc/otel-collector.yaml
+    command:
+      - --config=/etc/otel-collector.yaml
+    ports:
+      - "4317:4317"    # OTLP gRPC receiver
+      #      - "4318:4318"    # OTLP HTTP receiver
+    depends_on:
+      - jaeger
+      - prometheus

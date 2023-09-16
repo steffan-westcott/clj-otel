@@ -58,6 +58,8 @@ clojure -A:deps -T:build help/doc"
   ["examples/common/core-async.utils"
    "examples/common/interceptor.utils"
    "examples/common/log4j2.utils"
+   "examples/cube-app"
+   "examples/divisor-app"
    "examples/factorial-app"
    "examples/square-app"
    "tutorial/instrumented"])

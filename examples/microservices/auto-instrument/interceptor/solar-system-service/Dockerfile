@@ -1,4 +1,5 @@
 FROM eclipse-temurin:17-alpine
+LABEL clj-otel.example="solar-system"
 EXPOSE 8080
 COPY target/solar-system-service-standalone.jar /service.jar
 COPY target/opentelemetry-javaagent.jar /opentelemetry-javaagent.jar

@@ -13,10 +13,13 @@
 
  :aliases {;; Include this alias to export telemetry data
            :otel       {:jvm-opts   [;; Name the instrumented application or service
-                                     "-Dotel.resource.attributes=service.name=square-app"
+                                     "-Dotel.resource.attributes=service.name=divisor-app"
 
                                      ;; Apply autoconfiguration to global OpenTelemetry instance
                                      "-Dotel.java.global-autoconfigure.enabled=true"
+
+                                     ;; Export metrics to Prometheus via HTTP server for scraping
+                                     "-Dotel.metrics.exporter=prometheus"
 
                                      ;; Set metric export to every 10 seconds
                                      "-Dotel.metric.export.interval=10000"
@@ -30,8 +33,13 @@
                                      ;; Automatically add various OpenTelemetry resources to exported telemetry
                                      io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.27.0-alpha"}
 
-                                     ;; Enables export of telemetry using OpenTelemetry Protocol (OTLP)
-                                     io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}}}
+                                     ;; Enable export of telemetry using OpenTelemetry Protocol (OTLP)
+                                     io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}
+
+                                     ;; Enable export of metrics to Prometheus via HTTP server for scraping
+                                     io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.27.0-alpha"}
+
+                                    }}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
            :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.56.0"}

@@ -1,6 +1,4 @@
 = Examples
-:toc:
-:toclevels: 3
 :icons: font
 ifdef::env-github[]
 :tip-caption: :bulb:
@@ -12,12 +10,12 @@ endif::[]
 
 == Running the examples
 
-These instructions assume a Unix-like environment, with `docker` to spin up backend instances and `curl` to issue HTTP requests.
+These instructions assume a Unix-like environment, with `docker` to build container images and spin up instances.
 All examples use `deps.edn` for project configuration.
 
 . *Clone `clj-otel` repository*
 +
-To clone this repository, run the following command :
+To clone this repository, run the following command
 +
 [source,bash]
 ----
@@ -29,12 +27,178 @@ git clone https://github.com/steffan-westcott/clj-otel.git
 Before running any of the examples, the file `opentelemetry-javaagent.jar` must be downloaded and placed in the `examples` directory.
 See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[releases page] for notes and download links.
 
-. *Start OpenTelemetry Collector and telemetry backend instances*
+. *Select example*
 +
-`docker-compose.yaml` is a Docker Compose configuration file that can be used to spin up OpenTelemetry Collector, Jaeger, Zipkin and Prometheus instances.
-The Collector config in file `otel-collector-config.yaml` is set to forward trace data to Jaeger and Zipkin, while metrics data is forwarded to Prometheus.
+WARNING: The examples use `:local/root` to depend on `clj-otel` modules.
+In your own libraries and applications, use `:mvn/version` instead, as shown in the xref:guides.adoc#_add_manual_instrumentation_to_your_library_or_application_code[guides to add manual instrumentation].
 +
-To start the instances, run the following command in the `examples` directory :
+Select an example from the following list and change the current directory to the path shown
+
+* `examples/cube-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+A small application run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
+
+* `examples/square-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+A small application using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
+
+* `examples/factorial-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+A small application using programmatically configured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
+
+* `examples/divisor-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        jaeger
+        prometheus
+    end
+    localhost --> jaeger
+    prometheus --scrape--> localhost
+----
++
+A small application using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry directly to Jaeger and Prometheus instances.
+
+* `examples/microservices/auto-instrument/middleware`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        sentence-summary-load-gen --> sentence-summary-service
+        sentence-summary-service --> word-length-service
+        sentence-summary-service & word-length-service --> otel-collector
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+----
++
+A pair of dependent microservices `sentence-summary-service` and `word-length-service` implemented with Ring middleware, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
+
+* `examples/microservices/auto-instrument/interceptor`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        solar-system-load-gen --> solar-system-service
+        solar-system-service --> planet-service
+        solar-system-service & planet-service --> otel-collector
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+----
++
+A pair of dependent microservices `solar-system-service` and `planet-service` implemented with Pedestal interceptors, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
+
+* `examples/microservices/manual-instrument/middleware`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        puzzle-load-gen --> puzzle-service
+        puzzle-service --> random-word-service
+        puzzle-service & random-word-service --> otel-collector
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+----
++
+A pair of dependent microservices `puzzle-service` and `random-word-service` implemented with Ring middleware, not using the agent, exporting telemetry to a Collector instance.
+
+* `examples/microservices/manual-instrument/interceptor`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github[[mermaid]]
+----
+graph LR
+    subgraph docker network
+        average-load-gen --> average-service
+        average-service --> sum-service
+        average-service & sum-service --> otel-collector
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+----
++
+A pair of dependent microservices `average-service` and `sum-service` implemented with Pedestal interceptors, not using the agent, exporting telemetry to a Collector instance.
+
+. *Build example*
++
+Some examples must be built before running. These examples have a `build.sh` file.
++
+To build the chosen example, run the following command
++
+[source,bash]
+----
+./build.sh
+----
+
+. *Start container instances*
++
+`compose.yaml` is a Docker Compose configuration file that specifies container instances to spin up.
+These containers may include telemetry backends (Jaeger, Prometheus) and the OpenTelemetry Collector.
+When the Collector is present, `otel-collector-config.yaml` is a configuration file that forwards telemetry data to the telemetry backends.
+The microservice examples include instances for each service and a load generator that automatically exercises the head microservice.
+
+* For all microservices examples, run one of the following commands corresponding to your choice of implementation for the head microservice:
++
+[source,bash]
+----
+SERVER=sync docker compose up -d
+----
++
+[source,bash]
+----
+SERVER=bound-async docker compose up -d
+----
++
+[source,bash]
+----
+SERVER=explicit-async docker compose up -d
+----
+
+* For all other examples, run the following command
 +
 [source,bash]
 ----
@@ -43,236 +207,34 @@ docker compose up -d
 
 . *Load and exercise example*
 +
-Select an example from the <<_examples_overview,overview>> below and follow the notes on starting and exercising the application or services.
-See the choice of aliases in the `deps.edn` file to configure telemetry export to an OpenTelemetry Collector or backend of your choice.
-For example, in `examples/square-app`, to export trace data to the Collector using gRPC with Netty transport, start a REPL with aliases `otel`, `traces-collector-grpc`, `metrics-none`, `logs-none` and `grpc-netty`.
+For the microservices examples, a load generator application is included.
+The load generator automatically issues randomized valid and invalid requests to the head microservice.
++
+The other examples are designed to be loaded and exercised in the REPL as follows:
 
-. *View telemetry data in backend(s)*
+* In the chosen example directory and your favourite Clojure development environment, start a REPL with the `otel` alias enabled
+* Load the example namespace and set as current
+* Evaluate each expression in the comment block at the end of the namespace
+
+. *View telemetry data in backends*
 +
 * *Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
-* *Zipkin* : Navigate to http://localhost:9411/zipkin/ then select search options under the cog icon and click the `Run Query` button.
 * *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric.
 
-. *Stop OpenTelemetry Collector and telemetry backend instances*
+. *Stop container instances*
 +
-To stop the OpenTelemetry Collector and telemetry backend instances, run the following command in the `examples` directory :
+To stop and tear down the container instances, run the following command:
 +
 [source,bash]
 ----
 docker compose down -v
 ----
 
-[#_examples_overview]
-== Examples overview
-
-WARNING: The examples use `:local/root` to depend on `clj-otel` modules.
-In your own libraries and applications, use `:mvn/version` instead, as shown in the xref:guides.adoc#_add_manual_instrumentation_to_your_library_or_application_code[guides to add manual instrumentation].
-
-=== Manually instrumented application run with autoconfigured SDK
-
-* Simplest example; small standalone application
-* Project directory `examples/square-app`
-* Manual instrumentation only, no automatic instrumentation
-* Runs with autoconfigured OpenTelemetry SDK
-
-To start and exercise the application:
-
-. Start REPL with chosen aliases in `examples/square-app/deps.edn`
-. In the REPL, load namespace `example.square-app`
+. *Prune example container images*
 +
-This will create a single span named `squaring` with an event `my event`.
-
-=== Microservices run with combined automatic and manual instrumentation
-
-* Two dependent microservices; One microservice has a choice of synchronous and asynchronous implementations
-* Project directories for Ring middleware example in `examples/microservices/auto-instrument/middleware`
-* Project directories for Pedestal interceptors example in `examples/microservices/auto-instrument/interceptor`
-* A combination of automatic and manual instrumentation
-* Runs with OpenTelemetry instrumentation agent
-
-==== Ring middleware example
-
-To start and exercise the Ring middleware example with combined automatic and manual instrumentation:
-
-. Start first REPL with chosen aliases in `examples/microservices/auto-instrument/middleware/word-length-service/deps.edn`
-. In the first REPL, load namespace `example.word-length-service`.
-This starts a `word-length-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/microservices/auto-instrument/middleware/sentence-summary-service/deps.edn`
-. In the second REPL, load one of the following namespaces to start a `sentence-summary-service` server on port 8080:
-* `example.sentence-summary-service` (synchronous example)
-* `example.sentence-summary-service-bound-async` (asynchronous example using bound context)
-* `example.sentence-summary-service-explicit-async` (asynchronous example using explicit context)
-. Send an HTTP request to exercise the servers:
+To delete previously built Docker images for the examples, run the following command:
 +
 [source,bash]
-[.small]
 ----
-curl -X GET "http://localhost:8080/summary?sentence=Clojure+and+OpenTelemetry"
-# {:word-count 3, :shortest-length 3, :longest-length 13}
+docker image prune -a --filter "label=clj-otel.example"
 ----
-+
-Simulate a downstream 5xx server error by including the word `boom` in the request:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/summary?sentence=Things+went+boom"
-# 500 HTTP response
-----
-+
-Simulate a downstream 4xx client error by including the word `problem` in the request:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/summary?sentence=User+problem"
-# 400 HTTP response
-----
-
-==== Pedestal interceptor example
-
-To start and exercise the Pedestal interceptor example with combined automatic and manual instrumentation:
-
-. Start first REPL with chosen aliases in `examples/microservices/auto-instrument/interceptor/planet-service/deps.edn`
-. In the first REPL, load namespace `example.planet-service`.
-This starts a `planet-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/microservices/auto-instrument/interceptor/solar-system-service/deps.edn`
-. In the second REPL, load one of the following namespaces to start a `solar-system-service` server on port 8080:
-* `example.solar-system-service` (synchronous example)
-* `example.solar-system-service-bound-async` (asynchronous example using bound context)
-* `example.solar-system-service-explicit-async` (asynchronous example using explicit context)
-. Send an HTTP request to exercise the servers:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/statistics?planet=jupiter"
-# The planet Jupiter has diameter 142984.0km and gravity 23.1m/s^2.
-----
-+
-Simulate a downstream 5xx server error by requesting data on Saturn:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/statistics?planet=saturn"
-# 500 HTTP response
-----
-+
-Simulate a downstream 4xx client error by requesting data on Pluto:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/statistics?planet=pluto"
-# 400 HTTP response
-----
-
-=== Microservices run with manual instrumentation only
-
-* Two dependent microservices; One microservice has a choice of synchronous and asynchronous implementations
-* Project directories for Ring middleware example in `examples/microservices/manual-instrument/middleware`
-* Project directories for Pedestal interceptors example in `examples/microservices/manual-instrument/interceptor`
-* Manual instrumentation only, no automatic instrumentation
-* Runs with autoconfigured OpenTelemetry SDK
-
-==== Ring middleware example
-
-To start and exercise the Ring middleware example with manual instrumentation:
-
-. Start first REPL with chosen aliases in `examples/microservices/manual-instrument/middleware/random-word-service/deps.edn`
-. In the first REPL, load namespace `example.random-word-service`.
-This starts a `random-word-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/microservices/manual-instrument/middleware/puzzle-service/deps.edn`
-. In the second REPL, load one of the following namespaces to start a `puzzle-service` server on port 8080:
-* `example.puzzle-service` (synchronous example)
-* `example.puzzle-service-bound-async` (asynchronous example using bound context)
-* `example.puzzle-service-explicit-async` (asynchronous example using explicit context)
-. Send an HTTP request to exercise the servers:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/puzzle?types=verb,noun,adjective,noun"
-# reac abt mixde fgrso
-----
-+
-Simulate a downstream 5xx server error by including the word type `fault` in the request:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/puzzle?types=noun,fault,verb"
-# 500 HTTP response
-----
-+
-Simulate a downstream 4xx client error by including an unknown word type in the request:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/puzzle?types=bogus,noun"
-# 400 HTTP response
-----
-
-==== Pedestal interceptor example
-
-To start and exercise the Pedestal interceptor example with manual instrumentation:
-
-. Start first REPL with chosen aliases in `examples/microservices/manual-instrument/interceptor/sum-service/deps.edn`
-. In the first REPL, load namespace `example.sum-service`.
-This starts a `sum-service` server on port 8081.
-. Start second REPL with chosen aliases in `examples/microservices/manual-instrument/interceptor/average-service/deps.edn`
-. In the second REPL, load one of the following namespaces to start an `average-service` server on port 8080:
-* `example.average-service` (synchronous example)
-* `example.average-service-bound-async` (asynchronous example using bound context)
-* `example.average-service-explicit-async` (asynchronous example using explicit context)
-. Send an HTTP request to exercise the servers:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/average?nums=1,2,3,4"
-# {:odds 2.0, :evens 3.0}
-----
-+
-Simulate a downstream 5xx server error by using odd numbers that add to 13:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/average?nums=1,2,3,4,9"
-# 500 HTTP response
-----
-+
-Simulate a downstream 4xx client error by giving first number 0:
-+
-[source,bash]
-[.small]
-----
-curl -X GET "http://localhost:8080/average?nums=0,1,2"
-# 400 HTTP response
-----
-
-=== Manually instrumented application run with programmatic SDK configuration
-
-* Small standalone application
-* Project directory `examples/factorial-app`
-* Manual instrumentation only, no automatic instrumentation
-* Runs with programmatically configured OpenTelemetry SDK
-
-To start and exercise the application:
-
-. Start REPL with chosen aliases in `examples/factorial/deps.edn`
-. In the REPL, load namespace `example.factorial-app`
-. Edit and redefine function `init-otel!` to configure the SDK as desired.
-. In the REPL, evaluate the following forms to initialise the SDK, exercise an instrumented function, then close the SDK:
-+
-[source,clojure]
-----
-(init-otel!)
-(factorial 7)
-(close-otel!)
-----
-+
-NOTE: `init-otel!` may be evaluated once only.

@@ -16,7 +16,7 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 
 === Add automatic instrumentation to an application at runtime
 
-* Follow the guide to <<_run_with_the_opentelemetry_auto_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>> to add automatic instrumentation.
+* Follow the guide to <<_run_with_the_opentelemetry_instrumentation_agent,run the application with the OpenTelemetry instrumentation agent>> to add automatic instrumentation.
 
 [#_add_manual_instrumentation_to_your_library_or_application_code]
 === Add manual instrumentation to your library or application code at design time
@@ -616,7 +616,7 @@ Use the `:context` option to specify the context to be propagated:
 The options below determine what telemetry data is exported from an application as it runs.
 Select one of these options and follow the linked guide:
 
-* <<_run_with_the_opentelemetry_auto_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>>
+* <<_run_with_the_opentelemetry_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>>
 +
 Select this option to export telemetry data produced by automatic and manual instrumentation.
 * <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>>
@@ -631,8 +631,8 @@ Select this option to mute all telemetry data.
 
 TIP: Traces, metrics and logs telemetry data are muted in the last option or by setting the autoconfiguration properties `otel.traces.exporter`, `otel.metrics.exporter` and `otel.logs.exporter` to `none` (the defaults are `otlp` for all properties) when using either of the first two options.
 
-[#_run_with_the_opentelemetry_auto_instrumentation_agent]
-=== Run with the OpenTelemetry auto-instrumentation agent
+[#_run_with_the_opentelemetry_instrumentation_agent]
+=== Run with the OpenTelemetry instrumentation agent
 
 * Download the latest version of the OpenTelemetry instrumentation agent JAR, the file `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[releases page].
 The agent JAR includes the SDK and all its dependencies.

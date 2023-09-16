@@ -1,9 +1,8 @@
-version: "3"
 services:
 
-  # Example microservice word-length-service
-  word-length-service:
-    image: example/word-length-service:latest
+  # Example microservice sum-service
+  sum-service:
+    image: example/sum-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -12,28 +11,28 @@ services:
       otel-collector:
         condition: service_started
 
-  # Example microservice sentence-summary-service
-  sentence-summary-service:
-    image: example/sentence-summary-service:latest
+  # Example microservice average-service
+  average-service:
+    image: example/average-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
       OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
-      WORD_LENGTH_SERVICE_ENDPOINT: http://word-length-service:8081
+      SUM_SERVICE_ENDPOINT: http://sum-service:8081
     depends_on:
-      word-length-service:
+      sum-service:
         condition: service_healthy
       otel-collector:
         condition: service_started
 
-  # Load generator for sentence-summary-service
-  sentence-summary-load-gen:
-    image: example/sentence-summary-load-gen:latest
+  # Load generator for average-service
+  average-load-gen:
+    image: example/average-load-gen:latest
     environment:
-      SENTENCE_SUMMARY_SERVICE_ENDPOINT: http://sentence-summary-service:8080
+      AVERAGE_SERVICE_ENDPOINT: http://average-service:8080
     depends_on:
-      sentence-summary-service:
+      average-service:
         condition: service_healthy
 
   # OpenTelemetry Collector

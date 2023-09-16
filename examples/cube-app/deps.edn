@@ -1,0 +1,21 @@
+;!zprint {:style [:respect-nl] :width 140}
+
+{:paths   ["src"]
+
+ :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
+
+           ;; Clojure wrapper of OpenTelemetry API
+           com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}}
+
+ :aliases {;; Include this alias to export telemetry data
+           :otel {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
+                             "-javaagent:../opentelemetry-javaagent.jar"
+
+                             ;; Name the instrumented application or service
+                             "-Dotel.resource.attributes=service.name=cube-app"
+
+                             ;; Set metric export to every 10 seconds
+                             "-Dotel.metric.export.interval=10000"
+
+                             ;; Disable logs export
+                             "-Dotel.logs.exporter=none"]}}}

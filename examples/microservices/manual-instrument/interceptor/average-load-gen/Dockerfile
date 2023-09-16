@@ -1,4 +1,5 @@
 FROM eclipse-temurin:17-alpine
+LABEL clj-otel.example="average"
 COPY target/average-load-gen-standalone.jar /load-gen.jar
 ENTRYPOINT ["java", \
             "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory", \

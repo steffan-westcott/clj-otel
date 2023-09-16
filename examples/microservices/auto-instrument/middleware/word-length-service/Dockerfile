@@ -1,4 +1,5 @@
 FROM eclipse-temurin:17-alpine
+LABEL clj-otel.example="sentence-summary"
 EXPOSE 8081
 COPY target/word-length-service-standalone.jar /service.jar
 COPY target/opentelemetry-javaagent.jar /opentelemetry-javaagent.jar

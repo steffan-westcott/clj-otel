@@ -1,4 +1,5 @@
 FROM eclipse-temurin:17-alpine
+LABEL clj-otel.example="average"
 EXPOSE 8081
 COPY target/sum-service-standalone.jar /service.jar
 ENTRYPOINT ["java", \
