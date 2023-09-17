@@ -35,6 +35,8 @@ This is intended for use by applications which transform the exception to an HTT
 - [ADD] Function `steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8/close!` to stop JVM telemetry.
 `steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8/register!` now returns a collection of `AutoCloseable`.
 - [MAINT] Removed `:dev` alias for development.
+- [MAINT] Reworked examples to be easier to run.
+Added load generator applications to microservices examples.
 
 === `0.2.3` (2023-06-18)
 
