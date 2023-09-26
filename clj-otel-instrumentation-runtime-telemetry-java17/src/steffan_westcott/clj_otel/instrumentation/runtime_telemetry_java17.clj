@@ -36,7 +36,7 @@
   ([]
    (register! {}))
   ([opts]
-   (register! (otel/get-global-otel!) opts))
+   (register! (otel/get-default-otel!) opts))
   ([open-telemetry
     {:keys [jmx jfr]
      :or   {jmx true}}]

@@ -7,14 +7,29 @@
             [steffan-westcott.clj-otel.sdk.tracer-provider :as tracer])
   (:import (io.opentelemetry.sdk OpenTelemetrySdk)))
 
-(def ^:private otel-sdk
-  (atom nil))
+(defn close-otel-sdk!
+  "Close the given `OpenTelemetrySdk` instance, or the default instance
+   used by `clj-otel`."
+  ([]
+   (close-otel-sdk! (otel/get-default-otel!)))
+  ([^OpenTelemetrySdk sdk]
+   (.close sdk)))
+
+(defn add-shutdown-hook!
+  "Adds a JVM shutdown hook that closes the given `OpenTelemetrySdk` instance,
+   or the current default instance used by `clj-otel`."
+  ([]
+   (add-shutdown-hook! (otel/get-default-otel!)))
+  ([^OpenTelemetrySdk sdk]
+   (let [^Runnable runnable #(close-otel-sdk! sdk)
+         hook (Thread. runnable)]
+     (.addShutdownHook (Runtime/getRuntime) hook))))
 
 (defn init-otel-sdk!
-  "Configure an `OpenTelemetrySdk` instance and set as the global
-   `OpenTelemetry` instance. `service-name` is the service name given to the
-   resource emitting telemetry. This function may be evaluated once only.
-   Attempts to evaluate this more than once will result in an error.
+  "Returns a configured `OpenTelemetrySdk` instance. `service-name` is the
+   service name given to the resource emitting telemetry. Optionally also sets
+   the configured SDK as the default `OpenTelemetry` instance used by `clj-otel`
+   and Java OpenTelemetry and registers a shutdown hook to close it.
 
    Takes a nested option map as described in the following sections. Some
    options can take either an option map or an equivalent fully configured Java
@@ -22,12 +37,15 @@
 
    Top level option map
 
-   | key              | description |
-   |------------------|-------------|
-   |`:resources`      | Collection of resources to merge with default SDK resource and `service-name` resource. Each resource in the collection is either a `Resource` instance or a map with keys `:attributes` (required) and `:schema-url` (optional). The merged resource describes the source of telemetry and is attached to emitted data (default: nil)
-   |`:propagators`    | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).
-   |`:tracer-provider`| Option map (see below) to configure `SdkTracerProvider` instance (default: `{}`).
-   |`:meter-provider` | Option map (see below) to configure `SdkMeterProvider` instance (default: `{}`).
+   | key                     | description |
+   |-------------------------|-------------|
+   |`:set-as-default`        | If true, sets the configured SDK instance as the default `OpenTelemetry` instance declared and used by `clj-otel` (default: `true`).
+   |`:set-as-global`         | If true, sets the configured SDK instance as the global `OpenTelemetry` instance declared by Java OpenTelemetry (default: `false`).
+   |`:register-shutdown-hook`| If true, registers a JVM shutdown hook to close the configured SDK instance (default: `true`).
+   |`:resources`             | Collection of resources to merge with default SDK resource and `service-name` resource. Each resource in the collection is either a `Resource` instance or a map with keys `:attributes` (required) and `:schema-url` (optional). The merged resource describes the source of telemetry and is attached to emitted data (default: nil)
+   |`:propagators`           | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).
+   |`:tracer-provider`       | Option map (see below) to configure `SdkTracerProvider` instance (default: `{}`).
+   |`:meter-provider`        | Option map (see below) to configure `SdkMeterProvider` instance (default: `{}`).
 
 
    ====================================================
@@ -152,8 +170,12 @@
    |`:max-buckets`      | Maximum number of positive and negative buckets (default: implementation defined)
    |`:max-scale`        | Maximum and initial scale (required if `:max-buckets` is specified)."
   [service-name
-   {:keys [resources propagators tracer-provider meter-provider]
-    :or   {propagators propagators/default}}]
+   {:keys [set-as-default set-as-global register-shutdown-hook resources propagators tracer-provider
+           meter-provider]
+    :or   {set-as-default         true
+           set-as-global          false
+           register-shutdown-hook true
+           propagators            propagators/default}}]
   (let [resource (res/merge-resources-with-default service-name resources)
         builder  (doto (OpenTelemetrySdk/builder)
                    (.setPropagators (propagators/context-propagators propagators))
@@ -161,14 +183,11 @@
                                         (assoc tracer-provider :resource resource)))
                    (.setMeterProvider (meter/sdk-meter-provider
                                        (assoc meter-provider :resource resource))))
-        sdk      (.build builder)]
-    (reset! otel-sdk sdk)
-    (otel/set-global-otel! sdk)))
-
-(defn close-otel-sdk!
-  "Shut down activities of `OpenTelemetrySdk` instance previously configured
-   by [[init-otel-sdk!]]."
-  []
-  (when-let [^OpenTelemetrySdk sdk @otel-sdk]
-    (.close sdk)
-    (reset! otel-sdk nil)))
+        sdk      (if set-as-global
+                   (.buildAndRegisterGlobal builder)
+                   (.build builder))]
+    (when register-shutdown-hook
+      (add-shutdown-hook! sdk))
+    (when set-as-default
+      (otel/set-default-otel! sdk))
+    sdk))

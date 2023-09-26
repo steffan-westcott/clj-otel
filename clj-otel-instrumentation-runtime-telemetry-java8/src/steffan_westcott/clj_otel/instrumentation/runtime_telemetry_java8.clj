@@ -13,7 +13,7 @@
   "Registers measurements that generate metrics about buffer pools and returns
    a collection of AutoCloseable."
   ([]
-   (register-buffer-pools! (otel/get-global-otel!)))
+   (register-buffer-pools! (otel/get-default-otel!)))
   ([open-telemetry]
    (BufferPools/registerObservers open-telemetry)))
 
@@ -21,7 +21,7 @@
   "Registers measurements that generate metrics about JVM classes and returns a
    collection of AutoCloseable."
   ([]
-   (register-classes! (otel/get-global-otel!)))
+   (register-classes! (otel/get-default-otel!)))
   ([open-telemetry]
    (Classes/registerObservers open-telemetry)))
 
@@ -29,7 +29,7 @@
   "Registers measurements that generate metrics about the CPU and returns a
    collection of AutoCloseable."
   ([]
-   (register-cpu! (otel/get-global-otel!)))
+   (register-cpu! (otel/get-default-otel!)))
   ([open-telemetry]
    (Cpu/registerObservers open-telemetry)))
 
@@ -37,7 +37,7 @@
   "Registers measurements that generate metrics about the garbage collector and
    returns a collection of AutoCloseable."
   ([]
-   (register-garbage-collector! (otel/get-global-otel!)))
+   (register-garbage-collector! (otel/get-default-otel!)))
   ([open-telemetry]
    (GarbageCollector/registerObservers open-telemetry)))
 
@@ -45,7 +45,7 @@
   "Registers measurements that generate metrics about JVM memory pools and
    returns a collection of AutoCloseable."
   ([]
-   (register-memory-pools! (otel/get-global-otel!)))
+   (register-memory-pools! (otel/get-default-otel!)))
   ([open-telemetry]
    (MemoryPools/registerObservers open-telemetry)))
 
@@ -53,7 +53,7 @@
   "Registers measurements that generate metrics about JVM threads and returns a
    collection of AutoCloseable."
   ([]
-   (register-threads! (otel/get-global-otel!)))
+   (register-threads! (otel/get-default-otel!)))
   ([open-telemetry]
    (Threads/registerObservers open-telemetry)))
 
@@ -61,7 +61,7 @@
   "Registers measurements that generate all JVM runtime metrics and returns a
    collection of AutoCloseable."
   ([]
-   (register! (otel/get-global-otel!)))
+   (register! (otel/get-default-otel!)))
   ([open-telemetry]
    (reduce #(into %1 (%2 open-telemetry))
            []

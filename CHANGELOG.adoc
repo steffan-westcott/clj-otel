@@ -26,6 +26,11 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.4` (in progress)
 
+- [ADD] Module `clj-otel-sdk-extension-autoconfigure` which wraps the autoconfigure OpenTelemetry SDK extension.
+Updated guide on using the autoconfigure module and adding initialisation code to application.
+- [ADD] Updated functions to use a default `OpenTelemetry` instance declared by `clj-otel`, falling back to the global `OpenTelemetry` instance declared by Java OpenTelemetry if no default instance was previously configured.
+Added recommendation to prefer use of default `OpenTelemetry` instance over the global `OpenTelemetry` instance, when using autoconfigure module or programmatic configuration of SDK.
+- [BREAK] `steffan-westcott.clj-otel.sdk.otel-sdk/init-otel-sdk!` has a new option `register-shutdown-hook` enabled by default.
 - [ADD] New middleware (formerly part of the microservices examples)
 * `wrap-exception-event` adds an exception event to the server span.
 This is intended for use by applications which transform the exception to an HTTP response in a subsequent middleware.

@@ -359,11 +359,21 @@ For an application to export telemetry data, the SDK and its dependencies should
 
 The SDK and its dependencies are added to an application in one of the following ways:
 
-* [.underline]#By using the OpenTelemetry instrumentation agent#: In this option, the SDK and its dependencies are present but do not appear on the application classpath.
-Also, autoconfiguration is used for configuring the SDK.
-* [.underline]#By using the `opentelemetry-sdk-extension-autoconfigure` library as an application dependency#: This option is for autoconfiguration of the SDK where the OpenTelemetry instrumentation agent is not present.
-The relevant optional SDK libraries (exporters, extensions, etc.) also need to be added as runtime dependencies.
-* [.underline]#By adding the SDK as a compile-time dependency to the application#: This option is for programmatic configuration of the SDK.
+* [.underline]#OpenTelemetry instrumentation agent#
++
+In this option the application is run with the OpenTelemetry instrumentation agent.
+The SDK and its dependencies are built into the agent.
+They are loaded at runtime but do not appear on the application classpath.
+Also, autoconfiguration is used for configuring the agent and SDK.
+* [.underline]#Autoconfigure SDK extension#
++
+In this option, an SDK extension is used alongside the SDK to enable autoconfiguration of the SDK.
+`clj-otel-sdk-extension-autoconfigure` is a Clojure wrapper for the `opentelemetry-sdk-extension-autoconfigure` Java library.
+The relevant optional Java SDK libraries (exporters, extensions, etc.) also need to be added as runtime dependencies.
+* [.underline]#Programmatic configuration#
++
+This option is for programmatic configuration of the SDK.
+This project `clj-otel` provides a module `clj-otel-sdk` for configuring the SDK in Clojure, as well as other support modules `clj-otel-exporter-\*`,`clj-otel-extension-*` and `clj-otel-sdk-extension-*` for programmatic access to various optional components.
 The relevant optional SDK libraries also need to be added as compile-time dependencies.
 
 If the SDK is not present at application runtime, all OpenTelemetry API calls default to a no-op implementation where no telemetry data is created.
@@ -375,12 +385,28 @@ Configuration of the OpenTelemetry instrumentation agent uses the same mechanism
 
 See documentation for https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfiguration] and https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/agent-config.md[instrumentation agent configuration].
 
-=== Programmatic configuration
+=== `OpenTelemetry` interface
 
-The SDK can be programmatically configured, as an alternative to autoconfiguration.
-This is a fallback option if autoconfiguration lacks the desired options.
+`OpenTelemetry` is a Java interface that acts as an entrypoint to all telemetry functionality at runtime.
+Most applications will configure and initialise a single `OpenTelemetry` instance.
+The instance should be initialised early in the application's run lifetime, before any telemetry data is produced.
 
-This project `clj-otel` provides a module `clj-otel-sdk` for configuring the SDK in Clojure, as well as other support modules `clj-otel-exporter-\*`,`clj-otel-extension-*` and `clj-otel-sdk-extension-*` for programmatic access to various optional components.
+==== Global `OpenTelemetry`
+
+The global `OpenTelemetry` is a singleton reference declared and used by Java OpenTelemetry.
+The reference is `nil` until set, and may be set once only.
+The global `OpenTelemetry` reference is always set when running an application with the OpenTelemetry instrumentation agent.
+
+WARNING: It is discouraged to set the global `OpenTelemetry` reference when using the autoconfigure SDK extension or programmatically configuring the SDK.
+
+==== Default `OpenTelemetry`
+
+The default `OpenTelemetry` is a singleton reference declared and used by `clj-otel`.
+The reference is `nil` until set.
+Many `clj-otel` functions that take an `OpenTelemetry` instance as a parameter will use the default `OpenTelemetry` by default.
+If the default `OpenTelemetry` has not been set, the global `OpenTelemetry` is used as a fallback.
+
+IMPORTANT: It is recommended to always set the default `OpenTelemetry` reference when using the autoconfigure SDK extension or programmatically configuring the SDK.
 
 == OpenTelemetry distros
 

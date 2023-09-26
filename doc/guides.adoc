@@ -619,7 +619,7 @@ Select one of these options and follow the linked guide:
 * <<_run_with_the_opentelemetry_instrumentation_agent,Run with the OpenTelemetry auto-instrumentation agent>>
 +
 Select this option to export telemetry data produced by automatic and manual instrumentation.
-* <<_run_with_autoconfigured_sdk,Run with autoconfigured SDK>>
+* <<_run_with_autoconfigure_sdk_extension,Run with autoconfigure SDK extension>>
 +
 Select this option to export telemetry data from manual instrumentation only; The SDK will be configured using properties or environment variables.
 * <<_run_with_programmatically_configured_sdk,Run with programmatically configured SDK>>
@@ -640,7 +640,7 @@ The agent JAR includes the SDK and all its dependencies.
 See the https://opentelemetry.io/docs/instrumentation/java/automatic/agent-config/[agent and SDK configuration documentation].
 * When running the application, enable the agent with the `-javaagent` JVM flag.
 
-For an example application `my-app`, with `deps.edn` to export traces only using OTLP over gRPC, use an alias like the following:
+For an example application `my-app` that exports traces only using OTLP over gRPC, use a project configuration like the following:
 
 .`deps.edn`
 [source,clojure]
@@ -656,11 +656,11 @@ For an example application `my-app`, with `deps.edn` to export traces only using
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]}}}
 ----
 
-[#_run_with_autoconfigured_sdk]
-=== Run with autoconfigured SDK
+[#_run_with_autoconfigure_sdk_extension]
+=== Run with autoconfigure SDK extension
 
 * Add project dependencies:
-** _Required:_ `io.opentelemetry/opentelemetry-sdk-extension-autoconfigure` for the SDK itself and SDK autoconfiguration.
+** _Required:_ `com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure` for the SDK itself, SDK extension and a Clojure wrapper for initialisation.
 ** _Required:_ `io.opentelemetry/opentelemetry-exporter-???` for any xref:concepts.adoc#_exporters[exporters] referenced in the configuration.
 See xref:reference.adoc#_java_exporter_libraries[Java exporter libraries supported by autoconfiguration].
 ** _Optional:_ `io.opentelemetry.instrumentation/opentelemetry-resources` for various xref:concepts.adoc#_resources[resources] to be automatically added to telemetry data.
@@ -671,29 +671,42 @@ See xref:reference.adoc#_java_exporter_libraries[Java exporter libraries support
 This is not needed if gRPC is not used by any exporters or the application.
 
 * Configure the SDK using properties and environment variables.
-** Include the JVM option `"-Dotel.java.global-autoconfigure.enabled=true"` or environment variable setting `OTEL_JAVA_GLOBAL_AUTOCONFIGURE_ENABLED=true`
 ** See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfigure configuration documentation] for details on all autoconfiguration options.
 
-For an example application `my-app`, with `deps.edn` to export traces only using OTLP over gRPC with Netty transport, use an alias like the following:
+* At application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure/CURRENT/api/steffan-westcott.clj-otel.sdk.autoconfigure#init-otel-sdk![`steffan-westcott.clj-otel.sdk.autoconfigure/init-otel-sdk!`] to initialise a configured SDK instance.
+By default, the instance is set as the default `OpenTelemetry` used by `clj-otel` and a JVM shutdown hook is registered to close it.
+
+For an example application `my-app` that exports traces only using OTLP over gRPC with Netty transport, use a project configuration like the following:
 
 .`deps.edn`
 [source,clojure]
 [.small]
 ----
 {;; ...
+ :deps {com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure {:mvn/version "1.27.0-alpha"}}
  :aliases {
    :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=my-app"
-                     "-Dotel.java.global-autoconfigure.enabled=true"
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.27.0-alpha"}
-                       io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.27.0"}
+          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.27.0"}
                        io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.27.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.56.0"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.56.0"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.56.0"}}}}}
+----
+
+To initialise a configured SDK instance, set as default `OpenTelemetry` and register a shutdown hook to close:
+
+.`example/my-app.clj`
+[source,clojure]
+----
+(ns example.my-app
+  (:require [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig]))
+
+(defn init-otel! []
+  (autoconfig/init-otel-sdk!))
 ----
 
 [#_run_with_programmatically_configured_sdk]
@@ -709,10 +722,10 @@ See xref:reference.adoc#_clojure_exporter_modules[Clojure wrapped versions of ex
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-extension-trace-propagators` for Clojure wrapped text map propagators implementing OpenTracing Basic Tracers, Jaeger and B3 propagation protocols.
 ** _Optional:_ `io.grpc/grpc-netty-shaded`, `io.grpc/grpc-protobuf` and `io.grpc/grpc-stub` to use Netty for gRPC transport rather than the default OkHttp (see example below).
 This is not needed if gRPC is not used by any exporters or the application.
-* At application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.clj-otel.sdk.otel-sdk#init-otel-sdk![`steffan-westcott.clj-otel.sdk.otel-sdk/init-otel-sdk!`] to configure and set an OpenTelemetry SDK instance as the global OpenTelemetry instance.
-* At application end, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.clj-otel.sdk.otel-sdk#close-otel-sdk![`steffan-westcott.clj-otel.sdk.otel-sdk/close-otel-sdk!`] to close down activities of the SDK instance.
+* At application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/CURRENT/api/steffan-westcott.clj-otel.sdk.otel-sdk#init-otel-sdk![`steffan-westcott.clj-otel.sdk.otel-sdk/init-otel-sdk!`] to configure and initialise an SDK instance.
+By default, the instance is set as the default `OpenTelemetry` used by `clj-otel` and a JVM shutdown hook is registered to close it.
 
-For an example application `my-app`, with `deps.edn` to export traces only using OTLP over gRPC with Netty transport, use deps like the following:
+For an example application `my-app` that exports traces only using OTLP over gRPC with Netty transport, use a project configuration like the following:
 
 .`deps.edn`
 [source,clojure]
@@ -727,12 +740,12 @@ For an example application `my-app`, with `deps.edn` to export traces only using
         io.grpc/grpc-stub                                             {:mvn/version "1.56.0"}}}
 ----
 
-To configure the SDK at start and close down at end, the application could have functions like the following:
+To initialise a configured SDK instance, set as default `OpenTelemetry` and register a shutdown hook to close:
 
 .`example/app.clj`
 [source,clojure]
 ----
-(ns example.app
+(ns example.my-app
   (:require [steffan-westcott.clj-otel.exporter.otlp-grpc-trace :as otlp-grpc-trace]
             [steffan-westcott.clj-otel.resource.resources :as res]
             [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]))
@@ -747,9 +760,6 @@ To configure the SDK at start and close down at end, the application could have 
      :tracer-provider
        {:span-processors
          [{:exporters [(otlp-grpc-trace/span-exporter)]}]}}))
-
-(defn close-otel! []
-  (sdk/close-otel-sdk!))
 ----
 
 [#_run_without_agent_or_sdk]
@@ -762,7 +772,7 @@ Usage of the OpenTelemetry API (manual instrumentation) in the application will 
 
 == Use the OpenTelemetry Collector
 
-The xref:concepts.adoc#_opentelemetry_collector[OpenTelemetry Collector] is used to manage telemetry data, as an alternative to applications exporting data directly to telemetry backends.
+The xref:concepts.adoc#_opentelemetry_collector[OpenTelemetry Collector] is used to manage telemetry data in transit, as an alternative to applications exporting data directly to telemetry backends.
 
 === Deploy the OpenTelemetry Collector
 

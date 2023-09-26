@@ -7,15 +7,16 @@
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
+           ;; Clojure wrapper of autoconfigure OpenTelemetry SDK extension
+           com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure
+           {:local/root "../../../../../clj-otel-sdk-extension-autoconfigure"}
+
            ;; Clojure wrapper of JVM metrics instrumentation
            com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry-java17"}
 
            ;; OpenTelemetry exporter that uses OTLP
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.27.0"}
-
-           ;; Enables autoconfiguration of OpenTelemetry SDK using environment variables and system properties
-           io.opentelemetry/opentelemetry-sdk-extension-autoconfigure {:mvn/version "1.27.0-alpha"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.27.0-alpha"}
@@ -49,7 +50,6 @@
           }
 
  :aliases {:otel {:jvm-opts ["-Dotel.resource.attributes=service.name=sum-service"
-                             "-Dotel.java.global-autoconfigure.enabled=true"
                              "-Dotel.metric.export.interval=10000"
                              "-Dotel.logs.exporter=none"
                              "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"

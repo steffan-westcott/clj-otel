@@ -30,7 +30,7 @@
      :or   {name       (:name default-library)
             version    (:version default-library)
             schema-url (:schema-url default-library)}}]
-   (let [^OpenTelemetry otel (or open-telemetry (otel/get-global-otel!))
+   (let [^OpenTelemetry otel (or open-telemetry (otel/get-default-otel!))
          builder (cond-> (.tracerBuilder otel name)
                    version    (.setInstrumentationVersion version)
                    schema-url (.setSchemaUrl schema-url))]

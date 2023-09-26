@@ -108,8 +108,5 @@
   ;; Exercise the application
   (factorial 7)
 
-  ;; Close OpenTelemetry SDK processes
-  (close-otel!)
-
   ;
 )

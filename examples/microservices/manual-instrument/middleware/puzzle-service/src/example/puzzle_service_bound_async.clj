@@ -22,7 +22,8 @@
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as
-             runtime-telemetry])
+             runtime-telemetry]
+            [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig])
   (:import (clojure.lang PersistentQueue)))
 
 
@@ -235,6 +236,9 @@
    (server conf {}))
   ([conf jetty-opts]
    (alter-var-root #'config (constantly conf))
+
+   ;; Initialise OpenTelemetry SDK instance and set as default used by `clj-otel`
+   (autoconfig/init-otel-sdk!)
 
    ;; Register measurements that report metrics about the JVM runtime. These measurements cover
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
