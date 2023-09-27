@@ -20,10 +20,10 @@
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry-java17"}
 
            ;; OpenTelemetry exporter that uses OTLP
-           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.28.0"}
+           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.29.0"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
-           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.28.0-alpha"}
+           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.29.0-alpha"}
 
            ;; Reitit HTTP router
            metosin/reitit-middleware {:mvn/version "0.6.0"}

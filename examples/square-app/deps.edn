@@ -26,10 +26,10 @@
                                      "-Dotel.logs.exporter=none"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
-                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.28.0-alpha"}
+                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.29.0-alpha"}
 
                                      ;; Enables export of telemetry using OpenTelemetry Protocol (OTLP)
-                                     io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.28.0"}}}
+                                     io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.29.0"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
            :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.56.0"}

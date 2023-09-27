@@ -118,8 +118,8 @@ See more xref:doc/examples.adoc[information on configuring and running the examp
 Breaking API changes may still be made, but there should be few, if any.
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
-*** Trace semantics conventions support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[recording exceptions] is complete.
-*** Trace semantics support for https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP spans] in applications run without the OpenTelemetry instrumentation agent is limited.
+*** Trace semantics conventions support for https://github.com/open-telemetry/semantic-conventions/blob/main/docs/exceptions/exceptions-spans.md[recording exceptions] is complete.
+*** Trace semantics support for https://github.com/open-telemetry/semantic-conventions/blob/main/docs/http/http-spans.md[HTTP spans] in applications run without the OpenTelemetry instrumentation agent is limited.
 *** Support for wrapping asynchronous Clojure code in spans is complete.
 The API is minimal and low-level, supporting any async library that works with callbacks.
 Perhaps with community feedback, this will be expanded to add more specialised support for popular async libraries.
@@ -137,7 +137,7 @@ Most configuration options are supported, but some public details of the OpenTel
 
 * For manual instrumentation:
 ** Add Logs API support.
-** Consider supporting more https://github.com/open-telemetry/opentelemetry-specification/tree/main/specification/trace/semantic_conventions[trace semantics conventions].
+** Consider supporting more https://github.com/open-telemetry/semantic-conventions/blob/main/docs/general/trace.md[trace semantics conventions].
 * Maintain parity with the latest version of https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`].
 * Implement integration tests using https://github.com/javahippie/clj-test-containers[clj-test-containers] or similar.
 * Consider ClojureScript OpenTelemetry support in the browser and node.js using https://github.com/open-telemetry/opentelemetry-js[`opentelemetry-js`]; this will likely be a separate project.

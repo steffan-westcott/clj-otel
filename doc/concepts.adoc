@@ -259,9 +259,9 @@ For example, a user identifier is put in the baggage to indicate the principal o
 OpenTelemetry defines a rich set of conventions for telemetry data.
 This semantic unification across vendors and technologies promotes analysis of telemetry data created in heterogeneous, polyglot systems.
 In particular, *semantic attributes* for spans and metrics are defined for base technologies like HTTP, database, RPC, messaging, FaaS (Function as a Service) and others.
-See https://opentelemetry.io/docs/concepts/semantic-conventions/[OpenTelemetry semantic conventions documentation].
+See https://github.com/open-telemetry/semantic-conventions[OpenTelemetry semantic conventions documentation].
 
-`clj-otel` follows the semantic conventions for areas such as https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/exceptions.md[span exception events] and manually created https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md[HTTP client and server spans].
+`clj-otel` follows the semantic conventions for areas such as https://github.com/open-telemetry/semantic-conventions/blob/main/docs/exceptions/exceptions-spans.md[span exception events] and manually created https://github.com/open-telemetry/semantic-conventions/blob/main/docs/http/http-spans.md[HTTP client and server spans].
 
 == Context
 
