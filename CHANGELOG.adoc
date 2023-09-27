@@ -42,6 +42,9 @@ This is intended for use by applications which transform the exception to an HTT
 - [MAINT] Removed `:dev` alias for development.
 - [MAINT] Reworked examples to be easier to run.
 Added load generator applications to microservices examples.
+- Bump deps:
+* [MAINT] OpenTelemetry `1.28.0`
+** [BREAK] `clj-otel-exporter-jaeger-*` are now deprecated, use `clj-otel-exporter-otlp` instead
 
 === `0.2.3` (2023-06-18)
 

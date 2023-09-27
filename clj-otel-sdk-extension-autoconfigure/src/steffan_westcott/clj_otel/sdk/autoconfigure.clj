@@ -26,9 +26,9 @@
      :or   {set-as-default         true
             set-as-global          false
             register-shutdown-hook true}}]
-   (let [builder  (doto (AutoConfiguredOpenTelemetrySdk/builder)
-                    (.setResultAsGlobal (boolean set-as-global))
-                    (.registerShutdownHook (boolean register-shutdown-hook)))
+   (let [builder  (cond-> (AutoConfiguredOpenTelemetrySdk/builder)
+                    set-as-global (.setResultAsGlobal)
+                    (not register-shutdown-hook) (.disableShutdownHook))
          auto-sdk (.build builder)
          sdk      (.getOpenTelemetrySdk auto-sdk)]
      (when set-as-default

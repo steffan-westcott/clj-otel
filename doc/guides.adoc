@@ -683,15 +683,15 @@ For an example application `my-app` that exports traces only using OTLP over gRP
 [.small]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure {:mvn/version "1.27.0-alpha"}}
+ :deps {com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure {:mvn/version "0.2.3"}}
  :aliases {
    :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=my-app"
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.27.0"}
-                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.27.0-alpha"}
+          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.28.0"}
+                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.28.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.56.0"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.56.0"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.56.0"}}}}}

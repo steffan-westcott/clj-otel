@@ -237,6 +237,9 @@ The other examples are designed to be loaded and exercised in the REPL as follow
 * *Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
 * *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric.
 
+NOTE: Traces may appear incomplete until all parts of telemetry data have been received and processed by the telemetry backend.
+This sometimes impacts recent traces of distributed services, where some but not all contributing services have completed exporting telemetry data.
+
 . *Stop container instances*
 +
 To stop and tear down the container instances, run the following command:
