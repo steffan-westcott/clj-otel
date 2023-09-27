@@ -3,6 +3,6 @@
 {:paths ["src"]
  :deps  {org.clojure/clojure {:mvn/version "1.11.1"}
          io.opentelemetry.instrumentation/opentelemetry-resources
-         {:mvn/version "1.29.0-alpha"
+         {:mvn/version "1.30.0-alpha"
           :exclusions  [io.opentelemetry.instrumentation/opentelemetry-instrumentation-api
                         io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-semconv]}}}
