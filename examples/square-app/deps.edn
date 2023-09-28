@@ -32,8 +32,8 @@
                                      io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.30.1"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
-           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.56.0"}
-                                     io.grpc/grpc-protobuf     {:mvn/version "1.56.0"}
-                                     io.grpc/grpc-stub         {:mvn/version "1.56.0"}}}
+           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.58.0"}
+                                     io.grpc/grpc-protobuf     {:mvn/version "1.58.0"}
+                                     io.grpc/grpc-stub         {:mvn/version "1.58.0"}}}
 
           }}
