@@ -8,7 +8,7 @@
   (:require [clojure.string :as str]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context])
-  (:import (io.opentelemetry.semconv.trace.attributes SemanticAttributes)))
+  (:import (io.opentelemetry.semconv SemanticAttributes)))
 
 (defn- parse-long*
   [s]
@@ -43,17 +43,17 @@
   (let [{:keys [headers request-method scheme uri query-string remote-addr]} request
         {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
         [_ host-name host-port] (re-find #"^(.*?)(?::(\d*))?$" host)]
-    (cond-> {SemanticAttributes/HTTP_METHOD    (str/upper-case (name request-method))
-             SemanticAttributes/HTTP_SCHEME    (name scheme)
-             SemanticAttributes/NET_HOST_NAME  host-name
-             SemanticAttributes/HTTP_TARGET    (if query-string
-                                                 (str uri "?" query-string)
-                                                 uri)
-             SemanticAttributes/HTTP_CLIENT_IP (client-ip forwarded x-forwarded-for remote-addr)}
+    (cond-> {SemanticAttributes/HTTP_REQUEST_METHOD (str/upper-case (name request-method))
+             SemanticAttributes/URL_SCHEME          (name scheme)
+             SemanticAttributes/SERVER_ADDRESS      host-name
+             SemanticAttributes/URL_PATH            uri
+             SemanticAttributes/URL_QUERY           query-string
+             SemanticAttributes/CLIENT_ADDRESS      (client-ip forwarded
+                                                               x-forwarded-for
+                                                               remote-addr)}
       user-agent      (assoc SemanticAttributes/USER_AGENT_ORIGINAL user-agent)
-      content-length  (assoc SemanticAttributes/HTTP_REQUEST_CONTENT_LENGTH
-                             (parse-long* content-length))
-      (seq host-port) (assoc SemanticAttributes/NET_HOST_PORT (parse-long* host-port))
+      content-length  (assoc SemanticAttributes/HTTP_REQUEST_BODY_SIZE (parse-long* content-length))
+      (seq host-port) (assoc SemanticAttributes/SERVER_PORT (parse-long* host-port))
       captured-request-headers
       (merge-headers-attrs "http.request.header." captured-request-headers headers))))
 
@@ -70,7 +70,7 @@
    (server-span-opts request {}))
   ([request {:keys [app-root]}]
    (let [{:keys [headers io.opentelemetry/server-request-attrs]} request]
-     {:name       (let [method (get server-request-attrs SemanticAttributes/HTTP_METHOD)]
+     {:name       (let [method (get server-request-attrs SemanticAttributes/HTTP_REQUEST_METHOD)]
                     (if app-root
                       (str method " " app-root "/*")
                       method))
@@ -99,7 +99,7 @@
      {:name       method'
       :span-kind  :client
       :parent     parent
-      :attributes {SemanticAttributes/HTTP_METHOD method'}})))
+      :attributes {SemanticAttributes/HTTP_REQUEST_METHOD method'}})))
 
 (defn add-route-data!
   "Adds data about the matched HTTP `request-method` and `route` to a server
@@ -141,9 +141,8 @@
          {:strs [Content-Length]} headers
          Content-Length' (when Content-Length
                            (parse-long* Content-Length))
-         attrs (cond-> {SemanticAttributes/HTTP_STATUS_CODE status}
-                 Content-Length' (assoc SemanticAttributes/HTTP_RESPONSE_CONTENT_LENGTH
-                                        Content-Length'))
+         attrs (cond-> {SemanticAttributes/HTTP_RESPONSE_STATUS_CODE status}
+                 Content-Length' (assoc SemanticAttributes/HTTP_RESPONSE_BODY_SIZE Content-Length'))
          stat (when (<= 400 status)
                 {:code :error})]
      (span/add-span-data! (cond-> {:context    context
@@ -163,7 +162,7 @@
     {:keys [context]
      :or   {context (context/dyn)}}]
    (let [{:keys [status io.opentelemetry.api.trace.span.status/description]} response
-         attrs {SemanticAttributes/HTTP_STATUS_CODE status}
+         attrs {SemanticAttributes/HTTP_RESPONSE_STATUS_CODE status}
          stat  (when (<= 500 status)
                  (cond-> {:code :error}
                    description (assoc :description description)))]

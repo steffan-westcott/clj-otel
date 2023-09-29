@@ -9,7 +9,7 @@
   (:import (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
-           (io.opentelemetry.semconv.trace.attributes SemanticAttributes)))
+           (io.opentelemetry.semconv SemanticAttributes)))
 
 (def ^:private default-library
   (get-in config [:defaults :instrumentation-library]))
