@@ -223,6 +223,13 @@ docker compose up -d
 
 . *Load and exercise example*
 +
+NOTE: You may see the following message appear in stdout for the examples using autoconfiguration.
+It is a https://github.com/open-telemetry/opentelemetry-java/issues/5862[known issue] in OpenTelemetry Java SDK, but has no impact on the application telemetry data.
++
+----
+INFO: AutoConfiguredOpenTelemetrySdk found on classpath but automatic configuration is disabled. To enable, run your JVM with -Dotel.java.global-autoconfigure.enabled=true
+----
++
 For the microservices examples, a load generator application is included.
 The load generator automatically issues randomized valid and invalid requests to the head microservice.
 +
@@ -234,11 +241,12 @@ The other examples are designed to be loaded and exercised in the REPL as follow
 
 . *View telemetry data in backends*
 +
-* *Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
-* *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric.
-
 NOTE: Traces may appear incomplete until all parts of telemetry data have been received and processed by the telemetry backend.
 This sometimes impacts recent traces of distributed services, where some but not all contributing services have completed exporting telemetry data.
++
+* *Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
+* *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric.
++
 
 . *Stop container instances*
 +
