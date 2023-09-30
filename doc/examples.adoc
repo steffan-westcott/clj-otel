@@ -47,8 +47,8 @@ graph LR
     end
     localhost --> otel-collector
 ----
-endif::[]
 +
+endif::[]
 A small application run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/square-app`
@@ -64,8 +64,8 @@ graph LR
     end
     localhost --> otel-collector
 ----
-endif::[]
 +
+endif::[]
 A small application using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/factorial-app`
@@ -81,8 +81,8 @@ graph LR
     end
     localhost --> otel-collector
 ----
-endif::[]
 +
+endif::[]
 A small application using programmatically configured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/divisor-app`
@@ -99,8 +99,8 @@ graph LR
     localhost --> jaeger
     prometheus --scrape--> localhost
 ----
-endif::[]
 +
+endif::[]
 A small application using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry directly to Jaeger and Prometheus instances.
 
 * `examples/microservices/auto-instrument/middleware`
@@ -118,8 +118,8 @@ graph LR
         otel-collector --remote write--> prometheus
     end
 ----
-endif::[]
 +
+endif::[]
 A pair of dependent microservices `sentence-summary-service` and `word-length-service` implemented with Ring middleware, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/auto-instrument/interceptor`
@@ -137,8 +137,8 @@ graph LR
         otel-collector --remote write--> prometheus
     end
 ----
-endif::[]
 +
+endif::[]
 A pair of dependent microservices `solar-system-service` and `planet-service` implemented with Pedestal interceptors, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/manual-instrument/middleware`
@@ -156,8 +156,8 @@ graph LR
         otel-collector --remote write--> prometheus
     end
 ----
-endif::[]
 +
+endif::[]
 A pair of dependent microservices `puzzle-service` and `random-word-service` implemented with Ring middleware, not using the agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/manual-instrument/interceptor`
@@ -175,8 +175,8 @@ graph LR
         otel-collector --remote write--> prometheus
     end
 ----
-endif::[]
 +
+endif::[]
 A pair of dependent microservices `average-service` and `sum-service` implemented with Pedestal interceptors, not using the agent, exporting telemetry to a Collector instance.
 
 . *Build example*
