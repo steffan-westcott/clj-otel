@@ -49,6 +49,7 @@ Added load generator applications to microservices examples.
 * [BREAK] Now using `io.opentelemetry.semconv/opentelemetry-semconv` semantic conventions.
 This impacts manually instrumented HTTP server applications using `clj-otel` middleware or interceptors, as several semantic attributes have changed.
 * [MAINT] gRPC `1.58.0`
+* [MAINT] Various build deps
 
 === `0.2.3` (2023-06-18)
 
