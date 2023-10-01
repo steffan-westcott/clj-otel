@@ -1,7 +1,7 @@
 (ns ^:no-doc steffan-westcott.clj-otel.sdk.resources
   "Utilities for `io.opentelemetry.sdk.resources.Resource` objects."
   (:require [steffan-westcott.clj-otel.api.attributes :as attr])
-  (:import (io.opentelemetry.semconv.resource.attributes ResourceAttributes)
+  (:import (io.opentelemetry.semconv ResourceAttributes)
            (java.util Map)
            (io.opentelemetry.sdk.resources Resource)))
 
