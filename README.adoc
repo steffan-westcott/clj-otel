@@ -21,8 +21,8 @@ image:https://img.shields.io/badge/clojurians-clj--otel-blue.svg?logo=slack[Slac
 .A distributed trace displayed in https://www.honeycomb.io/[Honeycomb]
 image::doc/images/honeycomb-trace.png[Distributed trace displayed in Honeycomb,width=500,link="doc/images/honeycomb-trace.png?raw=true"]
 
-.Exploring microservice dependencies with https://lightstep.com/[Lightstep]
-image::doc/images/lightstep-service-diagram.png[Microservice dependencies displayed in Lightstep,width=500,link="doc/images/lightstep-service-diagram.png?raw=true"]
+.Exploring microservice dependencies with https://www.servicenow.com/products/observability.html[ServiceNow Cloud Observability]
+image::doc/images/servicenow-service-diagram.png[Microservice dependencies displayed in ServiceNow Cloud Observability,width=500,link="doc/images/servicenow-service-diagram.png?raw=true"]
 
 == Requirements
 
