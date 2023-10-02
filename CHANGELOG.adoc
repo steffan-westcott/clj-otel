@@ -24,6 +24,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
+=== `0.2.5` (in progress)
+
 === `0.2.4.1` (2023-10-01)
 
 - [ADD] Module `clj-otel-sdk-extension-autoconfigure` which wraps the autoconfigure OpenTelemetry SDK extension.
