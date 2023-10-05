@@ -86,8 +86,7 @@
   [x y]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-span! {:name       "Calculating division"
-                    :attributes {:service.average.divide/parameters [x y]}}
+  (span/with-span! ["Calculating division" {:service.average.divide/parameters [x y]}]
 
     (Thread/sleep 10)
     (let [result (double (/ x y))]

@@ -6,7 +6,8 @@
             [steffan-westcott.clj-otel.config :refer [config]]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.api OpenTelemetry)
+  (:import (clojure.lang IPersistentMap IPersistentVector Named)
+           (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
            (io.opentelemetry.semconv SemanticAttributes)))
@@ -113,13 +114,33 @@
   ^SpanBuilder [^SpanBuilder builder links]
   (reduce add-link builder links))
 
+(defprotocol AsSpanOpts
+  (as-span-opts [x]
+   "Coerce to span options map for `new-span!`"))
+
+(extend-protocol AsSpanOpts
+ IPersistentMap
+   (as-span-opts [m]
+     m)
+ Named
+   (as-span-opts [x]
+     {:name (util/qname x)})
+ IPersistentVector
+   (as-span-opts [[x attrs]]
+     {:name       (util/qname x)
+      :attributes attrs}))
+
 (defn new-span!
   "Low level function that starts a new span and returns the context containing
    the new span. Does not mutate the current context. The span must be ended by
    evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
-   level helpers [[with-span!]], [[with-span-binding]] and [[async-span]]
-   instead of this function to manage the context and reliably end the span.
-   Takes an options map as follows:
+   level helpers [[with-span!]], [[with-bound-span!]], [[with-span-binding]],
+   [[async-span]] and [[async-bound-span]] instead of this function to reliably
+   manage the context and end the span.
+
+   `span-opts` is a single expression that may be one of several types.
+
+   `span-opts` as a map specifies all available options as follows:
 
    | key         | description |
    |-------------|-------------|
@@ -131,15 +152,25 @@
    |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
    |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:ns`, `:line` and `:file` (default: {}).
    |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
-   |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp)."
-  ^Context
-  [{:keys [^Tracer tracer name parent links attributes ^Thread thread source span-kind timestamp]
-    :or   {name       ""
-           parent     (context/dyn)
-           attributes {}
-           thread     (Thread/currentThread)
-           source     {}}}]
-  (let [tracer'        (or tracer (get-default-tracer!))
+   |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
+
+   `span-opts` as a string, keyword or symbol specifies a span with a
+   (qualified) name. All other options take default values shown above.
+
+   `span-opts` as a vector `[name attrs]` specifies a span with the given
+   (qualified) name and map of attributes. All other options take default values
+   shown above."
+  ^Context [span-opts]
+  (let [{:keys [^Tracer tracer name parent links attributes ^Thread thread source span-kind
+                timestamp]
+         :or   {name       ""
+                parent     (context/dyn)
+                attributes {}
+                thread     (Thread/currentThread)
+                source     {}}}
+        (as-span-opts span-opts)
+
+        tracer' (or tracer (get-default-tracer!))
         parent-context (or parent (context/root))
         {:keys [fn ns line file]} source
         default-attributes (cond-> {}
@@ -151,15 +182,15 @@
                              ns     (assoc SemanticAttributes/CODE_NAMESPACE ns)
                              line   (assoc SemanticAttributes/CODE_LINENO line)
                              file   (assoc SemanticAttributes/CODE_FILEPATH file))
-        attributes'    (merge default-attributes attributes)
-        builder        (cond-> (.spanBuilder tracer' name)
-                         :always   (.setParent parent-context)
-                         links     (add-links links)
-                         :always   (.setAllAttributes (attr/->attributes attributes'))
-                         span-kind (.setSpanKind (keyword->SpanKind span-kind))
-                         timestamp (as-> b (let [[amount unit] (util/timestamp timestamp)]
-                                             (.setStartTimestamp b amount unit))))
-        span           (.startSpan builder)]
+        attributes' (merge default-attributes attributes)
+        builder (cond-> (.spanBuilder tracer' name)
+                  :always   (.setParent parent-context)
+                  links     (add-links links)
+                  :always   (.setAllAttributes (attr/->attributes attributes'))
+                  span-kind (.setSpanKind (keyword->SpanKind span-kind))
+                  timestamp (as-> b (let [[amount unit] (util/timestamp timestamp)]
+                                      (.setStartTimestamp b amount unit))))
+        span (.startSpan builder)]
     (context/assoc-value parent-context span)))
 
 (defn- add-event!
@@ -330,12 +361,12 @@
    or [[async-bound-span]] instead for working with asynchronous functions. Does
    not use nor set the current context.
 
-   `span-opts` is a span options map, the same as for [[new-span!]], except that
-   the default values for `:line`, `:file` and `:ns` for the `:source` option
-   map are set from the place `with-span-binding` is evaluated. See also
-   [[with-span!]] and [[with-bound-span!]]."
+   `span-opts` is the same as for [[new-span!]], except that the default values
+   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
+   place `with-span-binding` is evaluated. See also [[with-span!]] and
+   [[with-bound-span!]]."
   [[context span-opts] & body]
-  `(let [span-opts# ~span-opts
+  `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
                            :file ~*file*
                            :ns   ~(str *ns*)}
@@ -351,12 +382,12 @@
    It is expected `body` provides a synchronous result, use [[async-span]]
    or [[async-bound-span]] instead for working with asynchronous functions.
 
-   `span-opts` is a span options map, the same as for [[new-span!]], except that
-   the default values for `:line`, `:file` and `:ns` for the `:source` option
-   map are set from the place `with-span!` is evaluated. See also
-   [[with-bound-span!]] and [[with-span-binding]]."
+   `span-opts` is the same as for [[new-span!]], except that the default values
+   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
+   place `with-span!` is evaluated. See also [[with-bound-span!]] and
+   [[with-span-binding]]."
   [span-opts & body]
-  `(let [span-opts# ~span-opts
+  `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
                            :file ~*file*
                            :ns   ~(str *ns*)}
@@ -374,12 +405,12 @@
    [[async-bound-span]] instead for working with asynchronous functions. Does
    not use nor set the current context.
 
-   `span-opts` is a span options map, the same as for [[new-span!]], except that
-   the default values for `:line`, `:file` and `:ns` for the `:source` option
-   map are set from the place `with-bound-span!` is evaluated. See also
-   [[with-span!]] and [[with-span-binding]]."
+   `span-opts` is the same as for [[new-span!]], except that the default values
+   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
+   place `with-bound-span!` is evaluated. See also [[with-span!]] and
+   [[with-span-binding]]."
   [span-opts & body]
-  `(let [span-opts# ~span-opts
+  `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
                            :file ~*file*
                            :ns   ~(str *ns*)}
@@ -428,7 +459,7 @@
    `raise*` are callback functions to be used by `f`. All callback functions
    take a single argument, `raise` and `raise*` take a `Throwable` instance."
   [span-opts f respond raise]
-  `(let [span-opts# ~span-opts
+  `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
                            :file ~*file*
                            :ns   ~(str *ns*)}
@@ -477,7 +508,7 @@
    `f`. All callback functions take a single argument, `raise` and `raise*` take
    a `Throwable` instance."
   [span-opts f respond raise]
-  `(let [span-opts# ~span-opts
+  `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
                            :file ~*file*
                            :ns   ~(str *ns*)}
@@ -489,10 +520,9 @@
   "Returns a Pedestal interceptor that will on entry start a new span and add
    the context containing the new span to the interceptor map with key
    `context-key`. `span-opts-fn` is a function which takes the interceptor
-   context and returns an options map for the new span, as for [[new-span!]].
-   The span is ended on interceptor exit (either `leave` or `error`). Does not
-   use nor set the current context. This is not specific to HTTP service
-   handling, see
+   context and returns `span-opts` as for [[new-span!]]. The span is ended on
+   interceptor exit (either `leave` or `error`). Does not use nor set the
+   current context. This is not specific to HTTP service handling, see
    [[steffan-westcott.clj-otel.api.trace.http/server-span-interceptors]] for
    adding HTTP server span support to HTTP services."
   [context-key span-opts-fn]

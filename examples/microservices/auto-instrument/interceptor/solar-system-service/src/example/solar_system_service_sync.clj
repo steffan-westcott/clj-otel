@@ -66,8 +66,7 @@
   [planet]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-span! {:name       "Getting planet statistics"
-                    :attributes {:system/planet planet}}
+  (span/with-span! ["Getting planet statistics" {:system/planet planet}]
 
     ;; Use `doall` to force lazy sequence to be realized within span
     (doall (map #(get-statistic-value planet %) [:diameter :gravity]))))
@@ -79,9 +78,9 @@
   [planet statistic-values]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-span! {:name       "Formatting report"
-                    :attributes {:system/planet planet
-                                 :service.solar-system.report/statistic-values statistic-values}}
+  (span/with-span! ["Formatting report"
+                    {:system/planet planet
+                     :service.solar-system.report/statistic-values statistic-values}]
 
     (Thread/sleep 25)
     (let [planet' (str/capitalize (name planet))

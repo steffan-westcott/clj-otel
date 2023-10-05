@@ -104,8 +104,7 @@
   ;; the body) closes or 6000 milliseconds have elapsed. Returns a dest channel
   ;; with buffer size 3. Values are piped from source to dest irrespective of
   ;; timeout.
-  (async'/<with-bound-span {:name       "Getting word lengths"
-                            :attributes {:system/words words}}
+  (async'/<with-bound-span ["Getting word lengths" {:system/words words}]
                            6000
                            3
 
@@ -118,8 +117,7 @@
   [lengths]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-bound-span! {:name       "Building sentence summary"
-                          :attributes {:system/word-lengths lengths}}
+  (span/with-bound-span! ["Building sentence summary" {:system/word-lengths lengths}]
 
     (Thread/sleep 25)
     (let [result {:word-count      (count lengths)

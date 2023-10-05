@@ -93,8 +93,7 @@
   [word-types]
 
   ;; Wrap the synchronous body in a new internal span.
-  (span/with-span! {:name       "Getting random words"
-                    :attributes {:system/word-types word-types}}
+  (span/with-span! ["Getting random words" {:system/word-types word-types}]
 
     ;; Use `doall` to force lazy sequence to be realized within span
     (doall (map get-random-word word-types))))
@@ -104,8 +103,7 @@
 (defn scramble
   "Scrambles a given word."
   [word]
-  (span/with-span! {:name       "Scrambling word"
-                    :attributes {:system/word word}}
+  (span/with-span! ["Scrambling word" {:system/word word}]
 
     (Thread/sleep 5)
     (let [scrambled-word (->> word

@@ -29,8 +29,7 @@
   [nums]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-span! {:name       "Calculating sum"
-                    :attributes {:system/nums nums}}
+  (span/with-span! ["Calculating sum" {:system/nums nums}]
 
     (Thread/sleep 50)
     (let [result (reduce + 0 nums)]

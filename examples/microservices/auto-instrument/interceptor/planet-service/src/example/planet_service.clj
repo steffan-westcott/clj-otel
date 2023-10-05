@@ -51,9 +51,9 @@
   [planet statistic]
 
   ;; Wrap the synchronous body in a new internal span.
-  (span/with-span! {:name       "Fetching statistic value"
-                    :attributes {:system/planet    planet
-                                 :system/statistic statistic}}
+  (span/with-span! ["Fetching statistic value"
+                    {:system/planet    planet
+                     :system/statistic statistic}]
 
     (Thread/sleep 50)
     (let [path [planet statistic]]

@@ -110,8 +110,7 @@
   [x y]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-bound-span! {:name       "Calculating division"
-                          :attributes {:service.average.divide/parameters [x y]}}
+  (span/with-bound-span! ["Calculating division" {:service.average.divide/parameters [x y]}]
 
     (Thread/sleep 10)
     (let [result (double (/ x y))]
@@ -131,8 +130,7 @@
   ;; the body) closes or 3000 milliseconds have elapsed. Returns a dest channel
   ;; with buffer size 1. Values are piped from source to dest irrespective of
   ;; timeout.
-  (async'/<with-bound-span {:name       "Calculating average"
-                            :attributes {:system/nums nums}}
+  (async'/<with-bound-span ["Calculating average" {:system/nums nums}]
                            3000
                            1
 

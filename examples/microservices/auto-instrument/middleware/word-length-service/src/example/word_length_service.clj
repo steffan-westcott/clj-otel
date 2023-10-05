@@ -28,8 +28,7 @@
   [word]
 
   ;; Manually create an internal span that wraps body (lexical scope)
-  (span/with-span! {:name       "Calculating length"
-                    :attributes {:system/word word}}
+  (span/with-span! ["Calculating length" {:system/word word}]
 
     (Thread/sleep (+ 50 (rand-int 80)))
 

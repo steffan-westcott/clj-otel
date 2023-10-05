@@ -101,8 +101,7 @@
   ;; the body) closes or 4000 milliseconds have elapsed. Returns a dest channel
   ;; with buffer size 2. Values are piped from source to dest irrespective of
   ;; timeout.
-  (async'/<with-bound-span {:name       "Getting planet statistics"
-                            :attributes {:system/planet planet}}
+  (async'/<with-bound-span ["Getting planet statistics" {:system/planet planet}]
                            4000
                            2
 
@@ -117,10 +116,9 @@
 
   ;; Wrap synchronous function body with an internal span. Context containing
   ;; internal span is assigned to `context*`.
-  (span/with-bound-span!
-    {:name       "Formatting report"
-     :attributes {:system/planet planet
-                  :service.solar-system.report/statistic-values statistic-values}}
+  (span/with-bound-span! ["Formatting report"
+                          {:system/planet planet
+                           :service.solar-system.report/statistic-values statistic-values}]
 
     (Thread/sleep 25)
     (let [planet' (str/capitalize (name planet))

@@ -211,7 +211,7 @@
    `<dest` irrespective of timeout. `<dest` will stop consuming and close when
    `<src` closes."
   [[context span-opts] timeout buf-size & body]
-  `(let [span-opts# ~span-opts
+  `(let [span-opts# (span/as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
                            :file ~*file*
                            :ns   ~(str *ns*)}
@@ -244,7 +244,7 @@
    `<dest` irrespective of timeout. `<dest` will stop consuming and close when
    `<src` closes."
   [span-opts timeout buf-size & body]
-  `(let [span-opts# ~span-opts
+  `(let [span-opts# (span/as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
                            :file ~*file*
                            :ns   ~(str *ns*)}

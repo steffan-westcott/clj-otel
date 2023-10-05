@@ -122,8 +122,7 @@
   ;; the body) closes or 5000 milliseconds have elapsed. Returns a dest channel
   ;; with buffer size 2. Values are piped from source to dest irrespective of
   ;; timeout.
-  (async'/<with-bound-span {:name       "Getting random words"
-                            :attributes {:system/word-types word-types}}
+  (async'/<with-bound-span ["Getting random words" {:system/word-types word-types}]
                            5000
                            2
 
@@ -136,8 +135,7 @@
   [word]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-bound-span! {:name       "Scrambling word"
-                          :attributes {:system/word word}}
+  (span/with-bound-span! ["Scrambling word" {:system/word word}]
 
     (Thread/sleep 5)
     (let [scrambled-word (->> word

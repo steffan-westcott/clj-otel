@@ -91,7 +91,7 @@
 (defn factorial
   "Returns the factorial of a number."
   [n]
-  (span/with-span! {:name "Computing factorial"}
+  (span/with-span! "Computing factorial"
     (instrument/add! @factorials-count {:value 1})
     (->> n
          inc

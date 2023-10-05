@@ -26,6 +26,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.5` (in progress)
 
+- [ADD] Terse syntax alternatives for `span-opts` map parameter in `new-span!` and related functions that create spans.
+
 === `0.2.4.1` (2023-10-01)
 
 - [ADD] Module `clj-otel-sdk-extension-autoconfigure` which wraps the autoconfigure OpenTelemetry SDK extension.

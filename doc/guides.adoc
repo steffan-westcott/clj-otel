@@ -43,7 +43,7 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 [source,clojure]
 ----
 (defn get-nums [args]
-  (span/with-span! {:name "Getting numbers"}
+  (span/with-span! "Getting numbers"
     (fetch-nums args)))
 ----
 
@@ -54,7 +54,7 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 [source,clojure]
 ----
 (defn get-nums [args]
-  (span/with-bound-span! {:name "Getting numbers"}
+  (span/with-bound-span! "Getting numbers"
     (fetch-nums args)))
 ----
 
@@ -107,13 +107,12 @@ The new context containing the new span is bound to `context*` in this example:
 
 ==== Add attributes to a span
 
-* Use the `:attributes` option to add xref:concepts.adoc#_attributes[attributes] when creating a span:
+* Include an xref:concepts.adoc#_attributes[attributes] map when creating a span:
 +
 [source,clojure]
 ----
 (defn user-info [user-id]
-  (span/with-span! {:name "Getting user info"
-                    :attributes {:system/user-id user-id}}
+  (span/with-span! ["Getting user info" {:system/user-id user-id}]
     (fetch-user-info user-id)))
 ----
 

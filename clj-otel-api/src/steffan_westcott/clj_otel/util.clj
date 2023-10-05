@@ -32,6 +32,22 @@
    (timestamp [t]
      t))
 
+(defprotocol AsQName
+  (qname [x]
+   "Given a keyword or symbol, returns the name qualified with namespace, if
+    any, seperated by a `/`."))
+
+(extend-protocol AsQName
+ Named
+   (qname [x]
+     (let [s (name x)]
+       (if-let [ns (namespace x)]
+         (str ns "/" s)
+         s)))
+ Object
+   (qname [x]
+     (str x)))
+
 (defprotocol AsQualifiedName
   (qualified-name [x]
    "Given a keyword or symbol, returns the name converted to follow

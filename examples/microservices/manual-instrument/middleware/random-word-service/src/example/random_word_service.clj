@@ -39,8 +39,7 @@
   [word-type]
 
   ;; Wrap the synchronous body in a new internal span.
-  (span/with-span! {:name       "Generating word"
-                    :attributes {:system/word-type word-type}}
+  (span/with-span! ["Generating word" {:system/word-type word-type}]
 
     (Thread/sleep (+ 10 (rand-int 80)))
 

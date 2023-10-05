@@ -69,8 +69,7 @@
   [words]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-span! {:name       "Getting word lengths"
-                    :attributes {:system/words words}}
+  (span/with-span! ["Getting word lengths" {:system/words words}]
 
     ;; Use `doall` to force lazy sequence to be realized within span
     (doall (map get-word-length words))))
@@ -82,8 +81,7 @@
   [lengths]
 
   ;; Wrap synchronous function body with an internal span.
-  (span/with-span! {:name       "Building sentence summary"
-                    :attributes {:system/word-lengths lengths}}
+  (span/with-span! ["Building sentence summary" {:system/word-lengths lengths}]
 
     (Thread/sleep 25)
     (let [result {:word-count      (count lengths)
