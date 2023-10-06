@@ -122,13 +122,13 @@
  IPersistentMap
    (as-span-opts [m]
      m)
- Named
-   (as-span-opts [x]
-     {:name (util/qname x)})
  IPersistentVector
    (as-span-opts [[x attrs]]
-     {:name       (util/qname x)
-      :attributes attrs}))
+     {:name       x
+      :attributes attrs})
+ Object
+   (as-span-opts [x]
+     {:name x}))
 
 (defn new-span!
   "Low level function that starts a new span and returns the context containing
@@ -145,7 +145,7 @@
    | key         | description |
    |-------------|-------------|
    |`:tracer`    | `io.opentelemetry.api.trace.Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
-   |`:name`      | Span name (default: `\"\"`).
+   |`:name`      | String, keyword or symbol used for (qualified) span name (default: `\"\"`).
    |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: bound or current context).
    |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
    |`:attributes`| Map of additional attributes for the span (default: no attributes).
@@ -183,7 +183,7 @@
                              line   (assoc SemanticAttributes/CODE_LINENO line)
                              file   (assoc SemanticAttributes/CODE_FILEPATH file))
         attributes' (merge default-attributes attributes)
-        builder (cond-> (.spanBuilder tracer' name)
+        builder (cond-> (.spanBuilder tracer' (str name))
                   :always   (.setParent parent-context)
                   links     (add-links links)
                   :always   (.setAllAttributes (attr/->attributes attributes'))
