@@ -126,8 +126,7 @@
         scrambled-words (map scramble words)]
 
     ;; Add event to span
-    (span/add-span-data! {:event {:name       "Completed setting puzzle"
-                                  :attributes {:system/puzzle scrambled-words}}})
+    (span/add-event! "Completed setting puzzle" {:system/puzzle scrambled-words})
 
     ;; Update puzzle-size metric
     (instrument/record! @puzzle-size {:value (reduce + (map count scrambled-words))})

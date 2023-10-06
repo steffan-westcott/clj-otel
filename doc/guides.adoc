@@ -139,20 +139,17 @@ Use the `:context` option to specify the context containing the span to update:
 
 ==== Add an event to a span
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-span-data![`steffan-westcott.clj-otel.api.trace.span/add-span-data!`] including the `:event` option to add an xref:concepts.adoc#_events[event] to an existing span.
-The event may include xref:concepts.adoc#_attributes[attributes].
-+
-By default, the event is added to the span in the bound or current context:
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-event![`steffan-westcott.clj-otel.api.trace.span/add-event!`] to add an xref:concepts.adoc#_events[event] to an existing span in the bound or current context.
+The event may include xref:concepts.adoc#_attributes[attributes]:
 +
 [source,clojure]
 ----
 (defn complete-stage [job]
-  (span/add-span-data! {:event {:name "Job stage completed"
-                                :attributes {:service.workflow.job/stage (:stage job)}}})
+  (span/add-event! "Job stage completed" {:service.workflow.job/stage (:stage job)})
   (notify-watchers job))
 ----
 +
-Use the `:context` option to specify the context containing the span to add the event to:
+* Alternatively use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-span-data![`steffan-westcott.clj-otel.api.trace.span/add-span-data!`] including the `:event` option for more flexibility:
 +
 [source,clojure]
 ----

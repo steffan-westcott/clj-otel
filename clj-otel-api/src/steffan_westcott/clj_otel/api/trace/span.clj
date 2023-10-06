@@ -6,7 +6,7 @@
             [steffan-westcott.clj-otel.config :refer [config]]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.util :as util])
-  (:import (clojure.lang IPersistentMap IPersistentVector Named)
+  (:import (clojure.lang IPersistentMap IPersistentVector)
            (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
@@ -193,16 +193,17 @@
         span (.startSpan builder)]
     (context/assoc-value parent-context span)))
 
-(defn- add-event!
+(defn- add-event-data!
   [^Span span
-   {:keys [^String name attributes timestamp]
+   {:keys [name attributes timestamp]
     :or   {name       ""
            attributes {}}}]
-  (let [attrs (attr/->attributes attributes)]
+  (let [name' (str name)
+        attrs (attr/->attributes attributes)]
     (if timestamp
       (let [[amount unit] (util/timestamp timestamp)]
-        (.addEvent span name attrs amount unit))
-      (.addEvent span name attrs))))
+        (.addEvent span name' attrs amount unit))
+      (.addEvent span name' attrs))))
 
 (defn- add-ex-data!
   [^Span span
@@ -221,7 +222,7 @@
    | key         | description |
    |-------------|-------------|
    |`:context`   | Context containing span to add data to (default: bound or current context).
-   |`:name`      | Name to set span to.
+   |`:name`      | String, keyword or symbol to set as the span name.
    |`:status`    | Option map (see below) describing span status to set.
    |`:attributes`| Map of additional attributes to merge in the span.
    |`:event`     | Option map (see below) describing an event to add to the span.
@@ -238,8 +239,8 @@
 
    | key         | description |
    |-------------|-------------|
-   |`:name`      | Event name (required).
-   |`:attributes`| Map of attributes to attach to event.
+   |`:name`      | String, keyword or symbol to set as the event name.
+   |`:attributes`| Map of attributes to attach to the event.
    |`:timestamp` | Event timestamp, value is either an `Instant` or vector `[amount ^TimeUnit unit]`.
 
    `:ex-data` option map
@@ -253,11 +254,21 @@
     :or   {context (context/dyn)}}]
   (let [span (get-span context)]
     (cond-> span
-      name       (.updateName name)
+      name       (.updateName (str name))
       status     (.setStatus (keyword->StatusCode (:code status)) (:description status))
       attributes (.setAllAttributes (attr/->attributes attributes))
-      event      (add-event! event)
+      event      (add-event-data! event)
       ex-data    (add-ex-data! ex-data))))
+
+(defn add-event!
+  "Adds an event to the bound or current context. `name` is a string, keyword or
+   symbol to use as the event name. `attributes` is a map of attributes to
+   attach to the event. For more flexible options, use [[add-span-data!]]."
+  ([name]
+   (add-event! name {}))
+  ([name attributes]
+   (add-span-data! {:event {:name       name
+                            :attributes attributes}})))
 
 (defn add-exception!
   "Adds an event describing `exception` to a span. By default, exception data

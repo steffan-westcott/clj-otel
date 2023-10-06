@@ -40,9 +40,8 @@
 
     (let [word-length (count word)]
 
-      ;; Add an event to the current span with some data attached
-      (span/add-span-data! {:event {:name       "Calculated word length"
-                                    :attributes {:system/word-length word-length}}})
+      ;; Add an event to the current span with some attributes attached
+      (span/add-event! "Calculated word length" {:system/word-length word-length})
 
       ;; Update letter-count metric
       (instrument/add! @letter-count {:value word-length})

@@ -58,9 +58,8 @@
     (Thread/sleep 50)
     (let [path [planet statistic]]
 
-      ;; Add an event to the current span with some data attached.
-      (span/add-span-data! {:event {:name       "Processed query path"
-                                    :attributes {:service.planet/query-path path}}})
+      ;; Add an event to the current span with some attributes attached.
+      (span/add-event! "Processed query path" {:service.planet/query-path path})
 
       ;; Update statistic-lookup-count metric
       (instrument/add! @statistic-lookup-count

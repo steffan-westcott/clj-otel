@@ -18,7 +18,7 @@
   "Returns the square of a number."
   [n]
   (span/with-span! [::squaring {:app.square/n n}]
-    (span/add-span-data! {:event {:name "my event"}})
+    (span/add-event! "my event")
     (instrument/add! @squares-count {:value 1})
     (* n n)))
 

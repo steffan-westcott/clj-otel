@@ -14,7 +14,7 @@
   "Returns the cube of a number."
   [n]
   (span/with-span! [::cubing {:app.cube/n n}]
-    (span/add-span-data! {:event {:name "my event"}})
+    (span/add-event! "my event")
     (instrument/add! @cubes-count {:value 1})
     (* n n n)))
 

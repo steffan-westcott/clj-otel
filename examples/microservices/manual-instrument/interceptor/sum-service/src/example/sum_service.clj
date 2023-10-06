@@ -34,9 +34,8 @@
     (Thread/sleep 50)
     (let [result (reduce + 0 nums)]
 
-      ;; Add an event to the internal span with some data attached.
-      (span/add-span-data! {:event {:name       "Computed sum"
-                                    :attributes {:system/sum result}}})
+      ;; Add an event to the internal span with some attributes attached.
+      (span/add-event! "Computed sum" {:system/sum result})
 
       ;; Simulate an intermittent runtime exception when sum is 13.
       ;; An uncaught exception leaving a span's scope is reported as an

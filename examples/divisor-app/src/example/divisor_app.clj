@@ -24,7 +24,7 @@
   "Returns the greatest common divisor of x and y."
   [x y]
   (span/with-span! [::calculating-gcd {:app.divisor/args [x y]}]
-    (span/add-span-data! {:event {:name "my event"}})
+    (span/add-event! "my event")
     (instrument/add! @gcd-count {:value 1})
     (gcd* x y)))
 

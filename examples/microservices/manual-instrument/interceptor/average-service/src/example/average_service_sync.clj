@@ -120,9 +120,9 @@
                        :evens evens-average}]
 
     ;; Add event to span
-    (span/add-span-data! {:event {:name       "Finished calculations"
-                                  :attributes {:system.averages/odds  odds-average
-                                               :system.averages/evens evens-average}}})
+    (span/add-event! "Finished calculations"
+                     {:system.averages/odds  odds-average
+                      :system.averages/evens evens-average})
 
     ;; Update average-result metric
     (doseq [[partition average] result]
