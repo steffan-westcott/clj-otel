@@ -27,6 +27,7 @@
            ring/ring-jetty-adapter {:mvn/version "1.10.0"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
+                             "-Dotel.semconv-stability.opt-in=http"
                              "-Dotel.resource.attributes=service.name=word-length-service"
                              "-Dotel.metric.export.interval=10000"
                              "-Dotel.logs.exporter=none"
