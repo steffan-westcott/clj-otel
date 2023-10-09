@@ -5,13 +5,13 @@
             [steffan-westcott.clj-otel.context :as context])
   (:import (io.opentelemetry.semconv SemanticAttributes)))
 
-(defn- now-millis!
+(defn- nano-time!
   []
-  (System/currentTimeMillis))
+  (System/nanoTime))
 
-(defn- since-millis!
+(defn- since-seconds!
   [start-time]
-  (- (now-millis!) start-time))
+  (double (/ (- (nano-time!) start-time) 1000000000)))
 
 (defonce
   ^{:doc
@@ -29,18 +29,18 @@
     "Delay containing a histogram that records the duration of inbound HTTP
      request processing."}
   request-duration
-  (delay (instrument/instrument {:name        "http.server.duration"
+  (delay (instrument/instrument {:name        "http.server.request.duration"
                                  :instrument-type :histogram
                                  :measurement-type :double
-                                 :unit        "ms"
-                                 :description "The duration of inbound HTTP request processing"})))
+                                 :unit        "s"
+                                 :description "The duration of the inbound HTTP request"})))
 
 (defonce
   ^{:doc
     "Delay containing a histogram that records the size of inbound HTTP
      request messages."}
   request-size
-  (delay (instrument/instrument {:name        "http.server.request.size"
+  (delay (instrument/instrument {:name        "http.server.request.body.size"
                                  :instrument-type :histogram
                                  :unit        "By"
                                  :description "The size of inbound HTTP request messages"})))
@@ -51,7 +51,7 @@
       "Delay containing a histogram that records the size of outbound HTTP
        response messages."}
     response-size
-    (delay (instrument/instrument {:name        "http.server.response.size"
+    (delay (instrument/instrument {:name        "http.server.response.body.size"
                                    :instrument-type :histogram
                                    :unit        "By"
                                    :description "The size of HTTP response messages"})))
@@ -68,7 +68,7 @@
   [server-request-attrs]
   (select-keys server-request-attrs
                [SemanticAttributes/HTTP_REQUEST_METHOD SemanticAttributes/URL_SCHEME
-                SemanticAttributes/SERVER_ADDRESS]))
+                SemanticAttributes/SERVER_ADDRESS SemanticAttributes/SERVER_PORT]))
 
 (defn- request-duration-or-size-attrs
   [server-request-attrs status]
@@ -83,7 +83,7 @@
    (record-duration! start-time server-request-attrs status (context/dyn)))
   ([start-time server-request-attrs status context]
    (instrument/record! @request-duration
-                       {:value      (since-millis! start-time)
+                       {:value      (since-seconds! start-time)
                         :attributes (request-duration-or-size-attrs server-request-attrs status)
                         :context    context})))
 
@@ -159,7 +159,7 @@
   (fn
     ([{:keys [io.opentelemetry/server-request-attrs]
        :as   request}]
-     (let [start-time (now-millis!)]
+     (let [start-time (nano-time!)]
        (try
          (let [response (handler request)]
            (record-duration! start-time server-request-attrs (:status response))
@@ -169,7 +169,7 @@
            (throw e)))))
     ([{:keys [io.opentelemetry/server-request-attrs io.opentelemetry/server-span-context]
        :as   request} respond raise]
-     (let [start-time (now-millis!)]
+     (let [start-time (nano-time!)]
        (try
          (handler request
                   (fn [response]
@@ -195,7 +195,7 @@
   []
   {:name  ::request-duration
    :enter (fn [ctx]
-            (assoc ctx ::start-time (now-millis!)))
+            (assoc ctx ::start-time (nano-time!)))
    :leave (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
                 ::keys [start-time]
                 :keys  [response]
