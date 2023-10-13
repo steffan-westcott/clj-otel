@@ -2,7 +2,9 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
    synchronous Pedestal HTTP service that is run without the OpenTelemetry
    instrumentation agent."
-  (:require [clojure.string :as str]
+  (:require [aero.core :as aero]
+            [clojure.java.io :as io]
+            [clojure.string :as str]
             [example.common.interceptor.utils :as interceptor-utils]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]
@@ -135,16 +137,16 @@
    ;; Initialise OpenTelemetry SDK instance and set as default used by `clj-otel`
    (autoconfig/init-otel-sdk!)
 
-   ;; Register measurements that report metrics about the JVM runtime. These measurements cover
-   ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
+   ;; Register measurements that report metrics about the JVM runtime. These measurements
+   ;; cover buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (http/start (service (conj {::http/routes routes
-                               ::http/type   :jetty
-                               ::http/host   "0.0.0.0"
-                               ::http/port   8081
-                               ::http/container-options {:max-threads 16}}
-                              opts)))))
+   (let [config (aero/read-config (io/resource "config.edn"))]
+     (http/start (service (merge {::http/routes routes
+                                  ::http/type   :jetty
+                                  ::http/host   "0.0.0.0"}
+                                 (:service-map config)
+                                 opts))))))
 
 
 

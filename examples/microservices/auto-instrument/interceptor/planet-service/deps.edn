@@ -4,6 +4,9 @@
 
  :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
 
+           ;; Application configuration
+           aero/aero {:mvn/version "1.1.6"}
+
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 

@@ -3,10 +3,12 @@
    asynchronous Pedestal HTTP service that is run with the OpenTelemetry
    instrumentation agent. In this example, the context is explicitly passed in
    as a parameter to `clj-otel` functions."
-  (:require [clj-http.client :as client]
+  (:require [aero.core :as aero]
+            [clj-http.client :as client]
             [clj-http.conn-mgr :as conn]
             [clj-http.core :as http-core]
             [clojure.core.async :as async]
+            [clojure.java.io :as io]
             [clojure.string :as str]
             [example.common.core-async.utils :as async']
             [example.common.interceptor.utils :as interceptor-utils]
@@ -77,7 +79,7 @@
   "Get a single statistic value of a planet and return a channel of a
    single-valued map of the statistic and its value."
   [context planet statistic]
-  (let [endpoint  (get-in config [:endpoints :planet-service] "http://localhost:8081")
+  (let [endpoint  (get-in config [:endpoints :planet-service])
         path      (str "/planets/" (name planet) "/" (name statistic))
         <response (<client-request context
                                    {:method :get
@@ -228,20 +230,19 @@
 
 (defn server
   "Starts solar-system-service server instance."
-  ([conf]
-   (server conf {}))
-  ([conf jetty-opts]
-   (alter-var-root #'config (constantly conf))
-   (http/start (service (conj {::http/routes routes
-                               ::http/type   :jetty
-                               ::http/host   "0.0.0.0"
-                               ::http/port   8080
-                               ::http/container-options {:max-threads 16}}
-                              jetty-opts)))))
+  ([]
+   (server {}))
+  ([opts]
+   (alter-var-root #'config (constantly (aero/read-config (io/resource "config.edn"))))
+   (http/start (service (merge {::http/routes routes
+                                ::http/type   :jetty
+                                ::http/host   "0.0.0.0"}
+                               (:service-map config)
+                               opts)))))
 
 
 
 (comment
-  (server {} {::http/join? false})
+  (server {::http/join? false})
   ;
 )

@@ -2,9 +2,11 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
    synchronous Ring HTTP service that is run with the OpenTelemetry
    instrumentation agent."
-  (:require [clj-http.client :as client]
+  (:require [aero.core :as aero]
+            [clj-http.client :as client]
             [clj-http.conn-mgr :as conn]
             [clj-http.core :as http-core]
+            [clojure.java.io :as io]
             [clojure.string :as str]
             [muuntaja.core :as m]
             [reitit.ring :as ring]
@@ -46,7 +48,7 @@
   ;; created by the OpenTelemetry instrumentation agent. The agent also
   ;; propagates the context containing the client span to the remote HTTP
   ;; server by injecting headers into the request.
-  (let [endpoint (get-in config [:endpoints :word-length-service] "http://localhost:8081")
+  (let [endpoint (get-in config [:endpoints :word-length-service])
         response (client/get (str endpoint "/length")
                              {:throw-exceptions   false
                               :connection-manager @conn-mgr
@@ -156,18 +158,15 @@
 
 (defn server
   "Starts sentence-summary-service server instance."
-  ([conf]
-   (server conf {}))
-  ([conf jetty-opts]
-   (alter-var-root #'config (constantly conf))
-   (jetty/run-jetty #'handler
-                    (conj jetty-opts
-                          {:max-threads 16
-                           :port        8080}))))
+  ([]
+   (server {}))
+  ([jetty-opts]
+   (alter-var-root #'config (constantly (aero/read-config (io/resource "config.edn"))))
+   (jetty/run-jetty #'handler (into (:jetty-opts config) jetty-opts))))
 
 
 
 (comment
-  (server {} {:join? false})
+  (server {:join? false})
   ;
 )

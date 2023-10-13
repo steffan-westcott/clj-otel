@@ -1,7 +1,9 @@
 (ns example.sentence-summary-load-gen
   "Load generator application that sends rate-controlled random requests to a
    sentence-summary-service instance."
-  (:require [clojure.string :as str]
+  (:require [aero.core :as aero]
+            [clojure.java.io :as io]
+            [clojure.string :as str]
             [example.common.load-gen :as lg])
   (:gen-class))
 
@@ -10,7 +12,7 @@
 
 (defn- sentence-summary-endpoint
   []
-  (get-in config [:endpoints :sentence-summary-service] "http://localhost:8080"))
+  (get-in config [:endpoints :sentence-summary-service]))
 
 (defn sentence-summary-req
   "Returns a request for a summary of a sentence containing the given words."
@@ -68,18 +70,16 @@
 
 (defn gen-load
   "Generates load for sentence-summary-service."
-  [conf]
-  (alter-var-root #'config (constantly conf))
+  []
+  (alter-var-root #'config (constantly (aero/read-config (io/resource "config.edn"))))
   (lg/do-requests (requests (System/currentTimeMillis))))
 
 (defn -main
   "Application entry point for sentence-summary-service load generator."
-  []
-  (let [conf {:endpoints {:sentence-summary-service (System/getenv
-                                                     "SENTENCE_SUMMARY_SERVICE_ENDPOINT")}}]
-    (gen-load conf)))
+  [& _args]
+  (gen-load))
 
 (comment
-  (gen-load {})
+  (gen-load)
   ;
 )

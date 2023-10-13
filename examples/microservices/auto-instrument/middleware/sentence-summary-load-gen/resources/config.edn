@@ -1,0 +1,2 @@
+{:endpoints {:sentence-summary-service #or [#env SENTENCE_SUMMARY_SERVICE_ENDPOINT
+                                            "http://localhost:8080"]}}

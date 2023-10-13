@@ -1,7 +1,9 @@
 (ns example.puzzle-load-gen
   "Load generator application that sends rate-controlled random requests to a
    puzzle-service instance."
-  (:require [example.common.load-gen :as lg])
+  (:require [aero.core :as aero]
+            [clojure.java.io :as io]
+            [example.common.load-gen :as lg])
   (:gen-class))
 
 (def ^:private config
@@ -9,7 +11,7 @@
 
 (defn- puzzle-endpoint
   []
-  (get-in config [:endpoints :puzzle-service] "http://localhost:8080"))
+  (get-in config [:endpoints :puzzle-service]))
 
 (defn puzzle-req
   "Returns a request for words of given types."
@@ -66,17 +68,16 @@
 
 (defn gen-load
   "Generates load for puzzle-service."
-  [conf]
-  (alter-var-root #'config (constantly conf))
+  []
+  (alter-var-root #'config (constantly (aero/read-config (io/resource "config.edn"))))
   (lg/do-requests (requests (System/currentTimeMillis))))
 
 (defn -main
   "Application entry point for puzzle-service load generator."
-  []
-  (let [conf {:endpoints {:puzzle-service (System/getenv "PUZZLE_SERVICE_ENDPOINT")}}]
-    (gen-load conf)))
+  [& _args]
+  (gen-load))
 
 (comment
-  (gen-load {})
+  (gen-load)
   ;
 )

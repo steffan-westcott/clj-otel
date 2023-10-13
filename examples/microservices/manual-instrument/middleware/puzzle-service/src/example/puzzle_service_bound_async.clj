@@ -3,10 +3,12 @@
    asynchronous Ring HTTP service that is run without the OpenTelemetry
    instrumentation agent. In this example, the bound context default is used in
    `clj-otel` functions."
-  (:require [clj-http.client :as client]
+  (:require [aero.core :as aero]
+            [clj-http.client :as client]
             [clj-http.conn-mgr :as conn]
             [clj-http.core :as http-core]
             [clojure.core.async :as async]
+            [clojure.java.io :as io]
             [clojure.string :as str]
             [example.common.core-async.utils :as async']
             [muuntaja.core :as m]
@@ -96,7 +98,7 @@
   "Get a random word string of the requested type and return a channel of the
    word."
   [word-type]
-  (let [endpoint  (get-in config [:endpoints :random-word-service] "http://localhost:8081")
+  (let [endpoint  (get-in config [:endpoints :random-word-service])
         <response (<client-request {:method       :get
                                     :url          (str endpoint "/random-word")
                                     :query-params {"type" (name word-type)}})]
@@ -229,10 +231,9 @@
 
 (defn server
   "Starts puzzle-service server instance."
-  ([conf]
-   (server conf {}))
-  ([conf jetty-opts]
-   (alter-var-root #'config (constantly conf))
+  ([]
+   (server {}))
+  ([jetty-opts]
 
    ;; Initialise OpenTelemetry SDK instance and set as default used by `clj-otel`
    (autoconfig/init-otel-sdk!)
@@ -241,15 +242,12 @@
    ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (jetty/run-jetty #'handler
-                    (conj jetty-opts
-                          {:async?      true
-                           :max-threads 16
-                           :port        8080}))))
+   (alter-var-root #'config (constantly (aero/read-config (io/resource "config.edn"))))
+   (jetty/run-jetty #'handler (merge {:async? true} (:jetty-opts config) jetty-opts))))
 
 
 
 (comment
-  (server {} {:join? false})
+  (server {:join? false})
   ;
 )

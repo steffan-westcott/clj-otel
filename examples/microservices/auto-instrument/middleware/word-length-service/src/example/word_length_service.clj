@@ -2,7 +2,9 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
    synchronous Ring HTTP service that is run with the OpenTelemetry
    instrumentation agent."
-  (:require [muuntaja.core :as m]
+  (:require [aero.core :as aero]
+            [clojure.java.io :as io]
+            [muuntaja.core :as m]
             [reitit.ring :as ring]
             [reitit.ring.middleware.exception :as exception]
             [reitit.ring.middleware.muuntaja :as muuntaja]
@@ -109,11 +111,9 @@
   "Starts word-length-service server instance."
   ([]
    (server {}))
-  ([opts]
-   (jetty/run-jetty #'handler
-                    (conj opts
-                          {:max-threads 16
-                           :port        8081}))))
+  ([jetty-opts]
+   (let [config (aero/read-config (io/resource "config.edn"))]
+     (jetty/run-jetty #'handler (into (:jetty-opts config) jetty-opts)))))
 
 
 

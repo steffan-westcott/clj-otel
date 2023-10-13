@@ -1,0 +1,2 @@
+{:service-map {:io.pedestal.http/port 8081
+               :io.pedestal.http/container-options {:max-threads 16}}}

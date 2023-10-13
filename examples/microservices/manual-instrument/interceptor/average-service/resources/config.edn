@@ -1,0 +1,3 @@
+{:endpoints   {:sum-service #or [#env SUM_SERVICE_ENDPOINT "http://localhost:8081"]}
+ :service-map {:io.pedestal.http/port 8080
+               :io.pedestal.http/container-options {:max-threads 16}}}

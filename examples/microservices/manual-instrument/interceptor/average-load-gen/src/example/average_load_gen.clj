@@ -1,7 +1,9 @@
 (ns example.average-load-gen
   "Load generator application that sends rate-controlled random requests to an
    average-service instance."
-  (:require [example.common.load-gen :as lg])
+  (:require [aero.core :as aero]
+            [clojure.java.io :as io]
+            [example.common.load-gen :as lg])
   (:gen-class))
 
 (def ^:private config
@@ -9,7 +11,7 @@
 
 (defn- average-endpoint
   []
-  (get-in config [:endpoints :average-service] "http://localhost:8080"))
+  (get-in config [:endpoints :average-service]))
 
 (defn average-req
   "Returns a request for averages taken from the given numbers."
@@ -74,17 +76,16 @@
 
 (defn gen-load
   "Generates load for average-service."
-  [conf]
-  (alter-var-root #'config (constantly conf))
+  []
+  (alter-var-root #'config (constantly (aero/read-config (io/resource "config.edn"))))
   (lg/do-requests (requests (System/currentTimeMillis))))
 
 (defn -main
   "Application entry point for average-service load generator."
-  []
-  (let [conf {:endpoints {:average-service (System/getenv "AVERAGE_SERVICE_ENDPOINT")}}]
-    (gen-load conf)))
+  [& _args]
+  (gen-load))
 
 (comment
-  (gen-load {})
+  (gen-load)
   ;
 )

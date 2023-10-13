@@ -6,15 +6,14 @@
 
 (defn -main
   "Starts a solar-system-service server instance according to environment variable `SERVER`."
-  []
-  (let [conf {:endpoints {:planet-service (System/getenv "PLANET_SERVICE_ENDPOINT")}}]
-    (case (System/getenv "SERVER")
+  [& _args]
+  (case (System/getenv "SERVER")
 
-      ;; Example of asynchronous server using bound context
-      "bound-async"    (bound-async/server conf)
+    ;; Example of asynchronous server using bound context
+    "bound-async"    (bound-async/server)
 
-      ;; Example of asynchronous server using explicit context
-      "explicit-async" (explicit-async/server conf)
+    ;; Example of asynchronous server using explicit context
+    "explicit-async" (explicit-async/server)
 
-      ;; Example of synchronous server
-      (sync/server conf))))
+    ;; Example of synchronous server
+    (sync/server)))

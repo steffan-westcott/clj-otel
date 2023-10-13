@@ -1,0 +1,2 @@
+{:endpoints {:solar-system-service #or [#env SOLAR_SYSTEM_SERVICE_ENDPOINT
+                                        "http://localhost:8080"]}}

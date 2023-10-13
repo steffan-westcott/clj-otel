@@ -3,10 +3,12 @@
    asynchronous Ring HTTP service that is run with the OpenTelemetry
    instrumentation agent. In this example, the context is explicitly passed in
    as a parameter to `clj-otel` functions."
-  (:require [clj-http.client :as client]
+  (:require [aero.core :as aero]
+            [clj-http.client :as client]
             [clj-http.conn-mgr :as conn]
             [clj-http.core :as http-core]
             [clojure.core.async :as async]
+            [clojure.java.io :as io]
             [clojure.string :as str]
             [example.common.core-async.utils :as async']
             [muuntaja.core :as m]
@@ -78,7 +80,7 @@
 (defn <get-word-length
   "Get the length of `word` and return a channel of the length value."
   [context word]
-  (let [endpoint  (get-in config [:endpoints :word-length-service] "http://localhost:8081")
+  (let [endpoint  (get-in config [:endpoints :word-length-service])
         <response (<client-request context
                                    {:method       :get
                                     :url          (str endpoint "/length")
@@ -212,19 +214,15 @@
 
 (defn server
   "Starts sentence-summary-service server instance."
-  ([conf]
-   (server conf {}))
-  ([conf jetty-opts]
-   (alter-var-root #'config (constantly conf))
-   (jetty/run-jetty #'handler
-                    (conj jetty-opts
-                          {:async?      true
-                           :max-threads 16
-                           :port        8080}))))
+  ([]
+   (server {}))
+  ([jetty-opts]
+   (alter-var-root #'config (constantly (aero/read-config (io/resource "config.edn"))))
+   (jetty/run-jetty #'handler (merge {:async? true} (:jetty-opts config) jetty-opts))))
 
 
 
 (comment
-  (server {} {:join? false})
+  (server {:join? false})
   ;
 )

@@ -1,0 +1,1 @@
+{:endpoints {:average-service #or [#env AVERAGE_SERVICE_ENDPOINT "http://localhost:8080"]}}

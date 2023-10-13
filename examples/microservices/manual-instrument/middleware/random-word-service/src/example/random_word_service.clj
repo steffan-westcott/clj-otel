@@ -2,7 +2,9 @@
   "Example application demonstrating using `clj-otel` to add telemetry to a
    synchronous Ring HTTP service that is run without the OpenTelemetry
    instrumentation agent."
-  (:require [muuntaja.core :as m]
+  (:require [aero.core :as aero]
+            [clojure.java.io :as io]
+            [muuntaja.core :as m]
             [reitit.ring :as ring]
             [reitit.ring.middleware.exception :as exception]
             [reitit.ring.middleware.muuntaja :as muuntaja]
@@ -130,19 +132,17 @@
   "Starts random-word-service server instance."
   ([]
    (server {}))
-  ([opts]
+  ([jetty-opts]
 
    ;; Initialise OpenTelemetry SDK instance and set as default used by `clj-otel`
    (autoconfig/init-otel-sdk!)
 
-   ;; Register measurements that report metrics about the JVM runtime. These measurements cover
-   ;; buffer pools, classes, CPU, garbage collector, memory pools and threads.
+   ;; Register measurements that report metrics about the JVM runtime. These measurements
+   ;; cover buffer pools, classes, CPU, garbage collector, memory pools and threads.
    (runtime-telemetry/register!)
 
-   (jetty/run-jetty #'handler
-                    (conj opts
-                          {:max-threads 16
-                           :port        8081}))))
+   (let [config (aero/read-config (io/resource "config.edn"))]
+     (jetty/run-jetty #'handler (into (:jetty-opts config) jetty-opts)))))
 
 
 

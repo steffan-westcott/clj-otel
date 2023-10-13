@@ -1,0 +1,3 @@
+{:endpoints  {:word-length-service #or [#env WORD_LENGTH_SERVICE_ENDPOINT "http://localhost:8081"]}
+ :jetty-opts {:max-threads 16
+              :port        8080}}
