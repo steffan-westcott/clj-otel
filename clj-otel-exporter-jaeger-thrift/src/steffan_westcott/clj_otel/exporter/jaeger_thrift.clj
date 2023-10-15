@@ -1,5 +1,7 @@
-(ns steffan-westcott.clj-otel.exporter.jaeger-thrift
-  "Span data exporter to Jaeger via Thrift."
+(ns ^{:deprecated "0.2.4.1"} steffan-westcott.clj-otel.exporter.jaeger-thrift
+  "Span data exporter to Jaeger via Thrift. Deprecated - Use
+   `steffan-westcott.clj-otel.exporter.otlp.grpc.trace` or
+   `steffan-westcott.clj-otel.exporter.otlp.http.trace` instead."
   (:import (io.opentelemetry.exporter.jaeger.thrift JaegerThriftSpanExporter)))
 
 (defn span-exporter

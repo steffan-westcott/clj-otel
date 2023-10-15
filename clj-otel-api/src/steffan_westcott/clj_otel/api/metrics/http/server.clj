@@ -18,11 +18,10 @@
     "Delay containing an up-down counter that records the number of concurrent
      HTTP requests that are currently in flight."}
   active-requests
-  (delay (instrument/instrument
-          {:name        "http.server.active_requests"
-           :instrument-type :up-down-counter
-           :unit        "{requests}"
-           :description "The number of concurrent HTTP requests that are currently in flight"})))
+  (delay (instrument/instrument {:name        "http.server.active_requests"
+                                 :instrument-type :up-down-counter
+                                 :unit        "{requests}"
+                                 :description "Number of active HTTP server requests."})))
 
 (defonce
   ^{:doc
@@ -33,7 +32,7 @@
                                  :instrument-type :histogram
                                  :measurement-type :double
                                  :unit        "s"
-                                 :description "The duration of the inbound HTTP request"})))
+                                 :description "Duration of HTTP server requests."})))
 
 (defonce
   ^{:doc
@@ -43,7 +42,7 @@
   (delay (instrument/instrument {:name        "http.server.request.body.size"
                                  :instrument-type :histogram
                                  :unit        "By"
-                                 :description "The size of inbound HTTP request messages"})))
+                                 :description "Size of HTTP server request bodies."})))
 
 ;; We lack access to the size of each HTTP response
 #_(defonce
@@ -54,7 +53,7 @@
     (delay (instrument/instrument {:name        "http.server.response.body.size"
                                    :instrument-type :histogram
                                    :unit        "By"
-                                   :description "The size of HTTP response messages"})))
+                                   :description "Size of HTTP server response bodies."})))
 
 (defn- add-active-requests!
   ([value attrs] (add-active-requests! value attrs (context/dyn)))

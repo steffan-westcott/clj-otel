@@ -1,5 +1,7 @@
-(ns steffan-westcott.clj-otel.exporter.jaeger-grpc
-  "Span data exporter to Jaeger via gRPC."
+(ns ^{:deprecated "0.2.4.1"} steffan-westcott.clj-otel.exporter.jaeger-grpc
+  "Span data exporter to Jaeger via gRPC. Deprecated - Use
+   `steffan-westcott.clj-otel.exporter.otlp.grpc.trace` or
+   `steffan-westcott.clj-otel.exporter.otlp.http.trace` instead."
   (:require [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.exporter.jaeger JaegerGrpcSpanExporter)))
 
