@@ -1,8 +1,17 @@
-FROM eclipse-temurin:17-alpine
-LABEL clj-otel.example="sentence-summary"
+FROM example.clj-otel/microservices-base AS builder
+RUN mkdir -p /build/examples/microservices/auto-instrument/middleware/word-length-service
+WORKDIR /build
+COPY . /build/examples/microservices/auto-instrument/middleware/word-length-service
+RUN clojure -T:build uberjar :project '"word-length-service"'
+FROM eclipse-temurin:21-alpine
+LABEL example.clj-otel=word-length-service
 EXPOSE 8081
-COPY target/word-length-service-standalone.jar /service.jar
-COPY target/opentelemetry-javaagent.jar /opentelemetry-javaagent.jar
+COPY --from=builder \
+     /build/examples/microservices/auto-instrument/middleware/word-length-service/target/word-length-service-standalone.jar \
+     /service.jar
+COPY --from=builder \
+     /build/examples/opentelemetry-javaagent.jar \
+     /opentelemetry-javaagent.jar
 ENTRYPOINT ["java", \
             "-javaagent:/opentelemetry-javaagent.jar", \
             "-Dotel.semconv-stability.opt-in=http", \

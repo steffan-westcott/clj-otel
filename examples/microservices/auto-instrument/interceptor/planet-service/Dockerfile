@@ -1,8 +1,17 @@
-FROM eclipse-temurin:17-alpine
-LABEL clj-otel.example="solar-system"
+FROM example.clj-otel/microservices-base AS builder
+RUN mkdir -p /build/examples/microservices/auto-instrument/interceptor/planet-service
+WORKDIR /build
+COPY . /build/examples/microservices/auto-instrument/interceptor/planet-service
+RUN clojure -T:build uberjar :project '"planet-service"'
+FROM eclipse-temurin:21-alpine
+LABEL example.clj-otel=planet-service
 EXPOSE 8081
-COPY target/planet-service-standalone.jar /service.jar
-COPY target/opentelemetry-javaagent.jar /opentelemetry-javaagent.jar
+COPY --from=builder \
+     /build/examples/microservices/auto-instrument/interceptor/planet-service/target/planet-service-standalone.jar \
+     /service.jar
+COPY --from=builder \
+     /build/examples/opentelemetry-javaagent.jar \
+     /opentelemetry-javaagent.jar
 ENTRYPOINT ["java", \
             "-javaagent:/opentelemetry-javaagent.jar", \
             "-Dotel.semconv-stability.opt-in=http", \

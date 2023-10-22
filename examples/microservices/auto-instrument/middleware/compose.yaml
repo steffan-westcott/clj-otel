@@ -2,7 +2,7 @@ services:
 
   # Example microservice word-length-service
   word-length-service:
-    image: example/word-length-service:latest
+    image: example.clj-otel/word-length-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -13,7 +13,7 @@ services:
 
   # Example microservice sentence-summary-service
   sentence-summary-service:
-    image: example/sentence-summary-service:latest
+    image: example.clj-otel/sentence-summary-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -28,7 +28,7 @@ services:
 
   # Load generator for sentence-summary-service
   sentence-summary-load-gen:
-    image: example/sentence-summary-load-gen:latest
+    image: example.clj-otel/sentence-summary-load-gen:latest
     environment:
       SENTENCE_SUMMARY_SERVICE_ENDPOINT: http://sentence-summary-service:8080
     depends_on:

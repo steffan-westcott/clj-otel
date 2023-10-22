@@ -2,7 +2,7 @@ services:
 
   # Example microservice planet-service
   planet-service:
-    image: example/planet-service:latest
+    image: example.clj-otel/planet-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -13,7 +13,7 @@ services:
 
   # Example microservice solar-system-service
   solar-system-service:
-    image: example/solar-system-service:latest
+    image: example.clj-otel/solar-system-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -28,7 +28,7 @@ services:
 
   # Load generator for solar-system-service
   solar-system-load-gen:
-    image: example/solar-system-load-gen:latest
+    image: example.clj-otel/solar-system-load-gen:latest
     environment:
       SOLAR_SYSTEM_SERVICE_ENDPOINT: http://solar-system-service:8080
     depends_on:

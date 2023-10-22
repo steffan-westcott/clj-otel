@@ -2,7 +2,7 @@ services:
 
   # Example microservice sum-service
   sum-service:
-    image: example/sum-service:latest
+    image: example.clj-otel/sum-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -13,7 +13,7 @@ services:
 
   # Example microservice average-service
   average-service:
-    image: example/average-service:latest
+    image: example.clj-otel/average-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -28,7 +28,7 @@ services:
 
   # Load generator for average-service
   average-load-gen:
-    image: example/average-load-gen:latest
+    image: example.clj-otel/average-load-gen:latest
     environment:
       AVERAGE_SERVICE_ENDPOINT: http://average-service:8080
     depends_on:

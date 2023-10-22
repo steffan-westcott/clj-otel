@@ -2,7 +2,7 @@ services:
 
   # Example microservice random-word-service
   random-word-service:
-    image: example/random-word-service:latest
+    image: example.clj-otel/random-word-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -13,7 +13,7 @@ services:
 
   # Example microservice puzzle-service
   puzzle-service:
-    image: example/puzzle-service:latest
+    image: example.clj-otel/puzzle-service:latest
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRIC_EXPORT_INTERVAL: 10000
@@ -28,7 +28,7 @@ services:
 
   # Load generator for puzzle-service
   puzzle-load-gen:
-    image: example/puzzle-load-gen:latest
+    image: example.clj-otel/puzzle-load-gen:latest
     environment:
       PUZZLE_SERVICE_ENDPOINT: http://puzzle-service:8080
     depends_on:

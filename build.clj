@@ -41,6 +41,11 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-instrumentation-runtime-telemetry-java8"
    "clj-otel-instrumentation-runtime-telemetry-java17"])
 
+(def ^:private common-demo-project-paths
+  ["examples/common/core-async.utils"
+   "examples/common/interceptor.utils"
+   "examples/common/log4j2.utils"])
+
 (def ^:private uber-demo-project-paths
   ["examples/microservices/auto-instrument/interceptor/planet-service"
    "examples/microservices/auto-instrument/interceptor/solar-system-load-gen"
@@ -56,10 +61,7 @@ clojure -A:deps -T:build help/doc"
    "examples/microservices/manual-instrument/middleware/random-word-service"])
 
 (def ^:private other-demo-project-paths
-  ["examples/common/core-async.utils"
-   "examples/common/interceptor.utils"
-   "examples/common/log4j2.utils"
-   "examples/cube-app"
+  ["examples/cube-app"
    "examples/divisor-app"
    "examples/factorial-app"
    "examples/square-app"
@@ -73,12 +75,14 @@ clojure -A:deps -T:build help/doc"
   [root-path]
   (some #{root-path} uber-demo-project-paths))
 
-(defn- agent-demo-project?
-  [root-path]
-  (re-find #"^examples/.*auto-instrument" root-path))
+;; Used by examples/Dockerfile
+#_{:clj-kondo/ignore [:unused-private-var]}
+(def ^:private microservices-project-paths
+  (concat common-demo-project-paths uber-demo-project-paths))
 
 (def ^:private project-paths
   (concat library-project-paths
+          common-demo-project-paths
           uber-demo-project-paths
           other-demo-project-paths))
 
@@ -103,10 +107,10 @@ clojure -A:deps -T:build help/doc"
   (str/ends-with? version "-SNAPSHOT"))
 
 (def ^:private head-sha-1
-  (b/git-process {:git-args "rev-parse HEAD"}))
+  (delay (b/git-process {:git-args "rev-parse HEAD"})))
 
 (defn- artifact-opts
-  [{:keys [aliases artifact-id group-id main root-path]}]
+  [{:keys [aliases artifact-id group-id main root-path tag]}]
   {:artifact-id       artifact-id
    :basis             (b/create-basis {:aliases aliases})
    :class-dir         "target/classes"
@@ -117,7 +121,7 @@ clojure -A:deps -T:build help/doc"
    :main              main
    :resource-dirs     ["resources"]
    :root-path         root-path
-   :scm               {:tag head-sha-1}
+   :scm               {:tag tag}
    :src-dirs          ["src"]
    :src-pom           "template/pom.xml"
    :target-dir        "target"
@@ -133,7 +137,9 @@ clojure -A:deps -T:build help/doc"
                   :group-id    (group-id root-path)
                   :main        (when (uber-demo-project? root-path)
                                  (symbol (str "example." (artifact-id root-path))))
-                  :root-path   root-path}))
+                  :root-path   root-path
+                  :tag         (when (library-project? root-path)
+                                 @head-sha-1)}))
 
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
@@ -230,11 +236,6 @@ clojure -A:deps -T:build help/doc"
   (println "Building uberjar" uber-file "...")
   (b/uber opts))
 
-(defn- docker-image-artifact
-  [image-tag]
-  (println "Building Docker image" image-tag)
-  (checked-process {:command-args ["docker" "build" "-t" image-tag "."]}))
-
 (defn- tag-release
   [tag]
   (println "Creating and pushing tag" tag)
@@ -242,7 +243,7 @@ clojure -A:deps -T:build help/doc"
   (checked-process {:command-args ["git" "push" "origin" tag]}))
 
 (defn clean
-  "Delete all clj-otel-* build directories."
+  "Delete all build directories."
   [_]
   (doseq [root-path project-paths]
     (b/with-project-root root-path
@@ -271,6 +272,21 @@ clojure -A:deps -T:build help/doc"
       (deploy-artifact (project-artifact-opts root-path))))
   (when-not snapshot?
     (tag-release version)))
+
+(defn fetch-deps
+  "Fetch dependencies for projects in collection referenced by symbol `paths`."
+  [{:keys [paths]}]
+  (doseq [root-path @(resolve paths)]
+    (println "Fetching deps for" root-path "...")
+    (b/with-project-root root-path
+      (b/create-basis))))
+
+(defn uberjar
+  "Build an uberjar for the demo project with the given project name."
+  [{:keys [project]}]
+  (when-let [root-path (some #(and (= project (artifact-id %)) %) uber-demo-project-paths)]
+    (b/with-project-root root-path
+      (uberjar-artifact (project-artifact-opts root-path)))))
 
 (defn lint
   "Lint all clj-otel-* libraries, example applications and tutorial source
@@ -304,17 +320,3 @@ clojure -A:deps -T:build help/doc"
                           io/as-url
                           str)]
     (checked-process {:command-args (concat ["zprint" "--url-only" config-url "-fsw"] files)})))
-
-(defn examples
-  "Given a collection of uber project names, build an uberjar and Docker image for each."
-  [{:keys [projects]
-    :or   {projects (map artifact-id uber-demo-project-paths)}}]
-  (doseq [project-name projects]
-    (when-let [root-path (some #(and (= project-name (artifact-id %)) %) uber-demo-project-paths)]
-      (b/with-project-root root-path
-        (uberjar-artifact (project-artifact-opts root-path)))
-      (when (agent-demo-project? root-path)
-        (b/copy-file {:src    "examples/opentelemetry-javaagent.jar"
-                      :target (str root-path "/target/opentelemetry-javaagent.jar")}))
-      (b/with-project-root root-path
-        (docker-image-artifact (str "example/" project-name))))))

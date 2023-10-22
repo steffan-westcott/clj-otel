@@ -1,7 +1,14 @@
-FROM eclipse-temurin:17-alpine
-LABEL clj-otel.example="average"
+FROM example.clj-otel/microservices-base AS builder
+RUN mkdir -p /build/examples/microservices/manual-instrument/interceptor/sum-service
+WORKDIR /build
+COPY . /build/examples/microservices/manual-instrument/interceptor/sum-service
+RUN clojure -T:build uberjar :project '"sum-service"'
+FROM eclipse-temurin:21-alpine
+LABEL example.clj-otel=sum-service
 EXPOSE 8081
-COPY target/sum-service-standalone.jar /service.jar
+COPY --from=builder \
+     /build/examples/microservices/manual-instrument/interceptor/sum-service/target/sum-service-standalone.jar \
+     /service.jar
 ENTRYPOINT ["java", \
             "-Dotel.resource.attributes=service.name=sum-service", \
             "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory", \

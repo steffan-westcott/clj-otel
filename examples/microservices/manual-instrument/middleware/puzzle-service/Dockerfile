@@ -1,7 +1,14 @@
-FROM eclipse-temurin:17-alpine
-LABEL clj-otel.example="puzzle"
+FROM example.clj-otel/microservices-base AS builder
+RUN mkdir -p /build/examples/microservices/manual-instrument/middleware/puzzle-service
+WORKDIR /build
+COPY . /build/examples/microservices/manual-instrument/middleware/puzzle-service
+RUN clojure -T:build uberjar :project '"puzzle-service"'
+FROM eclipse-temurin:21-alpine
+LABEL example.clj-otel=puzzle-service
 EXPOSE 8080
-COPY target/puzzle-service-standalone.jar /service.jar
+COPY --from=builder \
+     /build/examples/microservices/manual-instrument/middleware/puzzle-service/target/puzzle-service-standalone.jar \
+     /service.jar
 ENTRYPOINT ["java", \
             "-Dotel.resource.attributes=service.name=puzzle-service", \
             "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory", \

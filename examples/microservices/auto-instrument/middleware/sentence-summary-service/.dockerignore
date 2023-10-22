@@ -1,2 +1,4 @@
 *
-!target/*.jar
+!deps.edn
+!src/**
+!resources/**

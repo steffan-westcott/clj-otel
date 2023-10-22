@@ -196,6 +196,9 @@ To build the chosen example, run the following command
 These containers may include telemetry backends (Jaeger, Prometheus) and the OpenTelemetry Collector.
 When the Collector is present, `otel-collector.yaml` is a configuration file that forwards telemetry data to the telemetry backends.
 The microservice examples include instances for each service and a load generator that automatically exercises the head microservice.
++
+NOTE: The microservices examples may take some time to start, particularly those which use the OpenTelemetry instrumentation agent.
+When running the `docker compose` commands below, wait for the command to complete before proceeding to the next step.
 
 * For all microservices examples, run one of the following commands corresponding to your choice of implementation for the head microservice:
 +
@@ -223,7 +226,7 @@ docker compose up -d
 
 . *Load and exercise example*
 +
-NOTE: You may see the following message appear in stdout for the examples using autoconfiguration.
+NOTE: You may see the following message appear in stdout for the examples run with the autoconfigure SDK extension.
 It is a https://github.com/open-telemetry/opentelemetry-java/issues/5862[known issue] in OpenTelemetry Java SDK, but has no impact on the application telemetry data.
 +
 ----
@@ -259,9 +262,9 @@ docker compose down -v
 
 . *Prune example container images*
 +
-To delete previously built Docker images for the examples, run the following command:
+After trying out several of the examples, to delete the Docker images run the following command:
 +
 [source,bash]
 ----
-docker image prune -a --filter "label=clj-otel.example"
+docker image prune -a --filter "label=example.clj-otel"
 ----
