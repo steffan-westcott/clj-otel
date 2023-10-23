@@ -31,13 +31,13 @@
            io.pedestal/pedestal.service {:mvn/version "0.6.0"}
 
            ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
-           org.apache.logging.log4j/log4j-core {:mvn/version "2.20.0"}
-           org.apache.logging.log4j/log4j-jcl {:mvn/version "2.20.0"}
-           org.apache.logging.log4j/log4j-jul {:mvn/version "2.20.0"}
-           org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.20.0"}
+           org.apache.logging.log4j/log4j-core {:mvn/version "2.21.0"}
+           org.apache.logging.log4j/log4j-jcl {:mvn/version "2.21.0"}
+           org.apache.logging.log4j/log4j-jul {:mvn/version "2.21.0"}
+           org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.21.0"}
 
            ;; Enable JSON formatting of log messages to console/file
-           org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.20.0"}
+           org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.21.0"}
 
            ;; Functions for logging strings and maps using Log4j2
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
