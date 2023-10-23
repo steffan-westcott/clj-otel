@@ -25,10 +25,10 @@
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.31.0-alpha"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.6.0"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.6.0"}
-           io.pedestal/pedestal.route {:mvn/version "0.6.0"}
-           io.pedestal/pedestal.service {:mvn/version "0.6.0"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.6.1"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.6.1"}
+           io.pedestal/pedestal.route {:mvn/version "0.6.1"}
+           io.pedestal/pedestal.service {:mvn/version "0.6.1"}
 
            ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
            org.apache.logging.log4j/log4j-core {:mvn/version "2.21.0"}
