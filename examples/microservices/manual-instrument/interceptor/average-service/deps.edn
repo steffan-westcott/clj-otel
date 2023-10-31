@@ -34,15 +34,6 @@
            io.pedestal/pedestal.route {:mvn/version "0.6.1"}
            io.pedestal/pedestal.service {:mvn/version "0.6.1"}
 
-           ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
-           org.apache.logging.log4j/log4j-core {:mvn/version "2.21.1"}
-           org.apache.logging.log4j/log4j-jcl {:mvn/version "2.21.1"}
-           org.apache.logging.log4j/log4j-jul {:mvn/version "2.21.1"}
-           org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.21.1"}
-
-           ;; Enable JSON formatting of log messages to console/file
-           org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.21.1"}
-
            ;; Functions for logging strings and maps using Log4j2
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
 
@@ -57,10 +48,18 @@
            ; io.grpc/grpc-netty-shaded {:mvn/version "1.59.0"}
            ; io.grpc/grpc-protobuf {:mvn/version "1.59.0"}
            ; io.grpc/grpc-stub {:mvn/version "1.59.0"}
+
           }
 
- :aliases {:otel {:jvm-opts ["-Dotel.resource.attributes=service.name=average-service"
-                             "-Dotel.metric.export.interval=10000"
-                             "-Dotel.logs.exporter=none"
-                             "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                             "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}
+ :aliases {:otel  {:jvm-opts ["-Dotel.resource.attributes=service.name=average-service"
+                              "-Dotel.metric.export.interval=10000"
+                              "-Dotel.logs.exporter=none"]}
+
+           ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
+           :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.21.1"}
+                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.21.1"}
+                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.21.1"}
+                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.21.1"}
+                                org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.21.1"}}
+                   :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}

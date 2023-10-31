@@ -131,9 +131,12 @@ clojure -A:deps -T:build help/doc"
 (defn- project-artifact-opts
   [root-path]
   (artifact-opts {:artifact-id (artifact-id root-path)
-                  :aliases     [(if snapshot?
-                                  :snapshot
-                                  :release)]
+                  :aliases     (cond
+                                 (library-project? root-path) [(if snapshot?
+                                                                 :snapshot
+                                                                 :release)]
+                                 (uber-demo-project? root-path)
+                                 [:log4j])
                   :group-id    (group-id root-path)
                   :main        (when (uber-demo-project? root-path)
                                  (symbol (str "example." (artifact-id root-path))))
