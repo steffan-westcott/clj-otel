@@ -3,10 +3,7 @@ services:
   # Example microservice sum-service
   sum-service:
     image: example.clj-otel/sum-service:latest
-    environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_METRIC_EXPORT_INTERVAL: 10000
-      OTEL_LOGS_EXPORTER: none
+    env_file: compose.env
     depends_on:
       otel-collector:
         condition: service_started
@@ -14,12 +11,9 @@ services:
   # Example microservice average-service
   average-service:
     image: example.clj-otel/average-service:latest
+    env_file: compose.env
     environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_METRIC_EXPORT_INTERVAL: 10000
-      OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
-      SUM_SERVICE_ENDPOINT: http://sum-service:8081
     depends_on:
       sum-service:
         condition: service_healthy
@@ -29,8 +23,7 @@ services:
   # Load generator for average-service
   average-load-gen:
     image: example.clj-otel/average-load-gen:latest
-    environment:
-      AVERAGE_SERVICE_ENDPOINT: http://average-service:8080
+    env_file: compose.env
     depends_on:
       average-service:
         condition: service_healthy

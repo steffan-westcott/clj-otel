@@ -3,10 +3,7 @@ services:
   # Example microservice planet-service
   planet-service:
     image: example.clj-otel/planet-service:latest
-    environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_METRIC_EXPORT_INTERVAL: 10000
-      OTEL_LOGS_EXPORTER: none
+    env_file: compose.env
     depends_on:
       otel-collector:
         condition: service_started
@@ -14,12 +11,9 @@ services:
   # Example microservice solar-system-service
   solar-system-service:
     image: example.clj-otel/solar-system-service:latest
+    env_file: compose.env
     environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_METRIC_EXPORT_INTERVAL: 10000
-      OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
-      PLANET_SERVICE_ENDPOINT: http://planet-service:8081
     depends_on:
       planet-service:
         condition: service_healthy
@@ -29,8 +23,7 @@ services:
   # Load generator for solar-system-service
   solar-system-load-gen:
     image: example.clj-otel/solar-system-load-gen:latest
-    environment:
-      SOLAR_SYSTEM_SERVICE_ENDPOINT: http://solar-system-service:8080
+    env_file: compose.env
     depends_on:
       solar-system-service:
         condition: service_healthy

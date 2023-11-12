@@ -3,10 +3,7 @@ services:
   # Example microservice word-length-service
   word-length-service:
     image: example.clj-otel/word-length-service:latest
-    environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_METRIC_EXPORT_INTERVAL: 10000
-      OTEL_LOGS_EXPORTER: none
+    env_file: compose.env
     depends_on:
       otel-collector:
         condition: service_started
@@ -14,12 +11,9 @@ services:
   # Example microservice sentence-summary-service
   sentence-summary-service:
     image: example.clj-otel/sentence-summary-service:latest
+    env_file: compose.env
     environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_METRIC_EXPORT_INTERVAL: 10000
-      OTEL_LOGS_EXPORTER: none
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
-      WORD_LENGTH_SERVICE_ENDPOINT: http://word-length-service:8081
     depends_on:
       word-length-service:
         condition: service_healthy
@@ -29,8 +23,7 @@ services:
   # Load generator for sentence-summary-service
   sentence-summary-load-gen:
     image: example.clj-otel/sentence-summary-load-gen:latest
-    environment:
-      SENTENCE_SUMMARY_SERVICE_ENDPOINT: http://sentence-summary-service:8080
+    env_file: compose.env
     depends_on:
       sentence-summary-service:
         condition: service_healthy
