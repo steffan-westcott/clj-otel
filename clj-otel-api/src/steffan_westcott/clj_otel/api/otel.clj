@@ -1,7 +1,8 @@
 (ns steffan-westcott.clj-otel.api.otel
   "Functions that operate on `io.opentelemetry.api.OpenTelemetry`, the
    entrypoint to telemetry functionality."
-  (:import (io.opentelemetry.api GlobalOpenTelemetry OpenTelemetry)))
+  (:import (io.opentelemetry.api GlobalOpenTelemetry OpenTelemetry)
+           (io.opentelemetry.context.propagation TextMapPropagator)))
 
 (defonce ^:private default-otel
   (atom nil))
@@ -47,7 +48,7 @@
 (defn get-text-map-propagator
   "Gets the text map propagator of an `OpenTelemetry` instance `open-telemetry`
    or the default `OpenTelemetry` instance."
-  ([]
+  (^TextMapPropagator []
    (get-text-map-propagator (get-default-otel!)))
-  ([^OpenTelemetry open-telemetry]
+  (^TextMapPropagator [^OpenTelemetry open-telemetry]
    (.getTextMapPropagator (.getPropagators open-telemetry))))
