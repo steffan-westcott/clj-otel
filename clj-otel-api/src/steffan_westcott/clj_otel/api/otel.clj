@@ -47,7 +47,7 @@
 (defn get-text-map-propagator
   "Gets the text map propagator of an `OpenTelemetry` instance `open-telemetry`
    or the default `OpenTelemetry` instance."
-  ([]
+  (^TextMapPropagator []
    (get-text-map-propagator (get-default-otel!)))
-  ([^OpenTelemetry open-telemetry]
+  (^TextMapPropagator [^OpenTelemetry open-telemetry]
    (.getTextMapPropagator (.getPropagators open-telemetry))))
