@@ -6,8 +6,7 @@
            (io.opentelemetry.sdk.resources Resource)))
 
 (defprotocol ^:private AsResource
-  (as-Resource [resource]
-   "Coerce to a `Resource` instance."))
+  (^Resource as-Resource [resource] "Coerce to a `Resource` instance."))
 
 (extend-protocol AsResource
  Resource
@@ -21,7 +20,7 @@
   "Given the service name and a collection of `Resource` instances, returns
    the merge of these with the default SDK resource as a single `Resource`
    object."
-  [service-name resources]
+  ^Resource [service-name resources]
   (let [service-resource {:attributes {ResourceAttributes/SERVICE_NAME service-name}}
         resources'       (cons service-resource resources)]
     (reduce #(.merge ^Resource %1 (as-Resource %2)) (Resource/getDefault) resources')))

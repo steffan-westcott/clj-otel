@@ -6,7 +6,7 @@
 
 (defn span-exporter
   "Returns a span exporter that logs every span using `java.util.logging`."
-  []
+  ^LoggingSpanExporter []
   (LoggingSpanExporter/create))
 
 (defn metric-exporter
@@ -16,8 +16,9 @@
    | key                      | description |
    |--------------------------|-------------|
    |`:aggregation-temporality`| ^AggregationTemporality Time period over which metrics should be aggregated (default: `CUMULATIVE`)."
-  ([]
+  (^LoggingMetricExporter []
    (LoggingMetricExporter/create))
-  ([{:keys [aggregation-temporality]
+  (^LoggingMetricExporter
+   [{:keys [aggregation-temporality]
      :or   {aggregation-temporality AggregationTemporality/CUMULATIVE}}]
    (LoggingMetricExporter/create aggregation-temporality)))

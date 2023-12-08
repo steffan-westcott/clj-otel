@@ -10,9 +10,10 @@
   | key            | description |
   |----------------|-------------|
   |`:inject-format`| Header injection format, one of `:single-header` or `:multi-headers` (default: `:single-header`)."
-  ([]
+  (^B3Propagator []
    (b3-propagator {}))
-  ([{:keys [inject-format]
+  (^B3Propagator
+   [{:keys [inject-format]
      :or   {inject-format :single-header}}]
    (case inject-format
      :single-header (B3Propagator/injectingSingleHeader)

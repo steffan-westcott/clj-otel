@@ -25,9 +25,10 @@
    |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
    |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
    |`:open-telemetry`| `OpenTelemetry` instance to get tracer from (default: global `OpenTelemetry` instance)."
-  ([]
+  (^Tracer []
    (get-tracer {}))
-  ([{:keys [name version schema-url open-telemetry]
+  (^Tracer
+   [{:keys [name version schema-url open-telemetry]
      :or   {name       (:name default-library)
             version    (:version default-library)
             schema-url (:schema-url default-library)}}]
@@ -39,7 +40,7 @@
 
 (defn noop-tracer
   "Gets a no-op tracer."
-  []
+  ^Tracer []
   (get-tracer {:open-telemetry (otel/get-noop)}))
 
 (defonce ^:private default-tracer
@@ -48,7 +49,7 @@
 (defn set-default-tracer!
   "Sets the default `io.opentelemetry.api.trace.Tracer` instance used when
    creating spans. Returns `tracer`. See also [[get-tracer]]."
-  [tracer]
+  ^Tracer [tracer]
   (reset! default-tracer tracer))
 
 (defn- get-default-tracer!
@@ -81,7 +82,7 @@
    (Span/fromContext context)))
 
 (defprotocol ^:private AsSpanContext
-  (^:no-doc span-context [x]))
+  (^:no-doc ^SpanContext span-context [x]))
 
 (extend-protocol AsSpanContext
  SpanContext
@@ -97,9 +98,9 @@
 (defn get-span-context
   "Returns the given `SpanContext`, or extracts it from the given span or
    context. If no argument is given, extract from the bound or current context."
-  ([]
+  (^SpanContext []
    (get-span-context (get-span)))
-  ([x]
+  (^SpanContext [x]
    (span-context x)))
 
 (defn- add-link

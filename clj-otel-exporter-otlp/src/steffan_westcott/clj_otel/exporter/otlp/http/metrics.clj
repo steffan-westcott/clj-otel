@@ -23,9 +23,10 @@
    |`:compression-method`              | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
    |`:timeout`                         | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: constantly `AggregationTemporality/CUMULATIVE`)."
-  ([]
+  (^OtlpHttpMetricExporter []
    (metric-exporter {}))
-  ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
+  (^OtlpHttpMetricExporter
+   [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             compression-method timeout aggregation-temporality-selector]}]
    (let [builder (cond-> (OtlpHttpMetricExporter/builder)
                    endpoint (.setEndpoint endpoint)

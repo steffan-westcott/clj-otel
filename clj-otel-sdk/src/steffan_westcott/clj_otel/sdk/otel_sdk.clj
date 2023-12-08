@@ -169,6 +169,7 @@
    |--------------------|-------------|
    |`:max-buckets`      | Maximum number of positive and negative buckets (default: implementation defined)
    |`:max-scale`        | Maximum and initial scale (required if `:max-buckets` is specified)."
+  ^OpenTelemetrySdk
   [service-name
    {:keys [set-as-default set-as-global register-shutdown-hook resources propagators tracer-provider
            meter-provider]

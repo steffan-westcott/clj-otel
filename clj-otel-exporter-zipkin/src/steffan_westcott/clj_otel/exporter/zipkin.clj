@@ -18,9 +18,10 @@
    |`:local-ip-address-fn` | 0-arg function that returns `nil` or `InetAddress` of local Zipkin endpoint (default: fn that returns local IP address captured when exporter created).
    |`:compression`         | Method used to compress payloads. Value is string `\"gzip\"` or `\"none\"` (default: `\"gzip\"`).
    |`:meter-provider`      | ^MeterProvider to collect metrics related to export (default: metrics not collected)."
-  ([]
+  (^ZipkinSpanExporter []
    (span-exporter {}))
-  ([{:keys [endpoint read-timeout sender encoder local-ip-address-fn compression meter-provider]}]
+  (^ZipkinSpanExporter
+   [{:keys [endpoint read-timeout sender encoder local-ip-address-fn compression meter-provider]}]
    (let [builder (cond-> (ZipkinSpanExporter/builder)
                    endpoint            (.setEndpoint endpoint)
                    read-timeout        (.setReadTimeout (util/duration read-timeout))

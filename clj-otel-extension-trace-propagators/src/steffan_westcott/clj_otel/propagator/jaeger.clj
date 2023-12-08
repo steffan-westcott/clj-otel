@@ -4,5 +4,5 @@
 
 (defn jaeger-propagator
   "Returns an implementation of the Jaeger propagation protocol."
-  []
+  ^JaegerPropagator []
   (JaegerPropagator/getInstance))

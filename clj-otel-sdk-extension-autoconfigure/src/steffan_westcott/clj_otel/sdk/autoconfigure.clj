@@ -3,7 +3,8 @@
    properties. See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure
    for configuration options."
   (:require [steffan-westcott.clj-otel.api.otel :as otel])
-  (:import (io.opentelemetry.sdk.autoconfigure AutoConfiguredOpenTelemetrySdk)))
+  (:import (io.opentelemetry.sdk OpenTelemetrySdk)
+           (io.opentelemetry.sdk.autoconfigure AutoConfiguredOpenTelemetrySdk)))
 
 (defn init-otel-sdk!
   "Returns an `OpenTelemetrySdk` instance, configured by the OpenTelemetry Java
@@ -21,8 +22,9 @@
    |`:set-as-default`        | If true, sets the configured SDK instance as the default `OpenTelemetry` instance declared and used by `clj-otel` (default: `true`).
    |`:set-as-global`         | If true, sets the configured SDK instance as the global `OpenTelemetry` instance declared by Java OpenTelemetry (default: `false`).
    |`:register-shutdown-hook`| If true, registers a JVM shutdown hook to close the configured SDK instance (default: `true`)."
-  ([] (init-otel-sdk! {}))
-  ([{:keys [set-as-default set-as-global register-shutdown-hook]
+  (^OpenTelemetrySdk [] (init-otel-sdk! {}))
+  (^OpenTelemetrySdk
+   [{:keys [set-as-default set-as-global register-shutdown-hook]
      :or   {set-as-default         true
             set-as-global          false
             register-shutdown-hook true}}]

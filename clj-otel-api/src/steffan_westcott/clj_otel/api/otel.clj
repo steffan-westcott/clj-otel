@@ -9,7 +9,7 @@
 
 (defn get-noop
   "Gets a no-op `OpenTelemetry` instance."
-  []
+  ^OpenTelemetry []
   (OpenTelemetry/noop))
 
 (defn get-global-otel!
@@ -20,7 +20,7 @@
    autoconfiguration failed or otherwise did not occur) will also be set as the
    global instance i.e. this function is side-effecting if no instance was
    previously set."
-  []
+  ^OpenTelemetry []
   (GlobalOpenTelemetry/get))
 
 (defn set-global-otel!
@@ -33,14 +33,14 @@
 (defn set-default-otel!
   "Sets the default `OpenTelemetry` instance declared and used by `clj-otel`.
    Returns `otel`."
-  [otel]
+  ^OpenTelemetry [otel]
   (reset! default-otel otel))
 
 (defn get-default-otel!
   "Gets the default `OpenTelemetry` instance declared and used by `clj-otel`. If
    no instance has been previously set, this falls back to the global instance
    declared by OpenTelemetry Java."
-  []
+  ^OpenTelemetry []
   (if-let [otel @default-otel]
     otel
     (set-default-otel! (get-global-otel!))))

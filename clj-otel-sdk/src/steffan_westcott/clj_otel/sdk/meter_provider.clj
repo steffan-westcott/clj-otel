@@ -20,7 +20,7 @@
    |`:metric-exporter`| `MetricExporter` instance (required).
    |`:interval`       | Interval between each export. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 60s).
    |`:executor`       | `ScheduledExecutorService` instance for executing exports (default: thread pool with one daemon thread)."
-  [{:keys [metric-exporter interval executor]}]
+  ^PeriodicMetricReader [{:keys [metric-exporter interval executor]}]
   (let [builder (cond-> (PeriodicMetricReader/builder metric-exporter)
                   interval (.setInterval (util/duration interval))
                   executor (.setExecutor executor))]
@@ -55,7 +55,7 @@
       (Aggregation/defaultAggregation))))
 
 (defn- predicate
-  [pred]
+  ^Predicate [pred]
   (reify
    Predicate
      (test [_this x]
@@ -105,7 +105,7 @@
 (defn ^:no-doc sdk-meter-provider
   "Internal function that returns a `SdkMeterProvider`. See namespace
    `steffan-westcott.clj-otel.sdk.otel-sdk`"
-  [{:keys [readers views resource clock]}]
+  ^SdkMeterProvider [{:keys [readers views resource clock]}]
   (let [builder (cond-> (SdkMeterProvider/builder)
                   readers  (register-metric-readers readers)
                   views    (register-views views)

@@ -26,7 +26,7 @@
 
 (defn- attribute-type-of
   "Returns `AttributeType` inferred from type of `x`."
-  [x]
+  ^AttributeType [x]
   (cond (map? x)     AttributeType/STRING
         (coll? x)    (cond (every? boolean? x) AttributeType/BOOLEAN_ARRAY
                            (every? integer? x) AttributeType/LONG_ARRAY

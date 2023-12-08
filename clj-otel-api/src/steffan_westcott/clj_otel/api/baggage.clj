@@ -2,19 +2,20 @@
   "Conversion and manipulation functions for
    `io.opentelemetry.api.baggage.Baggage` objects."
   (:require [steffan-westcott.clj-otel.context :as context])
-  (:import (io.opentelemetry.api.baggage Baggage BaggageBuilder BaggageEntry BaggageEntryMetadata)))
+  (:import (io.opentelemetry.api.baggage Baggage BaggageBuilder BaggageEntry BaggageEntryMetadata)
+           (io.opentelemetry.context Context)))
 
 (defn get-baggage
   "Gets the baggage from a given context, or the bound ot current context if
    none is given. If no baggage is found in the context, empty baggage is returned."
-  ([]
+  (^Baggage []
    (get-baggage (context/dyn)))
-  ([context]
+  (^Baggage [context]
    (Baggage/fromContext context)))
 
 (defn assoc-baggage
   "Associates baggage with a context and returns the new context."
-  [context baggage]
+  ^Context [context baggage]
   (context/assoc-value context baggage))
 
 (defn- BaggageEntry->value
@@ -47,5 +48,5 @@
   "Converts a map to a `Baggage` instance. Each key in the map is either a
    string or keyword. Each value in the map is either `value` or a vector
    `[value metadata]`, where `value` and `metadata` are strings."
-  [m]
+  ^Baggage [m]
   (.build ^BaggageBuilder (reduce-kv put-entry (Baggage/builder) m)))

@@ -19,6 +19,7 @@
    |`:x509-trust-manager`      | `^X509TrustManager` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:polling-interval`        | Polling interval for configuration updates. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 60s).
    |`:initial-sampler`         | Initial sampler that is used before sampling configuration is obtained (default: `{:parent-based {:root {:ratio 0.001}}}`)."
+  ^JaegerRemoteSampler
   [{:keys [service-name endpoint trusted-certificates-pem client-private-key-pem
            client-certificates-pem ssl-context x509-trust-manager polling-interval
            initial-sampler]}]

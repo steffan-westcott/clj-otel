@@ -19,9 +19,10 @@
    |`:x509-trust-manager`      | `^X509TrustManager` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:timeout`                 | Maximum time to wait for export of a batch of spans.  Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:compression`             | Method used to compress payloads. Value is string `\"gzip\"` or `\"none\"` (default: `\"none\"`)."
-  ([]
+  (^JaegerGrpcSpanExporter []
    (span-exporter {}))
-  ([{:keys [endpoint trusted-certificates-pem client-private-key-pem client-certificates-pem
+  (^JaegerGrpcSpanExporter
+   [{:keys [endpoint trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager timeout compression]}]
    (let [builder (cond-> (JaegerGrpcSpanExporter/builder)
                    endpoint (.setEndpoint endpoint)

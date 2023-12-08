@@ -27,9 +27,10 @@
    |`:timeout`                         | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: same as constantly `AggregationTemporality/CUMULATIVE`).
    |`:default-aggregation-selector`    | Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`)."
-  ([]
+  (^OtlpGrpcMetricExporter []
    (metric-exporter {}))
-  ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
+  (^OtlpGrpcMetricExporter
+   [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout
             aggregation-temporality-selector default-aggregation-selector]}]
    (let [builder

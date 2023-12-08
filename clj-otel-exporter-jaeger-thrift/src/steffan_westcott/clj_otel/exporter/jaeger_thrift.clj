@@ -12,9 +12,9 @@
    |-----------|-------------|
    |`:endpoint`| Jaeger endpoint, used with the default sender (default: `\"http://localhost:14268/api/traces\"`).
    |`:sender`  | `ThriftSender` instance to use for communication with the backend (default: `ThriftSender` instance configured to use `:endpoint`)."
-  ([]
+  (^JaegerThriftSpanExporter []
    (span-exporter {}))
-  ([{:keys [endpoint thrift-sender]}]
+  (^JaegerThriftSpanExporter [{:keys [endpoint thrift-sender]}]
    (let [builder (cond-> (JaegerThriftSpanExporter/builder)
                    endpoint      (.setEndpoint endpoint)
                    thrift-sender (.setThriftSender thrift-sender))]

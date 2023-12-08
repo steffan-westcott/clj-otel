@@ -33,9 +33,9 @@
    |------|-------------|
    |`:jmx`| If true, include all JMX measurements, otherwise do not include any JMX measurements (default: true)
    |`:jfr`| Either a map or boolean value. If a map, the map keys are `JfrFeature` enum values, and the map boolean values determine if the feature should be enabled (true) or disabled (false). If not a map, the value determines if all JFR features should be enabled (true) or disabled (false) (default: See JfrFeature for each JFR feature default)."
-  ([]
+  (^RuntimeMetrics []
    (register! {}))
-  ([opts]
+  (^RuntimeMetrics [opts]
    (register! (otel/get-default-otel!) opts))
   ([open-telemetry
     {:keys [jmx jfr]

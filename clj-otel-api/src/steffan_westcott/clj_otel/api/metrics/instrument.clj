@@ -37,9 +37,10 @@
    |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
    |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
    |`:open-telemetry`| `OpenTelemetry` instance to get meter from (default: global `OpenTelemetry` instance)."
-  ([]
+  (^Meter []
    (get-meter {}))
-  ([{:keys [name version schema-url open-telemetry]
+  (^Meter
+   [{:keys [name version schema-url open-telemetry]
      :or   {name       (:name default-library)
             version    (:version default-library)
             schema-url (:schema-url default-library)}}]
@@ -55,7 +56,7 @@
 (defn set-default-meter!
   "Sets the default `io.opentelemetry.api.metrics.Meter` instance used when
    creating instruments. Returns `meter`. See also [[get-meter]]."
-  [meter]
+  ^Meter [meter]
   (reset! default-meter meter))
 
 (defn get-default-meter!

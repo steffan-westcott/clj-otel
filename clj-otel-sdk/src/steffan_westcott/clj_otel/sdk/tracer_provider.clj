@@ -12,7 +12,7 @@
     (io.opentelemetry.sdk.trace.samplers Sampler)))
 
 (defprotocol ^:private AsSpanLimits
-  (as-SpanLimits [span-limits]))
+  (^SpanLimits as-SpanLimits [span-limits]))
 
 (extend-protocol AsSpanLimits
  SpanLimits
@@ -31,7 +31,7 @@
        (.build builder))))
 
 (defprotocol ^:private AsSpanLimitsSupplier
-  (as-SpanLimits-Supplier [supplier]))
+  (^Supplier as-SpanLimits-Supplier [supplier]))
 
 (extend-protocol AsSpanLimitsSupplier
  Supplier
@@ -45,7 +45,8 @@
           (as-SpanLimits (supplier))))))
 
 (defprotocol AsSampler
-  (as-Sampler [sampler]
+  (^Sampler as-Sampler
+   [sampler]
    "Coerce to `Sampler`. May be given a `:sampler` option map, see
    `steffan-westcott.clj-otel.sdk.otel-sdk/init-otel-sdk!`."))
 
@@ -76,7 +77,7 @@
            parent-based (map->ParentBasedSampler parent-based))))
 
 (defprotocol ^:private AsSpanProcessor
-  (as-SpanProcessor [span-processor]))
+  (^SpanProcessor as-SpanProcessor [span-processor]))
 
 (defn- set-span-limits
   ^SdkTracerProviderBuilder [^SdkTracerProviderBuilder builder span-limits]
@@ -115,6 +116,7 @@
 (defn sdk-tracer-provider
   "Internal function that returns a `SdkTracerProvider`.
    See namespace `steffan-westcott.clj-otel.sdk.otel-sdk`"
+  ^SdkTracerProvider
   [{:keys [span-processors span-limits sampler resource id-generator clock]
     :or   {span-processors []}}]
   (let [builder (cond-> (add-span-processors (SdkTracerProvider/builder) span-processors)

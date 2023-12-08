@@ -23,9 +23,10 @@
    |`:compression-method`      | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
    |`:timeout`                 | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected)."
-  ([]
+  (^OtlpGrpcSpanExporter []
    (span-exporter {}))
-  ([{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
+  (^OtlpGrpcSpanExporter
+   [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout meter-provider]}]
    (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
                    endpoint (.setEndpoint endpoint)

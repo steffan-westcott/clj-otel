@@ -11,13 +11,13 @@
 
 (defn root
   "Returns the root context that all other contexts are derived from."
-  []
+  ^Context []
   (Context/root))
 
 (defn current
   "Returns the current context, which is stored in a thread local `Context`
    object. If no such context exists, the root context is returned instead."
-  []
+  ^Context []
   (Context/current))
 
 (defn set-current!
@@ -36,7 +36,7 @@
 (defn dyn
   "Returns the bound context, which is stored in a Clojure dynamic var. If no
    context is bound, the current context is returned instead."
-  []
+  ^Context []
   (or *bound-context* (current)))
 
 (defmacro bind-context!
@@ -61,8 +61,7 @@
              (ContextKey/named (name k)))))
 
 (defprotocol AsContextKey
-  (context-key [k]
-   "Coerces k to a `ContextKey`."))
+  (^ContextKey context-key [k] "Coerces k to a `ContextKey`."))
 
 (extend-protocol AsContextKey
  ContextKey
@@ -178,7 +177,7 @@
    |----------------------|-------------|
    |`:context`            | Context to merge with (default: bound or current context).
    |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in global `OpenTelemetry` instance)."
-  ([headers]
+  (^Context [headers]
    (headers->merged-context headers {}))
   (^Context
    [headers

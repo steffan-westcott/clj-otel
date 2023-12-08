@@ -6,5 +6,5 @@
 (defn w3c-trace-context-propagator
   "Returns an implementation of the [W3C Trace Context propagation
    protocol](https://www.w3.org/TR/trace-context/)."
-  []
+  ^W3CTraceContextPropagator []
   (W3CTraceContextPropagator/getInstance))

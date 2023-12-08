@@ -7,54 +7,55 @@
                                                                   GarbageCollector
                                                                   MemoryPools
                                                                   Threads)
-           (java.lang AutoCloseable)))
+           (java.lang AutoCloseable)
+           (java.util List)))
 
 (defn register-buffer-pools!
   "Registers measurements that generate metrics about buffer pools and returns
-   a collection of AutoCloseable."
-  ([]
+   a list of AutoCloseable."
+  (^List []
    (register-buffer-pools! (otel/get-default-otel!)))
-  ([open-telemetry]
+  (^List [open-telemetry]
    (BufferPools/registerObservers open-telemetry)))
 
 (defn register-classes!
   "Registers measurements that generate metrics about JVM classes and returns a
-   collection of AutoCloseable."
-  ([]
+   list of AutoCloseable."
+  (^List []
    (register-classes! (otel/get-default-otel!)))
-  ([open-telemetry]
+  (^List [open-telemetry]
    (Classes/registerObservers open-telemetry)))
 
 (defn register-cpu!
   "Registers measurements that generate metrics about the CPU and returns a
-   collection of AutoCloseable."
-  ([]
+   list of AutoCloseable."
+  (^List []
    (register-cpu! (otel/get-default-otel!)))
-  ([open-telemetry]
+  (^List [open-telemetry]
    (Cpu/registerObservers open-telemetry)))
 
 (defn register-garbage-collector!
   "Registers measurements that generate metrics about the garbage collector and
-   returns a collection of AutoCloseable."
-  ([]
+   list a collection of AutoCloseable."
+  (^List []
    (register-garbage-collector! (otel/get-default-otel!)))
-  ([open-telemetry]
+  (^List [open-telemetry]
    (GarbageCollector/registerObservers open-telemetry)))
 
 (defn register-memory-pools!
   "Registers measurements that generate metrics about JVM memory pools and
-   returns a collection of AutoCloseable."
-  ([]
+   returns a list of AutoCloseable."
+  (^List []
    (register-memory-pools! (otel/get-default-otel!)))
-  ([open-telemetry]
+  (^List [open-telemetry]
    (MemoryPools/registerObservers open-telemetry)))
 
 (defn register-threads!
   "Registers measurements that generate metrics about JVM threads and returns a
-   collection of AutoCloseable."
-  ([]
+   list of AutoCloseable."
+  (^List []
    (register-threads! (otel/get-default-otel!)))
-  ([open-telemetry]
+  (^List [open-telemetry]
    (Threads/registerObservers open-telemetry)))
 
 (defn register!

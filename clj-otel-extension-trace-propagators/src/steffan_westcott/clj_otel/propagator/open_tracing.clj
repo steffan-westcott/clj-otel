@@ -4,5 +4,5 @@
 
 (defn trace-propagator
   "Returns an implementation of the protocol used by OpenTracing Basic Tracers."
-  []
+  ^OtTracePropagator []
   (OtTracePropagator/getInstance))

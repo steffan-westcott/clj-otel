@@ -6,5 +6,5 @@
 (defn w3c-baggage-propagator
   "Returns an implementation of the [W3C specification for baggage header
    propagation](https://www.w3.org/TR/baggage/)."
-  []
+  ^W3CBaggagePropagator []
   (W3CBaggagePropagator/getInstance))

@@ -12,6 +12,6 @@
 (defn context-propagators
   "Returns a `ContextPropagators` instance containing the given ordered
    collection of `TextMapPropagator`s."
-  [text-map-propagators]
+  ^ContextPropagators [text-map-propagators]
   (let [^Iterable props (vec text-map-propagators)]
     (ContextPropagators/create (TextMapPropagator/composite props))))
