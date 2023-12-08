@@ -6,7 +6,8 @@
            (java.util.concurrent TimeUnit)))
 
 (defprotocol AsDuration
-  (^Duration duration [d] "Coerce to a `Duration` instance."))
+  (duration ^Duration [d]
+   "Coerce to a `Duration` instance."))
 
 (extend-protocol AsDuration
  Duration
@@ -32,8 +33,7 @@
      t))
 
 (defprotocol AsQualifiedName
-  (^String qualified-name
-   [x]
+  (qualified-name ^String [x]
    "Given a keyword or symbol, returns the name converted to follow
     OpenTelemetry conventions for attribute names; the name is converted to a
     snake_case string, where namespace and name are separated by `.`. Given any

@@ -12,7 +12,7 @@
     (io.opentelemetry.sdk.trace.samplers Sampler)))
 
 (defprotocol ^:private AsSpanLimits
-  (^SpanLimits as-SpanLimits [span-limits]))
+  (as-SpanLimits ^SpanLimits [span-limits]))
 
 (extend-protocol AsSpanLimits
  SpanLimits
@@ -31,7 +31,7 @@
        (.build builder))))
 
 (defprotocol ^:private AsSpanLimitsSupplier
-  (^Supplier as-SpanLimits-Supplier [supplier]))
+  (as-SpanLimits-Supplier ^Supplier [supplier]))
 
 (extend-protocol AsSpanLimitsSupplier
  Supplier
@@ -45,8 +45,7 @@
           (as-SpanLimits (supplier))))))
 
 (defprotocol AsSampler
-  (^Sampler as-Sampler
-   [sampler]
+  (as-Sampler ^Sampler [sampler]
    "Coerce to `Sampler`. May be given a `:sampler` option map, see
    `steffan-westcott.clj-otel.sdk.otel-sdk/init-otel-sdk!`."))
 
@@ -77,7 +76,7 @@
            parent-based (map->ParentBasedSampler parent-based))))
 
 (defprotocol ^:private AsSpanProcessor
-  (^SpanProcessor as-SpanProcessor [span-processor]))
+  (as-SpanProcessor ^SpanProcessor [span-processor]))
 
 (defn- set-span-limits
   ^SdkTracerProviderBuilder [^SdkTracerProviderBuilder builder span-limits]

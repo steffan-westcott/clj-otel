@@ -6,7 +6,8 @@
            (io.opentelemetry.sdk.resources Resource)))
 
 (defprotocol ^:private AsResource
-  (^Resource as-Resource [resource] "Coerce to a `Resource` instance."))
+  (as-Resource ^Resource [resource]
+   "Coerce to a `Resource` instance."))
 
 (extend-protocol AsResource
  Resource

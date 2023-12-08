@@ -61,7 +61,8 @@
              (ContextKey/named (name k)))))
 
 (defprotocol AsContextKey
-  (^ContextKey context-key [k] "Coerces k to a `ContextKey`."))
+  (context-key ^ContextKey [k]
+   "Coerces k to a `ContextKey`."))
 
 (extend-protocol AsContextKey
  ContextKey
