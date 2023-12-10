@@ -43,7 +43,7 @@
   ;; Wrap the synchronous body in a new internal span.
   (span/with-span! ["Generating word" {:system/word-type word-type}]
 
-    (Thread/sleep (+ 10 (rand-int 80)))
+    (Thread/sleep ^long (+ 10 (rand-int 80)))
 
     ;; Simulate an intermittent runtime exception. An uncaught exception leaving a span's scope
     ;; is reported as an exception event and the span status description is set to the

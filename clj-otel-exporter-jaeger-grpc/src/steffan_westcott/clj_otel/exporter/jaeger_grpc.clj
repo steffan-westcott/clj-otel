@@ -18,12 +18,13 @@
    |`:ssl-context`             | `^SSLContext` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:x509-trust-manager`      | `^X509TrustManager` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:timeout`                 | Maximum time to wait for export of a batch of spans.  Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
-   |`:compression`             | Method used to compress payloads. Value is string `\"gzip\"` or `\"none\"` (default: `\"none\"`)."
+   |`:compression`             | Method used to compress payloads. Value is string `\"gzip\"` or `\"none\"` (default: `\"none\"`).
+   |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected)."
   (^JaegerGrpcSpanExporter []
    (span-exporter {}))
   (^JaegerGrpcSpanExporter
    [{:keys [endpoint trusted-certificates-pem client-private-key-pem client-certificates-pem
-            ssl-context x509-trust-manager timeout compression]}]
+            ssl-context x509-trust-manager timeout compression meter-provider]}]
    (let [builder (cond-> (JaegerGrpcSpanExporter/builder)
                    endpoint (.setEndpoint endpoint)
                    trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
@@ -33,5 +34,6 @@
                    (and ssl-context x509-trust-manager) (.setSslContext ssl-context
                                                                         x509-trust-manager)
                    timeout (.setTimeout (util/duration timeout))
-                   compression (.setCompression compression))]
+                   compression (.setCompression compression)
+                   meter-provider (.setMeterProvider meter-provider))]
      (.build builder))))

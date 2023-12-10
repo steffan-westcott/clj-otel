@@ -57,7 +57,7 @@
 (defn- sleep-until
   "Sleep the current thread until system time t."
   [t]
-  (let [d (- t (System/currentTimeMillis))]
+  (let [^long d (- t (System/currentTimeMillis))]
     (when (pos? d)
       (Thread/sleep d))))
 

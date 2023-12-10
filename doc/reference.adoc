@@ -34,6 +34,14 @@ image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-sdk[cljdoc,l
 
 `clj-otel-sdk` is an optional module which provides xref:guides.adoc#_run_with_programmatically_configured_sdk[programmatic configuration of the OpenTelemetry SDK in Clojure].
 
+== `clj-otel-sdk-common`
+
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-sdk-common?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-common]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-sdk-common[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-common/CURRENT]
+
+`clj-otel-sdk-common` is an optional module which provides programmatic configuration in Clojure of OpenTelemetry SDK common components such as `Resource` objects.
+This module is used when configuring some exporters.
+
 == Instrumentation modules
 
 These are optional modules which implement instrumentation for applications not using the instrumentation agent.

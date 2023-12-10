@@ -32,7 +32,7 @@
   ;; Manually create an internal span that wraps body (lexical scope)
   (span/with-span! ["Calculating length" {:system/word word}]
 
-    (Thread/sleep (+ 50 (rand-int 80)))
+    (Thread/sleep ^long (+ 50 (rand-int 80)))
 
     ;; Simulate an intermittent runtime exception. An uncaught exception leaving a span's scope
     ;; is reported as an exception event and the span status description is set to the

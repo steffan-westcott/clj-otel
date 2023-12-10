@@ -1,0 +1,19 @@
+= `clj-otel-sdk-common`
+
+image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-sdk-common?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-common]
+ifndef::env-cljdoc[]
+image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-sdk-common[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-common]
+endif::[]
+image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License]
+image:https://img.shields.io/badge/clojurians-clj--otel-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/clj-otel]
+
+Provides programmatic configuration using Clojure of OpenTelemetry SDK common components
+
+This is an optional Clojure module which is part of the umbrella project `clj-otel`.
+For more information, see
+ifdef::env-cljdoc[]
+https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT[introduction to `clj-otel`].
+endif::[]
+ifndef::env-cljdoc[]
+xref:../README.adoc[introduction to `clj-otel`].
+endif::[]

@@ -26,11 +26,13 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.5` (in progress)
 
+- [ADD] Module `clj-otel-sdk-common` which wraps the OpenTelemetry SDK common library.
+- [BREAK] Moved function `merge-resources-with-default` to new module `clj-otel-sdk-common`.
 - [ADD] Terse syntax alternatives for `span-opts` map parameter in `new-span!` and related functions that create spans.
 - [ADD] Convenience function `add-event!` to add an event to the bound or current span.
 - [MAINT] Ensure example microservices uberjars are built and run on the same JDK.
 - Bump deps
-* [MAINT] OpenTelemetry `1.31.0`
+* [MAINT] OpenTelemetry `1.33.0`
 * [MAINT] gRPC `1.59.0`
 * [MAINT] Pedestal `0.6.1`
 

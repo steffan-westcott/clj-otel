@@ -24,6 +24,7 @@ clojure -A:deps -T:build help/doc"
 ;; Later artifacts in this vector may depend on earlier artifacts
 (def ^:private library-project-paths
   ["clj-otel-api"
+   "clj-otel-sdk-common"
    "clj-otel-sdk"
    "clj-otel-contrib-aws-resources"
    "clj-otel-contrib-aws-xray-propagator"

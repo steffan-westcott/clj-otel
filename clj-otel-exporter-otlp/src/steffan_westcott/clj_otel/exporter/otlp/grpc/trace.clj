@@ -1,7 +1,9 @@
 (ns steffan-westcott.clj-otel.exporter.otlp.grpc.trace
   "Span data exporter using OpenTelemetry Protocol via gRPC."
-  (:require [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.exporter.otlp.trace OtlpGrpcSpanExporter OtlpGrpcSpanExporterBuilder)))
+  (:require [steffan-westcott.clj-otel.sdk.export :as export]
+            [steffan-westcott.clj-otel.util :as util])
+  (:import (io.opentelemetry.api.metrics MeterProvider)
+           (io.opentelemetry.exporter.otlp.trace OtlpGrpcSpanExporter OtlpGrpcSpanExporterBuilder)))
 
 (defn- add-headers
   ^OtlpGrpcSpanExporterBuilder [builder headers]
@@ -22,12 +24,14 @@
    |`:x509-trust-manager`      | `^X509TrustManager` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:compression-method`      | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
    |`:timeout`                 | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
+   |`:retry-policy`            | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: retry disabled).
    |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected)."
   (^OtlpGrpcSpanExporter []
    (span-exporter {}))
   (^OtlpGrpcSpanExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
-            ssl-context x509-trust-manager compression-method timeout meter-provider]}]
+            ssl-context x509-trust-manager compression-method timeout retry-policy
+            ^MeterProvider meter-provider]}]
    (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
                    endpoint (.setEndpoint endpoint)
                    headers (add-headers headers)
@@ -39,5 +43,6 @@
                                                                         x509-trust-manager)
                    compression-method (.setCompression compression-method)
                    timeout (.setTimeout (util/duration timeout))
+                   retry-policy (.setRetryPolicy (export/retry-policy retry-policy))
                    meter-provider (.setMeterProvider meter-provider))]
      (.build builder))))
