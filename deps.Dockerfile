@@ -1,5 +1,5 @@
 FROM clojure:temurin-21-alpine
-LABEL example.clj-otel=library-base
+LABEL example.clj-otel=library-base-deps
 RUN mkdir -p /build
 WORKDIR /build
 COPY . /build

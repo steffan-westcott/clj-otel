@@ -45,6 +45,7 @@ clojure -A:deps -T:build help/doc"
 (def ^:private common-demo-project-paths
   ["examples/common/core-async.utils"
    "examples/common/interceptor.utils"
+   "examples/common/load-gen"
    "examples/common/log4j2.utils"])
 
 (def ^:private uber-demo-project-paths

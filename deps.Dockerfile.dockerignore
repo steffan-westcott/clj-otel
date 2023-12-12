@@ -2,5 +2,3 @@
 !deps.edn
 !build.clj
 !clj-otel-*/deps.edn
-!clj-otel-*/src/**
-!clj-otel-*/resources/**
