@@ -30,6 +30,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - [BREAK] Moved function `merge-resources-with-default` to new module `clj-otel-sdk-common`.
 - [ADD] Terse syntax alternatives for `span-opts` map parameter in `new-span!` and related functions that create spans.
 - [ADD] Convenience function `add-event!` to add an event to the bound or current span.
+- [ADD] Populate `err.type` trace semantic attribute on manually created client and server spans.
 - [MAINT] Ensure example microservices uberjars are built and run on the same JDK.
 - Bump deps
 * [MAINT] OpenTelemetry `1.33.0`

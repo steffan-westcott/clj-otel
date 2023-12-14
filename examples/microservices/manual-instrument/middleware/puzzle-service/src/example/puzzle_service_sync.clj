@@ -63,7 +63,12 @@
             ;; correlation to make distributed traces.
             request' (update request :headers merge (context/->headers))
 
-            response (client/request request')]
+            response (try
+                       (client/request request')
+                       (catch Throwable e
+                         (trace-http/add-client-span-response-data!
+                          {:io.opentelemetry.api.trace.span.attrs/error-type e})
+                         (throw e)))]
 
         ;; Add HTTP response data to the client span.
         (trace-http/add-client-span-response-data! response)

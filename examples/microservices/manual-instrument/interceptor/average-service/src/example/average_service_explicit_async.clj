@@ -73,7 +73,13 @@
                            (trace-http/add-client-span-response-data! response {:context context*})
 
                            (respond* response))
-                         raise*)))
+                         (fn [e]
+
+                           ;; Add error information to the client span.
+                           (trace-http/add-client-span-response-data!
+                            {:io.opentelemetry.api.trace.span.attrs/error-type e}
+                            {:context context*})
+                           (raise* e)))))
      respond
      raise)))
 
