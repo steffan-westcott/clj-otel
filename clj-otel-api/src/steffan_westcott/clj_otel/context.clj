@@ -146,7 +146,7 @@
      (keys [_ carrier]
        (keys carrier))
      (get [_ carrier key]
-       (some-> (get carrier key)
+       (some-> (get carrier (str/lower-case key))
                (str/split #",")
                first
                str/trim))))
