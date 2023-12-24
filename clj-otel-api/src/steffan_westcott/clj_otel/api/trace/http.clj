@@ -333,25 +333,29 @@
 (defn wrap-route
   "Ring middleware to add a matched route to the server span data and Ring
    request map. `route-fn` is a function which given a request returns the
-   matched route as a string."
+   matched route as a string, or nil if no match."
   [handler route-fn]
   (fn
     ([{:keys [request-method]
        :as   request}]
-     (let [route (route-fn request)]
-       (add-route-data! request-method route)
-       (handler (assoc-in request
-                 [:io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
-                 route))))
+     (if-let [route (route-fn request)]
+       (do
+         (add-route-data! request-method route)
+         (handler (assoc-in request
+                   [:io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
+                   route)))
+       (handler request)))
     ([{:keys [request-method io.opentelemetry/server-span-context]
        :as   request} respond raise]
-     (let [route (route-fn request)]
-       (add-route-data! request-method route {:context server-span-context})
-       (handler (assoc-in request
-                 [:io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
-                 route)
-                respond
-                raise)))))
+     (if-let [route (route-fn request)]
+       (do
+         (add-route-data! request-method route {:context server-span-context})
+         (handler (assoc-in request
+                   [:io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
+                   route)
+                  respond
+                  raise))
+       (handler request respond raise)))))
 
 (defn wrap-reitit-route
   "Ring middleware to add matched Reitit route to the server span and Ring
@@ -361,6 +365,16 @@
   (wrap-route handler
               (fn [request]
                 (get-in request [:reitit.core/match :template]))))
+
+(defn wrap-compojure-route
+  "Ring middleware to add matched Compojure route to the server span and Ring
+   request map. Use `compojure.core/wrap-routes` to apply this middleware to
+   all route handlers."
+  [handler]
+  (wrap-route handler
+              (fn [{prefix   :compojure/route-context
+                    [_ path] :compojure/route}]
+                (str prefix path))))
 
 ;;; Pedestal interceptors
 
