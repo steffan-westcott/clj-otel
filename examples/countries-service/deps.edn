@@ -1,0 +1,31 @@
+;!zprint {:style [:respect-nl] :width 140}
+
+{:paths   ["src" "resources"]
+
+ :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
+
+           ;; Application configuration
+           aero/aero {:mvn/version "1.1.6"}
+
+           ;; Clojure wrapper of OpenTelemetry API
+           com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
+
+           ;; Compojure HTTP router
+           compojure/compojure {:mvn/version "1.7.0"}
+
+           ;; Ring-Jetty web server integration
+           ring/ring-jetty-adapter {:mvn/version "1.10.0"}}
+
+ :aliases {;; Include this alias to export telemetry data
+           :otel {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
+                             "-javaagent:../opentelemetry-javaagent.jar"
+                             "-Dotel.semconv-stability.opt-in=http"
+
+                             ;; Name the instrumented application or service
+                             "-Dotel.resource.attributes=service.name=countries-service"
+
+                             ;; Set metric export to every 5 seconds
+                             "-Dotel.metric.export.interval=5000"
+
+                             ;; Disable logs export
+                             "-Dotel.logs.exporter=none"]}}}

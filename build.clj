@@ -63,7 +63,8 @@ clojure -A:deps -T:build help/doc"
    "examples/microservices/manual-instrument/middleware/random-word-service"])
 
 (def ^:private other-demo-project-paths
-  ["examples/cube-app"
+  ["examples/countries-service"
+   "examples/cube-app"
    "examples/divisor-app"
    "examples/factorial-app"
    "examples/square-app"

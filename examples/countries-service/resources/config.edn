@@ -1,0 +1,2 @@
+{:jetty-opts {:max-threads 16
+              :port        8080}}

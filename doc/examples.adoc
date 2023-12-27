@@ -49,7 +49,7 @@ graph LR
 ----
 +
 endif::[]
-A small application run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
+A small application `cube-app` run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/square-app`
 +
@@ -66,7 +66,7 @@ graph LR
 ----
 +
 endif::[]
-A small application using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
+A small application `square-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/factorial-app`
 +
@@ -83,7 +83,7 @@ graph LR
 ----
 +
 endif::[]
-A small application using programmatically configured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
+A small application `factorial-app` using programmatically configured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/divisor-app`
 +
@@ -101,7 +101,24 @@ graph LR
 ----
 +
 endif::[]
-A small application using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry directly to Jaeger and Prometheus instances.
+A small application `divisor-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry directly to Jaeger and Prometheus instances.
+
+* `examples/countries-service`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+endif::[]
+A single HTTP service `countries-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Compojure router, exporting telemetry to a Collector instance.
 
 * `examples/microservices/auto-instrument/middleware`
 +
@@ -120,7 +137,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `sentence-summary-service` and `word-length-service` implemented with Ring middleware, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `sentence-summary-service` and `word-length-service` implemented with Ring middleware, Reitit router, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/auto-instrument/interceptor`
 +
@@ -158,7 +175,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `puzzle-service` and `random-word-service` implemented with Ring middleware, not using the agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `puzzle-service` and `random-word-service` implemented with Ring middleware, Reitit router, not using the agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/manual-instrument/interceptor`
 +

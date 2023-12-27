@@ -42,4 +42,7 @@
   "go" :flow-body
 
   ;; clojure.tools.build.api
-  "with-project-root" :arg1-body}}
+  "with-project-root" :arg1-body
+
+  ;; Compojure
+  "defroutes" :arg1-body}}

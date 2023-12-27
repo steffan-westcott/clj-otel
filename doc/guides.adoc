@@ -380,8 +380,9 @@ This is the same example as above, for an application run without the agent
 ----
 
 * If you use middleware that injects data on the matched route into the Ring request map, add middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#wrap-route[`steffan-westcott.clj-otel.api.trace.http/wrap-route`] to add the route data to HTTP server spans for all matched routes.
+Alternatively, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#wrap-reitit-route[`steffan-westcott.clj-otel.api.trace.http/wrap-reitit-route`] for https://github.com/metosin/reitit[Reitit] or https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#wrap-compojure-route[`steffan-westcott.clj-otel.api.trace.http/wrap-compojure-route`] for https://github.com/weavejester/compojure[Compojure].
 +
-This is an example when using https://github.com/metosin/reitit[Reitit], with Jetty in an application run with the agent
+This is an example when using Reitit, with Jetty in an application run with the agent
 +
 [source,clojure]
 ----
@@ -391,11 +392,6 @@ This is an example when using https://github.com/metosin/reitit[Reitit], with Je
             [ring.adapter.jetty :as jetty]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
 
-(defn wrap-reitit-route [handler]
-  (trace-http/wrap-route handler
-                         (fn [request]
-                           (get-in request [:reitit.core/match :template]))))
-
 (defn foo-handler [request]
   ;; ...
   )
@@ -404,21 +400,49 @@ This is an example when using https://github.com/metosin/reitit[Reitit], with Je
   (ring/ring-handler (ring/router
                       ["/foo" {:name ::foo :get foo-handler}]
                       {:data {:muuntaja m/instance
-                              :middleware [wrap-reitit-route
+                              :middleware [trace-http/wrap-reitit-route
                                            ;; ... other middleware
                                            ]}})
                      (ring/create-default-handler)
 
-                     ;; Wrap handling of all requests, including those which have no matching route.
+                     ;; Add HTTP server span support to all requests, including
+                     ;; those which have no matching route.
                      {:middleware [[trace-http/wrap-server-span {:create-span? false}]]}))
 
 (defonce server
   (jetty/run-jetty #'handler {:port 8080 :join? false}))
 ----
 +
+This is an example when using Compojure, again with Jetty in an application run with the agent
++
+[source,clojure]
+----
+(ns example.service
+  (:require [compojure.core :refer [defroutes GET] :as compojure]
+            [ring.adapter.jetty :as jetty]
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
+(defroutes handler
+  (GET "/foo" [] ...)
+  ...)
+
+(def service
+  (-> handler
+
+      ;; Add matched Compojure route to server span data.
+      (compojure/wrap-routes trace-http/wrap-compojure-route)
+
+      ;; Add HTTP server span support to all requests, including
+      ;; those which have no matching route.
+      trace-http/wrap-server-span))
+
+(defonce server
+  (jetty/run-jetty #'service {:port 8080 :join? false}))
+----
++
 Optionally, to add some HTTP server metrics for applications run without the OpenTelemetry instrumentation agent, add middleware https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#wrap-active-requests[`steffan-westcott.clj-otel.api.metrics.http.server/wrap-active-requests`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#wrap-metrics-by-route[`steffan-westcott.clj-otel.api.metrics.http.server/wrap-metrics-by-route`].
 +
-This is the same example as above, for an application run without the agent
+This is the same example using Reitit as above, for an application run without the agent
 +
 [source,clojure]
 ----
@@ -429,11 +453,6 @@ This is the same example as above, for an application run without the agent
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
 
-(defn wrap-reitit-route [handler]
-  (trace-http/wrap-route handler
-                         (fn [request]
-                           (get-in request [:reitit.core/match :template]))))
-
 (defn foo-handler [request]
   ;; ...
   )
@@ -442,13 +461,14 @@ This is the same example as above, for an application run without the agent
   (ring/ring-handler (ring/router
                       ["/foo" {:name ::foo :get foo-handler}]
                       {:data {:muuntaja m/instance
-                              :middleware [wrap-reitit-route
+                              :middleware [trace-http/wrap-reitit-route
                                            metrics-http-server/wrap-metrics-by-route
                                            ;; ... other middleware
                                            ]}})
                      (ring/create-default-handler)
 
-                     ;; Wrap handling of all requests, including those which have no matching route.
+                     ;; Wrap handling of all requests, including those
+                     ;; which have no matching route.
                      {:middleware [[trace-http/wrap-server-span {:create-span? true}]
                                    [metrics-http-server/wrap-active-requests]]}))
 
