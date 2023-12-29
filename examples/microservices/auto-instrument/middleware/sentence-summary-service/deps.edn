@@ -25,7 +25,7 @@
            org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.10.0"}}
+           ring/ring-jetty-adapter {:mvn/version "1.11.0"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
                               "-Dotel.semconv-stability.opt-in=http"

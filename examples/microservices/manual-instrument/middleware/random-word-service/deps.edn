@@ -32,7 +32,7 @@
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.10.0"}
+           ring/ring-jetty-adapter {:mvn/version "1.11.0"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
 

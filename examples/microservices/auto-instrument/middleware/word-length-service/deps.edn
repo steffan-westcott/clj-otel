@@ -18,7 +18,7 @@
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.10.0"}}
+           ring/ring-jetty-adapter {:mvn/version "1.11.0"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
                               "-Dotel.semconv-stability.opt-in=http"
