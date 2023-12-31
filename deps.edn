@@ -1,12 +1,12 @@
 ;!zprint {:width 140}
 
 {:deps    {org.clojure/clojure {:mvn/version "1.11.1"}}
- :aliases {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.9.5"
-                                                               :git/sha "24f2894"}
-                                slipset/deps-deploy {:mvn/version "0.2.1"}
-                                io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v2.19.0"
-                                                                                  :git/sha "6c4a14a"}}
+ :aliases {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.9.6"
+                                                               :git/sha "8e78bcc"}
+                                slipset/deps-deploy {:mvn/version "0.2.2"}
+                                io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v2.21.0"
+                                                                                  :git/sha "ca04c71"}}
                    :ns-default build}
-           :antq  {:extra-deps {com.github.liquidz/antq {:mvn/version "2.6.1121"}
-                                org.slf4j/slf4j-nop     {:mvn/version "2.0.9"}}
+           :antq  {:extra-deps {com.github.liquidz/antq {:mvn/version "2.7.1147"}
+                                org.slf4j/slf4j-nop     {:mvn/version "2.0.10"}}
                    :main-opts  ["-m" "antq.core"]}}}

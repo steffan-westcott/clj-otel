@@ -37,6 +37,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 * [MAINT] OpenTelemetry `1.33.0`
 * [MAINT] gRPC `1.60.1`
 * [MAINT] Pedestal `0.6.1`
+* [MAINT] Various build deps
 
 === `0.2.4.1` (2023-10-01)
 
