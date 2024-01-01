@@ -119,6 +119,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://grafana.com/products/cloud/[Grafana Cloud]
 * https://gethelios.dev/[Helios]
 * https://www.honeycomb.io/[Honeycomb]
+* https://www.hyperdx.io/[HyperDX]
 * https://www.instana.com/[Instana]
 * https://www.kloudfuse.com/[Kloudfuse]
 * https://www.kloudmate.com/[KloudMate]
@@ -126,6 +127,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://logz.io/[Logz.io]
 * https://lumigo.io/[Lumigo]
 * https://newrelic.com/[New Relic]
+* https://www.observeinc.com/[Observe Inc.]
 * https://docs.oracle.com/en-us/iaas/application-performance-monitoring/index.html[Oracle Cloud Infrastructure APM]
 * https://www.servicenow.com/products/observability.html[ServiceNow Cloud Observability]
 * https://www.splunk.com/en_us/products/apm-application-performance-monitoring.html[Splunk APM]
@@ -458,7 +460,7 @@ The following are alternatives to OpenTelemetry in the Clojure ecosystem, concer
 
 * https://riemann.io/[Riemann] : Network event stream processing system, in Clojure
 * https://github.com/jitlogic/micrometer-clj[micrometer-clj] : Clojure wrapper for Java https://micrometer.io/[Micrometer] library
-* https://github.com/metrics-clojure/metrics-clojure[metrics-clojure] : Clojure facade around https://metrics.dropwizard.io/[Dropwizard Metrics] library
+* https://github.com/clj-commons/metrics-clojure[metrics-clojure] : Clojure facade around https://metrics.dropwizard.io/[Dropwizard Metrics] library
 * https://github.com/samsara/trackit[TRACKit!] : Clojure wrapper for https://metrics.dropwizard.io/[Dropwizard Metrics] library
 * https://github.com/mrmcc3/aws-metrics-collector[aws-metrics-collector] : Clojure AWS Cloudwatch metric collector
 

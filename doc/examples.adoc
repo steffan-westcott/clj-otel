@@ -137,7 +137,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `sentence-summary-service` and `word-length-service` implemented with Ring middleware, Reitit router, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `sentence-summary-service` and `word-length-service` both implemented with Ring middleware, Reitit router, run with the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/auto-instrument/interceptor`
 +
@@ -156,7 +156,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `solar-system-service` and `planet-service` implemented with Pedestal interceptors, both using the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `solar-system-service` and `planet-service` both implemented with Pedestal interceptors, run with the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/manual-instrument/middleware`
 +
@@ -175,7 +175,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `puzzle-service` and `random-word-service` implemented with Ring middleware, Reitit router, not using the agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `puzzle-service` and `random-word-service` both implemented with Ring middleware, Reitit router, not using the agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/manual-instrument/interceptor`
 +
@@ -194,7 +194,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `average-service` and `sum-service` implemented with Pedestal interceptors, not using the agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `average-service` and `sum-service` both implemented with Pedestal interceptors, not using the agent, exporting telemetry to a Collector instance.
 
 . *Build example*
 +
@@ -250,7 +250,7 @@ The other examples are designed to be loaded and exercised in the REPL as follow
 
 * In the chosen example directory and your favourite Clojure development environment, start a REPL with the `otel` alias enabled
 * Load the example namespace and set as current
-* Evaluate each expression in the comment block at the end of the namespace
+* Evaluate each expression or enter each terminal command in the comment block at the end of the namespace
 
 . *View telemetry data in backends*
 +

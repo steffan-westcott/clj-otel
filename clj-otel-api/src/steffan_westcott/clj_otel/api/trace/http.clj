@@ -125,7 +125,7 @@
        :name       (str (str/upper-case (name request-method)) " " app-root route)
        :attributes {SemanticAttributes/HTTP_ROUTE route}}))))
 
-(defprotocol ^:private AsErrorType
+(defprotocol ^:private ^:no-doc AsErrorType
   (as-error-type ^String [e]))
 
 (extend-protocol AsErrorType
@@ -358,7 +358,7 @@
        (handler request respond raise)))))
 
 (defn wrap-reitit-route
-  "Ring middleware to add matched Reitit route to the server span and Ring
+  "Ring middleware to add matched Reitit route to the server span data and Ring
    request map. This assumes `reitit.ring/ring-handler` is used with option
    `:inject-match?` set to true (which is the default)."
   [handler]
@@ -367,9 +367,9 @@
                 (get-in request [:reitit.core/match :template]))))
 
 (defn wrap-compojure-route
-  "Ring middleware to add matched Compojure route to the server span and Ring
-   request map. Use `compojure.core/wrap-routes` to apply this middleware to
-   all route handlers."
+  "Ring middleware to add matched Compojure route to the server span data and
+   Ring request map. Use `compojure.core/wrap-routes` to apply this middleware
+   to all route handlers."
   [handler]
   (wrap-route handler
               (fn [{prefix   :compojure/route-context

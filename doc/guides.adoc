@@ -253,17 +253,20 @@ By default, the bound or current context is used.
 
 NOTE: Counter, up-down counter and gauge instruments support taking measurements asynchronously.
 
-* Create a 0-arity function that returns a measurement, or a sequence of measurements.
+* Create a 0-arity function that returns a single measurement (a map), or a collection of measurements.
 The measurement(s) may have attributes.
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#instrument[`steffan-westcott.clj-otel.api.metrics.instrument/instrument`] to create an instrument of the required type.
 The second parameter is the function created in the previous step.
 +
 [source,clojure]
 ----
-(defn read-temperature []
-  (let [temp (get-core-temp)]
-    {:value temp
-     :attributes {:location :reactor-core}}))
+(defn read-temperatures []
+  (let [core-temp (get-core-temp)
+        exhaust-temp (get-exhaust-temp)]
+    [{:value core-temp
+      :attributes {:location :reactor-core}}
+     {:value exhaust-temp
+      :attributes {:location :exhaust-pipe}}]))
 
 (defonce temperature
   (instrument/instrument {:name "app.temperature"
@@ -271,7 +274,7 @@ The second parameter is the function created in the previous step.
                           :measurement-type :long
                           :unit "{degree Celsius}"
                           :description "The operating temperature"}
-                         read-temperature))
+                         read-temperatures))
 ----
 
 ==== Add JVM runtime telemetry

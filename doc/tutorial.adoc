@@ -216,7 +216,7 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
   (-> handler
       params/wrap-params
       wrap-exception
-      (trace-http/wrap-server-span)))
+      trace-http/wrap-server-span))
 ----
 
 * Update the `get-count-handler` function to add an attribute `service.counter/count` to the existing server span as follows:

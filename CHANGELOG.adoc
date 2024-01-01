@@ -26,17 +26,19 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.5` (in progress)
 
+- [FIX] Queried header names in  context propagator text maps (for manually instrumented applications) should be lower-cased.
+Previously, `b3multi` and `xray` propagators would fail because header names in Ring `request` maps are lower-cased but the queried header name may not.
 - [ADD] Module `clj-otel-sdk-common` which wraps the OpenTelemetry SDK common library.
 - [BREAK] Moved function `merge-resources-with-default` to new module `clj-otel-sdk-common`.
 - [ADD] Terse syntax alternatives for `span-opts` map parameter in `new-span!` and related functions that create spans.
 - [ADD] Convenience function `add-event!` to add an event to the bound or current span.
 - [ADD] Populate `err.type` trace semantic attribute on manually created client and server spans.
-- [ADD] Support for adding Compojure route data to HTTP server spans.
+- [ADD] Middleware `wrap-compojure-route` that adds the matched Compojure route to the server span and request map.
 - [MAINT] Ensure example microservices uberjars are built and run on the same JDK.
 - Bump deps
 * [MAINT] OpenTelemetry `1.33.0`
 * [MAINT] gRPC `1.60.1`
-* [MAINT] Pedestal `0.6.1`
+* [MAINT] Pedestal `0.6.3`
 * [MAINT] Various build deps
 
 === `0.2.4.1` (2023-10-01)

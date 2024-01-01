@@ -64,7 +64,7 @@
   (-> handler
       params/wrap-params
       wrap-exception
-      (trace-http/wrap-server-span)))
+      trace-http/wrap-server-span))
 
 
 (defonce ^{:doc "counter-service server instance"} server

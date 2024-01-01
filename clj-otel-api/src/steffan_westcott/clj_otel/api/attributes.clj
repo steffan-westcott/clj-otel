@@ -87,7 +87,7 @@
 (defn ->attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
    keyword, string or `AttributeKey` instance. Each map value may be a boolean,
-   long, double, string or a homogenous array of those types. Attributes with
+   long, double, string or a collection of one of those types. Attributes with
    `nil` values are dropped."
   ^Attributes [m]
   (let [kvs (keep attribute-key-value m)]

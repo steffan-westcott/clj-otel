@@ -52,7 +52,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
                     :attributes {:system/profile-id (:id profile)}}
     (validate profile)))
 ----
-** To add metrics telemetry, use Clojure functions in https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument[`steffan-westcott.clj-otel.api.metrics.instrument`] to create instruments and take measurements with attributes
+** To add metrics telemetry, use Clojure functions in https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument[`steffan-westcott.clj-otel.api.metrics.instrument`] to create instruments, then add or record measurements with attributes
 +
 [source,clojure]
 ----
