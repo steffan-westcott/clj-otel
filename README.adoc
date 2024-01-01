@@ -41,15 +41,14 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.4.1"}}}
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.5"}}}
 ----
 ** To add traces telemetry, use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
 +
 [source,clojure]
 ----
 (defn validate-profile [profile]
-  (span/with-span! {:name       "Validating profile"
-                    :attributes {:system/profile-id (:id profile)}}
+  (span/with-span! ["Validating profile" {:system/profile-id (:id profile)}]
     (validate profile)))
 ----
 ** To add metrics telemetry, use Clojure functions in https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument[`steffan-westcott.clj-otel.api.metrics.instrument`] to create instruments, then add or record measurements with attributes
@@ -196,5 +195,5 @@ Cloud-native software is so complex now, we need all the help we can get to unde
 
 == License
 
-Copyright © 2021-2023 Steffan Westcott +
+Copyright © 2021-2024 Steffan Westcott +
 Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]

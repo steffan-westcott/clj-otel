@@ -43,7 +43,7 @@
 (defn inc-count-handler
   "Ring handler for 'POST /inc' request. Increments counter, returns HTTP 204."
   []
-  (span/with-span! {:name "Incrementing counter"}
+  (span/with-span! "Incrementing counter"
     (swap! counter inc))
   (response/status 204))
 

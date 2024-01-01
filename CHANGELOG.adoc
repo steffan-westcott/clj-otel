@@ -24,7 +24,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
-=== `0.2.5` (in progress)
+=== `0.2.5` (2024-01-01)
 
 - [FIX] Queried header names in  context propagator text maps (for manually instrumented applications) should be lower-cased.
 Previously, `b3multi` and `xray` propagators would fail because header names in Ring `request` maps are lower-cased but the queried header name may not.
