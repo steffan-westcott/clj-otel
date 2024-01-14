@@ -29,13 +29,13 @@
                                      "-Dotel.logs.exporter=none"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
-                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "1.32.0-alpha"}
+                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.0.0-alpha"}
 
                                      ;; Enable export of telemetry using OpenTelemetry Protocol (OTLP)
-                                     io.opentelemetry/opentelemetry-exporter-otlp       {:mvn/version "1.34.0"}
+                                     io.opentelemetry/opentelemetry-exporter-otlp       {:mvn/version "1.34.1"}
 
                                      ;; Enable export of metrics to Prometheus via HTTP server for scraping
-                                     io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.34.0-alpha"}
+                                     io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.34.1-alpha"}
 
                                     }}
 

@@ -9,8 +9,8 @@ receivers:
   otlp:
     protocols:
 
-      # Enable gRPC receiver
-      grpc:
+      # Enable HTTP receiver
+      http:
 
 
 

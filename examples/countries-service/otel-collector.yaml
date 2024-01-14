@@ -8,10 +8,10 @@ receivers:
     protocols:
 
       # Enable gRPC receiver
-      grpc:
+#      grpc:
 
       # Enable HTTP receiver
-#      http:
+      http:
 
 
 

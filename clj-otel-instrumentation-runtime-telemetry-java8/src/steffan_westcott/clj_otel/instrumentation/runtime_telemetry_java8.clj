@@ -1,22 +1,13 @@
 (ns steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8
   "Functions for registering measurements about the JVM runtime on Java 8+."
   (:require [steffan-westcott.clj-otel.api.otel :as otel])
-  (:import (io.opentelemetry.instrumentation.runtimemetrics.java8 BufferPools
-                                                                  Classes
+  (:import (io.opentelemetry.instrumentation.runtimemetrics.java8 Classes
                                                                   Cpu
                                                                   GarbageCollector
                                                                   MemoryPools
                                                                   Threads)
            (java.lang AutoCloseable)
            (java.util List)))
-
-(defn register-buffer-pools!
-  "Registers measurements that generate metrics about buffer pools and returns
-   a list of AutoCloseable."
-  (^List []
-   (register-buffer-pools! (otel/get-default-otel!)))
-  (^List [open-telemetry]
-   (BufferPools/registerObservers open-telemetry)))
 
 (defn register-classes!
   "Registers measurements that generate metrics about JVM classes and returns a
@@ -66,8 +57,8 @@
   ([open-telemetry]
    (reduce #(into %1 (%2 open-telemetry))
            []
-           [register-buffer-pools! register-classes! register-cpu! register-garbage-collector!
-            register-memory-pools! register-threads!])))
+           [register-classes! register-cpu! register-garbage-collector! register-memory-pools!
+            register-threads!])))
 
 (defn close!
   "Closes each of a collection of AutoCloseable."

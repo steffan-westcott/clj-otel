@@ -19,7 +19,6 @@
  :aliases {;; Include this alias to export telemetry data
            :otel {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
                              "-javaagent:../opentelemetry-javaagent.jar"
-                             "-Dotel.semconv-stability.opt-in=http"
 
                              ;; Name the instrumented application or service
                              "-Dotel.resource.attributes=service.name=countries-service"

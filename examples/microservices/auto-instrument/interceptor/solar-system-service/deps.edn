@@ -30,7 +30,6 @@
            org.example/common.interceptor.utils {:local/root "../../../../common/interceptor.utils"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
-                              "-Dotel.semconv-stability.opt-in=http"
                               "-Dotel.resource.attributes=service.name=solar-system-service"
                               "-Dotel.metric.export.interval=10000"
                               "-Dotel.logs.exporter=none"]}

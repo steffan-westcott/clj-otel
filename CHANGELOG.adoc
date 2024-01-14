@@ -27,7 +27,11 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 === `0.2.6` (in progress)
 
 - Bump deps
-* [MAINT] OpenTelemetry `1.34.0`
+* [MAINT] OpenTelemetry `1.34.1`
+** [BREAK] OpenTelemetry instrumentation agent `2.0.0`
+The default OTLP exporter protocol used by the agent has changed from `grpc` to `http/protobuf`.
+See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v2.0.0[release notes] for details on this and other breaking changes.
+Note the default OTLP exporter protocol used by the autoconfigure SDK extension remains as `grpc`.
 
 === `0.2.5` (2024-01-01)
 
@@ -42,8 +46,6 @@ Previously, `b3multi` and `xray` propagators would fail because header names in 
 - [MAINT] Ensure example microservices uberjars are built and run on the same JDK.
 - Bump deps
 * [MAINT] OpenTelemetry `1.33.0`
-* [MAINT] gRPC `1.60.1`
-* [MAINT] Pedestal `0.6.3`
 * [MAINT] Various build deps
 
 === `0.2.4.1` (2023-10-01)
@@ -70,7 +72,6 @@ Added load generator applications to microservices examples.
 ** [BREAK] `clj-otel-exporter-jaeger-*` are now deprecated, use `clj-otel-exporter-otlp` instead
 * [BREAK] Now using `io.opentelemetry.semconv/opentelemetry-semconv` semantic conventions.
 This impacts manually instrumented HTTP server applications using `clj-otel` middleware or interceptors, as several semantic attributes have changed.
-* [MAINT] gRPC `1.58.0`
 * [MAINT] Various build deps
 
 === `0.2.3` (2023-06-18)
@@ -82,8 +83,6 @@ This impacts manually instrumented HTTP server applications using `clj-otel` mid
 * [MAINT] OpenTelemetry `1.27.0`
 ** [BREAK] The default value for autoconfiguration property `otel.logs.exporter` has changed from `none` to `otlp`
 ** [BREAK] Module `clj-otel-instrumentation-runtime-metrics` has been renamed and split into modules `clj-otel-instrumentation-runtime-telemetry-java8` and `clj-otel-instrumentation-runtime-telemetry-java17`
-* [MAINT] gRPC `1.56.0`
-* [MAINT] Pedestal `0.6.0`
 
 === `0.2.2` (2023-06-05)
 
@@ -99,7 +98,6 @@ The Jaeger Collector now accepts OTLP directly.
 See the https://www.jaegertracing.io/docs/1.45/client-libraries/#deprecating-jaeger-clients[Jaeger clients deprecation notice].
 - Bump deps:
 * [MAINT] OpenTelemetry contrib `1.26.0-alpha`
-* [MAINT] gRPC `1.55.1`
 * [MAINT] Various build deps
 
 === `0.2.1` (2023-05-08)
@@ -108,7 +106,6 @@ See the https://www.jaegertracing.io/docs/1.45/client-libraries/#deprecating-jae
 - [MAINT] Removed deprecated build dep `build-clj`
 - Bump deps:
 * [MAINT] OpenTelemetry `1.26.0`
-* [MAINT] gRPC `1.54.1`
 * [MAINT] Various build deps
 
 === `0.2.0` (2023-04-10)
@@ -136,14 +133,12 @@ The pattern also ensures all requests are recorded, including those which do not
 ** [BREAK] Module `clj-otel-extension-aws` renamed to `clj-otel-contrib-aws-xray-propagator`
 ** [BREAK] Module `clj-otel-sdk-extension-aws` renamed to `clj-otel-contrib-aws-resources`
 ** [BREAK] Module `clj-otel-sdk-extension-resources` renamed to `clj-otel-instrumentation-resources`
-* [MAINT] gRPC `1.54.0`
 * [MAINT] Various build deps
 
 === `0.1.5` (2022-09-03)
 
 - Bump deps:
 * [MAINT] OpenTelemetry `1.17.0`
-* [MAINT] gRPC `1.49.0`
 * [MAINT] Various build deps
 
 === `0.1.4` (2022-07-05)
@@ -154,14 +149,12 @@ By default, attributes identifying the namespace, line number and source file pa
 - Bump deps:
 * [MAINT] OpenTelemetry `1.15.0`
 ** [BREAK] Modules `clj-otel-exporter-otlp-*` are merged to new module `clj-otel-exporter-otlp`
-* [MAINT] gRPC `1.47.0`
 * [MAINT] Various build deps
 
 === `0.1.3` (2022-05-22)
 
 - Bump deps:
 * [MAINT] OpenTelemetry `1.14.0`
-* [MAINT] gRPC `1.46.0`
 * [MAINT] Various build deps
 
 === `0.1.2` (2022-04-13)
@@ -172,14 +165,12 @@ By default, attributes identifying the namespace, line number and source file pa
 * [MAINT] OpenTelemetry `1.13.0`
 ** [BREAK] The default value for autoconfiguration property `otel.metrics.exporter` has changed from `none` to `otlp`
 * [MAINT] Clojure `1.11.1`
-* [MAINT] gRPC `1.45.1`
 * [MAINT] Various build deps
 
 === `0.1.1` (2022-03-13)
 
 - Bump deps:
 * [MAINT] OpenTelemetry `1.12.0`
-* [MAINT] gRPC `1.45.0`
 * [MAINT] Various build deps
 
 === `0.1.0` (2022-02-27)
