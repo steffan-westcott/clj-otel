@@ -19,7 +19,7 @@ clojure -A:deps -T:build help/doc"
   (:import (java.nio.file FileSystems)))
 
 (def ^:private version
-  "0.2.6-SNAPSHOT")
+  "0.2.6")
 
 ;; Later artifacts in this vector may depend on earlier artifacts
 (def ^:private library-project-paths
