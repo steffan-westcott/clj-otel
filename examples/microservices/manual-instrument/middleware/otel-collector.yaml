@@ -31,7 +31,7 @@ processors:
 exporters:
 
   # Logs brief summary of telemetry data to console
-  logging:
+  debug:
 
   # Exports to Jaeger using OTLP over gRPC
   otlp/jaeger:
@@ -68,10 +68,10 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ logging, otlp/jaeger ]
+      exporters: [ debug, otlp/jaeger ]
 
     # Enable pipeline of components for metrics
     metrics:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ prometheusremotewrite ]
+      exporters: [ debug, prometheusremotewrite ]
