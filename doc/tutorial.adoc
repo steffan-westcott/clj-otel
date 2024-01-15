@@ -115,7 +115,7 @@ You will now start a telemetry backend that will receive and display telemetry t
 ----
 docker run --rm                     \
            -p 16686:16686           \
-           -p 4317:4317             \
+           -p 4318:4318             \
            jaegertracing/all-in-one \
            --collector.otlp.enabled=true
 ----

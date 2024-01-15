@@ -709,8 +709,8 @@ For an example application `my-app` that exports traces only using OTLP over gRP
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.34.0"}
-                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "1.32.0-alpha"}
+          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.34.1"}
+                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "2.0.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.60.1"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.60.1"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.60.1"}}}}}
@@ -803,7 +803,7 @@ See the https://opentelemetry.io/docs/collector/configuration/[configuration doc
 
 This example Collector configuration has a `traces` pipeline where:
 
-* Trace data are received by the Collector as OTLP over gRPC
+* Trace data are received by the Collector as OTLP over HTTP
 * Memory usage in the Collector process is limited
 * Traces are batched in the Collector prior to export to the backend
 * Traces are exported by the Collector as OTLP over gRPC to the Jaeger backend on host `jaeger`
@@ -814,7 +814,7 @@ This example Collector configuration has a `traces` pipeline where:
 receivers:
   otlp:
     protocols:
-      grpc:
+      http:
 
 processors:
   memory_limiter:

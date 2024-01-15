@@ -26,6 +26,8 @@ git clone https://github.com/steffan-westcott/clj-otel.git
 +
 Before running any of the examples, the file `opentelemetry-javaagent.jar` must be downloaded and placed in the `examples` directory.
 See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[releases page] for notes and download links.
++
+NOTE: The examples assume `opentelemetry-javaagent.jar` version `2.0.0` or later is used.
 
 . *Select example*
 +
