@@ -127,18 +127,6 @@ image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-expo
 
 Configuration of span and metrics exporters using OTLP.
 
-==== `opentelemetry-exporter-jaeger`
-
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-jaeger[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-jaeger]
-
-Configuration of span exporter to Jaeger using gRPC.
-
-==== `opentelemetry-exporter-jaeger-thrift`
-
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-jaeger-thrift[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-jaeger-thrift]
-
-Configuration of span exporter to Jaeger using Thrift.
-
 ==== `opentelemetry-exporter-zipkin`
 
 image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-zipkin[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-zipkin]
@@ -174,20 +162,6 @@ image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-expo
 image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-otlp[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp/CURRENT]
 
 Configuration of span and metrics exporters using OTLP.
-
-==== `clj-otel-exporter-jaeger-grpc`
-
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc/CURRENT]
-
-Configuration of span exporter to Jaeger using gRPC.
-
-==== `clj-otel-exporter-jaeger-thrift`
-
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift/CURRENT]
-
-Configuration of span exporter to Jaeger using Thrift.
 
 ==== `clj-otel-exporter-zipkin`
 

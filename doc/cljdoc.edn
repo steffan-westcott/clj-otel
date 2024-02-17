@@ -10,8 +10,6 @@
                    ["Changelog" {:file "CHANGELOG.adoc"}]]
  com.github.steffan-westcott/clj-otel-contrib-aws-resources {:cljdoc.doc/tree [["README" {:file "clj-otel-contrib-aws-resources/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator {:cljdoc.doc/tree [["README" {:file "clj-otel-contrib-aws-xray-propagator/README.adoc"}]]}
- com.github.steffan-westcott/clj-otel-exporter-jaeger-grpc {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-jaeger-grpc/README.adoc"}]]}
- com.github.steffan-westcott/clj-otel-exporter-jaeger-thrift {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-jaeger-thrift/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-exporter-logging {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-logging/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-exporter-logging-otlp {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-logging-otlp/README.adoc"}]]}
  com.github.steffan-westcott/clj-otel-exporter-otlp {:cljdoc.doc/tree [["README" {:file "clj-otel-exporter-otlp/README.adoc"}]]}
