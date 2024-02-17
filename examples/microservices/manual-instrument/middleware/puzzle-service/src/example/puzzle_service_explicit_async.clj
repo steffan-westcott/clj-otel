@@ -174,7 +174,7 @@
   (let [<words (<random-words context word-types)]
     (async'/go-try
       (try
-        (loop [scrambled-words (PersistentQueue/EMPTY)]
+        (loop [scrambled-words PersistentQueue/EMPTY]
           (if-let [word (async'/<? <words)]
             (recur (conj scrambled-words (scramble context word)))
             (do
