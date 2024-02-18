@@ -2,7 +2,8 @@
   "Span data exporter to Zipkin."
   (:require [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.exporter.zipkin ZipkinSpanExporter)
-           (java.util.function Supplier)))
+           (java.util.function Supplier)
+           (zipkin2.reporter BytesEncoder BytesMessageSender)))
 
 (defn span-exporter
   "Returns a span exporter that sends span data using the
@@ -13,15 +14,16 @@
    |-----------------------|-------------|
    |`:endpoint`            | With the default sender, Zipkin endpoint e.g. `\"http://zipkinhost:9411/api/v2/spans\"` (default: `\"http://localhost:9411/api/v2/spans\"`).
    |`:read-timeout`        | With the default sender, maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
-   |`:sender`              | `zipkin2.reporter.Sender` used to send span data (default: `OkHttpSender` instance with `:endpoint` and `:read-timeout` config).
-   |`:encoder`             | `zipkin2.codec.BytesEncoder` Format used to send span data (default: `SpanBytesEncoder/JSON_V2`).
+   |`:sender`              | `zipkin2.reporter.BytesMessageSender` used to send span data (default: `OkHttpSender` instance with `:compression`, `:endpoint` and `:read-timeout` config).
+   |`:encoder`             | `zipkin2.reporter.BytesEncoder` Format used to send span data (default: `SpanBytesEncoder/JSON_V2`).
    |`:local-ip-address-fn` | 0-arg function that returns `nil` or `InetAddress` of local Zipkin endpoint (default: fn that returns local IP address captured when exporter created).
    |`:compression`         | Method used to compress payloads. Value is string `\"gzip\"` or `\"none\"` (default: `\"gzip\"`).
    |`:meter-provider`      | ^MeterProvider to collect metrics related to export (default: metrics not collected)."
   (^ZipkinSpanExporter []
    (span-exporter {}))
   (^ZipkinSpanExporter
-   [{:keys [endpoint read-timeout sender encoder local-ip-address-fn compression meter-provider]}]
+   [{:keys [endpoint read-timeout ^BytesMessageSender sender ^BytesEncoder encoder
+            local-ip-address-fn compression meter-provider]}]
    (let [builder (cond-> (ZipkinSpanExporter/builder)
                    endpoint            (.setEndpoint endpoint)
                    read-timeout        (.setReadTimeout (util/duration read-timeout))
