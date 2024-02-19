@@ -63,9 +63,7 @@
   "Returns the default meter if not nil. Otherwise, gets a meter using
    defaults and sets this as the default meter."
   ^Meter []
-  (if-let [meter @default-meter]
-    meter
-    (set-default-meter! (get-meter))))
+  (swap! default-meter #(or % (get-meter))))
 
 (defprotocol Counter
   "Protocol for instruments of type `:counter` or `:up-down-counter` that take

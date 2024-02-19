@@ -41,9 +41,7 @@
    no instance has been previously set, this falls back to the global instance
    declared by OpenTelemetry Java."
   ^OpenTelemetry []
-  (if-let [otel @default-otel]
-    otel
-    (set-default-otel! (get-global-otel!))))
+  (swap! default-otel #(or % (get-global-otel!))))
 
 (defn get-text-map-propagator
   "Gets the text map propagator of an `OpenTelemetry` instance `open-telemetry`

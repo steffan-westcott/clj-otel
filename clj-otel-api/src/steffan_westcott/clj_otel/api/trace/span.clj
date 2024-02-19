@@ -56,9 +56,7 @@
   "Returns the default tracer if not nil. Otherwise, gets a tracer using
    defaults and sets this as the default tracer."
   ^Tracer []
-  (if-let [tracer @default-tracer]
-    tracer
-    (set-default-tracer! (get-tracer))))
+  (swap! default-tracer #(or % (get-tracer))))
 
 (def ^:private keyword->StatusCode
   {:unset StatusCode/UNSET
