@@ -159,7 +159,7 @@
    | key                  | description |
    |----------------------|-------------|
    |`:context`            | Context to propagate (default: bound or current context).
-   |`:text-map-propagator`| Propagator used to create headers map entries (default: propagator set in global `OpenTelemetry` instance)."
+   |`:text-map-propagator`| Propagator used to create headers map entries (default: propagator set in default or global `OpenTelemetry` instance)."
   ([]
    (->headers {}))
   ([{:keys [^Context context ^TextMapPropagator text-map-propagator]
@@ -177,7 +177,7 @@
    | key                  | description |
    |----------------------|-------------|
    |`:context`            | Context to merge with (default: bound or current context).
-   |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in global `OpenTelemetry` instance)."
+   |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in default or global `OpenTelemetry` instance)."
   (^Context [headers]
    (headers->merged-context headers {}))
   (^Context
