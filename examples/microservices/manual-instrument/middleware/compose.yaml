@@ -4,6 +4,8 @@ services:
   random-word-service:
     image: example.clj-otel/random-word-service:latest
     env_file: compose.env
+    ports:
+      - "8091:8091"      # nREPL server
     depends_on:
       otel-collector:
         condition: service_started
@@ -14,6 +16,8 @@ services:
     env_file: compose.env
     environment:
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
+    ports:
+      - "8090:8090"      # nREPL server
     depends_on:
       random-word-service:
         condition: service_healthy

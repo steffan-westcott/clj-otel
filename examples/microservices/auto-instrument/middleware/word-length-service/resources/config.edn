@@ -1,2 +1,4 @@
-{:jetty-opts {:max-threads 16
-              :port        8081}}
+{:jetty {:max-threads 16
+         :port        8081}
+ :nrepl {:bind "0.0.0.0"
+         :port 8091}}

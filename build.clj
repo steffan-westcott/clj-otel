@@ -44,7 +44,8 @@ clojure -A:deps -T:build help/doc"
   ["examples/common/core-async.utils"
    "examples/common/interceptor.utils"
    "examples/common/load-gen"
-   "examples/common/log4j2.utils"])
+   "examples/common/log4j2.utils"
+   "examples/common/system"])
 
 (def ^:private uber-demo-project-paths
   ["examples/microservices/auto-instrument/interceptor/planet-service"
@@ -123,7 +124,7 @@ clojure -A:deps -T:build help/doc"
    :resource-dirs     ["resources"]
    :root-path         root-path
    :scm               {:tag tag}
-   :src-dirs          ["src"]
+   :src-dirs          ["src" "dev"]
    :src-pom           "template/pom.xml"
    :target-dir        "target"
    :uber-file         (format "target/%s-standalone.jar" artifact-id)
@@ -137,10 +138,10 @@ clojure -A:deps -T:build help/doc"
                                                                  :snapshot
                                                                  :release)]
                                  (uber-demo-project? root-path)
-                                 [:log4j])
+                                 [:log4j :dev])
                   :group-id    (group-id root-path)
                   :main        (when (uber-demo-project? root-path)
-                                 (symbol (str "example." (artifact-id root-path))))
+                                 (symbol (str "example." (artifact-id root-path) ".main")))
                   :root-path   root-path
                   :tag         (when (library-project? root-path)
                                  @head-sha-1)}))
@@ -297,8 +298,10 @@ clojure -A:deps -T:build help/doc"
   files using clj-kondo. Assumes a working installation of `clj-kondo`
   executable binary."
   [_]
-  (let [src-paths (map #(str % "/src") project-paths)]
-    (checked-process {:command-args (concat ["clj-kondo" "--lint" "build.clj"] src-paths)})))
+  (let [paths (->> project-paths
+                   (mapcat #(list (str % "/src") (str % "/dev")))
+                   (filter #(.isDirectory (io/file %))))]
+    (checked-process {:command-args (concat ["clj-kondo" "--lint" "build.clj"] paths)})))
 
 (defn outdated
   "Check all clj-otel-* libraries, example applications and tutorials for
@@ -316,7 +319,8 @@ clojure -A:deps -T:build help/doc"
   "Apply formatting to all *.clj and *.edn source files using zprint. Assumes a
   working installation of `zprint` executable binary."
   [_]
-  (let [project-files (mapcat #(globs % "src/**.clj" "*.edn" "resources/**.edn") project-paths)
+  (let [project-files (mapcat #(globs % "src/**.clj" "dev/**.clj" "*.edn" "resources/**.edn")
+                       project-paths)
         other-files   (globs "." "*.clj" "*.edn" ".clj-kondo/**.edn" "doc/**.edn")
         files         (concat project-files other-files)
         config-url    (-> ".zprint.edn"

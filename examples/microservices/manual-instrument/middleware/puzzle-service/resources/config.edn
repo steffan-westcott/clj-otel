@@ -1,3 +1,6 @@
-{:endpoints  {:random-word-service #or [#env RANDOM_WORD_SERVICE_ENDPOINT "http://localhost:8081"]}
- :jetty-opts {:max-threads 16
-              :port        8080}}
+{:endpoints   {:random-word-service #or [#env RANDOM_WORD_SERVICE_ENDPOINT "http://localhost:8081"]}
+ :jetty       {:max-threads 16
+               :port        8080}
+ :nrepl       {:bind "0.0.0.0"
+               :port 8090}
+ :server-impl #or [#env SERVER "sync"]}

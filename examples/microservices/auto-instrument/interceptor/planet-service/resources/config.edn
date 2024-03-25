@@ -1,2 +1,4 @@
-{:service-map {:io.pedestal.http/port 8081
+{:nrepl       {:bind "0.0.0.0"
+               :port 8091}
+ :service-map {:io.pedestal.http/port 8081
                :io.pedestal.http/container-options {:max-threads 16}}}

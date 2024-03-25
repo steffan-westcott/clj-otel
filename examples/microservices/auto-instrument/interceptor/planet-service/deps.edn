@@ -1,6 +1,6 @@
 ;!zprint {:style [:respect-nl] :width 140}
 
-{:paths   ["src" "resources"]
+{:paths   ["src" "dev" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
 
@@ -20,7 +20,10 @@
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
 
            ;; Interceptor utilities
-           org.example/common.interceptor.utils {:local/root "../../../../common/interceptor.utils"}}
+           org.example/common.interceptor.utils {:local/root "../../../../common/interceptor.utils"}
+
+           ;; Common functions for system configuration and operation
+           org.example/common.system {:local/root "../../../../common/system"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
                               "-Dotel.resource.attributes=service.name=planet-service"
@@ -34,4 +37,8 @@
                                 org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.23.0"}
                                 org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.23.0"}}
                    :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}
+                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
+
+           :dev   {:extra-paths ["dev"]
+                   :extra-deps  {nrepl/nrepl       {:mvn/version "1.1.1"}
+                                 http-kit/http-kit {:mvn/version "2.7.0"}}}}}
