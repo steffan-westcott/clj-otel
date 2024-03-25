@@ -1,0 +1,8 @@
+{:datasource {:adapter           "postgresql"
+              :username          "rpg"
+              :password          "rpg"
+              :database-name     "rpg"
+              :server-name       "localhost"
+              :maximum-pool-size 2}
+ :jetty      {:max-threads 16
+              :port        8080}}

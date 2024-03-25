@@ -66,6 +66,7 @@ clojure -A:deps -T:build help/doc"
    "examples/cube-app"
    "examples/divisor-app"
    "examples/factorial-app"
+   "examples/rpg-service"
    "examples/square-app"
    "tutorial/instrumented"])
 

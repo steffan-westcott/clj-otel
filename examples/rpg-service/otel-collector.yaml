@@ -1,0 +1,67 @@
+# OpenTelemetry Collector configuration.
+
+# Telemetry data receivers components
+receivers:
+
+  # Receives data in OpenTelemetry Protocol format
+  otlp:
+    protocols:
+
+      # Enable gRPC receiver
+#      grpc:
+
+      # Enable HTTP receiver
+      http:
+
+
+
+# Telemetry data processors components
+processors:
+
+  # Help avoid out-of-memory errors during high load
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 50
+
+  # Places received data in batches prior to export
+  batch:
+
+
+
+# Telemetry data exporters components
+exporters:
+
+  # Logs brief summary of telemetry data to console
+  debug:
+
+  # Exports to Jaeger using OTLP over gRPC
+  otlp/jaeger:
+    endpoint: "jaeger:4317"
+    tls:
+      insecure: true
+
+  # Exports to Prometheus
+  prometheusremotewrite:
+    endpoint: "http://prometheus:9090/api/v1/write"
+    tls:
+      insecure: true
+
+
+
+# Enable receivers, processors, exporters and extensions components
+service:
+
+  # Enable pipelines of components for telemetry data
+  pipelines:
+
+    # Enable pipeline of components for traces
+    traces:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ debug, otlp/jaeger ]
+
+    # Enable pipeline of components for metrics
+    metrics:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ debug, prometheusremotewrite ]
