@@ -27,10 +27,14 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 === `0.2.7` (in progress)
 
 - Bump deps
-* [MAINT] OpenTelemetry `1.35.0`
+* [MAINT] OpenTelemetry `1.36.0`
 ** [BREAK] Removed modules `clj-otel-exporter-jaeger-grpc` and `clj-otel-exporter-jaeger-thrift` as the Java libraries `opentelemetry-exporter-jaeger` and `opentelemetry-exporter-jaeger-thrift` are no longer published.
 Jaeger has native support for OTLP, use `clj-otel-exporter-otlp` instead to configure an OTLP exporter.
 ** [BREAK] In module `clj-otel-exporter-zipkin`, `span-exporter` options `:sender` and `:encoder` now take `zipkin2.reporter.BytesMessageSender` and `zipkin2.codec.BytesEncoder` values
+* Refactored microservice examples
+** Added state lifecycle management, using `with-open` and `closeable` pattern
+** Altered Ring/Pedestal servers to reload routes on every HTTP request
+** Added embedded nREPL server
 
 === `0.2.6` (2024-01-15)
 

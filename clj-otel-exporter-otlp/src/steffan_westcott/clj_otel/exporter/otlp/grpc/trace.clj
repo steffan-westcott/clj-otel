@@ -24,13 +24,14 @@
    |`:x509-trust-manager`      | `^X509TrustManager` \"bring your own SSLContext\" alternative to setting certificate bytes when using TLS.
    |`:compression-method`      | Method used to compress payloads, `\"gzip\"` or `\"none\"` (default: `\"none\"`).
    |`:timeout`                 | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
+   |`:connect-timeout`         | Maximum time to wait for new connections to be established. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).\n
    |`:retry-policy`            | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: retry disabled).
    |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected)."
   (^OtlpGrpcSpanExporter []
    (span-exporter {}))
   (^OtlpGrpcSpanExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
-            ssl-context x509-trust-manager compression-method timeout retry-policy
+            ssl-context x509-trust-manager compression-method timeout connect-timeout retry-policy
             ^MeterProvider meter-provider]}]
    (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
                    endpoint (.setEndpoint endpoint)
@@ -43,6 +44,7 @@
                                                                         x509-trust-manager)
                    compression-method (.setCompression compression-method)
                    timeout (.setTimeout (util/duration timeout))
+                   connect-timeout (.setConnectTimeout (util/duration connect-timeout))
                    retry-policy (.setRetryPolicy (export/retry-policy retry-policy))
                    meter-provider (.setMeterProvider meter-provider))]
      (.build builder))))

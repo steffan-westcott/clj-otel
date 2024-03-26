@@ -1,7 +1,8 @@
 (ns steffan-westcott.clj-otel.sdk.export
   "Utilities for OpenTelemetry SDK exporters."
   (:require [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.sdk.common.export RetryPolicy)))
+  (:import (io.opentelemetry.sdk.common.export ProxyOptions RetryPolicy)
+           (java.net InetSocketAddress ProxySelector)))
 
 (defn retry-policy
   "Builds and returns a `RetryPolicy` object. May take an option map as
@@ -21,3 +22,15 @@
                    max-backoff        (.setMaxBackoff (util/duration max-backoff))
                    backoff-multiplier (.setBackoffMultiplier backoff-multiplier))]
      (.build builder))))
+
+(defn proxy-options
+  "Builds and returns a `ProxyOptions` object. Takes a map with one of the options defined:
+
+   | key               | description |
+   |-------------------|-------------|
+   |`:proxy-selector`  | ^ProxySelector defines proxy selection.
+   |`:socket-address`  | ^InetSocketAddress specifies socket address of a single HTTP proxy."
+  [{:keys [^ProxySelector proxy-selector ^InetSocketAddress socket-address]}]
+  (if proxy-selector
+    (ProxyOptions/create proxy-selector)
+    (ProxyOptions/create socket-address)))
