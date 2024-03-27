@@ -5,4 +5,4 @@
  :deps  {org.clojure/clojure    {:mvn/version "1.11.2"}
          org.clojure/core.async {:mvn/version "1.6.681"}
          com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}
-         ring/ring-core         {:mvn/version "1.11.0"}}}
+         ring/ring-core         {:mvn/version "1.12.1"}}}

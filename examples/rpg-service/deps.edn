@@ -26,10 +26,10 @@
            org.example/common.system {:local/root "../common/system"}
 
            ;; PostgreSQL JDBC driver
-           org.postgresql/postgresql {:mvn/version "42.7.2"}
+           org.postgresql/postgresql {:mvn/version "42.7.3"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.11.0"}}
+           ring/ring-jetty-adapter {:mvn/version "1.12.1"}}
 
  :aliases {;; Include this alias to export telemetry data
            :otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent

@@ -30,7 +30,7 @@
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.11.0"}}
+           ring/ring-jetty-adapter {:mvn/version "1.12.1"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
                               "-Dotel.resource.attributes=service.name=sentence-summary-service"
