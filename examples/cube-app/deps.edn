@@ -2,7 +2,7 @@
 
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.11.1"}
+ :deps    {org.clojure/clojure {:mvn/version "1.11.2"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}}
@@ -14,8 +14,8 @@
                              ;; Name the instrumented application or service
                              "-Dotel.resource.attributes=service.name=cube-app"
 
-                             ;; Set metric export to every 10 seconds
-                             "-Dotel.metric.export.interval=10000"
+                             ;; Set metric export to every 5 seconds
+                             "-Dotel.metric.export.interval=5000"
 
                              ;; Disable logs export
                              "-Dotel.logs.exporter=none"]}}}

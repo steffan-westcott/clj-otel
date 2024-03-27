@@ -2,6 +2,6 @@
 
 {:paths ["src"]
 
- :deps  {org.clojure/clojure {:mvn/version "1.11.1"}
+ :deps  {org.clojure/clojure {:mvn/version "1.11.2"}
          ring/ring-core      {:mvn/version "1.11.0"}
          com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}}}
