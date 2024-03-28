@@ -1,5 +1,9 @@
 .calva
 .clj-kondo/.cache
+.clj-kondo/com.github.seancorfield
+.clj-kondo/com.github.steffan-westcott
+.clj-kondo/http-kit
+.clj-kondo/metosin
 .cpcache
 .idea
 .lein-*
