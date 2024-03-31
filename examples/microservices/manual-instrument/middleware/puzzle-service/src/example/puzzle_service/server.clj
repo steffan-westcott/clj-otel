@@ -49,7 +49,6 @@
                                     ;; Add metrics that include http.route attribute
                                     metrics-http-server/wrap-metrics-by-route
 
-                                    parameters/parameters-middleware ;
                                     muuntaja/format-negotiate-middleware ;
                                     muuntaja/format-response-middleware ;
                                     exception/exception-middleware ;
@@ -58,8 +57,8 @@
                                     ;; exception/exception-middleware runs
                                     trace-http/wrap-exception-event ;
 
+                                    parameters/parameters-middleware ;
                                     muuntaja/format-request-middleware ;
-                                    ;coercion/coerce-exceptions-middleware ;
                                     coercion/coerce-response-middleware ;
                                     coercion/coerce-request-middleware ;
                                    ]}}))

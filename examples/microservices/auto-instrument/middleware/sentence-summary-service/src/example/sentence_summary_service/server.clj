@@ -45,7 +45,6 @@
                        :middleware [;; Add route data to server span
                                     trace-http/wrap-reitit-route ;
 
-                                    parameters/parameters-middleware ;
                                     muuntaja/format-negotiate-middleware ;
                                     muuntaja/format-response-middleware ;
                                     exception/exception-middleware ;
@@ -54,8 +53,8 @@
                                     ;; exception/exception-middleware runs
                                     trace-http/wrap-exception-event ;
 
+                                    parameters/parameters-middleware ;
                                     muuntaja/format-request-middleware ;
-                                    ;coercion/coerce-exceptions-middleware ;
                                     coercion/coerce-response-middleware ;
                                     coercion/coerce-request-middleware ;
                                    ]}}))
