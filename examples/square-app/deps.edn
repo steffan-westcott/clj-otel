@@ -29,7 +29,7 @@
                                      io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.2.0-alpha"}
 
                                      ;; Enables export of telemetry using OpenTelemetry Protocol (OTLP)
-                                     io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.36.0"}}}
+                                     io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.37.0"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
            :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.62.2"}

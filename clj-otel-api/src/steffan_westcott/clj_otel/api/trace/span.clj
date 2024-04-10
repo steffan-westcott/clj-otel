@@ -212,6 +212,18 @@
                 (some? escaping?) (assoc SemanticAttributes/EXCEPTION_ESCAPED (boolean escaping?)))]
     (.recordException span exception (attr/->attributes attrs))))
 
+(defn- add-link-data!
+  [^Span span [sc attributes]]
+  (if-let [span-context (get-span-context sc)]
+    (if attributes
+      (.addLink span span-context (attr/->attributes attributes))
+      (.addLink span span-context))
+    span))
+
+(defn- add-links-data!
+  ^Span [span links]
+  (reduce add-link-data! span links))
+
 (defn add-span-data!
   "Adds data to a span. All data values documented here are optional unless
    otherwise noted as required. Takes a top level option map as follows:
@@ -226,6 +238,7 @@
    |`:attributes`| Map of additional attributes to merge in the span.
    |`:event`     | Option map (see below) describing an event to add to the span.
    |`:ex-data`   | Option map (see below) describing an exception event to add to the span.
+   |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link.
 
    `:status` option map
 
@@ -249,7 +262,7 @@
    |`:exception` | Exception instance (required).
    |`:escaping?` | Optional value, true if exception is escaping the span's scope, false if exception is caught within the span's scope and not rethrown.
    |`:attributes`| Map of additional attributes to attach to exception event."
-  [{:keys [context name status attributes event ex-data]
+  [{:keys [context name status attributes event ex-data links]
     :or   {context (context/dyn)}}]
   (let [span (get-span context)]
     (cond-> span
@@ -257,7 +270,8 @@
       status     (.setStatus (keyword->StatusCode (:code status)) (:description status))
       attributes (.setAllAttributes (attr/->attributes attributes))
       event      (add-event-data! event)
-      ex-data    (add-ex-data! ex-data))))
+      ex-data    (add-ex-data! ex-data)
+      links      (add-links-data! links))))
 
 (defn add-event!
   "Adds an event to the bound or current context. `name` is a string, keyword or

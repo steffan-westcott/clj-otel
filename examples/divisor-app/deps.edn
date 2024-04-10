@@ -32,10 +32,10 @@
                                      io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.2.0-alpha"}
 
                                      ;; Enable export of telemetry using OpenTelemetry Protocol (OTLP)
-                                     io.opentelemetry/opentelemetry-exporter-otlp       {:mvn/version "1.36.0"}
+                                     io.opentelemetry/opentelemetry-exporter-otlp       {:mvn/version "1.37.0"}
 
                                      ;; Enable export of metrics to Prometheus via HTTP server for scraping
-                                     io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.36.0-alpha"}
+                                     io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.37.0-alpha"}
 
                                     }}
 
