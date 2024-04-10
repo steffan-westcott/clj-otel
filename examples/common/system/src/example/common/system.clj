@@ -10,8 +10,8 @@
 
 (defn closeable
   "Wrap a value with support for `Closeable`."
-  ([value] (closeable value identity))
-  ([value close]
+  (^Closeable [value] (closeable value identity))
+  (^Closeable [value close]
    (reify
     IDeref
       (deref [_]
