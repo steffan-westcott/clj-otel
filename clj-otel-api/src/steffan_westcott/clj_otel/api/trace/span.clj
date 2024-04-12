@@ -10,7 +10,9 @@
            (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
-           (io.opentelemetry.semconv SemanticAttributes)))
+           (io.opentelemetry.semconv ExceptionAttributes)
+           (io.opentelemetry.semconv.incubating CodeIncubatingAttributes
+                                                ThreadIncubatingAttributes)))
 
 (def ^:private default-library
   (get-in config [:defaults :instrumentation-library]))
@@ -173,14 +175,14 @@
         parent-context (or parent (context/root))
         {:keys [fn ns line file]} source
         default-attributes (cond-> {}
-                             thread (assoc SemanticAttributes/THREAD_NAME
+                             thread (assoc ThreadIncubatingAttributes/THREAD_NAME
                                            (.getName thread)
-                                           SemanticAttributes/THREAD_ID
+                                           ThreadIncubatingAttributes/THREAD_ID
                                            (.getId thread))
-                             fn     (assoc SemanticAttributes/CODE_FUNCTION fn)
-                             ns     (assoc SemanticAttributes/CODE_NAMESPACE ns)
-                             line   (assoc SemanticAttributes/CODE_LINENO line)
-                             file   (assoc SemanticAttributes/CODE_FILEPATH file))
+                             fn     (assoc CodeIncubatingAttributes/CODE_FUNCTION fn)
+                             ns     (assoc CodeIncubatingAttributes/CODE_NAMESPACE ns)
+                             line   (assoc CodeIncubatingAttributes/CODE_LINENO line)
+                             file   (assoc CodeIncubatingAttributes/CODE_FILEPATH file))
         attributes' (merge default-attributes attributes)
         builder (cond-> (.spanBuilder tracer' (str name))
                   :always   (.setParent parent-context)
@@ -209,7 +211,8 @@
    {:keys [exception escaping? attributes]
     :or   {attributes {}}}]
   (let [attrs (cond-> attributes
-                (some? escaping?) (assoc SemanticAttributes/EXCEPTION_ESCAPED (boolean escaping?)))]
+                (some? escaping?) (assoc ExceptionAttributes/EXCEPTION_ESCAPED
+                                         (boolean escaping?)))]
     (.recordException span exception (attr/->attributes attrs))))
 
 (defn- add-link-data!

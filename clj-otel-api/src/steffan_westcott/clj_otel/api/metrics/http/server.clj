@@ -3,7 +3,8 @@
    OpenTelemetry instrumentation agent."
   (:require [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.context :as context])
-  (:import (io.opentelemetry.semconv SemanticAttributes)))
+  (:import (io.opentelemetry.semconv HttpAttributes UrlAttributes ServerAttributes)
+           (io.opentelemetry.semconv.incubating HttpIncubatingAttributes)))
 
 (defn- nano-time!
   []
@@ -66,16 +67,16 @@
 (defn- active-requests-attrs
   [server-request-attrs]
   (select-keys server-request-attrs
-               [SemanticAttributes/HTTP_REQUEST_METHOD SemanticAttributes/URL_SCHEME
-                SemanticAttributes/SERVER_ADDRESS SemanticAttributes/SERVER_PORT]))
+               [HttpAttributes/HTTP_REQUEST_METHOD UrlAttributes/URL_SCHEME
+                ServerAttributes/SERVER_ADDRESS ServerAttributes/SERVER_PORT]))
 
 (defn- request-duration-or-size-attrs
   [server-request-attrs status]
   (-> (select-keys server-request-attrs
-                   [SemanticAttributes/HTTP_REQUEST_METHOD SemanticAttributes/HTTP_ROUTE
-                    SemanticAttributes/URL_SCHEME SemanticAttributes/SERVER_ADDRESS
-                    SemanticAttributes/SERVER_PORT])
-      (assoc SemanticAttributes/HTTP_RESPONSE_STATUS_CODE status)))
+                   [HttpAttributes/HTTP_REQUEST_METHOD HttpAttributes/HTTP_ROUTE
+                    UrlAttributes/URL_SCHEME ServerAttributes/SERVER_ADDRESS
+                    ServerAttributes/SERVER_PORT])
+      (assoc HttpAttributes/HTTP_RESPONSE_STATUS_CODE status)))
 
 (defn- record-duration!
   ([start-time server-request-attrs status]
@@ -89,7 +90,7 @@
 (defn- record-request-size!
   ([server-request-attrs status] (record-request-size! server-request-attrs status (context/dyn)))
   ([server-request-attrs status context]
-   (when-let [size (get server-request-attrs SemanticAttributes/HTTP_REQUEST_BODY_SIZE)]
+   (when-let [size (get server-request-attrs HttpIncubatingAttributes/HTTP_REQUEST_BODY_SIZE)]
      (instrument/record! @request-size
                          {:value      size
                           :attributes (request-duration-or-size-attrs server-request-attrs status)

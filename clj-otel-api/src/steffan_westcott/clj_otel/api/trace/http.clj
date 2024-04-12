@@ -8,7 +8,13 @@
   (:require [clojure.string :as str]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context])
-  (:import (io.opentelemetry.semconv SemanticAttributes)))
+  (:import (io.opentelemetry.semconv ClientAttributes
+                                     ErrorAttributes
+                                     HttpAttributes
+                                     ServerAttributes
+                                     UrlAttributes
+                                     UserAgentAttributes)
+           (io.opentelemetry.semconv.incubating HttpIncubatingAttributes)))
 
 (defn- parse-long*
   [s]
@@ -43,17 +49,16 @@
   (let [{:keys [headers request-method scheme uri query-string remote-addr]} request
         {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
         [_ host-name host-port] (re-find #"^(.*?)(?::(\d*))?$" host)]
-    (cond-> {SemanticAttributes/HTTP_REQUEST_METHOD (str/upper-case (name request-method))
-             SemanticAttributes/URL_SCHEME          (name scheme)
-             SemanticAttributes/SERVER_ADDRESS      host-name
-             SemanticAttributes/URL_PATH            uri
-             SemanticAttributes/URL_QUERY           query-string
-             SemanticAttributes/CLIENT_ADDRESS      (client-ip forwarded
-                                                               x-forwarded-for
-                                                               remote-addr)}
-      user-agent      (assoc SemanticAttributes/USER_AGENT_ORIGINAL user-agent)
-      content-length  (assoc SemanticAttributes/HTTP_REQUEST_BODY_SIZE (parse-long* content-length))
-      (seq host-port) (assoc SemanticAttributes/SERVER_PORT (parse-long* host-port))
+    (cond-> {HttpAttributes/HTTP_REQUEST_METHOD (str/upper-case (name request-method))
+             UrlAttributes/URL_SCHEME        (name scheme)
+             ServerAttributes/SERVER_ADDRESS host-name
+             UrlAttributes/URL_PATH          uri
+             UrlAttributes/URL_QUERY         query-string
+             ClientAttributes/CLIENT_ADDRESS (client-ip forwarded x-forwarded-for remote-addr)}
+      user-agent      (assoc UserAgentAttributes/USER_AGENT_ORIGINAL user-agent)
+      content-length  (assoc HttpIncubatingAttributes/HTTP_REQUEST_BODY_SIZE
+                             (parse-long* content-length))
+      (seq host-port) (assoc ServerAttributes/SERVER_PORT (parse-long* host-port))
       captured-request-headers
       (merge-headers-attrs "http.request.header." captured-request-headers headers))))
 
@@ -70,7 +75,7 @@
    (server-span-opts request {}))
   ([request {:keys [app-root]}]
    (let [{:keys [headers io.opentelemetry/server-request-attrs]} request]
-     {:name       (let [method (get server-request-attrs SemanticAttributes/HTTP_REQUEST_METHOD)]
+     {:name       (let [method (get server-request-attrs HttpAttributes/HTTP_REQUEST_METHOD)]
                     (if app-root
                       (str method " " app-root "/*")
                       method))
@@ -99,7 +104,7 @@
      {:name       method'
       :span-kind  :client
       :parent     parent
-      :attributes {SemanticAttributes/HTTP_REQUEST_METHOD method'}})))
+      :attributes {HttpAttributes/HTTP_REQUEST_METHOD method'}})))
 
 (defn add-route-data!
   "Adds data about the matched HTTP `request-method` and `route` to a server
@@ -123,7 +128,7 @@
      (span/add-span-data!
       {:context    context
        :name       (str (str/upper-case (name request-method)) " " app-root route)
-       :attributes {SemanticAttributes/HTTP_ROUTE route}}))))
+       :attributes {HttpAttributes/HTTP_ROUTE route}}))))
 
 (defprotocol ^:private ^:no-doc AsErrorType
   (as-error-type ^String [e]))
@@ -159,8 +164,8 @@
          err-type (and error?
                        (or (and error-type (as-error-type error-type)) (and status (str status))))
          attrs (cond-> {}
-                 status   (assoc SemanticAttributes/HTTP_RESPONSE_STATUS_CODE status)
-                 err-type (assoc SemanticAttributes/ERROR_TYPE err-type))
+                 status   (assoc HttpAttributes/HTTP_RESPONSE_STATUS_CODE status)
+                 err-type (assoc ErrorAttributes/ERROR_TYPE err-type))
          span-status (when error?
                        (cond-> {:code :error}
                          description (assoc :description description)))]
@@ -342,7 +347,7 @@
        (do
          (add-route-data! request-method route)
          (handler (assoc-in request
-                   [:io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
+                   [:io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
                    route)))
        (handler request)))
     ([{:keys [request-method io.opentelemetry/server-span-context]
@@ -351,7 +356,7 @@
        (do
          (add-route-data! request-method route {:context server-span-context})
          (handler (assoc-in request
-                   [:io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
+                   [:io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
                    route)
                   respond
                   raise))
@@ -506,7 +511,7 @@
             (let [path (:path route)]
               (add-route-data! (:request-method request) path {:context server-span-context})
               (assoc-in ctx
-               [:request :io.opentelemetry/server-request-attrs SemanticAttributes/HTTP_ROUTE]
+               [:request :io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
                path)))})
 
 (defn exception-event-interceptor

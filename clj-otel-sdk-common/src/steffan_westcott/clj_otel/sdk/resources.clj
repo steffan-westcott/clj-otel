@@ -1,7 +1,7 @@
 (ns ^:no-doc steffan-westcott.clj-otel.sdk.resources
   "Utilities for `io.opentelemetry.sdk.resources.Resource` objects."
   (:require [steffan-westcott.clj-otel.api.attributes :as attr])
-  (:import (io.opentelemetry.semconv ResourceAttributes)
+  (:import (io.opentelemetry.semconv ServiceAttributes)
            (java.util Map)
            (io.opentelemetry.sdk.resources Resource)))
 
@@ -22,6 +22,6 @@
    the merge of these with the default SDK resource as a single `Resource`
    object."
   ^Resource [service-name resources]
-  (let [service-resource {:attributes {ResourceAttributes/SERVICE_NAME service-name}}
+  (let [service-resource {:attributes {ServiceAttributes/SERVICE_NAME service-name}}
         resources'       (cons service-resource resources)]
     (reduce #(.merge ^Resource %1 (as-Resource %2)) (Resource/getDefault) resources')))
