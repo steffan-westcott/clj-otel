@@ -37,7 +37,7 @@
                                  "Unknown word type"
                                  {:type          ::ring/response
                                   :response      {:status 400
-                                                  :body   "Unknown word type"}
+                                                  :body   {:error "Unknown word type"}}
                                   :service/error :service.random-word.errors/unknown-word-type
                                   :system/word-type word-type})))
 

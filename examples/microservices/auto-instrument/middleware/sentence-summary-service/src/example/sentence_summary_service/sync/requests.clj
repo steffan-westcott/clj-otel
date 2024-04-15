@@ -14,15 +14,17 @@
   ;; server by injecting headers into the request.
   (let [endpoint (get-in config [:endpoints :word-length-service])
         response (client/get (str endpoint "/length")
-                             {:throw-exceptions   false
+                             {:throw-exceptions false
                               :connection-manager conn-mgr
-                              :http-client        client
-                              :query-params       {"word" word}})
-        status   (:status response)]
+                              :http-client  client
+                              :query-params {"word" word}
+                              :accept       :json
+                              :as           :json})
+        {:keys [status body]} response]
     (if (= 200 status)
-      (Integer/parseInt (:body response))
+      (:length body)
       (throw (ex-info "Unexpected HTTP response"
                       {:type          ::ring/response
                        :response      {:status status
-                                       :body   "Unexpected HTTP response"}
+                                       :body   {:error "Unexpected HTTP response"}}
                        :service/error :service.errors/unexpected-http-response})))))

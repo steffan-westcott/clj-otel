@@ -18,7 +18,8 @@
   [types]
   {:method       :get
    :url          (str (puzzle-endpoint) "/puzzle")
-   :query-params {:types types}})
+   :query-params {:types types}
+   :accept       "application/json"})
 
 (defn- rand-valid-types
   []

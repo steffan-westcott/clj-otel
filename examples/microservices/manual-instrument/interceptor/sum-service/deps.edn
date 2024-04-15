@@ -30,6 +30,10 @@
            io.pedestal/pedestal.route {:mvn/version "0.6.3"}
            io.pedestal/pedestal.service {:mvn/version "0.6.3"}
 
+           ;; Muuntaja content negotiation
+           metosin/jsonista {:mvn/version "0.3.8"}
+           metosin/muuntaja {:mvn/version "0.6.10"}
+
            ;; Functions for logging strings and maps using Log4j2
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
 
@@ -60,5 +64,6 @@
                                 "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
            :dev   {:extra-paths ["dev"]
-                   :extra-deps  {nrepl/nrepl       {:mvn/version "1.1.1"}
-                                 http-kit/http-kit {:mvn/version "2.7.0"}}}}}
+                   :extra-deps  {org.clojure/data.json {:mvn/version "2.5.0"}
+                                 nrepl/nrepl           {:mvn/version "1.1.1"}
+                                 http-kit/http-kit     {:mvn/version "2.7.0"}}}}}

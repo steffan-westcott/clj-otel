@@ -19,7 +19,8 @@
   [words]
   {:method       :get
    :url          (str (sentence-summary-endpoint) "/summary")
-   :query-params {:sentence (str/join " " words)}})
+   :query-params {:sentence (str/join " " words)}
+   :accept       "application/json"})
 
 (defn- rand-words
   []

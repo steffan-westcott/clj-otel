@@ -15,8 +15,9 @@
 (defn get-puzzle
   "Returns a response containing a puzzle of the requested word types."
   [components {{{:keys [types]} :query} :parameters}]
-  (let [word-types (map keyword (str/split types #","))]
-    (response/response (app/generate-puzzle components word-types))))
+  (let [word-types (map keyword (str/split types #","))
+        puzzle     (app/generate-puzzle components word-types)]
+    (response/response {:puzzle puzzle})))
 
 
 
@@ -27,4 +28,4 @@
    ["/puzzle"
     {:get {:handler    (partial get-puzzle components)
            :parameters {:query [:map [:types :string]]}
-           :responses  {200 {:body [:string]}}}}]])
+           :responses  {200 {:body [:map [:puzzle :string]]}}}}]])

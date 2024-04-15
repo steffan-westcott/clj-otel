@@ -71,14 +71,15 @@
         <response (<client-request components
                                    {:method       :get
                                     :url          (str endpoint "/random-word")
-                                    :query-params {"type" (name word-type)}})]
+                                    :query-params {"type" (name word-type)}
+                                    :accept       :json
+                                    :as           :json})]
     (async'/go-try
-      (let [response (async'/<? <response)
-            status   (:status response)]
+      (let [{:keys [status body]} (async'/<? <response)]
         (if (= 200 status)
-          (:body response)
+          (:word body)
           (throw (ex-info "Unexpected HTTP response"
                           {:type          ::ring/response
                            :response      {:status status
-                                           :body   "Unexpected HTTP response"}
+                                           :body   {:error "Unexpected HTTP response"}}
                            :service/error :service.errors/unexpected-http-response})))))))

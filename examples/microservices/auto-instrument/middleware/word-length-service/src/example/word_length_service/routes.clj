@@ -22,10 +22,10 @@
     (throw (ex-info "Bad word argument"
                     {:type          ::ring/response
                      :response      {:status 400
-                                     :body   "Bad word argument"}
+                                     :body   {:error "Bad word argument"}}
                      :service/error :service.word-length.errors/bad-word
                      :system/word   word}))
-    (response/response (str (app/word-length components word)))))
+    (response/response {:length (app/word-length components word)})))
 
 
 
@@ -36,4 +36,4 @@
    ["/length"
     {:get {:handler    (partial get-length components)
            :parameters {:query [:map [:word :string]]}
-           :responses  {200 {:body [:string]}}}}]])
+           :responses  {200 {:body [:map [:length :int]]}}}}]])

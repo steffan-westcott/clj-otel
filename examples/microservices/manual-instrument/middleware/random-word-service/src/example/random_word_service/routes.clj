@@ -16,7 +16,7 @@
   [components {{{:keys [type]} :query} :parameters}]
   (let [word (app/random-word components (keyword type))]
     (Thread/sleep ^long (+ 20 (rand-int 20)))
-    (response/response word)))
+    (response/response {:word word})))
 
 
 
@@ -27,4 +27,4 @@
    ["/random-word"
     {:get {:handler    (partial get-random-word components)
            :parameters {:query [:map [:type :string]]}
-           :responses  {200 {:body [:string]}}}}]])
+           :responses  {200 {:body [:map [:word :string]]}}}}]])

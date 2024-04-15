@@ -22,17 +22,20 @@
 (defn process-response
   "Returns the status and decoded JSON body of a response, or client error."
   [{:keys [status body error]}]
-  (or error
-      {:status status
-       :body   (json/read-str body
-                              {:eof-error? false
-                               :key-fn     keyword})}))
+  (if error
+    {:error error}
+    {:status status
+     :body   (json/read-str body
+                            {:eof-error? false
+                             :key-fn     keyword})}))
 
 #_{:clj-kondo/ignore [:unresolved-var]}
 (defn do-get-request
   "Make a GET request to the running system."
   [path]
-  (process-response @(client/get (str "http://localhost:8080" path))))
+  (process-response @(client/get (str "http://localhost:8080" path)
+                                 {:headers {"Accept" "application/json"}
+                                  :as      :text})))
 
 (defn get-character
   "Request the running system for data on an RPG character."

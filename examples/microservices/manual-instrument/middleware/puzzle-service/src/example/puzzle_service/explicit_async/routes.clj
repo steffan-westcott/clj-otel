@@ -22,7 +22,7 @@
         <puzzle    (app/<generate-puzzle components server-span-context word-types)]
     (async'/ch->respond-raise <puzzle
                               (fn [puzzle]
-                                (respond (response/response puzzle)))
+                                (respond (response/response {:puzzle puzzle})))
                               raise)))
 
 
@@ -33,4 +33,4 @@
    ["/puzzle"
     {:get {:handler    (partial get-puzzle components)
            :parameters {:query [:map [:types :string]]}
-           :responses  {200 {:body [:string]}}}}]])
+           :responses  {200 {:body [:map [:puzzle :string]]}}}}]])

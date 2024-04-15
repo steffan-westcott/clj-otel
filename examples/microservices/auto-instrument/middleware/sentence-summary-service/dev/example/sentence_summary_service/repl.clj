@@ -7,11 +7,13 @@
 (defn process-response
   "Returns the status and decoded JSON body of a response, or client error."
   [{:keys [status body error]}]
-  (or error
-      {:status status
-       :body   (cond-> body
-                 (= 200 status) (json/read-str {:eof-error? false
-                                                :key-fn     keyword}))}))
+  (if error
+    {:error error}
+    {:status status
+     :body   (and body
+                  (json/read-str body
+                                 {:eof-error? false
+                                  :key-fn     keyword}))}))
 
 
 #_{:clj-kondo/ignore [:unresolved-var]}
@@ -33,7 +35,8 @@
   "Request the running system for a summary of the given sentence."
   [sentence]
   (do-get-request "/summary"
-                  {:query-params {"sentence" sentence}}))
+                  {:query-params {"sentence" sentence}
+                   :headers      {"Accept" "application/json"}}))
 
 
 (defn unknown-request
