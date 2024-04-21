@@ -1,15 +1,20 @@
 (ns example.sum-service.repl
   "Functions to operate and exercise the running service at the REPL."
-  (:require [clojure.string :as str]
+  (:require [clojure.data.json :as json]
+            [clojure.string :as str]
             [org.httpkit.client :as client]))
 
 
 (defn process-response
-  "Returns the status and body of a response, or client error."
+  "Returns the status and decoded JSON body of a response, or client error."
   [{:keys [status body error]}]
-  (or error
-      {:status status
-       :body   body}))
+  (if error
+    {:error error}
+    {:status status
+     :body   (and body
+                  (json/read-str body
+                                 {:eof-error? false
+                                  :key-fn     keyword}))}))
 
 
 #_{:clj-kondo/ignore [:unresolved-var]}
@@ -31,7 +36,8 @@
   "Request the running system for the sum of the given nums."
   [nums]
   (do-get-request "/sum"
-                  {:query-params {"nums" (str/join "," (map str nums))}}))
+                  {:query-params {"nums" (str/join "," (map str nums))}
+                   :headers      {"Accept" "application/json"}}))
 
 
 (defn unknown-request

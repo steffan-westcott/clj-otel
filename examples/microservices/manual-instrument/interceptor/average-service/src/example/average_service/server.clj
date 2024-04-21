@@ -34,33 +34,41 @@
   [default-interceptors
    {:keys [config]
     :as   components}]
-  (map interceptor/interceptor
-       (concat (;; As this application is not run with the OpenTelemetry instrumentation
-                ;; agent, create a server span for each request. The current context is
-                ;; set if all request handling is processed synchronously.
-                trace-http/server-span-interceptors {:create-span?         true
-                                                     :set-current-context? (sync? config)})
+  (map
+   interceptor/interceptor
+   (concat
+    (;; As this application is not run with the OpenTelemetry instrumentation
+     ;; agent, create a server span for each request. The current context is
+     ;; set if all request handling is processed synchronously.
+     trace-http/server-span-interceptors {:create-span?         true
+                                          :set-current-context? (sync? config)})
 
-               ;; Add metric that records the number of active HTTP requests
-               [(metrics-http-server/active-requests-interceptor)]
+    ;; Add metric that records the number of active HTTP requests
+    [(metrics-http-server/active-requests-interceptor)]
 
-               ;; Default Pedestal interceptor stack
-               default-interceptors
+    ;; Negotiate content formats
+    [(interceptor-utils/content-negotiation-interceptor)]
 
-               ;; Adds matched route data to server spans
-               [(trace-http/route-interceptor)]
+    ;; Coerce HTTP response format
+    [(interceptor-utils/coerce-response-interceptor)]
 
-               ;; Adds metrics that include http.route attribute
-               (metrics-http-server/metrics-by-route-interceptors)
+    ;; Default Pedestal interceptor stack
+    default-interceptors
 
-               ;; Convert exception to HTTP response
-               [(interceptor-utils/exception-response-interceptor)]
+    ;; Adds matched route data to server spans
+    [(trace-http/route-interceptor)]
 
-               ;; Add exception event to server span
-               [(trace-http/exception-event-interceptor)]
+    ;; Adds metrics that include http.route attribute
+    (metrics-http-server/metrics-by-route-interceptors)
 
-               ;; Add system components to context
-               [(interceptor-utils/components-interceptor components)])))
+    ;; Convert exception to HTTP response
+    [(interceptor-utils/exception-response-interceptor)]
+
+    ;; Add exception event to server span
+    [(trace-http/exception-event-interceptor)]
+
+    ;; Add system components to context
+    [(interceptor-utils/components-interceptor components)])))
 
 
 
@@ -71,7 +79,8 @@
   (-> {::http/routes #(routes config) ; rebuild routes on every request
        ::http/type   :jetty
        ::http/host   "0.0.0.0"
-       ::http/join?  false}
+       ::http/join?  false
+       ::http/not-found-interceptor (interceptor-utils/not-found-interceptor)}
       (merge (:service-map config))
       (http/default-interceptors)
       (update ::http/interceptors update-interceptors components)))
@@ -79,7 +88,7 @@
 
 
 (defn server
-  "Starts the server."
+  "Starts the server and returns an initialized service map."
   [service-map]
   (http/start (http/create-server service-map)))
 

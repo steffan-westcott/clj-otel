@@ -48,12 +48,14 @@
         path      (str "/planets/" (name planet) "/" (name statistic))
         <response (<client-request components
                                    {:method :get
-                                    :url    (str endpoint path)})]
+                                    :url    (str endpoint path)
+                                    :accept :json
+                                    :as     :json})]
     (async'/go-try
       (let [response (async'/<? <response)
-            status   (:status response)]
+            {:keys [status body]} response]
         (if (= 200 status)
-          {statistic (Double/parseDouble (:body response))}
+          {statistic (:statistic body)}
           (throw (ex-info (str status " HTTP response")
                           {:http.response/status status
                            :service/error        :service.errors/unexpected-http-response})))))))

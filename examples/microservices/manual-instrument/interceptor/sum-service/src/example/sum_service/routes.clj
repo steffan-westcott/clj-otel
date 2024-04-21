@@ -28,7 +28,7 @@
       (throw (ex-info "Zero argument"
                       {:http.response/status 400
                        :system/error         :service.sum.errors/zero-argument}))
-      (response/response (str (app/sum components nums))))))
+      (response/response {:sum (app/sum components nums)}))))
 
 
 

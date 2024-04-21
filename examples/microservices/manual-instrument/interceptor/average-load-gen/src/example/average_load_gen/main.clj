@@ -18,7 +18,8 @@
   [nums]
   {:method       :get
    :url          (str (average-endpoint) "/average")
-   :query-params {:nums nums}})
+   :query-params {:nums nums}
+   :accept       "application/json"})
 
 (defn- rand-odds
   []

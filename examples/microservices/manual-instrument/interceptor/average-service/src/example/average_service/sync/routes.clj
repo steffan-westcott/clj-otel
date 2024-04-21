@@ -23,7 +23,7 @@
                       (filter seq))
         nums     (map #(Integer/parseInt %) num-strs)
         avs      (app/averages components nums)]
-    (response/response (str avs))))
+    (response/response {:average avs})))
 
 
 

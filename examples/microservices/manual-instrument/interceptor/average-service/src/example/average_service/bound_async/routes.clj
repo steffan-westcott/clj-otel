@@ -28,7 +28,7 @@
                   <avs     (app/<averages (:components request) nums)]
               (async'/go-try-response ctx
                 (let [avs (async'/<? <avs)]
-                  (response/response (str avs))))))})
+                  (response/response {:average avs})))))})
 
 
 

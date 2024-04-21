@@ -14,13 +14,15 @@
         ;; propagates the context containing the client span to the remote HTTP
         ;; server by injecting headers into the request.
         response (client/get (str endpoint path)
-                             {:throw-exceptions   false
+                             {:throw-exceptions false
                               :connection-manager conn-mgr
-                              :http-client        client})
-        status   (:status response)]
+                              :http-client client
+                              :accept      :json
+                              :as          :json})
+        {:keys [status body]} response]
 
     (if (= 200 status)
-      {statistic (Double/parseDouble (:body response))}
+      {statistic (:statistic body)}
       (throw (ex-info (str status " HTTP response")
                       {:http.response/status status
                        :service/error        :service.errors/unexpected-http-response})))))

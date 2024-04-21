@@ -17,7 +17,7 @@
   [{:keys [components query-params]}]
   (let [planet (keyword (get query-params :planet))
         report (app/planet-report components planet)]
-    (response/response report)))
+    (response/response {:statistics report})))
 
 
 

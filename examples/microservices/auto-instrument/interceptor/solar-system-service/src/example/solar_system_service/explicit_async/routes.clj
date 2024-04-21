@@ -23,7 +23,7 @@
                   <report (app/<planet-report (:components request) server-span-context planet)]
               (async'/go-try-response ctx
                 (let [report (async'/<? <report)]
-                  (response/response report)))))})
+                  (response/response {:statistics report})))))})
 
 
 

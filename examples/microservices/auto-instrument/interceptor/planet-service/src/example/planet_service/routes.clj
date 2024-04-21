@@ -26,7 +26,7 @@
       (throw (ex-info "Pluto is not a full planet"
                       {:http.response/status 400
                        :service/error        :service.planet.errors/pluto-not-full-planet}))
-      (response/response (str (app/planet-statistic components planet statistic))))))
+      (response/response {:statistic (app/planet-statistic components planet statistic)}))))
 
 
 

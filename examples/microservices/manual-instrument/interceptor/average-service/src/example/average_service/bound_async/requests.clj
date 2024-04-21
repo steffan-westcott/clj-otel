@@ -69,12 +69,14 @@
         <response (<client-request components
                                    {:method       :get
                                     :url          (str endpoint "/sum")
-                                    :query-params {"nums" (str/join "," nums)}})]
+                                    :query-params {"nums" (str/join "," nums)}
+                                    :accept       :json
+                                    :as           :json})]
     (async'/go-try
       (let [response (async'/<? <response)
-            status   (:status response)]
+            {:keys [status body]} response]
         (if (= 200 status)
-          (Integer/parseInt (:body response))
+          (:sum body)
           (throw (ex-info (str status " HTTP response")
                           {:http.response/status status
                            :service/error        :service.errors/unexpected-http-response})))))))

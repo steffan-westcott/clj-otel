@@ -16,6 +16,12 @@
                 ;; create another one.
                 trace-http/server-span-interceptors {:create-span? false})
 
+               ;; Negotiate content formats
+               [(interceptor-utils/content-negotiation-interceptor)]
+
+               ;; Coerce HTTP response format
+               [(interceptor-utils/coerce-response-interceptor)]
+
                ;; Default Pedestal interceptor stack
                default-interceptors
 
@@ -40,7 +46,8 @@
   (-> {::http/routes #(routes/routes) ; on every request, look up routes/routes var and rebuild
        ::http/type   :jetty
        ::http/host   "0.0.0.0"
-       ::http/join?  false}
+       ::http/join?  false
+       ::http/not-found-interceptor (interceptor-utils/not-found-interceptor)}
       (merge (:service-map config))
       (http/default-interceptors)
       (update ::http/interceptors update-interceptors components)))
@@ -48,7 +55,7 @@
 
 
 (defn server
-  "Starts the server."
+  "Starts the server and returns an initialized service map."
   [service-map]
   (http/start (http/create-server service-map)))
 

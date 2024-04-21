@@ -30,10 +30,6 @@
            io.pedestal/pedestal.route {:mvn/version "0.6.3"}
            io.pedestal/pedestal.service {:mvn/version "0.6.3"}
 
-           ;; Muuntaja content negotiation
-           metosin/jsonista {:mvn/version "0.3.8"}
-           metosin/muuntaja {:mvn/version "0.6.10"}
-
            ;; Functions for logging strings and maps using Log4j2
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
 

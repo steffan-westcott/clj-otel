@@ -18,7 +18,8 @@
   [planet]
   {:method       :get
    :url          (str (solar-system-endpoint) "/statistics")
-   :query-params {:planet planet}})
+   :query-params {:planet planet}
+   :accept       "application/json"})
 
 (defn rand-valid-req
   "Returns a random valid request."
