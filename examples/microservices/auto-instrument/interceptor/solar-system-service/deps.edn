@@ -9,7 +9,7 @@
            aero/aero {:mvn/version "1.1.6"}
 
            ;; clj-http HTTP client
-           clj-http/clj-http {:mvn/version "3.12.3"}
+           clj-http/clj-http {:mvn/version "3.13.0"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}

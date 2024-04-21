@@ -13,7 +13,7 @@
            cheshire/cheshire {:mvn/version "5.13.0"}
 
            ;; clj-http HTTP client
-           clj-http/clj-http {:mvn/version "3.12.3"}
+           clj-http/clj-http {:mvn/version "3.13.0"}
 
            ;; Jackson deps version pinning
            com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.17.0"}
@@ -24,7 +24,7 @@
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.8"}
-           metosin/malli {:mvn/version "0.15.0"}
+           metosin/malli {:mvn/version "0.16.0"}
            metosin/muuntaja {:mvn/version "0.6.10"}
            metosin/reitit-malli {:mvn/version "0.7.0-alpha7"}
            metosin/reitit-middleware {:mvn/version "0.7.0-alpha7"}
