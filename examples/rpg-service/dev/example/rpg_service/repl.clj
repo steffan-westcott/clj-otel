@@ -1,7 +1,7 @@
 (ns example.rpg-service.repl
   "Functions to operate and exercise the rpg-service system at the REPL."
   (:require [clojure.data.json :as json]
-            [example.common.system.repl :as system-repl]
+            [example.common.system :as common-system]
             [example.rpg-service.system :as system]
             [org.httpkit.client :as client]))
 
@@ -12,12 +12,12 @@
 (defn start!
   "Starts the system."
   []
-  (system-repl/start! #'system system/with-system))
+  (common-system/start! #'system system/with-system))
 
 (defn stop!
   "Stops the system."
   []
-  (system-repl/stop! #'system))
+  (common-system/stop! #'system))
 
 (defn process-response
   "Returns the status and decoded JSON body of a response, or client error."

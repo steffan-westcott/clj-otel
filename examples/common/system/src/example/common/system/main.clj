@@ -1,18 +1,10 @@
 (ns example.common.system.main
-  "Functions for running a system as a standalone Java application."
+  "Functions for running a system as a standalone application."
   (:require [clojure.tools.logging.readable :as log]
             [example.common.system :as system]))
 
 
-(defn- maybe-throw
-  [x]
-  (if (instance? Throwable x)
-    (throw x)
-    x))
-
-
-
-(defn- set-default-uncaught-exception-handler
+(defn- log-uncaught-exceptions
   []
   (Thread/setDefaultUncaughtExceptionHandler
    (reify
@@ -22,23 +14,20 @@
 
 
 
-(defn- start-system
+(defn add-shutdown-hook
+  "Adds a shutdown hook to evaluate no-arg function f."
+  [f]
+  (.addShutdownHook (Runtime/getRuntime) (Thread. ^Runnable f)))
+
+
+
+(defn- run-system
   [system-var with-system-fn]
   (log/info "Starting system...")
-  (let [[system-p stop-fn] (system/run with-system-fn)
-        sys (maybe-throw @system-p)]
-    (alter-var-root system-var (constantly sys))
-    (.addShutdownHook (Runtime/getRuntime)
-                      (Thread. (fn []
-                                 (try
-                                   (log/info "Stopping system...")
-                                   (stop-fn)
-                                   (log/info "System stopped")
-                                   (catch Throwable e
-                                     (log/error e "System error while stopping")))
-                                 (alter-var-root system-var (constantly nil))
-                                 (shutdown-agents))))
-    (log/info "System started")))
+  (system/start! system-var with-system-fn)
+  (add-shutdown-hook (fn stop-system []
+                       (system/stop! system-var)))
+  (log/info "System started"))
 
 
 
@@ -50,8 +39,9 @@
    code."
   [system-var with-system-fn]
   (try
-    (set-default-uncaught-exception-handler)
-    (start-system system-var with-system-fn)
+    (log-uncaught-exceptions)
+    (add-shutdown-hook shutdown-agents)
+    (run-system system-var with-system-fn)
     (catch Throwable e
       (log/fatal e "Error in main thread")
       (System/exit 1))))
