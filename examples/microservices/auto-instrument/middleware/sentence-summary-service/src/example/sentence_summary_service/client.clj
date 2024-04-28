@@ -1,11 +1,12 @@
 (ns example.sentence-summary-service.client
   "HTTP client components, used to make HTTP requests to other microservices."
   (:require [clj-http.conn-mgr :as conn]
-            [clj-http.core :as http-core]))
+            [clj-http.core :as http-core]
+            [example.sentence-summary-service.env :refer [config]]))
 
 
 (defn- async?
-  [config]
+  []
   (case (:server-impl config)
     "sync"           false
     "bound-async"    true
@@ -15,8 +16,8 @@
 
 (defn connection-manager
   "Returns a (a)synchronous pooling connection manager."
-  [config]
-  (if (async? config)
+  []
+  (if (async?)
     (conn/make-reusable-async-conn-manager {})
     (conn/make-reusable-conn-manager {})))
 
@@ -31,7 +32,7 @@
 
 (defn client
   "Returns a (a)synchronous HTTP client."
-  [config conn-mgr]
-  (if (async? config)
+  [conn-mgr]
+  (if (async?)
     (http-core/build-async-http-client {} conn-mgr)
     (http-core/build-http-client {} false conn-mgr)))

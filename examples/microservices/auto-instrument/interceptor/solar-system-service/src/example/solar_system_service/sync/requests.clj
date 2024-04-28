@@ -1,11 +1,12 @@
 (ns example.solar-system-service.sync.requests
   "Requests to other microservices, synchronous implementation."
-  (:require [clj-http.client :as client]))
+  (:require [clj-http.client :as client]
+            [example.solar-system-service.env :refer [config]]))
 
 
 (defn get-statistic-value
   "Get a single statistic value of a planet."
-  [{:keys [config conn-mgr client]} planet statistic]
+  [{:keys [conn-mgr client]} planet statistic]
   (let [endpoint (get-in config [:endpoints :planet-service])
         path     (str "/planets/" (name planet) "/" (name statistic))
 

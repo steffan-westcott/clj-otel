@@ -1,7 +1,6 @@
 (ns example.common.system.main
   "Functions for running a system as a standalone application."
-  (:require [clojure.tools.logging.readable :as log]
-            [example.common.system :as system]))
+  (:require [clojure.tools.logging.readable :as log]))
 
 
 (defn- log-uncaught-exceptions
@@ -21,27 +20,17 @@
 
 
 
-(defn- run-system
-  [system-var with-system-fn]
-  (log/info "Starting system...")
-  (system/start! system-var with-system-fn)
-  (add-shutdown-hook (fn stop-system []
-                       (system/stop! system-var)))
-  (log/info "System started"))
-
-
-
 (defn main
   "Starts a system, then stops it and shuts down the JVM process when a
-   terminate signal is received by the JVM. `system-var` is set to the running
-   system map of components passed from `with-system-fn`. `system-var` is
-   intended as an aid for remote REPL development and is never read by the main
-   code."
-  [system-var with-system-fn]
+   terminate signal is received by the JVM."
+  [start-system! stop-system!]
   (try
     (log-uncaught-exceptions)
     (add-shutdown-hook shutdown-agents)
-    (run-system system-var with-system-fn)
+    (log/info "Starting system...")
+    (start-system!)
+    (add-shutdown-hook stop-system!)
+    (log/info "System started")
     (catch Throwable e
       (log/fatal e "Error in main thread")
       (System/exit 1))))

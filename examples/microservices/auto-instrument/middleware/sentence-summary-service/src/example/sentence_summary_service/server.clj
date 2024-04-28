@@ -1,6 +1,7 @@
 (ns example.sentence-summary-service.server
   "HTTP server and handler components."
   (:require [example.sentence-summary-service.bound-async.routes :as bound-async-routes]
+            [example.sentence-summary-service.env :refer [config]]
             [example.sentence-summary-service.explicit-async.routes :as explicit-async-routes]
             [example.sentence-summary-service.sync.routes :as sync-routes]
             [muuntaja.core :as m]
@@ -16,7 +17,7 @@
 
 
 (defn- async?
-  [config]
+  []
   (case (:server-impl config)
     "sync"           false
     "bound-async"    true
@@ -26,8 +27,7 @@
 
 (defn- routes
   "Route data for all routes, according to configured server implementation."
-  [{:keys [config]
-    :as   components}]
+  [components]
   (case (:server-impl config)
     "sync"           (sync-routes/routes components)
     "bound-async"    (bound-async-routes/routes components)
@@ -90,8 +90,8 @@
 
 (defn server
   "Starts and returns an (a)synchronous HTTP server."
-  [config handler]
-  (jetty/run-jetty handler (assoc (:jetty config) :join? false :async? (async? config))))
+  [handler]
+  (jetty/run-jetty handler (assoc (:jetty config) :join? false :async? (async?))))
 
 
 

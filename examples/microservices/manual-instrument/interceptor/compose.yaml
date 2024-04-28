@@ -28,6 +28,8 @@ services:
   average-load-gen:
     image: example.clj-otel/average-load-gen:latest
     env_file: compose.env
+    ports:
+      - "8092:8092"      # nREPL server
     depends_on:
       average-service:
         condition: service_healthy

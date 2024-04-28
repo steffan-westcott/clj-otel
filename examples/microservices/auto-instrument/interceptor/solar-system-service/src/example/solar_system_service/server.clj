@@ -2,6 +2,7 @@
   "HTTP server components."
   (:require [example.common.interceptor.utils :as interceptor-utils]
             [example.solar-system-service.bound-async.routes :as bound-async-routes]
+            [example.solar-system-service.env :refer [config]]
             [example.solar-system-service.explicit-async.routes :as explicit-async-routes]
             [example.solar-system-service.sync.routes :as sync-routes]
             [io.pedestal.http :as http]
@@ -11,7 +12,7 @@
 
 (defn- routes
   "Route data for all routes, according to configured server implementation."
-  [config]
+  []
   (case (:server-impl config)
     "sync"           (sync-routes/routes)
     "bound-async"    (bound-async-routes/routes)
@@ -53,9 +54,8 @@
 
 (defn service-map
   "Returns a service map ready for creating an HTTP server."
-  [{:keys [config]
-    :as   components}]
-  (-> {::http/routes #(routes config) ; rebuild routes on every request
+  [components]
+  (-> {::http/routes #(routes) ; rebuild routes on every request
        ::http/type   :jetty
        ::http/host   "0.0.0.0"
        ::http/join?  false

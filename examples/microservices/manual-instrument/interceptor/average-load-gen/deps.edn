@@ -8,7 +8,10 @@
            aero/aero {:mvn/version "1.1.6"}
 
            ;; Load generator utilities
-           org.example/common.load-gen {:local/root "../../../../common/load-gen"}}
+           org.example/common.load-gen {:local/root "../../../../common/load-gen"}
+
+           ;; Common functions for system configuration and operation
+           org.example/common.system {:local/root "../../../../common/system"}}
 
  :aliases {;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
            :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.23.1"}
@@ -16,4 +19,7 @@
                                 org.apache.logging.log4j/log4j-jul         {:mvn/version "2.23.1"}
                                 org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.23.1"}}
                    :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}
+                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
+
+           :dev   {:extra-paths ["dev"]
+                   :extra-deps  {nrepl/nrepl {:mvn/version "1.1.1"}}}}}

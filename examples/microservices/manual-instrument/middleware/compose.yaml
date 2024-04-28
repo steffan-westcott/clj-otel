@@ -28,6 +28,8 @@ services:
   puzzle-load-gen:
     image: example.clj-otel/puzzle-load-gen:latest
     env_file: compose.env
+    ports:
+      - "8092:8092"      # nREPL server
     depends_on:
       puzzle-service:
         condition: service_healthy

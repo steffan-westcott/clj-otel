@@ -3,6 +3,7 @@
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [example.common.core-async.utils :as async']
+            [example.solar-system-service.env :refer [config]]
             [steffan-westcott.clj-otel.context :as context]))
 
 
@@ -42,8 +43,7 @@
 (defn <get-statistic-value
   "Get a single statistic value of a planet and return a channel of a
    single-valued map of the statistic and its value."
-  [{:keys [config]
-    :as   components} context planet statistic]
+  [components context planet statistic]
   (let [endpoint  (get-in config [:endpoints :planet-service])
         path      (str "/planets/" (name planet) "/" (name statistic))
         <response (<client-request components

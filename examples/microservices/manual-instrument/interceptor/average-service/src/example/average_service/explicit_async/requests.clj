@@ -3,6 +3,7 @@
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [clojure.string :as str]
+            [example.average-service.env :refer [config]]
             [example.common.core-async.utils :as async']
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -62,8 +63,7 @@
 
 (defn <get-sum
   "Get the sum of the nums and return a channel of the result."
-  [{:keys [config]
-    :as   components} context nums]
+  [components context nums]
   (let [endpoint  (get-in config [:endpoints :sum-service])
         <response (<client-request components
                                    context

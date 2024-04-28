@@ -12,12 +12,11 @@
   "Evaluates `f` with system map of configured components. The components are
    closed when evaluation completes."
   [f]
-  (with-open [config      (closeable (env/config))
+  (with-open [config      (closeable (env/set-config!))
               instruments (closeable (metrics/instruments))
               datasource  (closeable (db/datasource (:datasource @config)) db/stop-datasource)
               eql-db      (closeable (db/eql-db @datasource))
-              components  (closeable {:config      @config
-                                      :instruments @instruments
+              components  (closeable {:instruments @instruments
                                       :eql-db      @eql-db})
               handler     (closeable (server/rebuilding-handler @components))
               server      (closeable (server/server (:jetty @config) @handler) server/stop-server)]

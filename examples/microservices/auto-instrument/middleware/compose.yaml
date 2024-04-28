@@ -28,6 +28,8 @@ services:
   sentence-summary-load-gen:
     image: example.clj-otel/sentence-summary-load-gen:latest
     env_file: compose.env
+    ports:
+      - "8092:8092"      # nREPL server
     depends_on:
       sentence-summary-service:
         condition: service_healthy

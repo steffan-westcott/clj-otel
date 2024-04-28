@@ -1,6 +1,7 @@
 (ns example.word-length-service.server
   "HTTP server and handler components."
-  (:require [example.word-length-service.routes :as routes]
+  (:require [example.word-length-service.env :refer [config]]
+            [example.word-length-service.routes :as routes]
             [muuntaja.core :as m]
             [reitit.coercion.malli :as coercion-malli]
             [reitit.ring :as ring]
@@ -65,7 +66,7 @@
 
 (defn server
   "Starts and returns a synchronous HTTP server."
-  [config handler]
+  [handler]
   (jetty/run-jetty handler (assoc (:jetty config) :join? false)))
 
 

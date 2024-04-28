@@ -29,12 +29,12 @@
 
 
 
-(defn run
+(defn- run
   "Starts evaluation of `(with-system-fn f)` in another thread and returns
    `system`, a map of configured system components. It is expected that
    `with-system-fn` evaluates `(f system)`, most easily achieved using
    `with-open`. The started thread is blocked while the system runs (in other
-   threads). `system` includes metadata `:stop-fn`, which when evaluated will
+   threads). `system` includes metadata `::stop-fn`, which when evaluated will
    close the system components and terminate the thread."
   [with-system-fn]
   (let [system-p (promise)
@@ -49,7 +49,7 @@
         stop-fn  (fn []
                    (deliver stop-p nil)
                    @runner)]
-    (with-meta (maybe-throw @system-p) {:stop-fn stop-fn})))
+    (vary-meta (maybe-throw @system-p) assoc ::stop-fn stop-fn)))
 
 
 
@@ -70,6 +70,6 @@
   (alter-var-root system-var
                   (fn [system]
                     (when system
-                      ((:stop-fn (meta system))))
+                      ((::stop-fn (meta system))))
                     nil))
   :stopped)

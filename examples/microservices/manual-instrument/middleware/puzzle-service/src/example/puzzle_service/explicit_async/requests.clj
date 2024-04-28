@@ -3,6 +3,7 @@
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [example.common.core-async.utils :as async']
+            [example.puzzle-service.env :refer [config]]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -63,8 +64,7 @@
 (defn <get-random-word
   "Get a random word string of the requested type and return a channel of the
    word."
-  [{:keys [config]
-    :as   components} context word-type]
+  [components context word-type]
   (let [endpoint  (get-in config [:endpoints :random-word-service])
         <response (<client-request components
                                    context

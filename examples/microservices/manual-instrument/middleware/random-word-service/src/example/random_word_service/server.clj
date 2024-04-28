@@ -1,6 +1,7 @@
 (ns example.random-word-service.server
   "HTTP server and handler components."
-  (:require [example.random-word-service.routes :as routes]
+  (:require [example.random-word-service.env :refer [config]]
+            [example.random-word-service.routes :as routes]
             [muuntaja.core :as m]
             [reitit.coercion.malli :as coercion-malli]
             [reitit.ring :as ring]
@@ -69,7 +70,7 @@
 
 (defn server
   "Starts and returns a synchronous HTTP server."
-  [config handler]
+  [handler]
   (jetty/run-jetty handler (assoc (:jetty config) :join? false)))
 
 

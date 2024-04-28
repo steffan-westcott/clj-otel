@@ -1,6 +1,7 @@
 (ns example.puzzle-service.sync.requests
   "Requests to other microservices, synchronous implementation."
   (:require [clj-http.client :as client]
+            [example.puzzle-service.env :refer [config]]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -40,8 +41,7 @@
 
 (defn get-random-word
   "Get a random word string of the requested type."
-  [{:keys [config]
-    :as   components} word-type]
+  [components word-type]
   (let [endpoint (get-in config [:endpoints :random-word-service])
         response (client-request components
                                  {:method       :get

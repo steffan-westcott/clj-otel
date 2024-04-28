@@ -1,1 +1,3 @@
-{:endpoints {:puzzle-service #or [#env PUZZLE_SERVICE_ENDPOINT "http://localhost:8080"]}}
+{:endpoints {:puzzle-service #or [#env PUZZLE_SERVICE_ENDPOINT "http://localhost:8080"]}
+ :nrepl     {:bind "0.0.0.0"
+             :port 8092}}

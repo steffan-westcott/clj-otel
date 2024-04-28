@@ -28,6 +28,8 @@ services:
   solar-system-load-gen:
     image: example.clj-otel/solar-system-load-gen:latest
     env_file: compose.env
+    ports:
+      - "8092:8092"      # nREPL server
     depends_on:
       solar-system-service:
         condition: service_healthy

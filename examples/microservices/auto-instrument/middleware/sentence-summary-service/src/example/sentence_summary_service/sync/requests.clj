@@ -1,12 +1,13 @@
 (ns example.sentence-summary-service.sync.requests
   "Requests to other microservices, synchronous implementation."
   (:require [clj-http.client :as client]
+            [example.sentence-summary-service.env :refer [config]]
             [reitit.ring :as ring]))
 
 
 (defn get-word-length
   "Get the length of `word`."
-  [{:keys [config conn-mgr client]} word]
+  [{:keys [conn-mgr client]} word]
 
   ;; Apache HttpClient request is automatically wrapped in a client span
   ;; created by the OpenTelemetry instrumentation agent. The agent also

@@ -1,6 +1,7 @@
 (ns example.sum-service.server
   "HTTP server components."
   (:require [example.common.interceptor.utils :as interceptor-utils]
+            [example.sum-service.env :refer [config]]
             [example.sum-service.routes :as routes]
             [io.pedestal.http :as http]
             [io.pedestal.interceptor :as interceptor]
@@ -52,8 +53,7 @@
 
 (defn service-map
   "Returns a service map ready for creating an HTTP server."
-  [{:keys [config]
-    :as   components}]
+  [components]
   (-> {::http/routes #(routes/routes) ; on every request, look up routes/routes var and rebuild
        ::http/type   :jetty
        ::http/host   "0.0.0.0"

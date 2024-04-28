@@ -1,2 +1,3 @@
-{:endpoints {:solar-system-service #or [#env SOLAR_SYSTEM_SERVICE_ENDPOINT
-                                        "http://localhost:8080"]}}
+{:endpoints {:solar-system-service #or [#env SOLAR_SYSTEM_SERVICE_ENDPOINT "http://localhost:8080"]}
+ :nrepl     {:bind "0.0.0.0"
+             :port 8092}}

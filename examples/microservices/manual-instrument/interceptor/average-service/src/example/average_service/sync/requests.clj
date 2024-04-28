@@ -2,6 +2,7 @@
   "Requests to other microservices, synchronous implementation."
   (:require [clj-http.client :as client]
             [clojure.string :as str]
+            [example.average-service.env :refer [config]]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
@@ -40,8 +41,7 @@
 
 (defn get-sum
   "Get the sum of the nums."
-  [{:keys [config]
-    :as   components} nums]
+  [components nums]
   (let [endpoint (get-in config [:endpoints :sum-service])
         response (client-request components
                                  {:method       :get

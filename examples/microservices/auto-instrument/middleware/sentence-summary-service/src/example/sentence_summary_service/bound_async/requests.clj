@@ -3,6 +3,7 @@
   (:require [clj-http.client :as client]
             [clojure.core.async :as async]
             [example.common.core-async.utils :as async']
+            [example.sentence-summary-service.env :refer [config]]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.context :as context]))
 
@@ -41,8 +42,7 @@
 
 (defn <get-word-length
   "Get the length of `word` and return a channel of the length value."
-  [{:keys [config]
-    :as   components} word]
+  [components word]
   (let [endpoint  (get-in config [:endpoints :word-length-service])
         <response (<client-request components
                                    {:method       :get

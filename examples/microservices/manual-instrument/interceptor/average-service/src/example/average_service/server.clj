@@ -1,6 +1,7 @@
 (ns example.average-service.server
   "HTTP server components."
   (:require [example.average-service.bound-async.routes :as bound-async-routes]
+            [example.average-service.env :refer [config]]
             [example.average-service.explicit-async.routes :as explicit-async-routes]
             [example.average-service.sync.routes :as sync-routes]
             [example.common.interceptor.utils :as interceptor-utils]
@@ -11,7 +12,7 @@
 
 
 (defn- sync?
-  [config]
+  []
   (case (:server-impl config)
     "sync"           true
     "bound-async"    false
@@ -21,7 +22,7 @@
 
 (defn- routes
   "Route data for all routes, according to configured server implementation."
-  [config]
+  []
   (case (:server-impl config)
     "sync"           (sync-routes/routes)
     "bound-async"    (bound-async-routes/routes)
@@ -31,9 +32,7 @@
 
 (defn- update-interceptors
   "Returns modified default interceptors."
-  [default-interceptors
-   {:keys [config]
-    :as   components}]
+  [default-interceptors components]
   (map
    interceptor/interceptor
    (concat
@@ -41,7 +40,7 @@
      ;; agent, create a server span for each request. The current context is
      ;; set if all request handling is processed synchronously.
      trace-http/server-span-interceptors {:create-span?         true
-                                          :set-current-context? (sync? config)})
+                                          :set-current-context? (sync?)})
 
     ;; Add metric that records the number of active HTTP requests
     [(metrics-http-server/active-requests-interceptor)]
@@ -74,9 +73,8 @@
 
 (defn service-map
   "Returns a service map ready for creating an HTTP server."
-  [{:keys [config]
-    :as   components}]
-  (-> {::http/routes #(routes config) ; rebuild routes on every request
+  [components]
+  (-> {::http/routes #(routes) ; rebuild routes on every request
        ::http/type   :jetty
        ::http/host   "0.0.0.0"
        ::http/join?  false
