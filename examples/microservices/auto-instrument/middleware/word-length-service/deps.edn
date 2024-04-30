@@ -17,11 +17,11 @@
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.8"}
-           metosin/malli {:mvn/version "0.16.0"}
+           metosin/malli {:mvn/version "0.16.1"}
            metosin/muuntaja {:mvn/version "0.6.10"}
-           metosin/reitit-malli {:mvn/version "0.7.0-alpha7"}
-           metosin/reitit-middleware {:mvn/version "0.7.0-alpha7"}
-           metosin/reitit-ring {:mvn/version "0.7.0-alpha7"}
+           metosin/reitit-malli {:mvn/version "0.7.0"}
+           metosin/reitit-middleware {:mvn/version "0.7.0"}
+           metosin/reitit-ring {:mvn/version "0.7.0"}
 
            ;; Functions for logging strings and maps using Log4j2
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
