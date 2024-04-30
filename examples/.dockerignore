@@ -1,5 +1,0 @@
-*
-!opentelemetry-javaagent.jar
-!common/*/deps.edn
-!common/*/src/**
-!microservices/**/deps.edn

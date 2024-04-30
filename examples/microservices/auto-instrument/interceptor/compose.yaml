@@ -1,38 +1,95 @@
+volumes:
+  m2:
+    name: example.clj-otel.m2
+    external: true
+  gitlibs:
+    name: example.clj-otel.gitlibs
+    external: true
+
 services:
 
   # Example microservice planet-service
   planet-service:
-    image: example.clj-otel/planet-service:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     ports:
       - "8091:8091"      # nREPL server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-api:/app/clj-otel-api:ro
+      - ../../../common:/app/examples/common:ro
+      - ../../../opentelemetry-javaagent.jar:/app/examples/opentelemetry-javaagent.jar:ro
+      - ./planet-service/deps.edn:/app/examples/microservices/auto-instrument/interceptor/planet-service/deps.edn:ro
+      - ./planet-service/dev:/app/examples/microservices/auto-instrument/interceptor/planet-service/dev:ro
+      - ./planet-service/resources:/app/examples/microservices/auto-instrument/interceptor/planet-service/resources:ro
+      - ./planet-service/src:/app/examples/microservices/auto-instrument/interceptor/planet-service/src:ro
+    working_dir: "/app/examples/microservices/auto-instrument/interceptor/planet-service"
+    command: "clojure -M:otel:log4j:dev -m example.planet-service.repl"
+    healthcheck:
+      start_period: 120s
+      interval: 5s
+      timeout: 1s
+      retries: 2
+      test: "wget --spider -q http://localhost:8081/ping || exit 1"
     depends_on:
       otel-collector:
         condition: service_started
 
+
   # Example microservice solar-system-service
   solar-system-service:
-    image: example.clj-otel/solar-system-service:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
     ports:
       - "8090:8090"      # nREPL server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-api:/app/clj-otel-api:ro
+      - ../../../common:/app/examples/common:ro
+      - ../../../opentelemetry-javaagent.jar:/app/examples/opentelemetry-javaagent.jar:ro
+      - ./solar-system-service/deps.edn:/app/examples/microservices/auto-instrument/interceptor/solar-system-service/deps.edn:ro
+      - ./solar-system-service/dev:/app/examples/microservices/auto-instrument/interceptor/solar-system-service/dev:ro
+      - ./solar-system-service/resources:/app/examples/microservices/auto-instrument/interceptor/solar-system-service/resources:ro
+      - ./solar-system-service/src:/app/examples/microservices/auto-instrument/interceptor/solar-system-service/src:ro
+    working_dir: "/app/examples/microservices/auto-instrument/interceptor/solar-system-service"
+    command: "clojure -M:otel:log4j:dev -m example.solar-system-service.repl"
+    healthcheck:
+      start_period: 120s
+      interval: 5s
+      timeout: 1s
+      retries: 2
+      test: "wget --spider -q http://localhost:8080/ping || exit 1"
     depends_on:
       planet-service:
         condition: service_healthy
       otel-collector:
         condition: service_started
 
+
   # Load generator for solar-system-service
   solar-system-load-gen:
-    image: example.clj-otel/solar-system-load-gen:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     ports:
       - "8092:8092"      # nREPL server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../common:/app/examples/common:ro
+      - ./solar-system-load-gen/deps.edn:/app/examples/microservices/auto-instrument/interceptor/solar-system-load-gen/deps.edn:ro
+      - ./solar-system-load-gen/dev:/app/examples/microservices/auto-instrument/interceptor/solar-system-load-gen/dev:ro
+      - ./solar-system-load-gen/resources:/app/examples/microservices/auto-instrument/interceptor/solar-system-load-gen/resources:ro
+      - ./solar-system-load-gen/src:/app/examples/microservices/auto-instrument/interceptor/solar-system-load-gen/src:ro
+    working_dir: "/app/examples/microservices/auto-instrument/interceptor/solar-system-load-gen"
+    command: "clojure -M:log4j:dev -m example.solar-system-load-gen.repl"
     depends_on:
       solar-system-service:
         condition: service_healthy
+
 
   # OpenTelemetry Collector
   otel-collector:
@@ -47,6 +104,7 @@ services:
       prometheus:
         condition: service_started
 
+
   # Jaeger
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -54,6 +112,7 @@ services:
       - --collector.otlp.enabled=true
     ports:
       - "16686:16686"    # Jaeger web interface
+
 
   # Prometheus
   prometheus:

@@ -1,4 +1,0 @@
-*
-!deps.edn
-!build.clj
-!clj-otel-*/deps.edn

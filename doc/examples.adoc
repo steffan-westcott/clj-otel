@@ -10,7 +10,7 @@ endif::[]
 
 == Running the examples
 
-These instructions assume a Unix-like environment, with `docker` to build container images and spin up instances.
+These instructions assume a Unix-like environment, with `docker` to run Clojure applications and telemetry backend instances in containers.
 All examples use `deps.edn` for project configuration.
 
 . *Clone `clj-otel` repository*
@@ -198,17 +198,6 @@ graph LR
 endif::[]
 A pair of dependent microservices `average-service` and `sum-service` both implemented with Pedestal interceptors, not using the agent, exporting telemetry to a Collector instance.
 
-. *Build example*
-+
-Some examples must be built before running. These examples have a `build.sh` file.
-+
-To build the chosen example, run the following command
-+
-[source,bash]
-----
-./build.sh
-----
-
 . *Start container instances*
 +
 `compose.yaml` is a Docker Compose configuration file that specifies container instances to spin up.
@@ -217,42 +206,46 @@ When the Collector is present, `otel-collector.yaml` is a configuration file tha
 The microservice examples include instances for each service and a load generator that automatically exercises the head microservice.
 +
 NOTE: The microservices examples may take some time to start, particularly those which use the OpenTelemetry instrumentation agent.
-When running the `docker compose` commands below, wait for the command to complete before proceeding to the next step.
+Wait for the command to complete before proceeding to the next step.
 
 * For all microservices examples, run one of the following commands corresponding to your choice of implementation for the head microservice:
 +
 [source,bash]
 ----
-SERVER=sync docker compose up -d
+SERVER=sync ./up.sh
 ----
 +
 [source,bash]
 ----
-SERVER=bound-async docker compose up -d
+SERVER=bound-async ./up.sh
 ----
 +
 [source,bash]
 ----
-SERVER=explicit-async docker compose up -d
+SERVER=explicit-async ./up.sh
 ----
 
 * For all other examples, run the following command
 +
 [source,bash]
 ----
-docker compose up -d
+./up.sh
 ----
 
 . *Load and exercise example*
 +
-For the microservices examples, a load generator application is included.
-The load generator automatically issues randomized valid and invalid requests to the head microservice.
+* For the microservice examples:
+** A load generator application is included and runs automatically.
+The load generator issues randomized valid and invalid requests to the head microservice.
+** For altering the running system, all microservice and load generator instances expose an nREPL server for remote access.
+See the `compose.yaml` file for details on which port the nREPL server is available.
+Also see the `dev` source tree for functions to use in a remote REPL session.
+** The microservices rebuild routes on each request received, so changes will take effect when edited namespaces are reloaded.
 +
-The other examples are designed to be loaded and exercised in the REPL as follows:
-
-* In the chosen example directory and your favourite Clojure development environment, start a REPL with the `otel` alias enabled
-* Load the example namespace and set as current
-* Evaluate each expression or enter each terminal command in the comment block at the end of the namespace
+* For the other examples:
+** In the chosen example directory and your favourite Clojure development environment, start a REPL with the `otel` alias enabled.
+** Load the example namespace and set as current.
+** Evaluate each expression or enter each terminal command in the comment block at the end of the namespace.
 
 . *View telemetry data in backends*
 +
@@ -269,14 +262,16 @@ To stop and tear down the container instances, run the following command:
 +
 [source,bash]
 ----
-docker compose down -v
+./down.sh
 ----
 
-. *Prune example container images*
+. *Delete example volumes*
 +
-After trying out several of the examples, to delete the Docker images run the following command:
+The microservice examples cache downloaded dependencies in shared external Docker volumes.
+After trying out the examples, delete the external Docker volumes with the following commands:
 +
 [source,bash]
 ----
-docker image prune -a --filter "label=example.clj-otel"
+docker volume rm example.clj-otel.gitlibs
+docker volume rm example.clj-otel.m2
 ----

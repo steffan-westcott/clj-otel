@@ -1,21 +1,68 @@
+volumes:
+  m2:
+    name: example.clj-otel.m2
+    external: true
+  gitlibs:
+    name: example.clj-otel.gitlibs
+    external: true
+
 services:
 
   # Example microservice sum-service
   sum-service:
-    image: example.clj-otel/sum-service:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-api:/app/clj-otel-api:ro
+      - ../../../../clj-otel-sdk-extension-autoconfigure:/app/clj-otel-sdk-extension-autoconfigure:ro
+      - ../../../../clj-otel-instrumentation-runtime-telemetry-java17:/app/clj-otel-instrumentation-runtime-telemetry-java17:ro
+      - ../../../common:/app/examples/common:ro
+      - ./sum-service/deps.edn:/app/examples/microservices/manual-instrument/interceptor/sum-service/deps.edn:ro
+      - ./sum-service/dev:/app/examples/microservices/manual-instrument/interceptor/sum-service/dev:ro
+      - ./sum-service/resources:/app/examples/microservices/manual-instrument/interceptor/sum-service/resources:ro
+      - ./sum-service/src:/app/examples/microservices/manual-instrument/interceptor/sum-service/src:ro
+    working_dir: "/app/examples/microservices/manual-instrument/interceptor/sum-service"
+    command: "clojure -M:otel:log4j:dev -m example.sum-service.repl"
+    healthcheck:
+      start_period: 120s
+      interval: 5s
+      timeout: 1s
+      retries: 2
+      test: "wget --spider -q http://localhost:8081/ping || exit 1"
     ports:
       - "8091:8091"      # nREPL server
     depends_on:
       otel-collector:
         condition: service_started
 
+
   # Example microservice average-service
   average-service:
-    image: example.clj-otel/average-service:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-api:/app/clj-otel-api:ro
+      - ../../../../clj-otel-sdk-extension-autoconfigure:/app/clj-otel-sdk-extension-autoconfigure:ro
+      - ../../../../clj-otel-instrumentation-runtime-telemetry-java17:/app/clj-otel-instrumentation-runtime-telemetry-java17:ro
+      - ../../../common:/app/examples/common:ro
+      - ./average-service/deps.edn:/app/examples/microservices/manual-instrument/interceptor/average-service/deps.edn:ro
+      - ./average-service/dev:/app/examples/microservices/manual-instrument/interceptor/average-service/dev:ro
+      - ./average-service/resources:/app/examples/microservices/manual-instrument/interceptor/average-service/resources:ro
+      - ./average-service/src:/app/examples/microservices/manual-instrument/interceptor/average-service/src:ro
+    working_dir: "/app/examples/microservices/manual-instrument/interceptor/average-service"
+    command: "clojure -M:otel:log4j:dev -m example.average-service.repl"
+    healthcheck:
+      start_period: 120s
+      interval: 5s
+      timeout: 1s
+      retries: 2
+      test: "wget --spider -q http://localhost:8080/ping || exit 1"
     ports:
       - "8090:8090"      # nREPL server
     depends_on:
@@ -24,15 +71,27 @@ services:
       otel-collector:
         condition: service_started
 
+
   # Load generator for average-service
   average-load-gen:
-    image: example.clj-otel/average-load-gen:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     ports:
       - "8092:8092"      # nREPL server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../common:/app/examples/common:ro
+      - ./average-load-gen/deps.edn:/app/examples/microservices/manual-instrument/interceptor/average-load-gen/deps.edn:ro
+      - ./average-load-gen/dev:/app/examples/microservices/manual-instrument/interceptor/average-load-gen/dev:ro
+      - ./average-load-gen/resources:/app/examples/microservices/manual-instrument/interceptor/average-load-gen/resources:ro
+      - ./average-load-gen/src:/app/examples/microservices/manual-instrument/interceptor/average-load-gen/src:ro
+    working_dir: "/app/examples/microservices/manual-instrument/interceptor/average-load-gen"
+    command: "clojure -M:log4j:dev -m example.average-load-gen.repl"
     depends_on:
       average-service:
         condition: service_healthy
+
 
   # OpenTelemetry Collector
   otel-collector:
@@ -47,6 +106,7 @@ services:
       prometheus:
         condition: service_started
 
+
   # Jaeger
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -54,6 +114,7 @@ services:
       - --collector.otlp.enabled=true
     ports:
       - "16686:16686"    # Jaeger web interface
+
 
   # Prometheus
   prometheus:

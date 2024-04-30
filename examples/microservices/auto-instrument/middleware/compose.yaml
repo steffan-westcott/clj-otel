@@ -1,38 +1,95 @@
+volumes:
+  m2:
+    name: example.clj-otel.m2
+    external: true
+  gitlibs:
+    name: example.clj-otel.gitlibs
+    external: true
+
 services:
 
   # Example microservice word-length-service
   word-length-service:
-    image: example.clj-otel/word-length-service:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     ports:
       - "8091:8091"      # nREPL server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-api:/app/clj-otel-api:ro
+      - ../../../common:/app/examples/common:ro
+      - ../../../opentelemetry-javaagent.jar:/app/examples/opentelemetry-javaagent.jar:ro
+      - ./word-length-service/deps.edn:/app/examples/microservices/auto-instrument/middleware/word-length-service/deps.edn:ro
+      - ./word-length-service/dev:/app/examples/microservices/auto-instrument/middleware/word-length-service/dev:ro
+      - ./word-length-service/resources:/app/examples/microservices/auto-instrument/middleware/word-length-service/resources:ro
+      - ./word-length-service/src:/app/examples/microservices/auto-instrument/middleware/word-length-service/src:ro
+    working_dir: "/app/examples/microservices/auto-instrument/middleware/word-length-service"
+    command: "clojure -M:otel:log4j:dev -m example.word-length-service.repl"
+    healthcheck:
+      start_period: 120s
+      interval: 5s
+      timeout: 1s
+      retries: 2
+      test: "wget --spider -q http://localhost:8081/ping || exit 1"
     depends_on:
       otel-collector:
         condition: service_started
 
+
   # Example microservice sentence-summary-service
   sentence-summary-service:
-    image: example.clj-otel/sentence-summary-service:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
       SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
     ports:
       - "8090:8090"      # nREPL server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-api:/app/clj-otel-api:ro
+      - ../../../common:/app/examples/common:ro
+      - ../../../opentelemetry-javaagent.jar:/app/examples/opentelemetry-javaagent.jar:ro
+      - ./sentence-summary-service/deps.edn:/app/examples/microservices/auto-instrument/middleware/sentence-summary-service/deps.edn:ro
+      - ./sentence-summary-service/dev:/app/examples/microservices/auto-instrument/middleware/sentence-summary-service/dev:ro
+      - ./sentence-summary-service/resources:/app/examples/microservices/auto-instrument/middleware/sentence-summary-service/resources:ro
+      - ./sentence-summary-service/src:/app/examples/microservices/auto-instrument/middleware/sentence-summary-service/src:ro
+    working_dir: "/app/examples/microservices/auto-instrument/middleware/sentence-summary-service"
+    command: "clojure -M:otel:log4j:dev -m example.sentence-summary-service.repl"
+    healthcheck:
+      start_period: 120s
+      interval: 5s
+      timeout: 1s
+      retries: 2
+      test: "wget --spider -q http://localhost:8080/ping || exit 1"
     depends_on:
       word-length-service:
         condition: service_healthy
       otel-collector:
         condition: service_started
 
+
   # Load generator for sentence-summary-service
   sentence-summary-load-gen:
-    image: example.clj-otel/sentence-summary-load-gen:latest
+    image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     ports:
       - "8092:8092"      # nREPL server
+    volumes:
+      - m2:/root/.m2
+      - gitlibs:/root/.gitlibs
+      - ../../../common:/app/examples/common:ro
+      - ./sentence-summary-load-gen/deps.edn:/app/examples/microservices/auto-instrument/middleware/sentence-summary-load-gen/deps.edn:ro
+      - ./sentence-summary-load-gen/dev:/app/examples/microservices/auto-instrument/middleware/sentence-summary-load-gen/dev:ro
+      - ./sentence-summary-load-gen/resources:/app/examples/microservices/auto-instrument/middleware/sentence-summary-load-gen/resources:ro
+      - ./sentence-summary-load-gen/src:/app/examples/microservices/auto-instrument/middleware/sentence-summary-load-gen/src:ro
+    working_dir: "/app/examples/microservices/auto-instrument/middleware/sentence-summary-load-gen"
+    command: "clojure -M:log4j:dev -m example.sentence-summary-load-gen.repl"
     depends_on:
       sentence-summary-service:
         condition: service_healthy
+
 
   # OpenTelemetry Collector
   otel-collector:
@@ -47,6 +104,7 @@ services:
       prometheus:
         condition: service_started
 
+
   # Jaeger
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -54,6 +112,7 @@ services:
       - --collector.otlp.enabled=true
     ports:
       - "16686:16686"    # Jaeger web interface
+
 
   # Prometheus
   prometheus:
