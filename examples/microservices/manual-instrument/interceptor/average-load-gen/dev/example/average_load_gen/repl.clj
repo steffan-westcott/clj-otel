@@ -21,7 +21,7 @@
    Intended for use by `clojure` command."
   [& opts]
   (run-nrepl)
-  (main/-main opts))
+  (apply main/-main opts))
 
 
 
