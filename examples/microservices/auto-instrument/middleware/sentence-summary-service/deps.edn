@@ -51,8 +51,7 @@
            :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.23.1"}
                                 org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.23.1"}
                                 org.apache.logging.log4j/log4j-jul         {:mvn/version "2.23.1"}
-                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.23.1"}
-                                org.apache.logging.log4j/log4j-layout-template-json {:mvn/version "2.23.1"}}
+                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.23.1"}}
                    :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                                 "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
