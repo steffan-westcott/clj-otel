@@ -99,29 +99,45 @@ services:
     command:
       - --config=/etc/otel-collector.yaml
     depends_on:
-      jaeger:
+      tempo:
         condition: service_started
       prometheus:
         condition: service_started
 
 
-  # Jaeger
-  jaeger:
-    image: jaegertracing/all-in-one:latest
+  # Tempo
+  tempo:
+    image: grafana/tempo:2.4.1
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
     command:
-      - --collector.otlp.enabled=true
-    ports:
-      - "16686:16686"    # Jaeger web interface
+      - -config.file=/etc/tempo.yaml
 
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.45.5
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:
       - --config.file=/etc/prometheus.yaml
       - --web.enable-remote-write-receiver
       - --enable-feature=exemplar-storage
+
+
+  # Grafana
+  grafana:
+    image: grafana/grafana-oss:10.4.2
+    volumes:
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml
+    environment:
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_NEWS_NEWS_FEED_ENABLED=false
     ports:
-      - "9090:9090"      # Prometheus web interface
+      - "3000:3000"       # Grafana web interface
+    depends_on:
+      - tempo
+      - prometheus

@@ -36,8 +36,9 @@ Jaeger has native support for OTLP, use `clj-otel-exporter-otlp` instead to conf
 - Refactored microservice examples
 ** [MAINT] Removed uberjar build step.
 All application instances now use a `clojure` Docker image rather than custom image containing an uberjar.
-** [ADD] Added state lifecycle management, using `with-open` and `closeable` pattern
-** [MAINT] Altered Ring/Pedestal servers to reload routes on every HTTP request
+** [ADD] For telemetry backend, changed to use Grafana with Grafana Tempo and Prometheus.
+** [ADD] Added state lifecycle management, using `with-open` and `closeable` pattern.
+** [MAINT] Altered Ring/Pedestal servers to reload routes on every HTTP request.
 ** [ADD] Added embedded nREPL server to all application and load-gen instances for remote access.
 
 === `0.2.6` (2024-01-15)

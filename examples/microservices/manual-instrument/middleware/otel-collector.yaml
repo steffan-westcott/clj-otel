@@ -33,9 +33,9 @@ exporters:
   # Logs brief summary of telemetry data to console
   debug:
 
-  # Exports to Jaeger using OTLP over gRPC
-  otlp/jaeger:
-    endpoint: "jaeger:4317"
+  # Exports to Tempo using OTLP over gRPC
+  otlp/tempo:
+    endpoint: "tempo:4317"
     tls:
       insecure: true
 
@@ -68,7 +68,7 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ debug, otlp/jaeger ]
+      exporters: [ debug, otlp/tempo ]
 
     # Enable pipeline of components for metrics
     metrics:

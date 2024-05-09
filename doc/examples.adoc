@@ -133,8 +133,10 @@ graph LR
         sentence-summary-load-gen --> sentence-summary-service
         sentence-summary-service --> word-length-service
         sentence-summary-service & word-length-service --> otel-collector
-        otel-collector --> jaeger
+        otel-collector --> tempo
         otel-collector --remote write--> prometheus
+        grafana --> tempo
+        grafana --> prometheus
     end
 ----
 +
@@ -152,8 +154,10 @@ graph LR
         solar-system-load-gen --> solar-system-service
         solar-system-service --> planet-service
         solar-system-service & planet-service --> otel-collector
-        otel-collector --> jaeger
+        otel-collector --> tempo
         otel-collector --remote write--> prometheus
+        grafana --> tempo
+        grafana --> prometheus
     end
 ----
 +
@@ -171,8 +175,10 @@ graph LR
         puzzle-load-gen --> puzzle-service
         puzzle-service --> random-word-service
         puzzle-service & random-word-service --> otel-collector
-        otel-collector --> jaeger
+        otel-collector --> tempo
         otel-collector --remote write--> prometheus
+        grafana --> tempo
+        grafana --> prometheus
     end
 ----
 +
@@ -190,8 +196,10 @@ graph LR
         average-load-gen --> average-service
         average-service --> sum-service
         average-service & sum-service --> otel-collector
-        otel-collector --> jaeger
+        otel-collector --> tempo
         otel-collector --remote write--> prometheus
+        grafana --> tempo
+        grafana --> prometheus
     end
 ----
 +
@@ -252,8 +260,9 @@ Also see the `dev` source tree for functions to use in a remote REPL session.
 NOTE: Traces may appear incomplete until all parts of telemetry data have been received and processed by the telemetry backend.
 This sometimes impacts recent traces of distributed services, where some but not all contributing services have completed exporting telemetry data.
 +
+* *Grafana* : Navigate to http://localhost:3000 then select `Data sources` then `Explore data` for any data source listed.
 * *Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
-* *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric.
+* *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric. The Prometheus server is not exposed in examples that use Grafana.
 +
 
 . *Stop container instances*
