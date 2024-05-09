@@ -42,7 +42,7 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
-      SERVER: ${SERVER}  # Select "sync", "bound-async" or "explicit-async" example server
+      SERVER:
     ports:
       - "8090:8090"      # nREPL server
     volumes:
