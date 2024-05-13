@@ -217,7 +217,7 @@ The available types of instrument are:
 * Counter (sync or async)
 * Up-down counter (sync or async)
 * Histogram (sync only)
-* Gauge (async only)
+* Gauge (sync or async)
 
 === Logs
 

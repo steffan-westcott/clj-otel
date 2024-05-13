@@ -204,7 +204,7 @@ Use the `:context` option to specify the context containing the span to add the 
 
 ==== Create and use an instrument to take measurements synchronously
 
-NOTE: Counter, up-down counter and histogram instruments support taking measurements synchronously.
+NOTE: Counter, up-down counter, gauge and histogram instruments support taking measurements synchronously.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#instrument[`steffan-westcott.clj-otel.api.metrics.instrument/instrument`] to create an instrument of the required type.
 +
@@ -709,7 +709,7 @@ For an example application `my-app` that exports traces only using OTLP over gRP
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.37.0"}
+          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.38.0"}
                        io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "2.2.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.63.0"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.63.0"}

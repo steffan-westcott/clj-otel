@@ -200,6 +200,7 @@
        :long   (.ofLongs builder)
        :double builder))
    (build
+     ([builder] (.build builder))
      ([builder observe] (.buildWithCallback builder (callback-double observe))))
  DoubleCounterBuilder
    (build
@@ -214,6 +215,7 @@
      ([builder] (.build builder)))
  LongGaugeBuilder
    (build
+     ([builder] (.build builder))
      ([builder observe] (.buildWithCallback builder (callback-long observe)))))
 
 (defn instrument
@@ -232,7 +234,7 @@
    |`:description`      | String describing the instrument (default: no description).
 
    The 1-arity form of [[instrument]] is for building instruments that take
-   measurements synchronously. Counter, up-down counter and histogram
+   measurements synchronously. Counter, up-down counter, gauge and histogram
    instruments are supported. The built instrument is returned, and measurements
    are made with the `add!` or `record!` functions.
 
