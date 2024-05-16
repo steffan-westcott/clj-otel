@@ -9,8 +9,8 @@
            aero/aero {:mvn/version "1.1.6"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.17.0"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.17.0"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.17.1"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.17.1"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
@@ -48,4 +48,4 @@
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.0"}
                                  nrepl/nrepl           {:mvn/version "1.1.1"}
-                                 http-kit/http-kit     {:mvn/version "2.7.0"}}}}}
+                                 http-kit/http-kit     {:mvn/version "2.8.0"}}}}}

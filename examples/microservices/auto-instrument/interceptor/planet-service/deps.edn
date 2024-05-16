@@ -12,10 +12,10 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.6.3"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.6.3"}
-           io.pedestal/pedestal.route {:mvn/version "0.6.3"}
-           io.pedestal/pedestal.service {:mvn/version "0.6.3"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.6.4"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.6.4"}
+           io.pedestal/pedestal.route {:mvn/version "0.6.4"}
+           io.pedestal/pedestal.service {:mvn/version "0.6.4"}
 
            ;; Functions for logging strings and maps using Log4j2
            org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
@@ -42,4 +42,4 @@
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.0"}
                                  nrepl/nrepl           {:mvn/version "1.1.1"}
-                                 http-kit/http-kit     {:mvn/version "2.7.0"}}}}}
+                                 http-kit/http-kit     {:mvn/version "2.8.0"}}}}}

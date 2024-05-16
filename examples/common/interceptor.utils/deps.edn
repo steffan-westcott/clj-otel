@@ -4,6 +4,6 @@
 
  :deps  {org.clojure/clojure   {:mvn/version "1.11.3"}
          org.clojure/data.json {:mvn/version "2.5.0"}
-         io.pedestal/pedestal.service {:mvn/version "0.6.3"}
+         io.pedestal/pedestal.service {:mvn/version "0.6.4"}
          ring/ring-core        {:mvn/version "1.12.1"}
          com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}}}

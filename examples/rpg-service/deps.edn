@@ -15,7 +15,7 @@
            com.github.tamizhvendan/honeyeql {:mvn/version "1.0.2"}
 
            ;; HikariCP JDBC connection pool
-           hikari-cp/hikari-cp {:mvn/version "3.0.1"}
+           hikari-cp/hikari-cp {:mvn/version "3.1.0"}
 
            ;; Reitit HTTP routing and content handling
            metosin/reitit-malli {:mvn/version "0.7.0"}
@@ -55,4 +55,4 @@
            ;; Include this alias for developing in the REPL
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.0"}
-                                 http-kit/http-kit     {:mvn/version "2.7.0"}}}}}
+                                 http-kit/http-kit     {:mvn/version "2.8.0"}}}}}
