@@ -4,6 +4,7 @@
 .clj-kondo/com.github.steffan-westcott
 .clj-kondo/http-kit
 .clj-kondo/metosin
+.clj-kondo/potemkin
 .cpcache
 .idea
 .lein-*
