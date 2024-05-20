@@ -735,7 +735,7 @@ To initialise a configured SDK instance, set as default `OpenTelemetry` and regi
 ** _Required:_ `com.github.steffan-westcott/clj-otel-sdk` for the SDK itself and a Clojure wrapper of SDK configuration
 ** _Required:_ `com.github.steffan-westcott/clj-otel-exporter-???` for Clojure wrapped versions of any xref:concepts.adoc#_exporters[exporters] referenced in the configuration.
 See xref:reference.adoc#_clojure_exporter_modules[Clojure wrapped versions of exporters supported by autoconfiguration].
-** _Optional:_ `com.github.steffan-westcott/clj-otel-sdk-extension-resources` for Clojure wrapped versions of various xref:concepts.adoc#_resources[resources] to add to telemetry data.
+** _Optional:_ `com.github.steffan-westcott/clj-otel-instrumentation-resources` for Clojure wrapped versions of various xref:concepts.adoc#_resources[resources] to add to telemetry data.
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-contrib-aws-resources` for Clojure wrapped versions of resources describing the AWS execution environment.
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator` for Clojure wrapped text map propagator implementing the AWS X-Ray Trace Header propagation protocol.
 ** _Optional:_ `com.github.steffan-westcott/clj-otel-extension-trace-propagators` for Clojure wrapped text map propagators implementing OpenTracing Basic Tracers, Jaeger and B3 propagation protocols.
@@ -751,12 +751,12 @@ For an example application `my-app` that exports traces only using OTLP over gRP
 [.small]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-exporter-otlp            {:mvn/version "0.2.6"}
-        com.github.steffan-westcott/clj-otel-sdk-extension-resources  {:mvn/version "0.2.6"}
-        com.github.steffan-westcott/clj-otel-sdk                      {:mvn/version "0.2.6"}
-        io.grpc/grpc-netty-shaded                                     {:mvn/version "1.64.0"}
-        io.grpc/grpc-protobuf                                         {:mvn/version "1.64.0"}
-        io.grpc/grpc-stub                                             {:mvn/version "1.64.0"}}}
+ :deps {com.github.steffan-westcott/clj-otel-exporter-otlp             {:mvn/version "0.2.6"}
+        com.github.steffan-westcott/clj-otel-instrumentation-resources {:mvn/version "0.2.6"}
+        com.github.steffan-westcott/clj-otel-sdk                       {:mvn/version "0.2.6"}
+        io.grpc/grpc-netty-shaded                                      {:mvn/version "1.64.0"}
+        io.grpc/grpc-protobuf                                          {:mvn/version "1.64.0"}
+        io.grpc/grpc-stub                                              {:mvn/version "1.64.0"}}}
 ----
 
 To initialise a configured SDK instance, set as default `OpenTelemetry` and register a shutdown hook to close:
