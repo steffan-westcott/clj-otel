@@ -27,7 +27,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 === `0.2.7` (in progress)
 
 - Bump deps
-* [MAINT] OpenTelemetry `1.38.0`
+* [MAINT] OpenTelemetry `1.39.0`
 ** [ADD] Sync gauge support
 ** [ADD] `:links` option for `add-span-data!`
 ** [BREAK] Removed modules `clj-otel-exporter-jaeger-grpc` and `clj-otel-exporter-jaeger-thrift` as the Java libraries `opentelemetry-exporter-jaeger` and `opentelemetry-exporter-jaeger-thrift` are no longer published.

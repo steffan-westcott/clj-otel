@@ -20,7 +20,7 @@
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry-java17"}
 
            ;; OpenTelemetry exporter that uses OTLP
-           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.38.0"}
+           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.39.0"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.4.0-alpha"}
