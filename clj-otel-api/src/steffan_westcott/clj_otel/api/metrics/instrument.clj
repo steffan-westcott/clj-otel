@@ -151,6 +151,7 @@
   (set-unit [builder unit])
   (set-description [builder description])
   (set-type [builder type])
+  (set-explicit-bucket-boundaries-advice [builder boundaries])
   (build [builder]
          [builder observe]))
 
@@ -188,6 +189,8 @@
      (case type
        :long   (.ofLongs builder)
        :double builder))
+   (set-explicit-bucket-boundaries-advice [builder boundaries]
+     (.setExplicitBucketBoundariesAdvice builder (vec boundaries)))
    (build
      ([builder] (.build builder)))
  DoubleGaugeBuilder
@@ -211,6 +214,8 @@
      ([builder] (.build builder))
      ([builder observe] (.buildWithCallback builder (callback-double observe))))
  LongHistogramBuilder
+   (set-explicit-bucket-boundaries-advice [builder boundaries]
+     (.setExplicitBucketBoundariesAdvice builder (vec boundaries)))
    (build
      ([builder] (.build builder)))
  LongGaugeBuilder
@@ -224,14 +229,15 @@
 
    The first parameter `opts` is an options map as follows:
 
-   | key                | description |
-   |--------------------|-------------|
-   |`:meter`            | `io.opentelemetry.api.metrics.Meter` used to create the instrument (default: default meter, as set by [[set-default-meter!]]; if no default meter has been set, one will be set with default config).
-   |`:name`             | Name of the instrument. Must be 63 or fewer characters including alphanumeric, `_`, `.`, `-`, and start with a letter (required).
-   |`:instrument-type`  | Type of instrument, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge` (required).
-   |`:measurement-type` | Type of measurement value, either `:long` or `:double` (default: `:long`).
-   |`:unit`             | String describing the unit of measurement (default: no specified unit).
-   |`:description`      | String describing the instrument (default: no description).
+   | key                                | description |
+   |------------------------------------|-------------|
+   |`:meter`                            | `io.opentelemetry.api.metrics.Meter` used to create the instrument (default: default meter, as set by [[set-default-meter!]]; if no default meter has been set, one will be set with default config).
+   |`:name`                             | Name of the instrument. Must be 63 or fewer characters including alphanumeric, `_`, `.`, `-`, and start with a letter (required).
+   |`:instrument-type`                  | Type of instrument, one of `:counter`, `:up-down-counter`, `:histogram` or `:gauge` (required).
+   |`:measurement-type`                 | Type of measurement value, either `:long` or `:double` (default: `:long`).
+   |`:unit`                             | String describing the unit of measurement (default: no specified unit).
+   |`:description`                      | String describing the instrument (default: no description).
+   |`:explicit-bucket-boundaries-advice`| Seq of increasing longs or doubles, recommended bucket boundaries when building a histogram (default: no advice given).
 
    The 1-arity form of [[instrument]] is for building instruments that take
    measurements synchronously. Counter, up-down counter, gauge and histogram
@@ -252,7 +258,8 @@
    |`:attributes`| Map of attributes to attach to measurement (default: no attributes)."
   ([opts]
    (instrument opts nil))
-  ([{:keys [^Meter meter name instrument-type measurement-type unit description]
+  ([{:keys [^Meter meter name instrument-type measurement-type unit description
+            explicit-bucket-boundaries-advice]
      :or   {measurement-type :long}} observe]
    (let [meter'  (or meter (get-default-meter!))
          builder (cond-> (case instrument-type
@@ -262,7 +269,9 @@
                            :gauge           (.gaugeBuilder meter' name))
                    unit        (set-unit unit)
                    description (set-description description)
-                   :always     (set-type measurement-type))]
+                   :always     (set-type measurement-type)
+                   explicit-bucket-boundaries-advice (set-explicit-bucket-boundaries-advice
+                                                      explicit-bucket-boundaries-advice))]
      (if observe
        (build builder observe)
        (build builder)))))
