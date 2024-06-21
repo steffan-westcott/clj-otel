@@ -29,10 +29,13 @@
     "Delay containing a histogram that records the duration of inbound HTTP
      request processing."}
   request-duration
-  (delay (instrument/instrument {:name        "http.server.request.duration"
+  (delay (instrument/instrument {:name "http.server.request.duration"
                                  :instrument-type :histogram
                                  :measurement-type :double
-                                 :unit        "s"
+                                 :unit "s"
+                                 :explicit-bucket-boundaries-advice [0.005 0.01 0.025 0.05 0.075 0.1
+                                                                     0.25 0.5 0.75 1.0 2.5 5.0 7.5
+                                                                     10.0]
                                  :description "Duration of HTTP server requests."})))
 
 (defonce
