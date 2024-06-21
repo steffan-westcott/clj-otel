@@ -29,6 +29,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - Bump deps
 * [MAINT] OpenTelemetry `1.39.0`
 ** [ADD] Sync gauge support
+** [ADD] Option to set explicit bucket boundaries advice for histograms
 ** [ADD] `:links` option for `add-span-data!`
 ** [BREAK] Removed modules `clj-otel-exporter-jaeger-grpc` and `clj-otel-exporter-jaeger-thrift` as the Java libraries `opentelemetry-exporter-jaeger` and `opentelemetry-exporter-jaeger-thrift` are no longer published.
 Jaeger has native support for OTLP, use `clj-otel-exporter-otlp` instead to configure an OTLP exporter.
