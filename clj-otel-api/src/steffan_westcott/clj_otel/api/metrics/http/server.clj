@@ -205,7 +205,7 @@
                 :as    ctx}]
             (record-duration! start-time
                               server-request-attrs
-                              (:status response)
+                              (or (:status response) 404)
                               server-span-context)
             ctx)
    :error (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
@@ -263,7 +263,7 @@
                 :as   ctx}]
             (record-request-size!
              server-request-attrs
-             (:status response)
+             (or (:status response) 404)
              server-span-context)
             ctx)
    :error (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
