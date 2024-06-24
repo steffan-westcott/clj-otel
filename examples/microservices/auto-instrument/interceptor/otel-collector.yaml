@@ -20,10 +20,32 @@ processors:
   # Help avoid out-of-memory errors during high load
   memory_limiter:
     check_interval: 1s
-    limit_mib: 50
+    limit_mib: 512
 
   # Places received data in batches prior to export
   batch:
+
+
+
+# Telemetry connectors
+connectors:
+
+  # Add span metrics, with HTTP response status code as an attribute when present on the span
+  spanmetrics:
+    namespace: traces.spanmetrics
+    metrics_flush_interval: 15s
+    dimensions:
+      - name: http.response.status_code
+    exemplars:
+      enabled: true
+    histogram:
+      unit: "s"
+      explicit:
+        buckets: [ 5ms, 10ms, 25ms, 50ms, 75ms, 100ms, 250ms, 500ms, 750ms, 1s, 2.5s, 5s, 7.5s, 10s ]
+
+  # Add service graph metrics for visualization
+  servicegraph:
+    latency_histogram_buckets: [ 5ms, 10ms, 25ms, 50ms, 75ms, 100ms, 250ms, 500ms, 750ms, 1s, 2.5s, 5s, 7.5s, 10s ]
 
 
 
@@ -68,10 +90,10 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ debug, otlp/tempo ]
+      exporters: [ debug, otlp/tempo, spanmetrics, servicegraph ]
 
     # Enable pipeline of components for metrics
     metrics:
-      receivers: [ otlp ]
+      receivers: [ otlp, spanmetrics, servicegraph ]
       processors: [ memory_limiter, batch ]
       exporters: [ debug, prometheusremotewrite ]

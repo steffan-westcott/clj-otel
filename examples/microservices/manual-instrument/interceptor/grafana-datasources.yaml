@@ -6,6 +6,11 @@ datasources:
     url: http://tempo:3200
     isDefault: true
     editable: true
+    jsonData:
+      serviceMap:
+        datasourceUid: "prometheus"
+      nodeGraph:
+        enabled: true
   - name: prometheus
     type: prometheus
     url: http://prometheus:9090

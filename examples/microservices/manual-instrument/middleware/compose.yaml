@@ -26,7 +26,10 @@ services:
       - ./random-word-service/resources:/app/examples/microservices/manual-instrument/middleware/random-word-service/resources:ro
       - ./random-word-service/src:/app/examples/microservices/manual-instrument/middleware/random-word-service/src:ro
     working_dir: "/app/examples/microservices/manual-instrument/middleware/random-word-service"
-    command: "clojure -M:otel:log4j:dev -m example.random-word-service.repl"
+    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:otel:log4j:dev -m example.random-word-service.repl"
+    mem_limit: 768mb
+    memswap_limit: 768mb
+    cpu_count: 2
     healthcheck:
       start_period: 120s
       interval: 5s
@@ -58,7 +61,10 @@ services:
       - ./puzzle-service/resources:/app/examples/microservices/manual-instrument/middleware/puzzle-service/resources:ro
       - ./puzzle-service/src:/app/examples/microservices/manual-instrument/middleware/puzzle-service/src:ro
     working_dir: "/app/examples/microservices/manual-instrument/middleware/puzzle-service"
-    command: "clojure -M:otel:log4j:dev -m example.puzzle-service.repl"
+    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:otel:log4j:dev -m example.puzzle-service.repl"
+    mem_limit: 768mb
+    memswap_limit: 768mb
+    cpu_count: 2
     healthcheck:
       start_period: 120s
       interval: 5s
@@ -87,7 +93,9 @@ services:
       - ./puzzle-load-gen/resources:/app/examples/microservices/manual-instrument/middleware/puzzle-load-gen/resources:ro
       - ./puzzle-load-gen/src:/app/examples/microservices/manual-instrument/middleware/puzzle-load-gen/src:ro
     working_dir: "/app/examples/microservices/manual-instrument/middleware/puzzle-load-gen"
-    command: "clojure -M:log4j:dev -m example.puzzle-load-gen.repl"
+    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:log4j:dev -m example.puzzle-load-gen.repl"
+    mem_limit: 768mb
+    memswap_limit: 768mb
     depends_on:
       puzzle-service:
         condition: service_healthy
@@ -95,7 +103,9 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector-contrib:latest
+    environment:
+      GOMEMLIMIT: "400MiB"
     volumes:
       - ./otel-collector.yaml:/etc/otel-collector.yaml
     command:

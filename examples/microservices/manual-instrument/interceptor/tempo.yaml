@@ -3,7 +3,9 @@ compactor:
     block_retention: 1h
 
 ingester:
-  max_block_duration: 5m
+  lifecycler:
+    ring:
+      replication_factor: 1
 
 server:
   http_listen_port: 3200

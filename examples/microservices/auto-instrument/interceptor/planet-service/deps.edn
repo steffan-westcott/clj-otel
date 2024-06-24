@@ -27,9 +27,7 @@
            org.example/common.system {:local/root "../../../../common/system"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"
-                              "-Dotel.resource.attributes=service.name=planet-service"
-                              "-Dotel.metric.export.interval=10000"
-                              "-Dotel.logs.exporter=none"]}
+                              "-Dotel.resource.attributes=service.name=planet-service"]}
 
            ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
            :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.23.1"}
