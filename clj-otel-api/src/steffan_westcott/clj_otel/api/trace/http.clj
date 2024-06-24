@@ -508,11 +508,13 @@
   {:name  ::route
    :enter (fn [{:keys [io.opentelemetry/server-span-context route request]
                 :as   ctx}]
-            (let [path (:path route)]
-              (add-route-data! (:request-method request) path {:context server-span-context})
-              (assoc-in ctx
-               [:request :io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
-               path)))})
+            (if-let [path (:path route)]
+              (do
+                (add-route-data! (:request-method request) path {:context server-span-context})
+                (assoc-in ctx
+                 [:request :io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
+                 path))
+              ctx))})
 
 (defn exception-event-interceptor
   "Returns an interceptor which adds an exception event to the server span. This
