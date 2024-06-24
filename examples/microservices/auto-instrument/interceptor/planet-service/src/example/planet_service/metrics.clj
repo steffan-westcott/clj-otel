@@ -6,10 +6,10 @@
 (def instrument-opts
   "Map of instruments and their options. All instruments in the map take
    measurements synchronously."
-  {:statistic-lookup-count {:name        "service.planet.statistic-lookup-count"
-                            :instrument-type :counter
-                            :unit        "{lookups}"
-                            :description "The number of statistic lookups"}})
+  {:statistic-lookups {:name        "service.planet.statistic-lookups"
+                       :instrument-type :counter
+                       :unit        "{lookups}"
+                       :description "The number of statistic lookups"}})
 
 
 

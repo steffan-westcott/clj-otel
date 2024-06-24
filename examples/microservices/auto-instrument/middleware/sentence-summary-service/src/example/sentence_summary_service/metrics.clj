@@ -6,10 +6,11 @@
 (def instrument-opts
   "Map of instruments and their options. All instruments in the map take
    measurements synchronously."
-  {:words-count {:name        "service.sentence-summary.words-count"
-                 :instrument-type :histogram
-                 :unit        "{words}"
-                 :description "The number of words in each sentence"}})
+  {:sentence-length {:name        "service.sentence-summary.sentence-length"
+                     :instrument-type :histogram
+                     :unit        "{words}"
+                     :description "The number of words in each sentence"
+                     :explicit-bucket-boundaries-advice [0 1 2 3 4 5 6 8 10 12 15 20 30 50]}})
 
 
 

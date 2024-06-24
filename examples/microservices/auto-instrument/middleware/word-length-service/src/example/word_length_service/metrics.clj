@@ -6,10 +6,10 @@
 (def instrument-opts
   "Map of instruments and their options. All instruments in the map take
    measurements synchronously."
-  {:letter-count {:name        "service.word-length.letter-count"
-                  :instrument-type :counter
-                  :unit        "{letters}"
-                  :description "The number of letters counted"}})
+  {:letters {:name        "service.word-length.letters"
+             :instrument-type :counter
+             :unit        "{letters}"
+             :description "The number of letters counted"}})
 
 
 

@@ -71,7 +71,7 @@
                                               :attributes {:system/puzzle scrambled-words}}})
 
               ;; Update puzzle-size metric
-              (instrument/record! (:puzzle-size instruments)
+              (instrument/record! (:puzzle-size-letters instruments)
                                   {:context context
                                    :value   (reduce + (map count scrambled-words))})
 

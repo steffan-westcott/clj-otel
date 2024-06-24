@@ -6,10 +6,11 @@
 (def instrument-opts
   "Map of instruments and their options. All instruments in the map take
    measurements synchronously."
-  {:puzzle-size {:name        "service.puzzle.puzzle-size"
-                 :instrument-type :histogram
-                 :unit        "{letters}"
-                 :description "The number of letters in each generated puzzle"}})
+  {:puzzle-size-letters {:name        "service.puzzle.puzzle-size-letters"
+                         :instrument-type :histogram
+                         :unit        "{letters}"
+                         :explicit-bucket-boundaries-advice [4 8 12 16 20 24 28 32 36 40 48 64]
+                         :description "The number of letters in each generated puzzle"}})
 
 
 

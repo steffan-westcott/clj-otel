@@ -6,10 +6,10 @@
 (def instrument-opts
   "Map of instruments and their options. All instruments in the map take
    measurements synchronously."
-  {:word-count {:name        "service.random-word.word-count"
-                :instrument-type :counter
-                :unit        "{words}"
-                :description "The number of words requested"}})
+  {:words {:name        "service.random-word.words"
+           :instrument-type :counter
+           :unit        "{words}"
+           :description "The number of words requested"}})
 
 
 

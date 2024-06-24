@@ -38,7 +38,7 @@
       (span/add-span-data! {:attributes {:service.solar-system.report/length (count report)}})
 
       ;; Update report-count metric
-      (instrument/add! (:report-count instruments) {:value 1})
+      (instrument/add! (:reports-created instruments) {:value 1})
 
       report)))
 

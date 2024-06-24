@@ -26,6 +26,6 @@
     {:get {:handler    (partial get-summary components)
            :parameters {:query [:map [:sentence :string]]}
            :responses  {200 {:body [:map ;
-                                    [:word-count :int] ;
+                                    [:words :int] ;
                                     [:shortest-length :int] ;
                                     [:longest-length :int]]}}}}]])

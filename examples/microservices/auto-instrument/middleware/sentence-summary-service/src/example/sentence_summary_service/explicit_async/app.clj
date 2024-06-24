@@ -39,17 +39,17 @@
                                      :attributes {:system/word-lengths lengths}}]
 
     (Thread/sleep 25)
-    (let [result {:word-count      (count lengths)
+    (let [result {:words (count lengths)
                   :shortest-length (apply min lengths)
-                  :longest-length  (apply max lengths)}]
+                  :longest-length (apply max lengths)}]
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:context    context*
-                            :attributes {:service.sentence-summary.summary/word-count (:word-count
+                            :attributes {:service.sentence-summary.summary/word-count (:words
                                                                                        result)}})
 
       ;; Update words-count metric
-      (instrument/record! (:words-count instruments)
+      (instrument/record! (:sentence-length instruments)
                           {:context context*
                            :value   (count lengths)})
 

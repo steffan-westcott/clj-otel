@@ -44,7 +44,7 @@
       (span/add-event! "Processed query path" {:service.planet/query-path path})
 
       ;; Update statistic-lookup-count metric
-      (instrument/add! (:statistic-lookup-count instruments)
+      (instrument/add! (:statistic-lookups instruments)
                        {:value      1
                         :attributes {:statistic statistic}})
 

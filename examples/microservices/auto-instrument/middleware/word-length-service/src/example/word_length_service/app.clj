@@ -26,6 +26,6 @@
       (span/add-event! "Calculated word length" {:system/word-length word-length})
 
       ;; Update letter-count metric
-      (instrument/add! (:letter-count instruments) {:value word-length})
+      (instrument/add! (:letters instruments) {:value word-length})
 
       word-length)))

@@ -20,7 +20,7 @@
 
 (defn- rand-words
   []
-  (repeatedly (inc (rand-int 8))
+  (repeatedly (reduce + 1 (repeatedly 8 #(rand-int 2)))
               #(rand-nth ["a" "ability" "amazing" "anchor" "apple" "be" "chair" "dancing"
                           "dedicated" "exchange" "excited" "fascinate" "festival" "film" "flame"
                           "green" "grip" "herald" "level" "light" "musical" "one" "praise" "revive"

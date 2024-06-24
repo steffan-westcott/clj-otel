@@ -48,6 +48,7 @@
     (span/add-event! "Completed setting puzzle" {:system/puzzle scrambled-words})
 
     ;; Update puzzle-size metric
-    (instrument/record! (:puzzle-size instruments) {:value (reduce + (map count scrambled-words))})
+    (instrument/record! (:puzzle-size-letters instruments)
+                        {:value (reduce + (map count scrambled-words))})
 
     (str/join " " scrambled-words)))

@@ -52,7 +52,7 @@
                             :attributes {:service.solar-system.report/length (count report)}})
 
       ;; Update report-count metric
-      (instrument/add! (:report-count instruments)
+      (instrument/add! (:reports-created instruments)
                        {:context context*
                         :value   1})
 

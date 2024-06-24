@@ -47,7 +47,7 @@
       (span/add-span-data! {:attributes {:system/word word}})
 
       ;; Update word-count metric
-      (instrument/add! (:word-count instruments)
+      (instrument/add! (:words instruments)
                        {:value      1
                         :attributes {:word-type word-type}})
 

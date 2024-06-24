@@ -6,10 +6,10 @@
 (def instrument-opts
   "Map of instruments and their options. All instruments in the map take
    measurements synchronously."
-  {:report-count {:name        "service.solar-system.planet-report-count"
-                  :instrument-type :counter
-                  :unit        "{reports}"
-                  :description "The number of reports built"}})
+  {:reports-created {:name        "service.solar-system.reports-created"
+                     :instrument-type :counter
+                     :unit        "{reports}"
+                     :description "The number of reports created"}})
 
 
 
