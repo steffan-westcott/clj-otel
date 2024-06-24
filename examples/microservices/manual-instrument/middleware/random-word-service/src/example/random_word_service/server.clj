@@ -49,7 +49,10 @@
    stateful `components`."
   [components]
   (ring/ring-handler (router components)
-                     (ring/create-default-handler)
+
+                     ;; Ensure metrics for default handler
+                     (-> (ring/create-default-handler)
+                         metrics-http-server/wrap-metrics-by-route)
 
                      ;; Wrap handling of all requests, including those which have no matching
                      ;; route. As this application is not run with the OpenTelemetry

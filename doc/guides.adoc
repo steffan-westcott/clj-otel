@@ -468,7 +468,8 @@ This is the same example using Reitit as above, for an application run without t
                                            metrics-http-server/wrap-metrics-by-route
                                            ;; ... other middleware
                                            ]}})
-                     (ring/create-default-handler)
+                     (-> (ring/create-default-handler)
+                         metrics-http-server/wrap-metrics-by-route)
 
                      ;; Wrap handling of all requests, including those
                      ;; which have no matching route.
