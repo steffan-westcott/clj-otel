@@ -7,6 +7,7 @@
   (:import (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.metrics DoubleCounter
                                          DoubleCounterBuilder
+                                         DoubleGauge
                                          DoubleGaugeBuilder
                                          DoubleHistogram
                                          DoubleHistogramBuilder
@@ -14,6 +15,7 @@
                                          DoubleUpDownCounterBuilder
                                          LongCounter
                                          LongCounterBuilder
+                                         LongGauge
                                          LongGaugeBuilder
                                          LongHistogram
                                          LongHistogramBuilder
@@ -67,9 +69,10 @@
 
 (defprotocol Counter
   "Protocol for instruments of type `:counter` or `:up-down-counter` that take
-   synchronous measurements."
+   measurements synchronously."
   (add! [counter delta]
-   "Adds a delta to `counter`. `delta` is an option map as follows:
+   "Synchronously adds a delta to `counter`. `delta` is an option map as
+    follows:
 
     | key         | description |
     |-------------|-------------|
@@ -101,8 +104,8 @@
 (defprotocol Histogram
   "Protocol for instruments of type `:histogram`."
   (record! [histogram measurement]
-   "Records a measurement in `histogram`. `measurement` is an option map as
-    follows:
+   "Synchronously records a measurement in `histogram`. `measurement` is an
+    option map as follows:
 
     | key         | description |
     |-------------|-------------|
@@ -124,6 +127,34 @@
  DoubleHistogram
    (record! [histogram measurement]
      (record* histogram measurement)))
+
+(defprotocol Gauge
+  "Protocol for instruments of type `:gauge` that take measurements
+   synchronously."
+  (set! [gauge measurement]
+   "Synchronously sets a measurement in `gauge`. `measurement` is an option map
+    as follows:
+
+     | key         | description |
+     |-------------|-------------|
+     |`:context`   | Context to associate with measurement (default: bound or current context).
+     |`:value`     | `long` or `double` value to set in `gauge` (required).
+     |`:attributes`| Map of attributes to attach to measurement (default: no attributes)."))
+
+(defmacro ^:private set*
+  [gauge measurement]
+  `(let [{:keys [~'context ~'value ~'attributes]
+          :or   {~'context (context/dyn)}}
+         ~measurement]
+     (.set ~gauge ~'value (attr/->attributes ~'attributes) ~'context)))
+
+(extend-protocol Gauge
+ LongGauge
+   (set! [gauge measurement]
+     (set* gauge measurement))
+ DoubleGauge
+   (set! [gauge measurement]
+     (set* gauge measurement)))
 
 (defmacro ^:private callback*
   [observe measurement-class]
@@ -242,7 +273,8 @@
    The 1-arity form of [[instrument]] is for building instruments that take
    measurements synchronously. Counter, up-down counter, gauge and histogram
    instruments are supported. The built instrument is returned, and measurements
-   are made with the `add!` or `record!` functions.
+   are made with the `add!` (counter/up-down counter), `set!` (gauge) and
+   `record!` (histogram) functions.
 
    The 2-arity form of [[instrument]] is for building instruments that take
    measurements asynchronously. Counter, up-down counter and gauge instruments

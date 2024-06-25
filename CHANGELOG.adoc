@@ -28,7 +28,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 - Bump deps
 * [MAINT] OpenTelemetry `1.39.0`
-** [ADD] Sync gauge support
+** [ADD] Support for creating and setting gauges that take measurements synchronously.
+Use `steffan-westcott.clj-otel.api.metrics.instrument/set!` to synchronously set a gauge to a given measurement.
 ** [ADD] Option to set explicit bucket boundaries advice for histograms
 ** [ADD] `:links` option for `add-span-data!`
 ** [FIX] `metrics-by-route-interceptors` should record requests that have 404 HTTP response code

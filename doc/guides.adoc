@@ -216,13 +216,19 @@ NOTE: Counter, up-down counter, gauge and histogram instruments support taking m
                           :unit "{foo}"
                           :description "The number of foos counted"}))
 
+(defonce cache-size
+  (instrument/instrument {:name "app.cache-size"
+                          :instrument-type :gauge
+                          :unit "{byte}"
+                          :description "The cache size"}))
+
 (defonce segment-size
   (instrument/instrument {:name "app.segment-size"
                           :instrument-type :histogram
                           :unit "{byte}"
                           :description "The size of requested segment"}))
 ----
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Counter[`steffan-westcott.clj-otel.api.metrics.instrument/add!`] to add a measurement to a counter or up-down counter.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Counter[`steffan-westcott.clj-otel.api.metrics.instrument/add!`] to synchronously add a measurement to a counter or up-down counter.
 The measurement may have attributes and context.
 By default, the bound or current context is used.
 +
@@ -234,7 +240,19 @@ By default, the bound or current context is used.
                               :attributes {:colour :red}})
   (red-foo args))
 ----
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Histogram[`steffan-westcott.clj-otel.api.metrics.instrument/record!`] to record a measurement in a histogram.
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Gauge[`steffan-westcott.clj-otel.api.metrics.instrument/set!`] to synchronously set a gauge to a given measurement.
+The measurement may have attributes and context.
+By default, the bound or current context is used.
++
+[source,clojure]
+----
+(defn resize-baz-cache [context size]
+  (instrument/set! cache-size {:context context
+                               :value size
+                               :attributes {:cache-type :baz}})
+  (resize-cache :baz size))
+----
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.instrument#Histogram[`steffan-westcott.clj-otel.api.metrics.instrument/record!`] to synchronously record a measurement in a histogram.
 The measurement may have attributes and context.
 By default, the bound or current context is used.
 
