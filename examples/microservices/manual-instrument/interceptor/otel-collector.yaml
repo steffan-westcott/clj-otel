@@ -46,6 +46,10 @@ connectors:
   # Add service graph metrics for visualization
   servicegraph:
     latency_histogram_buckets: [ 5ms, 10ms, 25ms, 50ms, 75ms, 100ms, 250ms, 500ms, 750ms, 1s, 2.5s, 5s, 7.5s, 10s ]
+    store:
+      ttl: 15s
+      max_items: 500
+    metrics_flush_interval: 15s
 
 
 
