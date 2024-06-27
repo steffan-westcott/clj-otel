@@ -12,6 +12,8 @@ services:
   random-word-service:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
+    environment:
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=random-word-service,service.instance.id=random-word-service-1"
     ports:
       - "8091:8091"      # nREPL server
     volumes:
@@ -26,7 +28,7 @@ services:
       - ./random-word-service/resources:/app/examples/microservices/manual-instrument/middleware/random-word-service/resources:ro
       - ./random-word-service/src:/app/examples/microservices/manual-instrument/middleware/random-word-service/src:ro
     working_dir: "/app/examples/microservices/manual-instrument/middleware/random-word-service"
-    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:otel:log4j:dev -m example.random-word-service.repl"
+    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:log4j:dev -m example.random-word-service.repl"
     mem_limit: 768mb
     memswap_limit: 768mb
     cpu_count: 2
@@ -46,6 +48,7 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=puzzle-service,service.instance.id=puzzle-service-1"
       SERVER:
     ports:
       - "8090:8090"      # nREPL server
@@ -61,7 +64,7 @@ services:
       - ./puzzle-service/resources:/app/examples/microservices/manual-instrument/middleware/puzzle-service/resources:ro
       - ./puzzle-service/src:/app/examples/microservices/manual-instrument/middleware/puzzle-service/src:ro
     working_dir: "/app/examples/microservices/manual-instrument/middleware/puzzle-service"
-    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:otel:log4j:dev -m example.puzzle-service.repl"
+    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:log4j:dev -m example.puzzle-service.repl"
     mem_limit: 768mb
     memswap_limit: 768mb
     cpu_count: 2

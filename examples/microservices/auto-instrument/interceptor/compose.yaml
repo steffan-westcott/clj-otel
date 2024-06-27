@@ -12,6 +12,8 @@ services:
   planet-service:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
+    environment:
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=planet-service,service.instance.id=planet-service-1"
     ports:
       - "8091:8091"      # nREPL server
     volumes:
@@ -45,6 +47,7 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=solar-system-service,service.instance.id=solar-system-service-1"
       SERVER:
     ports:
       - "8090:8090"      # nREPL server

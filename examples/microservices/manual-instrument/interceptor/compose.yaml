@@ -12,6 +12,8 @@ services:
   sum-service:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
+    environment:
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=sum-service,service.instance.id=sum-service-1"
     volumes:
       - m2:/root/.m2
       - gitlibs:/root/.gitlibs
@@ -24,7 +26,7 @@ services:
       - ./sum-service/resources:/app/examples/microservices/manual-instrument/interceptor/sum-service/resources:ro
       - ./sum-service/src:/app/examples/microservices/manual-instrument/interceptor/sum-service/src:ro
     working_dir: "/app/examples/microservices/manual-instrument/interceptor/sum-service"
-    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:otel:log4j:dev -m example.sum-service.repl"
+    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:log4j:dev -m example.sum-service.repl"
     mem_limit: 768mb
     memswap_limit: 768mb
     cpu_count: 2
@@ -46,6 +48,7 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
+      OTEL_RESOURCE_ATTRIBUTES: "service.name=average-service,service.instance.id=average-service-1"
       SERVER:
     volumes:
       - m2:/root/.m2
@@ -59,7 +62,7 @@ services:
       - ./average-service/resources:/app/examples/microservices/manual-instrument/interceptor/average-service/resources:ro
       - ./average-service/src:/app/examples/microservices/manual-instrument/interceptor/average-service/src:ro
     working_dir: "/app/examples/microservices/manual-instrument/interceptor/average-service"
-    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:otel:log4j:dev -m example.average-service.repl"
+    command: "clojure -J-XX:MaxRAMPercentage=70.0 -J-XX:+UseG1GC -M:log4j:dev -m example.average-service.repl"
     mem_limit: 768mb
     memswap_limit: 768mb
     cpu_count: 2
