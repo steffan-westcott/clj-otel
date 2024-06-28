@@ -43,6 +43,7 @@ This ensures correct recording of metrics for HTTP server spans with 404, 405 an
 ** [MAINT] Removed uberjar build step.
 All application instances now use a `clojure` Docker image rather than custom image containing an uberjar.
 ** [ADD] For telemetry backend, changed to use Grafana with Grafana Tempo and Prometheus.
+Preconfigured Grafana dashboards for metrics and traces are included.
 ** [ADD] Added state lifecycle management, using `with-open` and `closeable` pattern.
 ** [MAINT] Altered Ring/Pedestal servers to reload routes on every HTTP request.
 ** [ADD] Added embedded nREPL server to all application and load-gen instances for remote access.

@@ -209,7 +209,7 @@ A pair of dependent microservices `average-service` and `sum-service` both imple
 . *Start container instances*
 +
 `compose.yaml` is a Docker Compose configuration file that specifies container instances to spin up.
-These containers may include telemetry backends (Jaeger, Prometheus) and the OpenTelemetry Collector.
+These containers may include telemetry backends (Grafana, Jaeger, Prometheus) and the OpenTelemetry Collector.
 When the Collector is present, `otel-collector.yaml` is a configuration file that forwards telemetry data to the telemetry backends.
 The microservice examples include instances for each service and a load generator that automatically exercises the head microservice.
 +
@@ -260,7 +260,12 @@ Also see the `dev` source tree for functions to use in a remote REPL session.
 NOTE: Traces may appear incomplete until all parts of telemetry data have been received and processed by the telemetry backend.
 This sometimes impacts recent traces of distributed services, where some but not all contributing services have completed exporting telemetry data.
 +
-* *Grafana* : Navigate to http://localhost:3000 then select `Data sources` then `Explore data` for any data source listed.
+NOTE: The microservices examples use Grafana as the primary backend, with preconfigured dashboards.
+The other examples use Jaeger and Prometheus.
++
+* *Grafana* : Navigate to http://localhost:3000 for the *Overview* dashboard.
+Click on the dashboard links for further curated detail.
+Telemetry data can also be examined by clicking on *Home* > *Explore* and selecting *tempo* (for traces) or *prometheus* (for metrics).
 * *Jaeger* : Navigate to http://localhost:16686/search then select an option in the `Service` dropdown and click the `Find Traces` button.
 * *Prometheus* : Navigate to http://localhost:9090/graph then enter a metric name in the expression in the search bar, or click the `Open metrics explorer` button and select a metric. The Prometheus server is not exposed in examples that use Grafana.
 +

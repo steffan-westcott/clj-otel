@@ -144,12 +144,20 @@ services:
   grafana:
     image: grafana/grafana-oss:10.4.2
     volumes:
-      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml:ro
+      - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/grafana-dashboards.yaml:ro
+      - ../../../common/dashboards/JVM.json:/var/lib/grafana/dashboards/JVM.json:ro
+      - ../../../common/dashboards/HTTP-server-instances.json:/var/lib/grafana/dashboards/HTTP-server-instances.json:ro
+      - ../../../common/dashboards/HTTP-server-routes.json:/var/lib/grafana/dashboards/HTTP-server-routes.json:ro
+      - ../../../common/dashboards/HTTP-client.json:/var/lib/grafana/dashboards/HTTP-client.json:ro
+      - ./dashboards/overview.json:/var/lib/grafana/dashboards/overview.json:ro
+      - ./dashboards/sentences-and-words.json:/var/lib/grafana/dashboards/sentences-and-words.json:ro
     environment:
       - GF_ANALYTICS_REPORTING_ENABLED=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/overview.json
       - GF_NEWS_NEWS_FEED_ENABLED=false
     ports:
       - "3000:3000"       # Grafana web interface
