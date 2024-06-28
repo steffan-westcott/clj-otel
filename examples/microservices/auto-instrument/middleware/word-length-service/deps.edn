@@ -30,7 +30,7 @@
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.12.1"}}
+           ring/ring-jetty-adapter {:mvn/version "1.12.2"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"]}
 
@@ -44,5 +44,5 @@
 
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.0"}
-                                 nrepl/nrepl           {:mvn/version "1.1.1"}
+                                 nrepl/nrepl           {:mvn/version "1.2.0"}
                                  http-kit/http-kit     {:mvn/version "2.8.0"}}}}}
