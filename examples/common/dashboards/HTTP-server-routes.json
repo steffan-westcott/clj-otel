@@ -453,7 +453,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (http_response_status_code) (rate(traces_spanmetrics_duration_seconds_sum{service_name=\"$service\",span_kind=\"SPAN_KIND_SERVER\",span_name=\"$server_span\"}[$__rate_interval]) / rate(traces_spanmetrics_duration_seconds_count{service_name=\"$service\",span_kind=\"SPAN_KIND_SERVER\",span_name=\"$server_span\"}[$__rate_interval]))",
+          "expr": "(sum by (http_response_status_code) (rate(traces_spanmetrics_duration_seconds_sum{service_name=\"$service\",span_kind=\"SPAN_KIND_SERVER\",span_name=\"$server_span\"}[$__rate_interval])) / (sum by (http_response_status_code) (rate(traces_spanmetrics_duration_seconds_count{service_name=\"$service\",span_kind=\"SPAN_KIND_SERVER\",span_name=\"$server_span\"}[$__rate_interval]))))",
           "format": "time_series",
           "instant": false,
           "legendFormat": "{{http_response_status_code}}",
