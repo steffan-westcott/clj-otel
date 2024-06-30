@@ -19,10 +19,10 @@ image:https://img.shields.io/badge/clojurians-clj--otel-blue.svg?logo=slack[Slac
 `clj-otel` provides a *small idiomatic Clojure API* for adding *telemetry* to your libraries and applications using https://opentelemetry.io/[*OpenTelemetry*], an emerging standard for telemetry in cloud-native software, enabling effective *observability*.
 
 .A distributed trace displayed in https://www.honeycomb.io/[Honeycomb]
-image::doc/images/honeycomb-trace.png[Distributed trace displayed in Honeycomb,width=500,link="doc/images/honeycomb-trace.png?raw=true"]
+image::doc/images/honeycomb-trace.png[Distributed trace displayed in Honeycomb,width=600,link="doc/images/honeycomb-trace.png?raw=true"]
 
-.Exploring microservice dependencies with https://www.servicenow.com/products/observability.html[ServiceNow Cloud Observability]
-image::doc/images/servicenow-service-diagram.png[Microservice dependencies displayed in ServiceNow Cloud Observability,width=500,link="doc/images/servicenow-service-diagram.png?raw=true"]
+.Metrics for an HTTP server route displayed on a https://grafana.com/[Grafana] dashboard
+image::doc/images/grafana-dashboard.png[Metrics displayed in Grafana,width=600,link="doc/images/grafana-dashboard.png?raw=true"]
 
 == Requirements
 
