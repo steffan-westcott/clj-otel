@@ -37,7 +37,7 @@
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.5.0-alpha"}
 
            ;; Reitit HTTP router
-           metosin/jsonista {:mvn/version "0.3.8"}
+           metosin/jsonista {:mvn/version "0.3.9"}
            metosin/malli {:mvn/version "0.16.1"}
            metosin/muuntaja {:mvn/version "0.6.10"}
            metosin/reitit-malli {:mvn/version "0.7.0"}
