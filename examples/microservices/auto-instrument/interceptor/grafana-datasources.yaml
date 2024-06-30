@@ -18,7 +18,7 @@ datasources:
     editable: true
     jsonData:
       prometheusType: "Prometheus"
-      prometheusVersion: "2.45.0"
+      prometheusVersion: "2.50.1"
       exemplarTraceIdDestinations:
         - name: "trace_id"
           datasourceUid: "tempo"
