@@ -89,13 +89,13 @@ They depend on the OpenTelemetry implementation for Java https://github.com/open
 OpenTelemetry *exports* telemetry data to a variety of telemetry backends.
 The choice of backend(s) is applied when configuring system components for deployment.
 
-Query and presentation capabilities vary between backends.
-Many backends conceived as solutions focused on tracing, monitoring or application performance management (APM) predate OpenTelemetry.
-Today these backends have been modified to ingest telemetry data from OpenTelemetry.
+Telemetry backends have varied roles and capabilities.
+Telemetry visualization backends provide interactive tools for query and display of telemetry data.
+Other backends may provide telemetry data storage and indexing for later retrieval.
 
-The following sections are incomplete selections of open-source software (OSS) and commercial backends that accept telemetry data from OpenTelemetry.
+The following sections are incomplete selections of open-source software (OSS) and commercial telemetry visualization backends that accept telemetry data from OpenTelemetry. See https://opentelemetry.io/ecosystem/vendors/[here] for an extended list including other types of telemetry backend.
 
-=== OSS telemetry backends
+=== OSS telemetry visualization backends
 
 * https://grafana.com/[Grafana]
 * https://www.jaegertracing.io/[Jaeger]
@@ -103,7 +103,7 @@ The following sections are incomplete selections of open-source software (OSS) a
 * https://signoz.io/[SigNoz]
 * https://zipkin.io/[Zipkin]
 
-=== Commercial telemetry backends
+=== Commercial telemetry visualization backends
 
 NOTE: Some commercial telemetry backends have a free version with a reduced capacity or feature set.
 
@@ -111,10 +111,14 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://www.aspecto.io/[Aspecto]
 * https://aws.amazon.com/xray/[AWS X-Ray]
 * https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview[Azure Application Insights]
+* https://betterstack.com/[Better Stack]
+* https://www.causely.io/[Causely]
+* https://chronosphere.io/[Chronosphere]
 * https://coralogix.com/[Coralogix]
 * https://www.datadoghq.com/[Datadog]
 * https://www.dynatrace.com/[Dynatrace]
 * https://www.elastic.co/observability/application-performance-monitoring[Elastic APM]
+* https://gigapipe.com/qryn/[Gigapipe qryn]
 * https://cloud.google.com/trace[Google Cloud Trace]
 * https://grafana.com/products/cloud/[Grafana Cloud]
 * https://gethelios.dev/[Helios]
@@ -128,13 +132,17 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://lumigo.io/[Lumigo]
 * https://newrelic.com/[New Relic]
 * https://www.observeinc.com/[Observe Inc.]
+* https://oneuptime.com/[OneUptime]
+* https://openobserve.ai/[OpenObserve]
 * https://docs.oracle.com/en-us/iaas/application-performance-monitoring/index.html[Oracle Cloud Infrastructure APM]
 * https://www.servicenow.com/products/observability.html[ServiceNow Cloud Observability]
+* https://www.servicepilot.com/[ServicePilot]
 * https://www.splunk.com/en_us/products/apm-application-performance-monitoring.html[Splunk APM]
 * https://www.sumologic.com/[Sumo Logic]
 * https://telemetryhub.com/[TelemetryHub]
 * https://uptrace.dev/[Uptrace]
 * https://tanzu.vmware.com/aria-operations-for-applications[VMware Aria Operations for Applications]
+* https://vunetsystems.com/vuapp360/[VuNet]
 
 == Using OpenTelemetry
 
@@ -397,7 +405,7 @@ The instance should be initialised early in the application's run lifetime, befo
 
 The global `OpenTelemetry` is a singleton reference declared and used by Java OpenTelemetry.
 The reference is `nil` until set, and may be set once only.
-The global `OpenTelemetry` reference is always set when running an application with the OpenTelemetry instrumentation agent.
+The global `OpenTelemetry` reference is always automatically set when running an application with the OpenTelemetry instrumentation agent.
 
 WARNING: It is discouraged to set the global `OpenTelemetry` reference when using the autoconfigure SDK extension or programmatically configuring the SDK.
 
@@ -431,11 +439,12 @@ Some exporters provided by OpenTelemetry have default options set to target a Co
 
 == Alternative Clojure telemetry projects
 
-The following are alternatives to OpenTelemetry in the Clojure ecosystem, concerned with telemetry data creation or processing.
+The following are alternative telemetry projects in the Clojure ecosystem, concerned with telemetry data creation or processing.
 
 === Events & structured logs
 
 * https://github.com/BrunoBonacci/mulog[μ/log] : Micro-logging library that logs events and data, not words
+* https://github.com/taoensso/telemere[Telemere] : Structured telemetry library for Clojure/Script, with native OpenTelemetry support
 * https://github.com/amperity/ken[ken] : Observability library to instrument Clojure code
 * https://github.com/henryw374/clojure.log4j2[clojure.log4j2] : Sugar for using https://logging.apache.org/log4j/2.x/[Log4j2] from clojure, including `MapMessage` support
 * https://github.com/viesti/timbre-json-appender[timbre-json-appender] : Structured log appender for Timbre using jsonista
