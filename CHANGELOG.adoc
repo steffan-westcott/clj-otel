@@ -47,6 +47,7 @@ Preconfigured Grafana dashboards for metrics and traces are included.
 ** [ADD] Added state lifecycle management, using `with-open` and `closeable` pattern.
 ** [MAINT] Altered Ring/Pedestal servers to reload routes on every HTTP request.
 ** [ADD] Added embedded nREPL server to all application and load-gen instances for remote access.
+- [ADD] Example `rpg-service` with instrumented database access
 
 === `0.2.6` (2024-01-15)
 
