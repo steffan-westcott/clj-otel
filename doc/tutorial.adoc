@@ -189,7 +189,7 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 
  :deps    {org.clojure/clojure                      {:mvn/version "1.11.3"}
            ring/ring-jetty-adapter                  {:mvn/version "1.12.2"}
-           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.6"}}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.7"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.resource.attributes=service.name=counter-service"

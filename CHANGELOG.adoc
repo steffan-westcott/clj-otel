@@ -24,7 +24,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
-=== `0.2.7` (in progress)
+=== `0.2.7` (2024-07-01)
 
 - Bump deps
 * [MAINT] OpenTelemetry `1.39.0`
@@ -36,8 +36,6 @@ Use `steffan-westcott.clj-otel.api.metrics.instrument/set!` to synchronously set
 ** [BREAK] Removed modules `clj-otel-exporter-jaeger-grpc` and `clj-otel-exporter-jaeger-thrift` as the Java libraries `opentelemetry-exporter-jaeger` and `opentelemetry-exporter-jaeger-thrift` are no longer published.
 Jaeger has native support for OTLP, use `clj-otel-exporter-otlp` instead to configure an OTLP exporter.
 ** [BREAK] In module `clj-otel-exporter-zipkin`, `span-exporter` options `:sender` and `:encoder` now take `zipkin2.reporter.BytesMessageSender` and `zipkin2.codec.BytesEncoder` values
-* [MAINT] Updated guide on using `wrap-metrics-by-route` to also wrap Reitit default handler.
-This ensures correct recording of metrics for HTTP server spans with 404, 405 and 406 response codes.
 * [MAINT] Various build deps
 - Refactored microservice examples
 ** [MAINT] Removed uberjar build step.
@@ -48,6 +46,8 @@ Preconfigured Grafana dashboards for metrics and traces are included.
 ** [MAINT] Altered Ring/Pedestal servers to reload routes on every HTTP request.
 ** [ADD] Added embedded nREPL server to all application and load-gen instances for remote access.
 - [ADD] Example `rpg-service` with instrumented database access
+- [FIX] Updated examples and guide when using `wrap-metrics-by-route` to also wrap Reitit default handler.
+This ensures correct recording of metrics for HTTP server spans with 404, 405 and 406 response codes.
 
 === `0.2.6` (2024-01-15)
 

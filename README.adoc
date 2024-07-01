@@ -41,7 +41,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.6"}}}
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.7"}}}
 ----
 ** To add traces telemetry, use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
 +
