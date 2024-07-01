@@ -12,17 +12,17 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
       - name: Set up git user
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
       - name: Install Clojure CLI tools
-        uses: DeLaGuardo/setup-clojure@12.3
+        uses: DeLaGuardo/setup-clojure@12.5
         with:
-          cli: '1.11.1.1435'
+          cli: '1.11.3.1463'
       - name: Cache deps
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository
