@@ -122,6 +122,26 @@ graph LR
 endif::[]
 A single HTTP service `countries-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Compojure router, exporting telemetry to a Collector instance.
 
+* `examples/rpg-service`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph docker network
+        postgres
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> postgres
+    localhost --> otel-collector
+----
++
+endif::[]
+A single HTTP service `rpg-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Reitit router, accessing a PostgreSQL database instance, exporting telemetry to a Collector instance.
+Load namespace `example.rpg-service.repl` at the REPL to exercise this example.
+
 * `examples/microservices/auto-instrument/middleware`
 +
 ifdef::env-github[[source,mermaid]]
@@ -251,7 +271,7 @@ Also see the `dev` source tree for functions to use in a remote REPL session.
 ** The microservices rebuild routes on each request received, so changes will take effect when edited namespaces are reloaded.
 +
 * For the other examples:
-** In the chosen example directory and your favourite Clojure development environment, start a REPL with the `otel` alias enabled.
+** In the chosen example directory and your favourite Clojure development environment, start a REPL with the `otel` (and `dev` when available) alias(es) enabled.
 ** Load the example namespace and set as current.
 ** Evaluate each expression or enter each terminal command in the comment block at the end of the namespace.
 
