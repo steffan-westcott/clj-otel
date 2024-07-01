@@ -38,11 +38,11 @@
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.9"}
-           metosin/malli {:mvn/version "0.16.1"}
+           metosin/malli {:mvn/version "0.16.2"}
            metosin/muuntaja {:mvn/version "0.6.10"}
-           metosin/reitit-malli {:mvn/version "0.7.0"}
-           metosin/reitit-middleware {:mvn/version "0.7.0"}
-           metosin/reitit-ring {:mvn/version "0.7.0"}
+           metosin/reitit-malli {:mvn/version "0.7.1"}
+           metosin/reitit-middleware {:mvn/version "0.7.1"}
+           metosin/reitit-ring {:mvn/version "0.7.1"}
 
            ;; Utilities for core.async
            org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}
