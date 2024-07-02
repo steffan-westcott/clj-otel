@@ -1,4 +1,4 @@
 ;!zprint {:width 140}
 
 {:defaults {:instrumentation-library {:name    "steffan-westcott.clj-otel"
-                                      :version "0.2.7"}}}
+                                      :version "0.2.8-SNAPSHOT"}}}
