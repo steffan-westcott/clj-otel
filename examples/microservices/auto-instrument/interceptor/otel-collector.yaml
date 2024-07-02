@@ -11,6 +11,7 @@ receivers:
 
       # Enable HTTP receiver
       http:
+        endpoint: "0.0.0.0:4318"
 
 
 

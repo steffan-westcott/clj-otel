@@ -7,11 +7,9 @@ receivers:
   otlp:
     protocols:
 
-      # Enable gRPC receiver
-#      grpc:
-
       # Enable HTTP receiver
       http:
+        endpoint: "0.0.0.0:4318"
 
 
 
