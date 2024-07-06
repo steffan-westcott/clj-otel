@@ -26,6 +26,9 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.8` (in progress)
 
+- Bump deps
+* [MAINT] OpenTelemetry `1.40.0`
+
 === `0.2.7` (2024-07-01)
 
 - Bump deps
