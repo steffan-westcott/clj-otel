@@ -264,7 +264,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "rate(traces_spanmetrics_calls_total{service_name=\"solar-system-service\",span_kind=\"SPAN_KIND_SERVER\",span_name=\"GET /statistics\",status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval])",
+          "expr": "sum(rate(traces_spanmetrics_calls_total{service_name=\"solar-system-service\",span_kind=\"SPAN_KIND_SERVER\",span_name=\"GET /statistics\",status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
           "hide": false,
           "instant": true,
           "legendFormat": "error",
