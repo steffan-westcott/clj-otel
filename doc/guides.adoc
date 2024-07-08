@@ -501,6 +501,11 @@ This is the same example using Reitit as above, for an application run without t
 [#_use_pedestal_interceptors_for_server_span_support]
 ==== Use Pedestal interceptors for server span support
 
+NOTE: Pedestal version 0.7.0 introduced OpenTelemetry support.
+Its support includes a new interceptor `io.pedestal.http.tracing/request-tracing-interceptor`, which is enabled in Pedestal's default interceptors.
+This overlaps functionality with `clj-otel` provided interceptors, so should not be used together.
+To disable `request-tracing-interceptor`, set `:io.pedestal.http/tracing` to `nil` in the service map used to initialise the Pedestal HTTP server.
+
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#server-span-interceptors[`steffan-westcott.clj-otel.api.trace.http/server-span-interceptors`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#route-interceptor[`steffan-westcott.clj-otel.api.trace.http/route-interceptor`] to add HTTP server span support to a Pedestal HTTP service.
 +
 The enabled support features vary with the selected interceptor options.
@@ -532,10 +537,11 @@ An example using Jetty in an application run with the agent
       (http/create-server)))
 
 (def service-map
-  {::http/routes routes
-   ::http/type   :jetty
-   ::http/port   8080
-   ::http/join?  false})
+  {::http/routes  routes
+   ::http/type    :jetty
+   ::http/port    8080
+   ::http/join?   false
+   ::http/tracing nil})
 
 (defonce server
   (http/start (service service-map)))
@@ -572,10 +578,11 @@ This is the same example as above, for an application run without the agent
       (http/create-server)))
 
 (def service-map
-  {::http/routes routes
-   ::http/type   :jetty
-   ::http/port   8080
-   ::http/join?  false})
+  {::http/routes  routes
+   ::http/type    :jetty
+   ::http/port    8080
+   ::http/join?   false
+   ::http/tracing nil})
 
 (defonce server
   (http/start (service service-map)))

@@ -74,11 +74,12 @@
 (defn service-map
   "Returns a service map ready for creating an HTTP server."
   [components]
-  (-> {::http/routes #(routes) ; rebuild routes on every request
-       ::http/type   :jetty
-       ::http/host   "0.0.0.0"
-       ::http/join?  false
-       ::http/not-found-interceptor (interceptor-utils/not-found-interceptor)}
+  (-> {::http/routes  #(routes) ; rebuild routes on every request
+       ::http/type    :jetty
+       ::http/host    "0.0.0.0"
+       ::http/join?   false
+       ::http/not-found-interceptor (interceptor-utils/not-found-interceptor)
+       ::http/tracing nil}
       (merge (:service-map config))
       (http/default-interceptors)
       (update ::http/interceptors update-interceptors components)))
