@@ -31,7 +31,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector:0.104.0
     volumes:
       - ./otel-collector.yaml:/etc/otel-collector.yaml
     command:
