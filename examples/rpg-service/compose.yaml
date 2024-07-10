@@ -20,7 +20,7 @@ services:
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.53.1
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:
