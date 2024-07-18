@@ -39,9 +39,9 @@
                                      io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.40.0-alpha"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
-           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.65.0"}
-                                     io.grpc/grpc-protobuf     {:mvn/version "1.65.0"}
-                                     io.grpc/grpc-stub         {:mvn/version "1.65.0"}}}
+           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.65.1"}
+                                     io.grpc/grpc-protobuf     {:mvn/version "1.65.1"}
+                                     io.grpc/grpc-stub         {:mvn/version "1.65.1"}}}
 
            ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
            :log4j      {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.23.1"}

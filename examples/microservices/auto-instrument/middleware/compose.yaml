@@ -104,7 +104,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.104.0
+    image: otel/opentelemetry-collector-contrib:0.105.0
     environment:
       GOMEMLIMIT: "400MiB"
     volumes:
@@ -131,7 +131,7 @@ services:
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus:v2.53.1
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:
