@@ -26,6 +26,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.8` (in progress)
 
+- [ADD] Updated microservices examples to export logs to Grafana Loki.
+A `Logs` panel has been added to the `HTTP server instances` dashboard.
 - Bump deps
 * [MAINT] OpenTelemetry `1.40.0`, semconv `1.26.0-alpha`, instrumentation `2.6.0-alpha`
 * [BREAK] Pedestal `0.7.0` in microservices examples.

@@ -5,6 +5,7 @@
    https://medium.com/@maciekszajna/reloaded-workflow-out-of-the-box-be6b5f38ea98"
   (:require [example.common.system :refer [closeable] :as common-system]
             [example.sum-service.env :as env]
+            [example.sum-service.logging :as logging]
             [example.sum-service.metrics :as metrics]
             [example.sum-service.server :as server]
             [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as runtime-telemetry]
@@ -23,6 +24,7 @@
   (with-open [config          (closeable (env/set-config!))
               otel-sdk        (closeable (autoconfig/init-otel-sdk!)) ; registers its own shutdown hook for closing
               runtime-metrics (runtime-telemetry/register!)
+              _logging        (closeable (logging/install! @otel-sdk))
               instruments     (closeable (metrics/instruments))
               components      (closeable {:instruments @instruments})
               service-map     (closeable (server/service-map @components))

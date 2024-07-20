@@ -120,6 +120,14 @@ services:
         condition: service_started
 
 
+  # Loki
+  loki:
+    image: grafana/loki:3.1.0
+    volumes:
+      - ./loki.yaml:/etc/loki.yaml
+    command: -config.file=/etc/loki.yaml
+
+
   # Tempo
   tempo:
     image: grafana/tempo:2.5.0
@@ -162,6 +170,7 @@ services:
     ports:
       - "3000:3000"       # Grafana web interface
     depends_on:
+      - loki
       - tempo
       - prometheus
 

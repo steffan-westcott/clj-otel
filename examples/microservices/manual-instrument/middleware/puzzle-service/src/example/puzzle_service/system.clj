@@ -6,6 +6,7 @@
   (:require [example.common.system :refer [closeable] :as common-system]
             [example.puzzle-service.client :as client]
             [example.puzzle-service.env :as env]
+            [example.puzzle-service.logging :as logging]
             [example.puzzle-service.metrics :as metrics]
             [example.puzzle-service.server :as server]
             [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as runtime-telemetry]
@@ -24,6 +25,7 @@
   (with-open [config          (closeable (env/set-config!))
               otel-sdk        (closeable (autoconfig/init-otel-sdk!)) ; registers its own shutdown hook for closing
               runtime-metrics (runtime-telemetry/register!)
+              _logging        (closeable (logging/install! @otel-sdk))
               instruments     (closeable (metrics/instruments))
               conn-mgr        (closeable (client/connection-manager)
                                          client/stop-connection-manager)

@@ -5,6 +5,7 @@
    https://medium.com/@maciekszajna/reloaded-workflow-out-of-the-box-be6b5f38ea98"
   (:require [example.average-service.client :as client]
             [example.average-service.env :as env]
+            [example.average-service.logging :as logging]
             [example.average-service.metrics :as metrics]
             [example.average-service.server :as server]
             [example.common.system :refer [closeable] :as common-system]
@@ -24,6 +25,7 @@
   (with-open [config          (closeable (env/set-config!))
               otel-sdk        (closeable (autoconfig/init-otel-sdk!)) ; registers its own shutdown hook for closing
               runtime-metrics (runtime-telemetry/register!)
+              _logging        (closeable (logging/install! @otel-sdk))
               instruments     (closeable (metrics/instruments))
               conn-mgr        (closeable (client/connection-manager)
                                          client/stop-connection-manager)

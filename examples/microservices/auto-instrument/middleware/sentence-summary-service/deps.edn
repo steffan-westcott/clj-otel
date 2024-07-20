@@ -30,9 +30,6 @@
            metosin/reitit-middleware {:mvn/version "0.7.1"}
            metosin/reitit-ring {:mvn/version "0.7.1"}
 
-           ;; Functions for logging strings and maps using Log4j2
-           org.example/common.log4j2.utils {:local/root "../../../../common/log4j2.utils"}
-
            ;; Utilities for core.async
            org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}
 
@@ -44,11 +41,15 @@
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"]}
 
-           ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
-           :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.23.1"}
+           :log4j {:extra-deps {;; Log4j2 OTLP appender
+                                io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.6.0-alpha"}
+
+                                ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation
+                                org.apache.logging.log4j/log4j-core        {:mvn/version "2.23.1"}
                                 org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.23.1"}
                                 org.apache.logging.log4j/log4j-jul         {:mvn/version "2.23.1"}
                                 org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.23.1"}}
+
                    :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                                 "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 

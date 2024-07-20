@@ -60,6 +60,12 @@ exporters:
   # Logs brief summary of telemetry data to console
   debug:
 
+  # Exports to Loki using OTLP over HTTP
+  otlphttp/loki:
+    endpoint: "http://loki:3100/otlp"
+    tls:
+      insecure: true
+
   # Exports to Tempo using OTLP over gRPC
   otlp/tempo:
     endpoint: "tempo:4317"
@@ -90,6 +96,12 @@ service:
 
   # Enable pipelines of components for telemetry data
   pipelines:
+
+    # Enable pipeline of components for logs
+    logs:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ debug, otlphttp/loki ]
 
     # Enable pipeline of components for traces
     traces:
