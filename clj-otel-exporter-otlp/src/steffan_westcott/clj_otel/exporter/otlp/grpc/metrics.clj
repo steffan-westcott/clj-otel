@@ -29,13 +29,14 @@
    |`:connect-timeout`                 | Maximum time to wait for new connections to be established. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).\n\n
    |`:retry-policy`                    | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: retry disabled).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: same as constantly `AggregationTemporality/CUMULATIVE`).
-   |`:default-aggregation-selector`    | Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`)."
+   |`:default-aggregation-selector`    | Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`).
+   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:immutable-data`)."
   (^OtlpGrpcMetricExporter []
    (metric-exporter {}))
   (^OtlpGrpcMetricExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout connect-timeout retry-policy
-            aggregation-temporality-selector default-aggregation-selector]}]
+            aggregation-temporality-selector default-aggregation-selector memory-mode]}]
    (let [builder
          (cond-> (OtlpGrpcMetricExporter/builder)
            endpoint (.setEndpoint endpoint)
@@ -59,5 +60,6 @@
                                          (reify
                                           DefaultAggregationSelector
                                             (getDefaultAggregation [_ instrument-type]
-                                              (default-aggregation-selector instrument-type)))))]
+                                              (default-aggregation-selector instrument-type))))
+           memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode)))]
      (.build builder))))

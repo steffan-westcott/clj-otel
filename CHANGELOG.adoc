@@ -30,6 +30,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 A `Logs` panel has been added to the `HTTP server instances` dashboard.
 - Bump deps
 * [MAINT] OpenTelemetry `1.40.0`, semconv `1.26.0-alpha`, instrumentation `2.6.0-alpha`
+* [ADD] `MemoryMode` option for programmatically configured OTLP exporters.
 * [BREAK] Pedestal `0.7.0` in microservices examples.
 Pedestal `0.7.0` introduces its own support for OpenTelemetry, including a new interceptor `io.pedestal.http.tracing/request-tracing-interceptor`.
 This overlaps functionality with `clj-otel` interceptors, so should be disabled by setting `:io.pedestal.http/tracing` to `nil` in the Pedestal service map.

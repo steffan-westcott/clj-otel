@@ -28,31 +28,33 @@
    |`:connect-timeout`                 | Maximum time to wait for new connections to be established. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:retry-policy`                    | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: retry disabled).
    |`:proxy-options`                   | Option map for proxy options, see `steffan-westcott.clj-otel.sdk.export/proxy-options` (default: no proxy used).\n
-   |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: constantly `AggregationTemporality/CUMULATIVE`)."
+   |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: constantly `AggregationTemporality/CUMULATIVE`).
+   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:immutable-data`)."
   (^OtlpHttpMetricExporter []
    (metric-exporter {}))
   (^OtlpHttpMetricExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout connect-timeout retry-policy
-            proxy-options aggregation-temporality-selector]}]
-   (let [builder (cond-> (OtlpHttpMetricExporter/builder)
-                   endpoint (.setEndpoint endpoint)
-                   headers (add-headers headers)
-                   trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
-                   (and client-private-key-pem client-certificates-pem)
-                   (.setClientTls client-private-key-pem client-certificates-pem)
+            proxy-options aggregation-temporality-selector memory-mode]}]
+   (let [builder
+         (cond-> (OtlpHttpMetricExporter/builder)
+           endpoint (.setEndpoint endpoint)
+           headers (add-headers headers)
+           trusted-certificates-pem (.setTrustedCertificates trusted-certificates-pem)
+           (and client-private-key-pem client-certificates-pem)
+           (.setClientTls client-private-key-pem client-certificates-pem)
 
-                   (and ssl-context x509-trust-manager) (.setSslContext ssl-context
-                                                                        x509-trust-manager)
-                   compression-method (.setCompression compression-method)
-                   timeout (.setTimeout (util/duration timeout))
-                   connect-timeout (.setConnectTimeout (util/duration connect-timeout))
-                   retry-policy (.setRetryPolicy (export/retry-policy retry-policy))
-                   proxy-options (.setProxyOptions (export/proxy-options proxy-options))
-                   aggregation-temporality-selector
-                   (.setAggregationTemporalitySelector
-                    (reify
-                     AggregationTemporalitySelector
-                       (getAggregationTemporality [_ instrument-type]
-                         (aggregation-temporality-selector instrument-type)))))]
+           (and ssl-context x509-trust-manager) (.setSslContext ssl-context x509-trust-manager)
+           compression-method (.setCompression compression-method)
+           timeout (.setTimeout (util/duration timeout))
+           connect-timeout (.setConnectTimeout (util/duration connect-timeout))
+           retry-policy (.setRetryPolicy (export/retry-policy retry-policy))
+           proxy-options (.setProxyOptions (export/proxy-options proxy-options))
+           aggregation-temporality-selector (.setAggregationTemporalitySelector
+                                             (reify
+                                              AggregationTemporalitySelector
+                                                (getAggregationTemporality [_ instrument-type]
+                                                  (aggregation-temporality-selector
+                                                   instrument-type))))
+           memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode)))]
      (.build builder))))

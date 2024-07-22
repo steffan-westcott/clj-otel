@@ -1,7 +1,7 @@
 (ns steffan-westcott.clj-otel.sdk.export
   "Utilities for OpenTelemetry SDK exporters."
   (:require [steffan-westcott.clj-otel.util :as util])
-  (:import (io.opentelemetry.sdk.common.export ProxyOptions RetryPolicy)
+  (:import (io.opentelemetry.sdk.common.export MemoryMode ProxyOptions RetryPolicy)
            (java.net InetSocketAddress ProxySelector)))
 
 (defn retry-policy
@@ -34,3 +34,8 @@
   (if proxy-selector
     (ProxyOptions/create proxy-selector)
     (ProxyOptions/create socket-address)))
+
+(def ^:no-doc keyword->MemoryMode
+  "Map from keyword to MemoryMode. Internal use only."
+  {:reusable-data  MemoryMode/REUSABLE_DATA
+   :immutable-data MemoryMode/IMMUTABLE_DATA})
