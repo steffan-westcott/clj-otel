@@ -35,6 +35,7 @@ A `Logs` panel has been added to the `HTTP server instances` dashboard.
 * [BREAK] Pedestal `0.7.0` in microservices examples.
 Pedestal `0.7.0` introduces its own support for OpenTelemetry, including a new interceptor `io.pedestal.http.tracing/request-tracing-interceptor`.
 This overlaps functionality with `clj-otel` interceptors, so should be disabled by setting `:io.pedestal.http/tracing` to `nil` in the Pedestal service map.
+* [ADD] Add functions and middleware to add `http.route` instrumentation data to metrics and traces.
 
 === `0.2.7` (2024-07-01)
 
