@@ -115,6 +115,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://www.causely.io/[Causely]
 * https://chronosphere.io/[Chronosphere]
 * https://coralogix.com/[Coralogix]
+* https://www.dash0.com/[Dash0]
 * https://www.datadoghq.com/[Datadog]
 * https://www.dynatrace.com/[Dynatrace]
 * https://www.elastic.co/observability/application-performance-monitoring[Elastic APM]
