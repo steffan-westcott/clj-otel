@@ -10,7 +10,6 @@
            (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
-           (io.opentelemetry.semconv ExceptionAttributes)
            (io.opentelemetry.semconv.incubating CodeIncubatingAttributes
                                                 ThreadIncubatingAttributes)))
 
@@ -208,12 +207,9 @@
 
 (defn- add-ex-data!
   [^Span span
-   {:keys [exception escaping? attributes]
+   {:keys [exception attributes]
     :or   {attributes {}}}]
-  (let [attrs (cond-> attributes
-                (some? escaping?) (assoc ExceptionAttributes/EXCEPTION_ESCAPED
-                                         (boolean escaping?)))]
-    (.recordException span exception (attr/->attributes attrs))))
+  (.recordException span exception (attr/->attributes attributes)))
 
 (defn- add-link-data!
   [^Span span [sc attributes]]
@@ -263,7 +259,6 @@
    | key         | description |
    |-------------|-------------|
    |`:exception` | Exception instance (required).
-   |`:escaping?` | Optional value, true if exception is escaping the span's scope, false if exception is caught within the span's scope and not rethrown.
    |`:attributes`| Map of additional attributes to attach to exception event."
   [{:keys [context name status attributes event ex-data links]
     :or   {context (context/dyn)}}]
@@ -287,57 +282,48 @@
                             :attributes attributes}})))
 
 (defn add-exception!
-  "Adds an event describing `exception` to a span. By default, exception data
-   (as per `ex-info`) are added as attributes to the event. If the exception is
-   escaping the span's scope, the span's status is also set to `:error` with the
-   exception triage summary as the error description. May take an option map as
-   follows:
+  "Adds an event describing an `exception` that is escaping a span's scope. By
+   default, exception data (as per `ex-info`) are added as attributes to the
+   event. The span's status is set to `:error` with the exception triage
+   summary as the error description. May take an option map as follows:
 
    | key         | description |
    |-------------|-------------|
    |`:context`   | Context containing span to add exception event to (default: bound or current context).
-   |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
    |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([exception]
    (add-exception! exception {}))
   ([exception
-    {:keys [context escaping? attributes]
+    {:keys [context attributes]
      :or   {context    (context/dyn)
-            escaping?  true
             attributes ex-data}}]
    (let [triage      (main/ex-triage (Throwable->map exception))
          attributes' (if (fn? attributes)
                        (attributes exception)
                        attributes)
-         attrs       (into triage attributes')
-         status      (when escaping?
-                       {:code        :error
-                        :description (main/ex-str triage)})]
-     (add-span-data! (cond-> {:context context
-                              :ex-data {:exception  exception
-                                        :escaping?  escaping?
-                                        :attributes attrs}}
-                       status (assoc :status status))))))
+         attrs       (into triage attributes')]
+     (add-span-data! {:context context
+                      :ex-data {:exception  exception
+                                :attributes attrs}
+                      :status  {:code        :error
+                                :description (main/ex-str triage)}}))))
 
 (defn add-interceptor-exception!
-  "Adds an event describing an interceptor exception `e` to a span. Attributes
-   identifying the interceptor and stage are added to the event. Also, by
-   default exception data (as per `ex-info`) are added as attributes. If the
-   exception is escaping the span's scope, the span's status is also set to
-   `:error` with the wrapped exception triage summary as the error description.
-   May take an option map as follows:
+  "Adds an event describing an interceptor exception `e` that is escaping a
+   span's scope. Attributes identifying the interceptor and stage are added to
+   the event. Also, by default exception data (as per `ex-info`) are added as
+   attributes. The span's status is set to `:error` with the wrapped exception
+   triage summary as the error description. May take an option map as follows:
 
    | key         | description |
    |-------------|-------------|
    |`:context`   | Context containing span to add exception event to (default: bound or current context)
-   |`:escaping?` | If true, exception is escaping the span's scope; if false, exception is caught within the span's scope and not rethrown (default: `true`).
    |`:attributes`| Either a function which takes `exception` and returns a map of additional attributes for the event, or a map of additional attributes (default: `ex-data`)."
   ([e]
    (add-interceptor-exception! e {}))
   ([e
-    {:keys [context escaping? attributes]
+    {:keys [context attributes]
      :or   {context    (context/dyn)
-            escaping?  true
             attributes ex-data}}]
    (let [{:keys [exception interceptor stage]
           :or   {exception e}}
@@ -350,7 +336,6 @@
                        attributes))]
      (add-exception! exception
                      {:context    context
-                      :escaping?  escaping?
                       :attributes attrs}))))
 
 (defn end-span!

@@ -307,8 +307,13 @@
      create-span?       (wrap-server-request-attrs create-span-opts)
      (not create-span?) (wrap-existing-server-span))))
 
-(defn wrap-exception-event
-  "Ring middleware to add an exception event to the server span. This is
+(defn ^:deprecated wrap-exception-event
+  "DEPRECATED - OpenTelemetry no longer recommends to record exceptions that
+   are handled and do not escape the scope of a span. `wrap-exception-event`
+   currently still records the exception, but will be stubbed out and later
+   removed entirely in future `clj-otel` releases. See
+   https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/#exception-escaped
+   Ring middleware to add an exception event to the server span. This is
    intended for use by applications which transform the exception to an HTTP
    response in a subsequent middleware."
   [handler]
@@ -317,7 +322,7 @@
      (try
        (handler request)
        (catch Throwable e
-         (span/add-exception! e {:escaping? false})
+         (span/add-exception! e)
          (throw e))))
     ([{:keys [io.opentelemetry/server-span-context]
        :as   request} respond raise]
@@ -326,13 +331,11 @@
                 respond
                 (fn [e]
                   (span/add-exception! e
-                                       {:context   server-span-context
-                                        :escaping? false})
+                                       {:context server-span-context})
                   (raise e)))
        (catch Throwable e
          (span/add-exception! e
-                              {:context   server-span-context
-                               :escaping? false})
+                              {:context server-span-context})
          (raise e))))))
 
 (defn wrap-route
@@ -516,8 +519,14 @@
                  path))
               ctx))})
 
-(defn exception-event-interceptor
-  "Returns an interceptor which adds an exception event to the server span. This
+(defn ^:deprecated exception-event-interceptor
+  "DEPRECATED - OpenTelemetry no longer recommends to record exceptions that
+   are handled and do not escape the scope of a span.
+   `exception-event-interceptor` currently still records the exception, but
+   will be stubbed out and later removed entirely in future `clj-otel`
+   releases. See
+   https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/#exception-escaped
+   Returns an interceptor which adds an exception event to the server span. This
    is intended for use by applications which transform the exception to an HTTP
    response in a subsequent interceptor."
   []
@@ -525,6 +534,5 @@
    :error (fn [{:keys [io.opentelemetry/server-span-context]
                 :as   ctx} e]
             (span/add-interceptor-exception! e
-                                             {:context   server-span-context
-                                              :escaping? false})
+                                             {:context server-span-context})
             (assoc ctx :io.pedestal.interceptor.chain/error e))})

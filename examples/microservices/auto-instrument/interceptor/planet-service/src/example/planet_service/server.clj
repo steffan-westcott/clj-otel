@@ -32,9 +32,6 @@
                ;; Convert exception to HTTP response
                [(interceptor-utils/exception-response-interceptor)]
 
-               ;; Add exception event to server span
-               [(trace-http/exception-event-interceptor)]
-
                ;; Add system components to context
                [(interceptor-utils/components-interceptor components)])))
 

@@ -27,11 +27,6 @@
                                     muuntaja/format-negotiate-middleware ;
                                     muuntaja/format-response-middleware ;
                                     exception/exception-middleware ;
-
-                                    ;; Add exception event before
-                                    ;; exception/exception-middleware runs
-                                    trace-http/wrap-exception-event ;
-
                                     parameters/parameters-middleware ;
                                     muuntaja/format-request-middleware ;
                                     coercion/coerce-response-middleware ;

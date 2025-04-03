@@ -33,41 +33,36 @@
 (defn- update-interceptors
   "Returns modified default interceptors."
   [default-interceptors components]
-  (map
-   interceptor/interceptor
-   (concat
-    (;; As this application is not run with the OpenTelemetry instrumentation
-     ;; agent, create a server span for each request. The current context is
-     ;; set if all request handling is processed synchronously.
-     trace-http/server-span-interceptors {:create-span?         true
-                                          :set-current-context? (sync?)})
+  (map interceptor/interceptor
+       (concat (;; As this application is not run with the OpenTelemetry instrumentation
+                ;; agent, create a server span for each request. The current context is
+                ;; set if all request handling is processed synchronously.
+                trace-http/server-span-interceptors {:create-span?         true
+                                                     :set-current-context? (sync?)})
 
-    ;; Add metric that records the number of active HTTP requests
-    [(metrics-http-server/active-requests-interceptor)]
+               ;; Add metric that records the number of active HTTP requests
+               [(metrics-http-server/active-requests-interceptor)]
 
-    ;; Negotiate content formats
-    [(interceptor-utils/content-negotiation-interceptor)]
+               ;; Negotiate content formats
+               [(interceptor-utils/content-negotiation-interceptor)]
 
-    ;; Coerce HTTP response format
-    [(interceptor-utils/coerce-response-interceptor)]
+               ;; Coerce HTTP response format
+               [(interceptor-utils/coerce-response-interceptor)]
 
-    ;; Default Pedestal interceptor stack
-    default-interceptors
+               ;; Default Pedestal interceptor stack
+               default-interceptors
 
-    ;; Adds matched route data to server spans
-    [(trace-http/route-interceptor)]
+               ;; Adds matched route data to server spans
+               [(trace-http/route-interceptor)]
 
-    ;; Adds metrics that include http.route attribute
-    (metrics-http-server/metrics-by-route-interceptors)
+               ;; Adds metrics that include http.route attribute
+               (metrics-http-server/metrics-by-route-interceptors)
 
-    ;; Convert exception to HTTP response
-    [(interceptor-utils/exception-response-interceptor)]
+               ;; Convert exception to HTTP response
+               [(interceptor-utils/exception-response-interceptor)]
 
-    ;; Add exception event to server span
-    [(trace-http/exception-event-interceptor)]
-
-    ;; Add system components to context
-    [(interceptor-utils/components-interceptor components)])))
+               ;; Add system components to context
+               [(interceptor-utils/components-interceptor components)])))
 
 
 

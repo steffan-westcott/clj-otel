@@ -11,17 +11,6 @@
   (atom 0))
 
 
-(defn wrap-exception
-  "Ring middleware for wrapping an exception as an HTTP 500 response."
-  [handler]
-  (fn [request]
-    (try
-      (handler request)
-      (catch Throwable e
-        (span/add-exception! e {:escaping? false})
-        (let [resp (response/response (ex-message e))]
-          (response/status resp 500))))))
-
 
 (defn reset-count-handler
   "Ring handler for 'PUT /reset' request. Resets counter, returns HTTP 204."
@@ -63,7 +52,6 @@
   "Ring handler with middleware applied."
   (-> handler
       params/wrap-params
-      wrap-exception
       trace-http/wrap-server-span))
 
 

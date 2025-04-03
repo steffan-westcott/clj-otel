@@ -125,19 +125,11 @@
 
 
 (defmacro catch-response
-  "Evaluate body but catch any exception and return as response instead. The
-   caught exception will also be added as an event to the span in the given
-   context."
-  [context & body]
+  "Evaluate body but catch any exception and return as response instead."
+  [& body]
   `(try
      ~@body
      (catch Throwable e#
-
-       ;; Add non-escaping exception to span as an event
-       (span/add-exception! e#
-                            {:context   ~context
-                             :escaping? false})
-
        (exception-response e#))))
 
 
@@ -148,10 +140,9 @@
    a response."
   [ctx & body]
   `(async/go
-     (let [context#  (:io.opentelemetry/server-span-context ~ctx)
-           response# (catch-response context#
-                       ~@body)]
-       (assoc ~ctx :response response#))))
+     (assoc ~ctx
+            :response
+            (catch-response ~@body))))
 
 
 

@@ -63,9 +63,7 @@
   [country-code statistic]
   (let [iso-code (keyword (str/lower-case country-code))]
 
-    ;; Simulate an intermittent runtime exception. An uncaught exception leaving a span's scope
-    ;; is reported as an exception event and the span status description is set to the
-    ;; exception triage summary.
+    ;; Simulate an intermittent runtime exception.
     (when (= :irl iso-code)
       (throw (RuntimeException. "Unable to process country statistic")))
 
@@ -109,9 +107,6 @@
       ;; Add matched Compojure route to server span data.
       ;; `route/not-found` route is not considered as a match.
       (compojure/wrap-routes trace-http/wrap-compojure-route)
-
-      ;; Add exception event to server span before `wrap-exception` middleware is applied
-      trace-http/wrap-exception-event
 
       ;; Convert exception to HTTP response
       wrap-exception

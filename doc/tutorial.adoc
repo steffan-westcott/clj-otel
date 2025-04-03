@@ -54,14 +54,6 @@ The application has no instrumentation initially.
 
 (defonce counter (atom 0))
 
-(defn wrap-exception [handler]
-  (fn [request]
-    (try
-      (handler request)
-      (catch Throwable e
-        (let [resp (response/response (ex-message e))]
-          (response/status resp 500))))))
-
 (defn reset-count-handler [{:keys [query-params]}]
   (let [n (Integer/parseInt (get query-params "n"))]
     (reset! counter n)
@@ -84,8 +76,7 @@ The application has no instrumentation initially.
 
 (def service
   (-> handler
-      params/wrap-params
-      wrap-exception))
+      params/wrap-params))
 
 (defonce server
   (jetty/run-jetty #'service {:port 8080 :join? false}))
@@ -214,7 +205,6 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 (def service
   (-> handler
       params/wrap-params
-      wrap-exception
       trace-http/wrap-server-span))
 ----
 
@@ -267,30 +257,14 @@ image::images/jaeger-post-inc.png[Jaeger HTTP POST trace]
 +
 Notice the trace has two spans; a root server span named `HTTP POST` and a child internal span named `Incrementing counter` that you added to the code.
 
-* Update the function `wrap-exception` to add detail about any caught exceptions to the server span:
-+
-[source,clojure]
-----
-(defn wrap-exception [handler]
-  (fn [request]
-    (try
-      (handler request)
-      (catch Throwable e
-        (span/add-exception! e {:escaping? false})
-        (let [resp (response/response (ex-message e))]
-          (response/status resp 500))))))
-----
-
-* Reload the namespace, then issue a malformed request to cause an exception:
+* Issue a malformed request to cause an exception:
 +
 [source,bash]
 ----
 curl -X PUT "http://localhost:8080/reset?bogus=1"
-# Cannot parse null string
 ----
 
 * Find the most recent `HTTP PUT` trace on the Jaeger search page.
-You will see that the server span has a `Logs` event added by `span/add-exception!`.
-The event attributes include a Clojure triage and a stack trace of the caught exception.
+You will see that the server span has a `Logs` event containing the exception stack trace.
 +
 image::images/jaeger-exception.png[Jaeger exception trace]
