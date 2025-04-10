@@ -3,7 +3,7 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.11.3"}
-           org.clojure/core.async {:mvn/version "1.6.681"}
+           org.clojure/core.async {:mvn/version "1.8.741"}
            org.clojure/tools.logging {:mvn/version "1.3.0"}
 
            ;; Application configuration
@@ -37,7 +37,7 @@
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.12.2"}}
+           ring/ring-jetty-adapter {:mvn/version "1.14.1"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"]}
 

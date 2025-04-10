@@ -41,7 +41,7 @@
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.12.2"}
+           ring/ring-jetty-adapter {:mvn/version "1.14.1"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
            ; io.grpc/grpc-netty-shaded {:mvn/version "1.65.1"}

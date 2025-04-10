@@ -3,7 +3,7 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.11.3"}
-           org.clojure/core.async {:mvn/version "1.6.681"}
+           org.clojure/core.async {:mvn/version "1.8.741"}
            org.clojure/tools.logging {:mvn/version "1.3.0"}
 
            ;; Application configuration
@@ -30,10 +30,10 @@
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.6.0-alpha"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.7.0"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.7.0"}
-           io.pedestal/pedestal.route {:mvn/version "0.7.0"}
-           io.pedestal/pedestal.service {:mvn/version "0.7.0"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.7.2"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.7.2"}
+           io.pedestal/pedestal.route {:mvn/version "0.7.2"}
+           io.pedestal/pedestal.service {:mvn/version "0.7.2"}
 
            ;; Utilities for core.async
            org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}
