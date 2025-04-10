@@ -69,5 +69,4 @@
            :responses  {200 {:body [:map ;
                                     [:item/id :int] ;
                                     [:item/description :string] ;
-                                    [:item/carried-by :int] ;
                                     [:item/weight :int]]}}}}]])

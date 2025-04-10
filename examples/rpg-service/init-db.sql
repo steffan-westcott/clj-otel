@@ -60,7 +60,7 @@ ALTER SEQUENCE public.character_id_seq OWNED BY public."character".id;
 
 CREATE TABLE public.item (
     id integer NOT NULL,
-    carried_by integer,
+    character_id integer,
     description character varying(80),
     weight integer
 );
@@ -119,7 +119,7 @@ COPY public."character" (id, name) FROM stdin;
 -- Data for Name: item; Type: TABLE DATA; Schema: public; Owner: rpg
 --
 
-COPY public.item (id, carried_by, description, weight) FROM stdin;
+COPY public.item (id, character_id, description, weight) FROM stdin;
 1	1	Cloak	4
 2	2	Leather armour	12
 3	3	Rags	2
@@ -163,11 +163,11 @@ ALTER TABLE ONLY public.item
 
 
 --
--- Name: item item_carried_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: rpg
+-- Name: item item_character_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: rpg
 --
 
 ALTER TABLE ONLY public.item
-    ADD CONSTRAINT item_carried_by_fkey FOREIGN KEY (carried_by) REFERENCES public."character"(id);
+    ADD CONSTRAINT item_character_id_fkey FOREIGN KEY (character_id) REFERENCES public."character"(id);
 
 
 --
