@@ -44,9 +44,9 @@
            ring/ring-jetty-adapter {:mvn/version "1.14.1"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.65.1"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.65.1"}
-           ; io.grpc/grpc-stub {:mvn/version "1.65.1"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.71.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.71.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.71.0"}
 
           }
 
