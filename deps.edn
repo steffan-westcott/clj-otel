@@ -1,6 +1,6 @@
 ;!zprint {:width 140}
 
-{:deps    {org.clojure/clojure {:mvn/version "1.11.3"}}
+{:deps    {org.clojure/clojure {:mvn/version "1.12.0"}}
  :aliases {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.10.5"
                                                                :git/sha "2a21b7a"}
                                 slipset/deps-deploy {:mvn/version "0.2.2"}

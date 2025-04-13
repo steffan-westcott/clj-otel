@@ -40,7 +40,7 @@ The application has no instrumentation initially.
 ----
 {:paths ["src"]
 
- :deps  {org.clojure/clojure     {:mvn/version "1.11.3"}
+ :deps  {org.clojure/clojure     {:mvn/version "1.12.0"}
          ring/ring-jetty-adapter {:mvn/version "1.14.1"}}}
 ----
 +
@@ -130,7 +130,7 @@ Ensure the file is placed in the project root directory (the same directory as `
 ----
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure     {:mvn/version "1.11.3"}
+ :deps    {org.clojure/clojure     {:mvn/version "1.12.0"}
            ring/ring-jetty-adapter {:mvn/version "1.14.1"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
@@ -177,7 +177,7 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 ----
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure                      {:mvn/version "1.11.3"}
+ :deps    {org.clojure/clojure                      {:mvn/version "1.12.0"}
            ring/ring-jetty-adapter                  {:mvn/version "1.14.1"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.7"}}
 

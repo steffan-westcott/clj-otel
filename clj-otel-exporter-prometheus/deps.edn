@@ -1,5 +1,5 @@
 ;!zprint {:width 140}
 
 {:paths ["src"]
- :deps  {org.clojure/clojure {:mvn/version "1.11.3"}
+ :deps  {org.clojure/clojure {:mvn/version "1.12.0"}
          io.opentelemetry/opentelemetry-exporter-prometheus {:mvn/version "1.40.0-alpha"}}}
