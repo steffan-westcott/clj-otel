@@ -82,7 +82,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 docker run --rm                            \
            -p 16686:16686                  \
            -p 4318:4318                    \
-           jaegertracing/all-in-one:1.58.1
+           jaegertracing/all-in-one:1.68.0
 ----
 
 * To explore application behaviour described by the received telemetry data
@@ -194,5 +194,5 @@ Cloud-native software is so complex now, we need all the help we can get to unde
 
 == License
 
-Copyright © 2021-2024 Steffan Westcott +
+Copyright © 2021-2025 Steffan Westcott +
 Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]
