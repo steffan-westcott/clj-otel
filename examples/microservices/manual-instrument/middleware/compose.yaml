@@ -150,7 +150,7 @@ services:
 
   # Grafana
   grafana:
-    image: grafana/grafana-oss:11.1.0
+    image: grafana/grafana-oss:11.6.0
     volumes:
       - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml:ro
       - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/grafana-dashboards.yaml:ro
