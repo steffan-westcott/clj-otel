@@ -130,7 +130,7 @@ services:
 
   # Tempo
   tempo:
-    image: grafana/tempo:2.5.0
+    image: grafana/tempo:2.7.2
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
     command:

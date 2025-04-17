@@ -2,6 +2,13 @@ compactor:
   compaction:
     block_retention: 1h
 
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "tempo:4317"
+
 ingester:
   lifecycler:
     ring:
