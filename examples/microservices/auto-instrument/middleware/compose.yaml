@@ -122,7 +122,7 @@ services:
 
   # Loki
   loki:
-    image: grafana/loki:3.1.0
+    image: grafana/loki:3.4.3
     volumes:
       - ./loki.yaml:/etc/loki.yaml
     command: -config.file=/etc/loki.yaml
