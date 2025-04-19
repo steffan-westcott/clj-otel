@@ -160,43 +160,6 @@ The event may include xref:concepts.adoc#_attributes[attributes]:
   (notify-watchers context job))
 ----
 
-==== Add an exception event to a span
-
-CAUTION: `clj-otel` *automatically* adds events to spans for thrown exceptions which leave (escape) the span's scope.
-This behaviour applies to synchronous and asynchronous spans.
-
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#add-exception![`steffan-westcott.clj-otel.api.trace.span/add-exception!`] to add an event describing an exception to an existing span.
-Use this function to capture details about caught (non-escaping) exceptions.
-+
-The exception event may include xref:concepts.adoc#_attributes[attributes], controlled by the `:attributes` option.
-+
-By default, the exception event is added to the span in the bound or current context:
-+
-[source,clojure]
-----
-(defn process-args [args]
-  (try
-    (parse-args args)
-    (catch Throwable e
-      (span/add-exception! e {:escaping? false
-                              :attributes {:app/args args}})
-      {:result :parse-error})))
-----
-+
-Use the `:context` option to specify the context containing the span to add the exception event to:
-+
-[source,clojure]
-----
-(defn process-args [context args]
-  (try
-    (parse-args args)
-    (catch Throwable e
-      (span/add-exception! e {:context context
-                              :escaping? false
-                              :attributes {:app/args args}})
-      {:result :parse-error})))
-----
-
 === Add manual metrics instrumentation
 
 * See this https://opentelemetry.io/docs/reference/specification/metrics/supplementary-guidelines/#instrument-selection[OpenTelemetry guide] to select the appropriate instrument type to use.
@@ -735,8 +698,8 @@ For an example application `my-app` that exports traces only using OTLP over gRP
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.40.0"}
-                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "2.6.0-alpha"}
+          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.41.0"}
+                       io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "2.7.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.71.0"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.71.0"}
                        io.grpc/grpc-stub                                          {:mvn/version "1.71.0"}}}}}

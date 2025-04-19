@@ -29,12 +29,13 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - [ADD] Updated microservices examples to export logs to Grafana Loki.
 A `Logs` panel has been added to the `HTTP server instances` dashboard.
 - Bump deps
-* [MAINT] OpenTelemetry `1.40.0`, semconv `1.26.0-alpha`, instrumentation `2.6.0-alpha`
+* [MAINT] OpenTelemetry `1.41.0`, semconv `1.26.0-alpha`, instrumentation `2.7.0-alpha`
 ** [BREAK] Deprecated `wrap-exception-event` and `exception-event-interceptor`.
 These will be stubbed out and later removed in future releases.
 https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/#exception-escaped[OpenTelemetry no longer recommends to record non-escaping exceptions.]
 ** [BREAK] `add-exception!` and `add-interceptor-exception!` now assume the exception is escaping the span's scope i.e. former option `:escaping?` is true.
-** [ADD] `MemoryMode` option for programmatically configured OTLP exporters.
+** [ADD] `memory-mode` option for programmatically configured OTLP exporters.
+** [BREAK] `retry-policy` default changed (from disabled) for programmatically configured OTLP exporters.
 * [ADD] Programmatic configuration of log record exporters used for debugging.
 * [BREAK] Pedestal `0.7.0` in microservices examples.
 Pedestal `0.7.0` introduces its own support for OpenTelemetry, including a new interceptor `io.pedestal.http.tracing/request-tracing-interceptor`.
