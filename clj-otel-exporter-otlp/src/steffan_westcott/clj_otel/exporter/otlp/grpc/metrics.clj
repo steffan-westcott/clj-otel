@@ -30,7 +30,7 @@
    |`:retry-policy`                    | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: same as `(retry-policy)`).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: same as constantly `AggregationTemporality/CUMULATIVE`).
    |`:default-aggregation-selector`    | Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`).
-   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:immutable-data`)."
+   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`)."
   (^OtlpGrpcMetricExporter []
    (metric-exporter {}))
   (^OtlpGrpcMetricExporter

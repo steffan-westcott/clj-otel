@@ -29,7 +29,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - [ADD] Updated microservices examples to export logs to Grafana Loki.
 A `Logs` panel has been added to the `HTTP server instances` dashboard.
 - Bump deps
-* [MAINT] OpenTelemetry `1.43.0`, semconv `1.26.0-alpha`, instrumentation `2.9.0-alpha`
+* [MAINT] OpenTelemetry `1.44.1`, semconv `1.28.0-alpha`, instrumentation `2.10.0-alpha`
 ** [BREAK] Deprecated `wrap-exception-event` and `exception-event-interceptor`.
 These will be stubbed out and later removed in future releases.
 https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/#exception-escaped[OpenTelemetry no longer recommends to record non-escaping exceptions.]

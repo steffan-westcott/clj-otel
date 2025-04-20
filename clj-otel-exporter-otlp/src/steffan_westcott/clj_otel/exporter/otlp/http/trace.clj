@@ -29,7 +29,7 @@
    |`:retry-policy`            | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: same as `(retry-policy)`).
    |`:proxy-options`           | Option map for proxy options, see `steffan-westcott.clj-otel.sdk.export/proxy-options` (default: no proxy used).
    |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected).
-   |`:memory-mode`             | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:immutable-data`)."
+   |`:memory-mode`             | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`)."
   (^OtlpHttpSpanExporter []
    (span-exporter {}))
   (^OtlpHttpSpanExporter

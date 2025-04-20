@@ -27,7 +27,7 @@
    |`:connect-timeout`         | Maximum time to wait for new connections to be established. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:retry-policy`            | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: same as `(retry-policy)`).
    |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected).
-   |`:memory-mode`             | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:immutable-data`)."
+   |`:memory-mode`             | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`)."
   (^OtlpGrpcSpanExporter []
    (span-exporter {}))
   (^OtlpGrpcSpanExporter

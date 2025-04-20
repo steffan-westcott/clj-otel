@@ -19,7 +19,7 @@
    |`:otel-scope-enabled`          | True if `otel_scope_*` attributes are generated (default: true).
    |`:label?`                      | fn which takes the name of a resource attribute and returns true if it should be added as a label on each exported metric (default: no attributes added).
    |`:default-aggregation-selector`| Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`).\n
-   |`:memory-mode`                 | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:immutable-data`).
+   |`:memory-mode`                 | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`).
    |`:default-handler`             | Override for default HttpHandler."
   (^PrometheusHttpServer []
    (http-server {}))
