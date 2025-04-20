@@ -44,6 +44,13 @@
         (map (fn [[k v]] [k (BaggageEntry->value v)]))
         (.asMap baggage)))
 
+(defn get-entry
+  "Returns entry with key `k` in `baggage`, where `k` is a string or keyword.
+   Returned entry is either a value or a vector `[value metadata]`"
+  [^Baggage baggage k]
+  (when-let [entry (.getEntry baggage (name k))]
+    (BaggageEntry->value entry)))
+
 (defn ->baggage
   "Converts a map to a `Baggage` instance. Each key in the map is either a
    string or keyword. Each value in the map is either `value` or a vector
