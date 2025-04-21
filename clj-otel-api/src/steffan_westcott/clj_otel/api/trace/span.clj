@@ -150,7 +150,7 @@
    |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
    |`:attributes`| Map of additional attributes for the span (default: no attributes).
    |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
-   |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:ns`, `:line` and `:file` (default: {}).
+   |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: {}).
    |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
    |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
 
@@ -172,16 +172,16 @@
 
         tracer' (or tracer (get-default-tracer!))
         parent-context (or parent (context/root))
-        {:keys [fn ns line file]} source
+        {:keys [fn line col file]} source
         default-attributes (cond-> {}
                              thread (assoc ThreadIncubatingAttributes/THREAD_NAME
                                            (.getName thread)
                                            ThreadIncubatingAttributes/THREAD_ID
                                            (.getId thread))
-                             fn     (assoc CodeIncubatingAttributes/CODE_FUNCTION fn)
-                             ns     (assoc CodeIncubatingAttributes/CODE_NAMESPACE ns)
-                             line   (assoc CodeIncubatingAttributes/CODE_LINENO line)
-                             file   (assoc CodeIncubatingAttributes/CODE_FILEPATH file))
+                             fn     (assoc CodeIncubatingAttributes/CODE_FUNCTION_NAME fn)
+                             line   (assoc CodeIncubatingAttributes/CODE_LINE_NUMBER line)
+                             col    (assoc CodeIncubatingAttributes/CODE_COLUMN_NUMBER col)
+                             file   (assoc CodeIncubatingAttributes/CODE_FILE_PATH file))
         attributes' (merge default-attributes attributes)
         builder (cond-> (.spanBuilder tracer' (str name))
                   :always   (.setParent parent-context)
@@ -374,14 +374,13 @@
    not use nor set the current context.
 
    `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-   place `with-span-binding` is evaluated. See also [[with-span!]] and
+   for `:line` and `:file` for the `:source` option map are set from the place
+   `with-span-binding` is evaluated. See also [[with-span!]] and
    [[with-bound-span!]]."
   [[context span-opts] & body]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
-                           :file ~*file*
-                           :ns   ~(str *ns*)}
+                           :file ~*file*}
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (with-span-binding' [~context span-opts#]
@@ -395,14 +394,13 @@
    or [[async-bound-span]] instead for working with asynchronous functions.
 
    `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-   place `with-span!` is evaluated. See also [[with-bound-span!]] and
+   for `:line` and `:file` for the `:source` option map are set from the place
+   `with-span!` is evaluated. See also [[with-bound-span!]] and
    [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
-                           :file ~*file*
-                           :ns   ~(str *ns*)}
+                           :file ~*file*}
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (with-span-binding' [context# span-opts#]
@@ -418,14 +416,13 @@
    not use nor set the current context.
 
    `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-   place `with-bound-span!` is evaluated. See also [[with-span!]] and
+   for `:line` and `:file` for the `:source` option map are set from the place
+   `with-bound-span!` is evaluated. See also [[with-span!]] and
    [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
-                           :file ~*file*
-                           :ns   ~(str *ns*)}
+                           :file ~*file*}
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (with-span-binding' [context# span-opts#]
@@ -465,16 +462,15 @@
    with any async library that can work with callbacks.
 
    `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-   place `async-span` is evaluated. `f` must take arguments `[context respond*
+   for `:line` and `:file` for the `:source` option map are set from the place
+   `async-span` is evaluated. `f` must take arguments `[context respond*
    raise*]` where `context` is a context containing the new span, `respond*` and
    `raise*` are callback functions to be used by `f`. All callback functions
    take a single argument, `raise` and `raise*` take a `Throwable` instance."
   [span-opts f respond raise]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
-                           :file ~*file*
-                           :ns   ~(str *ns*)}
+                           :file ~*file*}
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (async-span' span-opts# ~f ~respond ~raise)))
@@ -514,16 +510,15 @@
    can work with callbacks.
 
    `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line`, `:file` and `:ns` for the `:source` option map are set from the
-   place `async-bound-span` is evaluated. `f` must take arguments `[respond*
+   for `:line` and `:file` for the `:source` option map are set from the place
+   `async-bound-span` is evaluated. `f` must take arguments `[respond*
    raise*]` where `respond*` and `raise*` are callback functions to be used by
    `f`. All callback functions take a single argument, `raise` and `raise*` take
    a `Throwable` instance."
   [span-opts f respond raise]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
-                           :file ~*file*
-                           :ns   ~(str *ns*)}
+                           :file ~*file*}
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (async-bound-span' span-opts# ~f ~respond ~raise)))

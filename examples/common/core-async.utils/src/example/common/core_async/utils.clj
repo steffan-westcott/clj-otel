@@ -196,7 +196,7 @@
    not be missing from the exported trace. If either `body` throws an exception
    or exception values are put on `<src`, exception events will be added to the
    span. `span-opts` is the same as for [[new-span!]] except that the default
-   values for `:line`, `:file` and `:ns` for the `:source` option map are set
+   values for `:line` and `:file` for the `:source` option map are set
    from the place `<with-span-binding` is evaluated. Returns a `<dest` channel
    with buffer size `buf-size`, where values are taken from `<src` and placed on
    `<dest` irrespective of timeout. `<dest` will stop consuming and close when
@@ -204,8 +204,7 @@
   [[context span-opts] timeout buf-size & body]
   `(let [span-opts# (span/as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
-                           :file ~*file*
-                           :ns   ~(str *ns*)}
+                           :file ~*file*}
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (span/async-span span-opts#
@@ -229,16 +228,15 @@
    not be missing from the exported trace. If either `body` throws an exception
    or exception values are put on `<src`, exception events will be added to the
    span. `span-opts` is the same as for [[new-span!]] except that the default
-   values for `:line`, `:file` and `:ns` for the `:source` option map are set
-   from the place `<with-span-binding` is evaluated. Returns a `<dest` channel
-   with buffer size `buf-size`, where values are taken from `<src` and placed on
+   values for `:line` and `:file` for the `:source` option map are set from the
+   place `<with-span-binding` is evaluated. Returns a `<dest` channel with
+   buffer size `buf-size`, where values are taken from `<src` and placed on
    `<dest` irrespective of timeout. `<dest` will stop consuming and close when
    `<src` closes."
   [span-opts timeout buf-size & body]
   `(let [span-opts# (span/as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
-                           :file ~*file*
-                           :ns   ~(str *ns*)}
+                           :file ~*file*}
                           (:source span-opts#))
          span-opts# (assoc span-opts# :source source#)]
      (span/async-bound-span
