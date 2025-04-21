@@ -29,13 +29,14 @@
    |`:retry-policy`                    | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: same as `(retry-policy)`).
    |`:proxy-options`                   | Option map for proxy options, see `steffan-westcott.clj-otel.sdk.export/proxy-options` (default: no proxy used).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: constantly `AggregationTemporality/CUMULATIVE`).
-   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`)."
+   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`).
+   |`:service-classloader`             | ^ClassLoader to load the sender API."
   (^OtlpHttpMetricExporter []
    (metric-exporter {}))
   (^OtlpHttpMetricExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout connect-timeout retry-policy
-            proxy-options aggregation-temporality-selector memory-mode]}]
+            proxy-options aggregation-temporality-selector memory-mode service-classloader]}]
    (let [builder
          (cond-> (OtlpHttpMetricExporter/builder)
            endpoint (.setEndpoint endpoint)
@@ -56,5 +57,6 @@
                                                 (getAggregationTemporality [_ instrument-type]
                                                   (aggregation-temporality-selector
                                                    instrument-type))))
-           memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode)))]
+           memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode))
+           service-classloader (.setServiceClassLoader service-classloader))]
      (.build builder))))

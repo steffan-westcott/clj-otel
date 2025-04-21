@@ -3,6 +3,6 @@
 {:paths ["src" "resources"]
  :deps  {org.clojure/clojure {:mvn/version "1.12.0"}
          camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
-         io.opentelemetry/opentelemetry-api {:mvn/version "1.47.0"}
-         io.opentelemetry.semconv/opentelemetry-semconv {:mvn/version "1.30.0-rc.1"}
-         io.opentelemetry.semconv/opentelemetry-semconv-incubating {:mvn/version "1.30.0-alpha-rc.1"}}}
+         io.opentelemetry/opentelemetry-api {:mvn/version "1.48.0"}
+         io.opentelemetry.semconv/opentelemetry-semconv {:mvn/version "1.30.0"}
+         io.opentelemetry.semconv/opentelemetry-semconv-incubating {:mvn/version "1.30.0-alpha"}}}

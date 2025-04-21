@@ -30,13 +30,15 @@
    |`:retry-policy`                    | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: same as `(retry-policy)`).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: same as constantly `AggregationTemporality/CUMULATIVE`).
    |`:default-aggregation-selector`    | Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`).
-   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`)."
+   |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`).
+   |`:service-classloader`             | ^ClassLoader to load the sender API."
   (^OtlpGrpcMetricExporter []
    (metric-exporter {}))
   (^OtlpGrpcMetricExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout connect-timeout retry-policy
-            aggregation-temporality-selector default-aggregation-selector memory-mode]}]
+            aggregation-temporality-selector default-aggregation-selector memory-mode
+            service-classloader]}]
    (let [builder
          (cond-> (OtlpGrpcMetricExporter/builder)
            endpoint (.setEndpoint endpoint)
@@ -61,5 +63,6 @@
                                           DefaultAggregationSelector
                                             (getDefaultAggregation [_ instrument-type]
                                               (default-aggregation-selector instrument-type))))
-           memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode)))]
+           memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode))
+           service-classloader (.setServiceClassLoader service-classloader))]
      (.build builder))))

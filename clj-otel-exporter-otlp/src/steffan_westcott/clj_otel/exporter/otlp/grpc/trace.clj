@@ -27,13 +27,14 @@
    |`:connect-timeout`         | Maximum time to wait for new connections to be established. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:retry-policy`            | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: same as `(retry-policy)`).
    |`:meter-provider`          | ^MeterProvider to collect metrics related to export (default: metrics not collected).
-   |`:memory-mode`             | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`)."
+   |`:memory-mode`             | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`).
+   |`:service-classloader`     | ^ClassLoader to load the sender API."
   (^OtlpGrpcSpanExporter []
    (span-exporter {}))
   (^OtlpGrpcSpanExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout connect-timeout retry-policy
-            ^MeterProvider meter-provider memory-mode]}]
+            ^MeterProvider meter-provider memory-mode service-classloader]}]
    (let [builder (cond-> (OtlpGrpcSpanExporter/builder)
                    endpoint (.setEndpoint endpoint)
                    headers (add-headers headers)
@@ -48,5 +49,6 @@
                    connect-timeout (.setConnectTimeout (util/duration connect-timeout))
                    retry-policy (.setRetryPolicy (export/retry-policy retry-policy))
                    meter-provider (.setMeterProvider meter-provider)
-                   memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode)))]
+                   memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode))
+                   service-classloader (.setServiceClassLoader service-classloader))]
      (.build builder))))
