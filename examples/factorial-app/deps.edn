@@ -20,12 +20,12 @@
 
            ;; Clojure wrapper of OpenTelemetry exporter that uses OTLP
            com.github.steffan-westcott/clj-otel-exporter-otlp {:local/root "../../clj-otel-exporter-otlp"}
-           io.grpc/grpc-api {:mvn/version "1.71.0"} ; Workaround for https://github.com/open-telemetry/opentelemetry-java/issues/4839
+           io.grpc/grpc-api {:mvn/version "1.72.0"} ; Workaround for https://github.com/open-telemetry/opentelemetry-java/issues/4839
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.71.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.71.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.71.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.72.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.72.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.72.0"}
 
           }
 

@@ -15,7 +15,7 @@
            com.github.tamizhvendan/honeyeql {:mvn/version "1.0.4"}
 
            ;; HikariCP JDBC connection pool
-           hikari-cp/hikari-cp {:mvn/version "3.1.0"}
+           hikari-cp/hikari-cp {:mvn/version "3.2.0"}
 
            ;; Reitit HTTP routing and content handling
            metosin/reitit-malli {:mvn/version "0.8.0"}
