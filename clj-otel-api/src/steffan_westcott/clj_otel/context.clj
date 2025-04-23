@@ -159,14 +159,16 @@
    | key                  | description |
    |----------------------|-------------|
    |`:context`            | Context to propagate (default: bound or current context).
-   |`:text-map-propagator`| Propagator used to create headers map entries (default: propagator set in default or global `OpenTelemetry` instance)."
+   |`:text-map-propagator`| Propagator used to create headers map entries (default: propagator set in default or global `OpenTelemetry` instance).
+   |`:setter`             | ^TextMapSetter used to build contents of returned value (default: uses `java.util.Map/put` directly)."
   ([]
    (->headers {}))
-  ([{:keys [^Context context ^TextMapPropagator text-map-propagator]
+  ([{:keys [^Context context ^TextMapPropagator text-map-propagator setter]
      :or   {context (dyn)
-            text-map-propagator (otel/get-text-map-propagator)}}]
+            text-map-propagator (otel/get-text-map-propagator)
+            setter  map-setter}}]
    (let [carrier (HashMap.)]
-     (.inject text-map-propagator context carrier map-setter)
+     (.inject text-map-propagator context carrier setter)
      (into {} carrier))))
 
 (defn headers->merged-context
@@ -177,12 +179,14 @@
    | key                  | description |
    |----------------------|-------------|
    |`:context`            | Context to merge with (default: bound or current context).
-   |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in default or global `OpenTelemetry` instance)."
+   |`:text-map-propagator`| Propagator used to extract data from the headers map (default: propagator set in default or global `OpenTelemetry` instance).
+   |`:getter`             | ^TextMapGetter used to get contents of `headers` (default: lower-cases key before lookup in `headers`; suitable for `headers` map in a Ring request)."
   (^Context [headers]
    (headers->merged-context headers {}))
   (^Context
    [headers
-    {:keys [^Context context ^TextMapPropagator text-map-propagator]
+    {:keys [^Context context ^TextMapPropagator text-map-propagator getter]
      :or   {context (dyn)
-            text-map-propagator (otel/get-text-map-propagator)}}]
-   (.extract text-map-propagator context headers map-getter)))
+            text-map-propagator (otel/get-text-map-propagator)
+            getter  map-getter}}]
+   (.extract text-map-propagator context headers getter)))

@@ -41,6 +41,7 @@ https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/#excep
 *** [BREAK] `:fn` should be the fully qualified function name
 *** [MAINT] Support for `:ns` has been deprecated and removed
 *** [ADD] `:col` is the source column number
+* [ADD] `:getter` and `:setter` options to generalise context propagation functions `->headers` and `headers->merged-context` for use  in applications other than Ring HTTP servers.
 * [ADD] Programmatic configuration of log record exporters used for debugging.
 * [BREAK] Pedestal `0.7.0` in microservices examples.
 Pedestal `0.7.0` introduces its own support for OpenTelemetry, including a new interceptor `io.pedestal.http.tracing/request-tracing-interceptor`.
