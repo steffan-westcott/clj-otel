@@ -16,8 +16,8 @@
            clj-http/clj-http {:mvn/version "3.13.0"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.18.3"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.18.3"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.19.0"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.19.0"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
