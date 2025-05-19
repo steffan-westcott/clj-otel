@@ -37,6 +37,6 @@
 
                                 ;; Add trace_id, span_id and trace_flags to Log4j2 NDC
                                 io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure {:mvn/version
-                                                                                                                      "2.15.0-alpha"}}
+                                                                                                                      "2.16.0-alpha"}}
                    :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                                 "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}
