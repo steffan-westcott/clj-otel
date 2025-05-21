@@ -27,11 +27,20 @@
 
 (defn register-garbage-collector!
   "Registers measurements that generate metrics about the garbage collector and
-   list a collection of AutoCloseable."
+   list a collection of AutoCloseable. May take an options map as follows:
+
+   | key               | description |
+   |-------------------|-------------|
+   |`:capture-gc-cause`| If true, add garbage collection cause as an attribute (default: false)."
   (^List []
    (register-garbage-collector! (otel/get-default-otel!)))
   (^List [open-telemetry]
-   (GarbageCollector/registerObservers open-telemetry)))
+   (register-garbage-collector! open-telemetry {}))
+  (^List
+   [open-telemetry
+    {:keys [capture-gc-cause]
+     :or   {capture-gc-cause false}}]
+   (GarbageCollector/registerObservers open-telemetry (boolean capture-gc-cause))))
 
 (defn register-memory-pools!
   "Registers measurements that generate metrics about JVM memory pools and

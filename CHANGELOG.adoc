@@ -35,6 +35,7 @@ These will be stubbed out and later removed in future releases.
 https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/#exception-escaped[OpenTelemetry no longer recommends to record non-escaping exceptions.]
 ** [BREAK] `add-exception!` and `add-interceptor-exception!` now assume the exception is escaping the span's scope i.e. former option `:escaping?` is true.
 ** [ADD] `memory-mode` option for programmatically configured OTLP exporters.
+** [ADD] `capture-gc-cause` option for JVM runtime garbage collection metrics, for both Java 8 and Java 17 instrumentation.
 ** [BREAK] `retry-policy` default changed (from disabled) for programmatically configured OTLP exporters.
 ** [ADD] Added `steffan-westcott.clj-otel.api.baggage/get-entry`
 ** For all `clj-otel` functions which create a span such as `with-span!`, optional entries in `:source` map have changed:
