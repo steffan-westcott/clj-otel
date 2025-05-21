@@ -31,7 +31,7 @@
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}
-           metosin/malli {:mvn/version "0.17.0"}
+           metosin/malli {:mvn/version "0.18.0"}
            metosin/muuntaja {:mvn/version "0.6.11"}
            metosin/reitit-malli {:mvn/version "0.8.0"}
            metosin/reitit-middleware {:mvn/version "0.8.0"}
