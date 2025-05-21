@@ -14,13 +14,13 @@ services:
 
   # Jaeger
   jaeger:
-    image: jaegertracing/all-in-one:1.68.0
+    image: jaegertracing/all-in-one:1.69.0
     ports:
       - "16686:16686"  # Jaeger web interface
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:v3.2.1
+    image: prom/prometheus:v3.4.0
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:
@@ -31,7 +31,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector:0.123.0
+    image: otel/opentelemetry-collector:0.126.0
     volumes:
       - ./otel-collector.yaml:/etc/otel-collector.yaml
     command:
