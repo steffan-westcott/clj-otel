@@ -130,36 +130,8 @@
    (as-span-opts [x]
      {:name x}))
 
-(defn new-span!
-  "Low level function that starts a new span and returns the context containing
-   the new span. Does not mutate the current context. The span must be ended by
-   evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
-   level helpers [[with-span!]], [[with-bound-span!]], [[with-span-binding]],
-   [[async-span]] and [[async-bound-span]] instead of this function to reliably
-   manage the context and end the span.
-
-   `span-opts` is a single expression that may be one of several types.
-
-   `span-opts` as a map specifies all available options as follows:
-
-   | key         | description |
-   |-------------|-------------|
-   |`:tracer`    | `io.opentelemetry.api.trace.Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
-   |`:name`      | String, keyword or symbol used for (qualified) span name (default: `\"\"`).
-   |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: bound or current context).
-   |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
-   |`:attributes`| Map of additional attributes for the span (default: no attributes).
-   |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
-   |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: {}).
-   |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
-   |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
-
-   `span-opts` as a string, keyword or symbol specifies a span with a
-   (qualified) name. All other options take default values shown above.
-
-   `span-opts` as a vector `[name attrs]` specifies a span with the given
-   (qualified) name and map of attributes. All other options take default values
-   shown above."
+#_{:clj-kondo/ignore [:missing-docstring]}
+(defn ^:no-doc new-span!'
   ^Context [span-opts]
   (let [{:keys [^Tracer tracer name parent links attributes ^Thread thread source span-kind
                 timestamp]
@@ -192,6 +164,44 @@
                                       (.setStartTimestamp b amount unit))))
         span (.startSpan builder)]
     (context/assoc-value parent-context span)))
+
+(defmacro new-span!
+  "Low level macro that starts a new span and returns the context containing
+   the new span. Does not mutate the current context. The span must be ended by
+   evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
+   level helpers [[with-span!]], [[with-bound-span!]], [[with-span-binding]],
+   [[async-span]] and [[async-bound-span]] instead of this macro to reliably
+   manage the context and end the span.
+
+   `span-opts` is a single expression that may be one of several types.
+
+   `span-opts` as a map specifies all available options as follows:
+
+   | key         | description |
+   |-------------|-------------|
+   |`:tracer`    | `io.opentelemetry.api.trace.Tracer` used to create the span (default: default tracer, as set by [[set-default-tracer!]]; if no default tracer has been set, one will be set with default config).
+   |`:name`      | String, keyword or symbol used for (qualified) span name (default: `\"\"`).
+   |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: bound or current context).
+   |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
+   |`:attributes`| Map of additional attributes for the span (default: no attributes).
+   |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
+   |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: `line` and `file` of location where `new-span!` is expanded).
+   |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
+   |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
+
+   `span-opts` as a string, keyword or symbol specifies a span with a
+   (qualified) name. All other options take default values shown above.
+
+   `span-opts` as a vector `[name attrs]` specifies a span with the given
+   (qualified) name and map of attributes. All other options take default values
+   shown above."
+  [span-opts]
+  `(let [span-opts# (as-span-opts ~span-opts)
+         source#    (into {:line ~(:line (meta &form))
+                           :file ~*file*}
+                          (:source span-opts#))
+         span-opts# (assoc span-opts# :source source#)]
+     (new-span!' span-opts#)))
 
 (defn- add-event-data!
   [^Span span
@@ -357,7 +367,7 @@
 #_{:clj-kondo/ignore [:missing-docstring]}
 (defmacro ^:no-doc with-span-binding'
   [[context span-opts] & body]
-  `(let [~context (new-span! ~span-opts)]
+  `(let [~context (new-span!' ~span-opts)]
      (try
        ~@body
        (catch Throwable e#
@@ -371,12 +381,8 @@
    and evaluates `body`. The span is ended on completion of body evaluation.
    It is expected `body` provides a synchronous result, use [[async-span]]
    or [[async-bound-span]] instead for working with asynchronous functions. Does
-   not use nor set the current context.
-
-   `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line` and `:file` for the `:source` option map are set from the place
-   `with-span-binding` is evaluated. See also [[with-span!]] and
-   [[with-bound-span!]]."
+   not use nor set the current context. `span-opts` is the same as for
+   [[new-span!]]. See also [[with-span!]] and [[with-bound-span!]]."
   [[context span-opts] & body]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
@@ -392,11 +398,8 @@
    previous value and the span is ended on completion of body evaluation.
    It is expected `body` provides a synchronous result, use [[async-span]]
    or [[async-bound-span]] instead for working with asynchronous functions.
-
-   `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line` and `:file` for the `:source` option map are set from the place
-   `with-span!` is evaluated. See also [[with-bound-span!]] and
-   [[with-span-binding]]."
+   `span-opts` is the same as for [[new-span!]]. See also [[with-bound-span!]]
+   and [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
@@ -413,12 +416,8 @@
    value and the span is ended on completion of body evaluation. It is expected
    `body` provides a synchronous result, use [[async-span]] or
    [[async-bound-span]] instead for working with asynchronous functions. Does
-   not use nor set the current context.
-
-   `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line` and `:file` for the `:source` option map are set from the place
-   `with-bound-span!` is evaluated. See also [[with-span!]] and
-   [[with-span-binding]]."
+   not use nor set the current context. `span-opts` is the same as for
+   [[new-span!]]. See also [[with-span!]] and [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
@@ -433,7 +432,7 @@
 (defn ^:no-doc async-span'
   [span-opts f respond raise]
   (try
-    (let [context (new-span! span-opts)]
+    (let [context (new-span!' span-opts)]
       (try
         (f context
            (fn [response]
@@ -459,12 +458,9 @@
    success/failure result. The span is ended just before either callback is
    evaluated or `f` itself throws an exception. Does not use nor mutate the
    current context. This is a low-level function intended for adaption for use
-   with any async library that can work with callbacks.
-
-   `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line` and `:file` for the `:source` option map are set from the place
-   `async-span` is evaluated. `f` must take arguments `[context respond*
-   raise*]` where `context` is a context containing the new span, `respond*` and
+   with any async library that can work with callbacks. `span-opts` is the same
+   as for [[new-span!]]. `f` must take arguments `[context respond* raise*]`
+   where `context` is a context containing the new span, `respond*` and
    `raise*` are callback functions to be used by `f`. All callback functions
    take a single argument, `raise` and `raise*` take a `Throwable` instance."
   [span-opts f respond raise]
@@ -479,7 +475,7 @@
 (defn ^:no-doc async-bound-span'
   [span-opts f respond raise]
   (try
-    (let [context (new-span! span-opts)]
+    (let [context (new-span!' span-opts)]
       (context/bind-context! context
         (try
           (f (fn [response]
@@ -507,14 +503,10 @@
    span is ended just before either callback is evaluated or `f` itself throws
    an exception. Does not use nor mutate the current context. This is a
    low-level function intended for adaption for use with any async library that
-   can work with callbacks.
-
-   `span-opts` is the same as for [[new-span!]], except that the default values
-   for `:line` and `:file` for the `:source` option map are set from the place
-   `async-bound-span` is evaluated. `f` must take arguments `[respond*
-   raise*]` where `respond*` and `raise*` are callback functions to be used by
-   `f`. All callback functions take a single argument, `raise` and `raise*` take
-   a `Throwable` instance."
+   can work with callbacks. `span-opts` is the same as for [[new-span!]]. `f`
+   must take arguments `[respond* raise*]` where `respond*` and `raise*` are
+   callback functions to be used by `f`. All callback functions take a single
+   argument, `raise` and `raise*` take a `Throwable` instance."
   [span-opts f respond raise]
   `(let [span-opts# (as-span-opts ~span-opts)
          source#    (into {:line ~(:line (meta &form))
@@ -535,7 +527,7 @@
   [context-key span-opts-fn]
   {:name  ::span
    :enter (fn [ctx]
-            (let [context (new-span! (span-opts-fn ctx))]
+            (let [context (new-span!' (span-opts-fn ctx))]
               (assoc ctx context-key context)))
    :leave (fn [ctx]
             (end-span! {:context (get ctx context-key)})

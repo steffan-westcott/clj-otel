@@ -26,6 +26,9 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.9` (in progress)
 
+- [ADD] Updated `span/new-span!` to provide defaults for source location, similar to other functions and macros that
+create spans. Note: `new-span!` is now a macro.
+
 === `0.2.8` (2025-05-22)
 
 - [ADD] Updated microservices examples to export logs to Grafana Loki.
