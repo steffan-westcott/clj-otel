@@ -3,7 +3,9 @@
   (:require [camel-snake-kebab.core :as csk])
   (:import (clojure.lang IPersistentVector Named)
            (java.time Duration Instant)
-           (java.util.concurrent TimeUnit)))
+           (java.util.concurrent TimeUnit)
+           (java.util.function Function)
+           (java.util.stream Stream)))
 
 (defprotocol AsDuration
   (duration ^Duration [d]
@@ -49,3 +51,37 @@
  Object
    (qualified-name [x]
      (csk/->snake_case_string (str x))))
+
+(def ^:private third-element
+  (reify
+   Function
+     (apply [_ stream]
+       (-> ^Stream stream
+           (.skip 2)
+           .findFirst
+           (.orElse nil)))))
+
+(defmacro ^:private source-if
+  [test true-expr false-expr]
+  (if (eval test)
+    true-expr
+    false-expr))
+
+(defn ^:private class-exists?
+  [class-name]
+  (boolean (try
+             (Class/forName class-name)
+             (catch Exception _))))
+
+(defn fn-name
+  "Returns the name of the currently executing function, using the StackWalker
+   API first available in Java 9. If `StackWalker` is not available, returns
+   nil; `(doto (Throwable.) .fillInStackTrace)` is not used to examine the
+   stack, as that has poor performance with deep stacks."
+  []
+  (source-if (class-exists? "java.lang.StackWalker")
+             (some-> ^java.lang.StackWalker$StackFrame
+                     (.walk (java.lang.StackWalker/getInstance) third-element)
+                     .getClassName
+                     Compiler/demunge)
+             nil))

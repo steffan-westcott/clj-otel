@@ -26,6 +26,9 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.9` (in progress)
 
+- [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.
+This is implemented using the StackWalker API for performance reasons, starting in Java 9.
+If StackWalker is not available, the attribute is not populated.
 - [ADD] Updated `span/new-span!` to provide defaults for source location, similar to other functions and macros that
 create spans. Note: `new-span!` is now a macro.
 
