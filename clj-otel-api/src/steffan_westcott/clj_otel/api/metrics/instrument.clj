@@ -186,6 +186,7 @@
   (build [builder]
          [builder observe]))
 
+#_{:clj-kondo/ignore [:missing-protocol-method]}
 (extend-protocol Builder
  LongCounterBuilder
    (set-unit [builder unit]
