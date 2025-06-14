@@ -11,7 +11,8 @@
             [reitit.ring.middleware.parameters :as parameters]
             [ring.adapter.jetty :as jetty]
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
-            [steffan-westcott.clj-otel.api.trace.http :as trace-http])
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]
+            [steffan-westcott.clj-otel.api.trace.span :as span])
   (:import (org.eclipse.jetty.server Server)))
 
 
@@ -31,6 +32,11 @@
                                     muuntaja/format-negotiate-middleware ;
                                     muuntaja/format-response-middleware ;
                                     exception/exception-middleware ;
+
+                                    ;; Ensure uncaught exceptions are recorded before
+                                    ;; they are transformed
+                                    span/wrap-span
+
                                     parameters/parameters-middleware ;
                                     muuntaja/format-request-middleware ;
                                     coercion/coerce-response-middleware ;

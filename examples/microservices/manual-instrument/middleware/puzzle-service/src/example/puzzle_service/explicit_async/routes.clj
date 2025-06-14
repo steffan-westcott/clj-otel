@@ -3,7 +3,8 @@
   (:require [clojure.string :as str]
             [example.common.core-async.utils :as async']
             [example.puzzle-service.explicit-async.app :as app]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn get-ping
@@ -16,10 +17,10 @@
 (defn get-puzzle
   "Returns a response containing a puzzle of the requested word types."
   [components
-   {:keys [io.opentelemetry/server-span-context]
+   {::span/keys [wrap-span-context]
     {{:keys [types]} :query} :parameters} respond raise]
   (let [word-types (map keyword (str/split types #","))
-        <puzzle    (app/<generate-puzzle components server-span-context word-types)]
+        <puzzle    (app/<generate-puzzle components wrap-span-context word-types)]
     (async'/ch->respond-raise <puzzle
                               (fn [puzzle]
                                 (respond (response/response {:puzzle puzzle})))

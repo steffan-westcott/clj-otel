@@ -313,6 +313,10 @@
    currently still records the exception, but will be stubbed out and later
    removed entirely in future `clj-otel` releases. See
    https://opentelemetry.io/docs/specs/semconv/attributes-registry/exception/#exception-escaped
+   Consider using `steffan-westcott.clj-otel.api.trace.span/wrap-span` or
+   `steffan-westcott.clj-otel.api.trace.span/wrap-bound-span` instead to record
+   uncaught exceptions before they are transformed.
+
    Ring middleware to add an exception event to the server span. This is
    intended for use by applications which transform the exception to an HTTP
    response in a subsequent middleware."

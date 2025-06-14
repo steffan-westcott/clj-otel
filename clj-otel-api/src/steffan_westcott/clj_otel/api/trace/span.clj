@@ -193,7 +193,7 @@
    |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
    |`:attributes`| Map of additional attributes for the span (default: no attributes).
    |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
-   |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: `line` and `file` of location where `new-span!` is expanded).
+   |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: `:fn`, `:line` and `:file` where `new-span!` is expanded).
    |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
    |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
 
@@ -498,6 +498,49 @@
   [span-opts f respond raise]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
      (async-bound-span' span-opts# ~f ~respond ~raise)))
+
+(defn wrap-span
+  "Ring middleware to create a span around subsequent request processing.
+   `span-opts-fn` is a function which takes a request and returns `span-opts`
+   as for [[new-span!]]; default is to always use an internal span named
+   `::wrap-span`. For an asynchronous request, the context containing the new
+   span is added to the request map with key `context-key`, default is
+   `::wrap-span-context`."
+  ([handler] (wrap-span handler (constantly ::wrap-span)))
+  ([handler span-opts-fn] (wrap-span handler span-opts-fn ::wrap-span-context))
+  ([handler span-opts-fn context-key]
+   (fn
+     ([request]
+      (with-span! (span-opts-fn request)
+        (handler request)))
+     ([request respond raise]
+      (async-span (span-opts-fn request)
+                  (fn [context respond* raise*]
+                    (handler (assoc request context-key context)
+                             respond*
+                             raise*))
+                  respond
+                  raise)))))
+
+(defn wrap-bound-span
+  "Ring middleware to create a span around subsequent request processing.
+   `span-opts-fn` is a function which takes a request and returns `span-opts`
+   as for [[new-span!]]; default is to always use an internal span named
+   `::wrap-span`. For an asynchronous request, the context containing the new
+   span is set as the bound context. The bound context is restored to its
+   original value when the span ends."
+  ([handler] (wrap-bound-span handler (constantly ::wrap-bound-span)))
+  ([handler span-opts-fn]
+   (fn
+     ([request]
+      (with-span! (span-opts-fn request)
+        (handler request)))
+     ([request respond raise]
+      (async-bound-span (span-opts-fn request)
+                        (fn [respond* raise*]
+                          (handler request respond* raise*))
+                        respond
+                        raise)))))
 
 (defn span-interceptor
   "Returns a Pedestal interceptor that will on entry start a new span and add

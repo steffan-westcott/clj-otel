@@ -10,7 +10,8 @@
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+            [steffan-westcott.clj-otel.api.trace.http :as trace-http]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 
@@ -104,9 +105,9 @@
   "Ring handler with middleware applied."
   (-> handler
 
-      ;; Add matched Compojure route to server span data.
-      ;; `route/not-found` route is not considered as a match.
-      (compojure/wrap-routes trace-http/wrap-compojure-route)
+      ;; Add matched Compojure route to server span data, then put span around route
+      ;; processing. `route/not-found` route is not considered as a match.
+      (compojure/wrap-routes (comp trace-http/wrap-compojure-route span/wrap-span))
 
       ;; Convert exception to HTTP response
       wrap-exception

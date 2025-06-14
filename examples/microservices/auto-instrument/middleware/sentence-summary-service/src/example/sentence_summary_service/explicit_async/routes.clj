@@ -2,7 +2,8 @@
   "HTTP routes, explicit async implementation."
   (:require [example.common.core-async.utils :as async']
             [example.sentence-summary-service.explicit-async.app :as app]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn get-ping
@@ -15,9 +16,9 @@
 (defn get-summary
   "Returns a response containing a summary of the given sentence."
   [components
-   {:keys [io.opentelemetry/server-span-context]
+   {::span/keys [wrap-span-context]
     {{:keys [sentence]} :query} :parameters} respond raise]
-  (let [<summary (app/<build-summary components server-span-context sentence)]
+  (let [<summary (app/<build-summary components wrap-span-context sentence)]
     (async'/ch->respond-raise <summary
                               (fn [summary]
                                 (respond (response/response summary)))

@@ -31,6 +31,8 @@ This is implemented using the StackWalker API for performance reasons, starting 
 If StackWalker is not available, the attribute is not populated.
 - [ADD] Updated `span/new-span!` to provide defaults for source location, similar to other functions and macros that
 create spans. Note: `new-span!` is now a macro.
+- [ADD] New middleware `span/wrap-span` and `span/wrap-bound-span` to create a span around subsequent processing.
+These can be used as an alternative to the deprecated `wrap-exception-event` to record uncaught exceptions before they are transformed.
 
 === `0.2.8` (2025-05-22)
 
