@@ -1,6 +1,7 @@
 (ns steffan-westcott.clj-otel.exporter.otlp.http.metrics
   "Metric data exporter using OpenTelemetry Protocol via HTTP."
-  (:require [steffan-westcott.clj-otel.sdk.export :as export]
+  (:require [steffan-westcott.clj-otel.sdk.common :as common]
+            [steffan-westcott.clj-otel.sdk.export :as export]
             [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.exporter.otlp.http.metrics OtlpHttpMetricExporter
                                                         OtlpHttpMetricExporterBuilder)
@@ -30,13 +31,15 @@
    |`:proxy-options`                   | Option map for proxy options, see `steffan-westcott.clj-otel.sdk.export/proxy-options` (default: no proxy used).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: constantly `AggregationTemporality/CUMULATIVE`).
    |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`).
-   |`:service-classloader`             | ^ClassLoader to load the sender API."
+   |`:service-classloader`             | ^ClassLoader to load the sender API.
+   |`:internal-telemetry-version`      | Self-monitoring telemetry to export, either `:legacy` or `:latest` (default: `:legacy`)."
   (^OtlpHttpMetricExporter []
    (metric-exporter {}))
   (^OtlpHttpMetricExporter
    [{:keys [endpoint headers trusted-certificates-pem client-private-key-pem client-certificates-pem
             ssl-context x509-trust-manager compression-method timeout connect-timeout retry-policy
-            proxy-options aggregation-temporality-selector memory-mode service-classloader]}]
+            proxy-options aggregation-temporality-selector memory-mode service-classloader
+            internal-telemetry-version]}]
    (let [builder
          (cond-> (OtlpHttpMetricExporter/builder)
            endpoint (.setEndpoint endpoint)
@@ -58,5 +61,8 @@
                                                   (aggregation-temporality-selector
                                                    instrument-type))))
            memory-mode (.setMemoryMode (export/keyword->MemoryMode memory-mode))
-           service-classloader (.setServiceClassLoader service-classloader))]
+           service-classloader (.setServiceClassLoader service-classloader)
+           internal-telemetry-version (.setInternalTelemetryVersion
+                                       (common/keyword->InternalTelemetryVersion
+                                        internal-telemetry-version)))]
      (.build builder))))

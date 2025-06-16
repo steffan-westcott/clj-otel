@@ -33,6 +33,8 @@ If StackWalker is not available, the attribute is not populated.
 create spans. Note: `new-span!` is now a macro.
 - [ADD] New middleware `span/wrap-span` and `span/wrap-bound-span` to create a span around subsequent processing.
 These can be used as an alternative to the deprecated `wrap-exception-event` to record uncaught exceptions before they are transformed.
+- Bump deps
+* [MAINT] OpenTelemetry `1.51.0`
 
 === `0.2.8` (2025-05-22)
 
