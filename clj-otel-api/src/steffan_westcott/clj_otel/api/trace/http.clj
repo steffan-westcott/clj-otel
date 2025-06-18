@@ -26,7 +26,12 @@
   [init prefix captured-headers headers]
   (persistent! (reduce (fn [m header-name]
                          (if-let [v (get headers header-name)]
-                           (assoc! m (str prefix header-name) [v])
+                           (assoc! m
+                                   (str prefix header-name)
+                                   (str/split v
+                                              (if (= "cookie" header-name)
+                                                #";"
+                                                #",")))
                            m))
                        (transient init)
                        captured-headers)))
