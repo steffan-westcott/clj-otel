@@ -26,7 +26,7 @@
   [init prefix captured-headers headers]
   (persistent! (reduce (fn [m header-name]
                          (if-let [v (get headers header-name)]
-                           (assoc! m (str prefix (str/replace header-name \- \_)) [v])
+                           (assoc! m (str prefix header-name) [v])
                            m))
                        (transient init)
                        captured-headers)))
