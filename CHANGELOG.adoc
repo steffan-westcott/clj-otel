@@ -28,6 +28,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 - [FIX] In HTTP server spans, ensure values of multiple request headers with same name are captured as an array.
 Also, do not normalize `-` to `_` in header names.
+- [FIX] More robust processing of potentially incomplete Ring request maps to extract server span attributes.
 - [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.
 This is implemented using the StackWalker API for performance reasons, starting in Java 9.
 If StackWalker is not available, the attribute is not populated.

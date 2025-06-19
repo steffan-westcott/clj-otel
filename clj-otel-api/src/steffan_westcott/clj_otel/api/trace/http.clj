@@ -24,17 +24,17 @@
 
 (defn- merge-headers-attrs
   [init prefix captured-headers headers]
-  (persistent! (reduce (fn [m header-name]
-                         (if-let [v (get headers header-name)]
-                           (assoc! m
-                                   (str prefix header-name)
-                                   (str/split v
-                                              (if (= "cookie" header-name)
-                                                #";"
-                                                #",")))
-                           m))
-                       (transient init)
-                       captured-headers)))
+  (reduce (fn [m header-name]
+            (if-let [v (get headers header-name)]
+              (assoc! m
+                      (str prefix header-name)
+                      (str/split v
+                                 (if (= "cookie" header-name)
+                                   #";"
+                                   #",")))
+              m))
+          init
+          captured-headers))
 
 (defn- client-ip
   [forwarded x-forwarded-for remote-addr]
@@ -53,19 +53,27 @@
   [request captured-request-headers]
   (let [{:keys [headers request-method scheme uri query-string remote-addr]} request
         {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
-        [_ host-name host-port] (re-find #"^(.*?)(?::(\d*))?$" host)]
-    (cond-> {HttpAttributes/HTTP_REQUEST_METHOD (str/upper-case (name request-method))
-             UrlAttributes/URL_SCHEME        (name scheme)
-             ServerAttributes/SERVER_ADDRESS host-name
-             UrlAttributes/URL_PATH          uri
-             UrlAttributes/URL_QUERY         query-string
-             ClientAttributes/CLIENT_ADDRESS (client-ip forwarded x-forwarded-for remote-addr)}
-      user-agent      (assoc UserAgentAttributes/USER_AGENT_ORIGINAL user-agent)
-      content-length  (assoc HttpIncubatingAttributes/HTTP_REQUEST_BODY_SIZE
-                             (parse-long* content-length))
-      (seq host-port) (assoc ServerAttributes/SERVER_PORT (parse-long* host-port))
-      captured-request-headers
-      (merge-headers-attrs "http.request.header." captured-request-headers headers))))
+        [_ host-name host-port] (some->> host
+                                         (re-find #"^(.*?)(?::(\d*))?$"))
+        client-addr (client-ip forwarded x-forwarded-for remote-addr)
+        content-length (some-> content-length
+                               parse-long*)
+        host-port (some-> host-port
+                          parse-long*)]
+    (persistent! (cond-> (transient {})
+                   uri            (assoc! UrlAttributes/URL_PATH uri)
+                   request-method (assoc! HttpAttributes/HTTP_REQUEST_METHOD
+                                          (str/upper-case (name request-method)))
+                   scheme         (assoc! UrlAttributes/URL_SCHEME (name scheme))
+                   query-string   (assoc! UrlAttributes/URL_QUERY query-string)
+                   client-addr    (assoc! ClientAttributes/CLIENT_ADDRESS client-addr)
+                   user-agent     (assoc! UserAgentAttributes/USER_AGENT_ORIGINAL user-agent)
+                   content-length (assoc! HttpIncubatingAttributes/HTTP_REQUEST_BODY_SIZE
+                                          content-length)
+                   host-name      (assoc! ServerAttributes/SERVER_ADDRESS host-name)
+                   host-port      (assoc! ServerAttributes/SERVER_PORT host-port)
+                   captured-request-headers
+                   (merge-headers-attrs "http.request.header." captured-request-headers headers)))))
 
 (defn server-span-opts
   "Returns a span options map (a parameter for
