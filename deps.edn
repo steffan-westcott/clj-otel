@@ -4,8 +4,8 @@
  :aliases {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.10.9"
                                                                :git/sha "e405aac"}
                                 slipset/deps-deploy {:mvn/version "0.2.2"}
-                                io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v2.24.0"
-                                                                                  :git/sha "de93f51"}}
+                                io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v2.25.0"
+                                                                                  :git/sha "9bceba9"}}
                    :ns-default build}
            :antq  {:extra-deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}
                                 org.slf4j/slf4j-nop     {:mvn/version "2.0.17"}}
