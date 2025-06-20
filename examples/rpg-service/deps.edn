@@ -12,24 +12,24 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
 
            ;; HoneyEQL EDN Query Language adapter
-           com.github.tamizhvendan/honeyeql {:mvn/version "1.0.4"}
+           com.github.tamizhvendan/honeyeql {:mvn/version "1.0.5"}
 
            ;; HikariCP JDBC connection pool
            hikari-cp/hikari-cp {:mvn/version "3.2.0"}
 
            ;; Reitit HTTP routing and content handling
-           metosin/reitit-malli {:mvn/version "0.8.0"}
-           metosin/reitit-middleware {:mvn/version "0.8.0"}
-           metosin/reitit-ring {:mvn/version "0.8.0"}
+           metosin/reitit-malli {:mvn/version "0.9.1"}
+           metosin/reitit-middleware {:mvn/version "0.9.1"}
+           metosin/reitit-ring {:mvn/version "0.9.1"}
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../common/system"}
 
            ;; PostgreSQL JDBC driver
-           org.postgresql/postgresql {:mvn/version "42.7.4"}
+           org.postgresql/postgresql {:mvn/version "42.7.7"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.14.1"}}
+           ring/ring-jetty-adapter {:mvn/version "1.14.2"}}
 
  :aliases {;; Include this alias to export telemetry data
            :otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent

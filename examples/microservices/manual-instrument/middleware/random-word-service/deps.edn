@@ -9,8 +9,8 @@
            aero/aero {:mvn/version "1.1.6"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.19.0"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.19.0"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.19.1"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.19.1"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
@@ -31,22 +31,22 @@
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}
-           metosin/malli {:mvn/version "0.18.0"}
+           metosin/malli {:mvn/version "0.19.1"}
            metosin/muuntaja {:mvn/version "0.6.11"}
-           metosin/reitit-malli {:mvn/version "0.8.0"}
-           metosin/reitit-middleware {:mvn/version "0.8.0"}
-           metosin/reitit-ring {:mvn/version "0.8.0"}
+           metosin/reitit-malli {:mvn/version "0.9.1"}
+           metosin/reitit-middleware {:mvn/version "0.9.1"}
+           metosin/reitit-ring {:mvn/version "0.9.1"}
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.14.1"}
+           ring/ring-jetty-adapter {:mvn/version "1.14.2"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.72.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.72.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.72.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.73.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.73.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.73.0"}
 
           }
 

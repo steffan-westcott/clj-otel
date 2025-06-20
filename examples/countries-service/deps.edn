@@ -15,7 +15,7 @@
            compojure/compojure {:mvn/version "1.7.1"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.14.1"}}
+           ring/ring-jetty-adapter {:mvn/version "1.14.2"}}
 
  :aliases {;; Include this alias to export telemetry data
            :otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent

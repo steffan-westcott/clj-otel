@@ -38,9 +38,9 @@
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.72.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.72.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.72.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.73.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.73.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.73.0"}
 
           }
 
