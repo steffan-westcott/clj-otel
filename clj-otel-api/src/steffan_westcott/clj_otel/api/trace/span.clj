@@ -10,8 +10,8 @@
            (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
-           (io.opentelemetry.semconv.incubating CodeIncubatingAttributes
-                                                ThreadIncubatingAttributes)))
+           (io.opentelemetry.semconv CodeAttributes)
+           (io.opentelemetry.semconv.incubating ThreadIncubatingAttributes)))
 
 (def ^:private default-library
   (get-in config [:defaults :instrumentation-library]))
@@ -158,10 +158,10 @@
                                            (.getName thread)
                                            ThreadIncubatingAttributes/THREAD_ID
                                            (.getId thread))
-                             fn     (assoc CodeIncubatingAttributes/CODE_FUNCTION_NAME fn)
-                             line   (assoc CodeIncubatingAttributes/CODE_LINE_NUMBER line)
-                             col    (assoc CodeIncubatingAttributes/CODE_COLUMN_NUMBER col)
-                             file   (assoc CodeIncubatingAttributes/CODE_FILE_PATH file))
+                             fn     (assoc CodeAttributes/CODE_FUNCTION_NAME fn)
+                             line   (assoc CodeAttributes/CODE_LINE_NUMBER line)
+                             col    (assoc CodeAttributes/CODE_COLUMN_NUMBER col)
+                             file   (assoc CodeAttributes/CODE_FILE_PATH file))
         attributes' (merge default-attributes attributes)
         builder (cond-> (.spanBuilder tracer' (str name))
                   :always   (.setParent parent-context)
