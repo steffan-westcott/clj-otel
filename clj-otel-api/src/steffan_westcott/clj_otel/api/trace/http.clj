@@ -51,15 +51,13 @@
 
 (defn- server-request-attrs
   [request captured-request-headers]
-  (let [{:keys [headers request-method scheme uri query-string remote-addr]} request
-        {:strs [user-agent content-length host forwarded x-forwarded-for]} headers
-        [_ host-name host-port] (some->> host
-                                         (re-find #"^(.*?)(?::(\d*))?$"))
+  (let [{:keys [headers request-method scheme uri query-string remote-addr server-name server-port]}
+        request
+
+        {:strs [user-agent content-length forwarded x-forwarded-for]} headers
         client-addr (client-ip forwarded x-forwarded-for remote-addr)
         content-length (some-> content-length
-                               parse-long*)
-        host-port (some-> host-port
-                          parse-long*)]
+                               parse-long*)]
     (persistent! (cond-> (transient {})
                    uri            (assoc! UrlAttributes/URL_PATH uri)
                    request-method (assoc! HttpAttributes/HTTP_REQUEST_METHOD
@@ -70,8 +68,8 @@
                    user-agent     (assoc! UserAgentAttributes/USER_AGENT_ORIGINAL user-agent)
                    content-length (assoc! HttpIncubatingAttributes/HTTP_REQUEST_BODY_SIZE
                                           content-length)
-                   host-name      (assoc! ServerAttributes/SERVER_ADDRESS host-name)
-                   host-port      (assoc! ServerAttributes/SERVER_PORT host-port)
+                   server-name    (assoc! ServerAttributes/SERVER_ADDRESS server-name)
+                   server-port    (assoc! ServerAttributes/SERVER_PORT server-port)
                    captured-request-headers
                    (merge-headers-attrs "http.request.header." captured-request-headers headers)))))
 
