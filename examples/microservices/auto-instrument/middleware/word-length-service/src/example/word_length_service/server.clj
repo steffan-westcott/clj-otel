@@ -9,7 +9,7 @@
             [reitit.ring.middleware.exception :as exception]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
-            [ring.adapter.jetty :as jetty]
+            [ring.adapter.jetty9 :as jetty]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span])
   (:import (org.eclipse.jetty.server Server)))
@@ -68,7 +68,7 @@
 (defn server
   "Starts and returns a synchronous HTTP server."
   [handler]
-  (jetty/run-jetty handler (assoc (:jetty config) :join? false)))
+  (jetty/run-jetty handler (assoc (:jetty config) :h2c? true :join? false)))
 
 
 

@@ -30,6 +30,10 @@
            ;; hato HTTP client
            hato/hato {:mvn/version "1.0.0"}
 
+           ;; Ring-Jetty web server integration
+           info.sunng/ring-jetty9-adapter {:mvn/version "0.37.4"}
+           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.1.7"}
+
            ;; OpenTelemetry exporter that uses OTLP
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.51.0"}
 
@@ -49,9 +53,6 @@
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../../../../common/system"}
-
-           ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.14.2"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
            ; io.grpc/grpc-netty-shaded {:mvn/version "1.73.0"}

@@ -11,7 +11,7 @@
             [reitit.ring.middleware.exception :as exception]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.middleware.parameters :as parameters]
-            [ring.adapter.jetty :as jetty]
+            [ring.adapter.jetty9 :as jetty]
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span])
@@ -101,7 +101,7 @@
 (defn server
   "Starts and returns an (a)synchronous HTTP server."
   [handler]
-  (jetty/run-jetty handler (assoc (:jetty config) :join? false :async? (async?))))
+  (jetty/run-jetty handler (assoc (:jetty config) :h2c? true :join? false :async? (async?))))
 
 
 
