@@ -1,24 +1,23 @@
 (ns example.sentence-summary-service.sync.requests
   "Requests to other microservices, synchronous implementation."
-  (:require [clj-http.client :as client]
-            [example.sentence-summary-service.env :refer [config]]
+  (:require [example.sentence-summary-service.env :refer [config]]
+            [hato.client :as client]
             [reitit.ring :as ring]))
 
 
 (defn get-word-length
   "Get the length of `word`."
-  [{:keys [conn-mgr client]} word]
+  [{:keys [client]} word]
 
-  ;; Apache HttpClient request is automatically wrapped in a client span
-  ;; created by the OpenTelemetry instrumentation agent. The agent also
-  ;; propagates the context containing the client span to the remote HTTP
-  ;; server by injecting headers into the request.
+  ;; hato request is automatically wrapped in a client span created by the
+  ;; OpenTelemetry instrumentation agent. The agent also propagates the context
+  ;; containing the client span to the remote HTTP server by injecting headers
+  ;; into the request.
   (let [endpoint (get-in config [:endpoints :word-length-service])
         response (client/get (str endpoint "/length")
                              {:throw-exceptions false
-                              :connection-manager conn-mgr
                               :http-client  client
-                              :query-params {"word" word}
+                              :query-params {:word word}
                               :accept       :json
                               :as           :json})
         {:keys [status body]} response]

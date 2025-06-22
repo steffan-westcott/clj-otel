@@ -27,11 +27,8 @@
               runtime-metrics (runtime-telemetry/register!)
               _logging        (closeable (logging/install! @otel-sdk))
               instruments     (closeable (metrics/instruments))
-              conn-mgr        (closeable (client/connection-manager)
-                                         client/stop-connection-manager)
-              client          (client/client @conn-mgr)
+              client          (client/client)
               components      (closeable {:instruments @instruments
-                                          :conn-mgr    @conn-mgr
                                           :client      client})
               service-map     (closeable (server/service-map @components))
               server          (closeable (server/server @service-map) server/stop-server)]
@@ -39,7 +36,6 @@
         :otel-sdk        @otel-sdk
         :runtime-metrics runtime-metrics
         :instruments     @instruments
-        :conn-mgr        @conn-mgr
         :client          client
         :components      @components
         :service-map     @service-map

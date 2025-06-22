@@ -12,9 +12,6 @@
            ;; Cheshire JSON processing
            cheshire/cheshire {:mvn/version "6.0.0"}
 
-           ;; clj-http HTTP client
-           clj-http/clj-http {:mvn/version "3.13.0"}
-
            ;; Jackson deps version pinning
            com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.19.1"}
            com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.19.1"}
@@ -29,6 +26,9 @@
            ;; Clojure wrapper of JVM metrics instrumentation
            com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry-java17"}
+
+           ;; hato HTTP client
+           hato/hato {:mvn/version "1.0.0"}
 
            ;; OpenTelemetry exporter that uses OTLP
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.51.0"}

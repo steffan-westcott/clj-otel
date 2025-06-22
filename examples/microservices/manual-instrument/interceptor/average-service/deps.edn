@@ -9,9 +9,6 @@
            ;; Application configuration
            aero/aero {:mvn/version "1.1.6"}
 
-           ;; clj-http HTTP client
-           clj-http/clj-http {:mvn/version "3.13.0"}
-
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
@@ -22,6 +19,9 @@
            ;; Clojure wrapper of JVM metrics instrumentation
            com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry-java17"}
+
+           ;; hato HTTP client
+           hato/hato {:mvn/version "1.0.0"}
 
            ;; OpenTelemetry exporter that uses OTLP
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.51.0"}

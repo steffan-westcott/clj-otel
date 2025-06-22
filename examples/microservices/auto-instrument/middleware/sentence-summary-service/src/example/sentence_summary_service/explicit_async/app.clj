@@ -61,7 +61,7 @@
   "Builds a summary of the words in the sentence and returns a channel of the
    summary value."
   [components context sentence]
-  (let [words        (str/split sentence #"\s+")
+  (let [words        (str/split sentence #",")
         <all-lengths (<word-lengths components context words)
         <lengths     (async'/<into?? [] <all-lengths)]
     (async'/go-try

@@ -16,11 +16,8 @@
 (defn get-sum
   "Returns a response containing the sum of the `nums` query parameters."
   [{:keys [components query-params]}]
-  (let [num-str  (get query-params :nums)
-        num-strs (->> (str/split num-str #",")
-                      (map str/trim)
-                      (filter seq))
-        nums     (map #(Integer/parseInt %) num-strs)]
+  (let [num-str (:nums query-params)
+        nums    (map #(Integer/parseInt %) (str/split num-str #","))]
 
     ;; Simulate a client error when first number argument is zero. Exception data is added as
     ;; attributes to the exception event by default.

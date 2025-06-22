@@ -1,6 +1,7 @@
 (ns example.average-load-gen.load
   "Functions for generating a load of timed random HTTP requests."
-  (:require [example.average-load-gen.env :refer [config]]
+  (:require [clojure.string :as str]
+            [example.average-load-gen.env :refer [config]]
             [example.common.load-gen.requests :as requests]
             [example.common.load-gen.signal :as sig]))
 
@@ -13,7 +14,7 @@
   [nums]
   {:method       :get
    :url          (str (average-endpoint) "/average")
-   :query-params {:nums nums}
+   :query-params {:nums (str/join "," nums)}
    :accept       "application/json"})
 
 (defn- rand-odds
@@ -72,5 +73,5 @@
 
 (defn start-load
   "Generates a load of timed random HTTP requests."
-  [conn-mgr client]
-  (requests/do-requests conn-mgr client (signal (System/currentTimeMillis))))
+  [client]
+  (requests/do-requests client (signal (System/currentTimeMillis))))

@@ -1,20 +1,18 @@
 (ns example.common.load-gen.requests
   "Functions for sending a timed sequence of HTTP requests."
-  (:require [clj-http.client :as client]
-            [clojure.tools.logging.readable :as log]))
+  (:require [clojure.tools.logging.readable :as log]
+            [hato.client :as client]))
 
 
 (defn- do-request
   "Send an HTTP request asynchronously"
-  [conn-mgr client req]
+  [client req]
   (log/debugf "Sending request : %s" req)
   (try
     (client/request (conj req
-                          {:async true
+                          {:async?           true
                            :throw-exceptions false
-                           :connection-manager conn-mgr
-                           :http-client client
-                           :multi-param-style :comma-separated})
+                           :http-client      client})
                     (fn [response]
                       (log/debugf "Received response : %s"
                                   {:request  req
@@ -39,7 +37,7 @@
   "Given a (possibly infinite) seq of vectors `signal`, for each vector [t req]
    perform an async HTTP req at system time t. It is assumed t monotonically
    increases in the sequence."
-  [conn-mgr client signal]
+  [client signal]
   (future (doseq [[t req] signal]
             (sleep-until t)
-            (do-request conn-mgr client req))))
+            (do-request client req))))

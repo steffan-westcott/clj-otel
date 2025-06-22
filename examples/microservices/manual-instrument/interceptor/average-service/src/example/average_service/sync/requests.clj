@@ -1,21 +1,20 @@
 (ns example.average-service.sync.requests
   "Requests to other microservices, synchronous implementation."
-  (:require [clj-http.client :as client]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [example.average-service.env :refer [config]]
+            [hato.client :as client]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
 
 
 (defn- client-request
-  "Perform a synchronous HTTP request using `clj-http`."
-  [{:keys [conn-mgr client]} request]
+  "Perform a synchronous HTTP request using `hato`."
+  [client request]
 
   (let [request (conj request
-                      {:throw-exceptions   false
-                       :connection-manager conn-mgr
-                       :http-client        client})]
+                      {:throw-exceptions false
+                       :http-client      client})]
 
     ;; Wrap the synchronous body in a new client span.
     (span/with-span! (trace-http/client-span-opts request)
@@ -41,12 +40,12 @@
 
 (defn get-sum
   "Get the sum of the nums."
-  [components nums]
+  [{:keys [client]} nums]
   (let [endpoint (get-in config [:endpoints :sum-service])
-        response (client-request components
+        response (client-request client
                                  {:method       :get
                                   :url          (str endpoint "/sum")
-                                  :query-params {"nums" (str/join "," nums)}
+                                  :query-params {:nums (str/join "," nums)}
                                   :accept       :json
                                   :as           :json})
         {:keys [status body]} response]

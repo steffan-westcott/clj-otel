@@ -1,7 +1,7 @@
 (ns example.puzzle-service.sync.requests
   "Requests to other microservices, synchronous implementation."
-  (:require [clj-http.client :as client]
-            [example.puzzle-service.env :refer [config]]
+  (:require [example.puzzle-service.env :refer [config]]
+            [hato.client :as client]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -9,13 +9,12 @@
 
 
 (defn- client-request
-  "Perform a synchronous HTTP request using `clj-http`."
-  [{:keys [conn-mgr client]} request]
+  "Perform a synchronous HTTP request using `hato`."
+  [client request]
 
   (let [request (conj request
-                      {:throw-exceptions   false
-                       :connection-manager conn-mgr
-                       :http-client        client})]
+                      {:throw-exceptions false
+                       :http-client      client})]
 
     ;; Wrap the synchronous body in a new client span.
     (span/with-span! (trace-http/client-span-opts request)
@@ -41,12 +40,12 @@
 
 (defn get-random-word
   "Get a random word string of the requested type."
-  [components word-type]
+  [{:keys [client]} word-type]
   (let [endpoint (get-in config [:endpoints :random-word-service])
-        response (client-request components
+        response (client-request client
                                  {:method       :get
                                   :url          (str endpoint "/random-word")
-                                  :query-params {"type" (name word-type)}
+                                  :query-params {:type (name word-type)}
                                   :accept       :json
                                   :as           :json})
         {:keys [status body]} response]

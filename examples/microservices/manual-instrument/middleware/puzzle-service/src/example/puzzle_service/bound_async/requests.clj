@@ -1,9 +1,9 @@
 (ns example.puzzle-service.bound-async.requests
   "Requests to other microservices, bound async implementation."
-  (:require [clj-http.client :as client]
-            [clojure.core.async :as async]
+  (:require [clojure.core.async :as async]
             [example.common.core-async.utils :as async']
             [example.puzzle-service.env :refer [config]]
+            [hato.client :as client]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -11,14 +11,13 @@
 
 
 (defn- client-request
-  "Make an asynchronous HTTP request using `clj-http`."
-  [{:keys [conn-mgr client]} request respond raise]
+  "Make an asynchronous HTTP request using `hato`."
+  [client request respond raise]
 
   (let [request (conj request
-                      {:async true
+                      {:async?           true
                        :throw-exceptions false
-                       :connection-manager conn-mgr
-                       :http-client client})]
+                       :http-client      client})]
 
     ;; Manually create a client span. The client span is ended when either a
     ;; response or exception is returned.
@@ -30,24 +29,22 @@
                                    ;; correlation to make distributed traces.
                                    request' (update request :headers merge (context/->headers))]
 
-                               ;; `clj-http` restores bindings before evaluating callback
-                               ;; function
-                               (client/request request'
-                                               (fn [response]
+                               ;; Use `bound-fn` to ensure respond/raise fns use bound context
+                               (client/request
+                                request'
+                                (bound-fn [response]
 
-                                                 ;; Add HTTP response data to the client span.
-                                                 (trace-http/add-client-span-response-data!
-                                                  response)
+                                  ;; Add HTTP response data to the client span.
+                                  (trace-http/add-client-span-response-data! response)
 
-                                                 (respond* response))
-                                               (fn [e]
+                                  (respond* response))
+                                (bound-fn [e]
 
-                                                 ;; Add error information to the client span.
-                                                 (trace-http/add-client-span-response-data!
-                                                  {:io.opentelemetry.api.trace.span.attrs/error-type
-                                                   e})
+                                  ;; Add error information to the client span.
+                                  (trace-http/add-client-span-response-data!
+                                   {:io.opentelemetry.api.trace.span.attrs/error-type e})
 
-                                                 (raise* e)))))
+                                  (raise* e)))))
                            respond
                            raise)))
 
@@ -55,10 +52,10 @@
 
 (defn- <client-request
   "Make an asynchronous HTTP request and return a channel of the response."
-  [components request]
+  [client request]
   (let [<ch    (async/chan)
         put-ch #(async/put! <ch %)]
-    (client-request components request put-ch put-ch)
+    (client-request client request put-ch put-ch)
     <ch))
 
 
@@ -66,12 +63,12 @@
 (defn <get-random-word
   "Get a random word string of the requested type and return a channel of the
    word."
-  [components word-type]
+  [{:keys [client]} word-type]
   (let [endpoint  (get-in config [:endpoints :random-word-service])
-        <response (<client-request components
+        <response (<client-request client
                                    {:method       :get
                                     :url          (str endpoint "/random-word")
-                                    :query-params {"type" (name word-type)}
+                                    :query-params {:type (name word-type)}
                                     :accept       :json
                                     :as           :json})]
     (async'/go-try

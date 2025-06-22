@@ -15,7 +15,7 @@
   [words]
   {:method       :get
    :url          (str (sentence-summary-endpoint) "/summary")
-   :query-params {:sentence (str/join " " words)}
+   :query-params {:sentence (str/join "," words)}
    :accept       "application/json"})
 
 (defn- rand-words
@@ -67,5 +67,5 @@
 
 (defn start-load
   "Generates a load of timed random HTTP requests."
-  [conn-mgr client]
-  (requests/do-requests conn-mgr client (signal (System/currentTimeMillis))))
+  [client]
+  (requests/do-requests client (signal (System/currentTimeMillis))))

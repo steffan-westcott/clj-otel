@@ -17,6 +17,11 @@
    {:next-inner {:list {:respect-nl? true}
                  :next-inner-restore [[:list :respect-nl?]]}}]
 
+  "bound-fn"
+  [:fn
+   {:next-inner {:list {:respect-nl? true}
+                 :next-inner-restore [[:list :respect-nl?]]}}]
+
   "do" :flow-body
   "try" :flow-body
   "finally" :flow-body

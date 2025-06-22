@@ -16,14 +16,12 @@
   "Evaluates `f` with system map of configured components. The components are
    closed when evaluation completes."
   [f]
-  (with-open [config   (closeable (env/set-config!))
-              conn-mgr (closeable (client/connection-manager) client/stop-connection-manager)
-              client   (client/client @conn-mgr)
-              load     (closeable (load/start-load @conn-mgr client) future-cancel)]
-    (f {:config   @config
-        :conn-mgr @conn-mgr
-        :client   client
-        :load     @load})))
+  (with-open [config (closeable (env/set-config!))
+              client (client/client)
+              load   (closeable (load/start-load client) future-cancel)]
+    (f {:config @config
+        :client client
+        :load   @load})))
 
 
 

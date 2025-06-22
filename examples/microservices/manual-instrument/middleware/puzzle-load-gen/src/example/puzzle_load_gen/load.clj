@@ -1,6 +1,7 @@
 (ns example.puzzle-load-gen.load
   "Functions for generating a load of timed random HTTP requests."
-  (:require [example.common.load-gen.requests :as requests]
+  (:require [clojure.string :as str]
+            [example.common.load-gen.requests :as requests]
             [example.common.load-gen.signal :as sig]
             [example.puzzle-load-gen.env :refer [config]]))
 
@@ -13,7 +14,7 @@
   [types]
   {:method       :get
    :url          (str (puzzle-endpoint) "/puzzle")
-   :query-params {:types types}
+   :query-params {:types (str/join "," types)}
    :accept       "application/json"})
 
 (defn- rand-valid-types
@@ -64,5 +65,5 @@
 
 (defn start-load
   "Generates a load of timed random HTTP requests."
-  [conn-mgr client]
-  (requests/do-requests conn-mgr client (signal (System/currentTimeMillis))))
+  [client]
+  (requests/do-requests client (signal (System/currentTimeMillis))))

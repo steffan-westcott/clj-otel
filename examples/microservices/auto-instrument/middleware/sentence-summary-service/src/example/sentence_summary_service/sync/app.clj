@@ -44,6 +44,6 @@
 (defn build-summary
   "Builds a summary of the words in the sentence."
   [components sentence]
-  (let [words   (str/split sentence #"\s+")
+  (let [words   (str/split sentence #",")
         lengths (word-lengths components words)]
     (summary components lengths)))

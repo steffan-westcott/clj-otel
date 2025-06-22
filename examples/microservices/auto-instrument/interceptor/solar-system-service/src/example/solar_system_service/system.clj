@@ -19,16 +19,13 @@
   [f]
   (with-open [config      (closeable (env/set-config!))
               instruments (closeable (metrics/instruments))
-              conn-mgr    (closeable (client/connection-manager) client/stop-connection-manager)
-              client      (client/client @conn-mgr)
+              client      (client/client)
               components  (closeable {:instruments @instruments
-                                      :conn-mgr    @conn-mgr
                                       :client      client})
               service-map (closeable (server/service-map @components))
               server      (closeable (server/server @service-map) server/stop-server)]
     (f {:config      @config
         :instruments @instruments
-        :conn-mgr    @conn-mgr
         :client      client
         :components  @components
         :service-map @service-map
