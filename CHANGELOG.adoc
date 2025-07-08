@@ -37,6 +37,7 @@ If StackWalker is not available, the attribute is not populated.
 create spans. Note: `new-span!` is now a macro.
 - [ADD] New middleware `span/wrap-span` and `span/wrap-bound-span` to create a span around subsequent processing.
 These can be used as an alternative to the deprecated `wrap-exception-event` to record uncaught exceptions before they are transformed.
+- [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
 - Bump deps
 * [MAINT] OpenTelemetry `1.51.0`, semconv `1.34.0`
 * [MAINT] Clojure `1.12.1` However `clj-otel` retains compatibility with Clojure `1.10.3` and later.

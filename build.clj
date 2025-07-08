@@ -64,6 +64,7 @@ clojure -A:deps -T:build help/doc"
    "examples/microservices/manual-instrument/middleware/random-word-service"
    "examples/rpg-service"
    "examples/square-app"
+   "examples/word-stream-app"
    "tutorial/instrumented"])
 
 (defn- library-project?

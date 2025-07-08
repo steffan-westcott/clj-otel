@@ -36,6 +36,23 @@ In your own libraries and applications, use `:mvn/version` instead, as shown in 
 +
 Select an example from the following list and change the current directory to the path shown
 
+* `examples/countries-service`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+endif::[]
+A single HTTP service `countries-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Compojure router, exporting telemetry to a Collector instance.
+
 * `examples/cube-app`
 +
 ifdef::env-github[[source,mermaid]]
@@ -52,40 +69,6 @@ graph LR
 +
 endif::[]
 A small application `cube-app` run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
-
-* `examples/square-app`
-+
-ifdef::env-github[[source,mermaid]]
-ifndef::env-github,env-cljdoc[[mermaid]]
-ifndef::env-cljdoc[]
-----
-graph LR
-    subgraph docker network
-        otel-collector --> jaeger
-        otel-collector --remote write--> prometheus
-    end
-    localhost --> otel-collector
-----
-+
-endif::[]
-A small application `square-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
-
-* `examples/factorial-app`
-+
-ifdef::env-github[[source,mermaid]]
-ifndef::env-github,env-cljdoc[[mermaid]]
-ifndef::env-cljdoc[]
-----
-graph LR
-    subgraph docker network
-        otel-collector --> jaeger
-        otel-collector --remote write--> prometheus
-    end
-    localhost --> otel-collector
-----
-+
-endif::[]
-A small application `factorial-app` using programmatically configured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/divisor-app`
 +
@@ -105,7 +88,7 @@ graph LR
 endif::[]
 A small application `divisor-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry directly to Jaeger and Prometheus instances.
 
-* `examples/countries-service`
+* `examples/factorial-app`
 +
 ifdef::env-github[[source,mermaid]]
 ifndef::env-github,env-cljdoc[[mermaid]]
@@ -120,7 +103,7 @@ graph LR
 ----
 +
 endif::[]
-A single HTTP service `countries-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Compojure router, exporting telemetry to a Collector instance.
+A small application `factorial-app` using programmatically configured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
 
 * `examples/rpg-service`
 +
@@ -141,6 +124,51 @@ graph LR
 endif::[]
 A single HTTP service `rpg-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Reitit router, accessing a PostgreSQL database instance, exporting telemetry to a Collector instance.
 Load namespace `example.rpg-service.repl` at the REPL to exercise this example.
+
+* `examples/square-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+endif::[]
+A small application `square-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
+
+* `examples/word-stream-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph flow
+        ingest --> batch-tail
+        ingest --> batch-mru
+        batch-tail --> update-tail
+        batch-mru --> update-mru
+    end
+    ingest-chan --> ingest
+    update-tail --> tail
+    update-mru --> mru
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+endif::[]
+A small application `word-stream-app` run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
+The application is implemented using https://clojure.github.io/core.async/flow.html[`core.async.flow`].
+This demonstrates manual instrumentation of a `core.async.flow` application with explicit context passing along the data flow.
 
 * `examples/microservices/auto-instrument/middleware`
 +
