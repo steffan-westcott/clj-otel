@@ -77,19 +77,12 @@
   "Returns a span options map (a parameter for
    [[steffan-westcott.clj-otel.api.trace.span/new-span!]]) for a manually
    created HTTP server span, initiated by processing an HTTP request specified
-   by Ring-style request map `request`. May take an options map as follows:
-
-   | key                       | description |
-   |---------------------------|-------------|
-   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root)."
+   by Ring-style request map `request`."
   ([request]
-   (server-span-opts request {}))
-  ([request {:keys [app-root]}]
+   (server-span-opts request nil))
+  ([request _opts]
    (let [{:keys [headers io.opentelemetry/server-request-attrs]} request]
-     {:name       (let [method (get server-request-attrs HttpAttributes/HTTP_REQUEST_METHOD)]
-                    (if app-root
-                      (str method " " app-root "/*")
-                      method))
+     {:name       (get server-request-attrs HttpAttributes/HTTP_REQUEST_METHOD)
       :span-kind  :server
       ;; always merge extracted context with bound or current context
       :parent     (context/headers->merged-context headers)
@@ -128,18 +121,16 @@
 
    | key       | description |
    |-----------|-------------|
-   |`:context` | Context containing server span (default: bound or current context).
-   |`:app-root`| Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: `nil`)."
+   |`:context` | Context containing server span (default: bound or current context)."
   ([request-method route]
    (add-route-data! request-method route {}))
   ([request-method route
-    {:keys [context app-root]
+    {:keys [context]
      :or   {context (context/dyn)}}]
    (when route
-     (span/add-span-data!
-      {:context    context
-       :name       (str (str/upper-case (name request-method)) " " app-root route)
-       :attributes {HttpAttributes/HTTP_ROUTE route}}))))
+     (span/add-span-data! {:context    context
+                           :name       (str (str/upper-case (name request-method)) " " route)
+                           :attributes {HttpAttributes/HTTP_ROUTE route}}))))
 
 (defprotocol ^:private ^:no-doc AsErrorType
   (as-error-type ^String [e]))
@@ -305,7 +296,6 @@
    | key                       | description |
    |---------------------------|-------------|
    |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
-   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
    |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([handler]
    (wrap-server-span handler {}))
@@ -502,7 +492,6 @@
    |---------------------------|-------------|
    |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
    |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
-   |`:app-root`                | Web application root, a URL prefix for all HTTP routes served by this application e.g. `\"/webshop\"` (default: no app root).
    |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([]
    (server-span-interceptors {}))
