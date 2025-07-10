@@ -30,6 +30,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 Also, do not normalize `-` to `_` in header names.
 - [FIX] More robust processing of potentially incomplete Ring request maps to extract server span attributes.
 - [FIX] To ensure HTTP/2 compatibility, read server name and port from Ring request map rather than `Host` header, which is supported in HTTP/1.1 only.
+- [FIX] Pass HTTP route data to the instrumentation agent when present.
+This ensures measurements captured by the agent for HTTP server span metrics have the `http.route` attribute.
 - [FIX] Ensure provided interceptors correctly set attributes for manually created HTTP server span metrics.
 - [FIX] Do not include app-root in server span names.
 - [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.

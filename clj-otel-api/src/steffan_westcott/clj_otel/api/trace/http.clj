@@ -8,7 +8,8 @@
   (:require [clojure.string :as str]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context])
-  (:import (io.opentelemetry.semconv ClientAttributes
+  (:import (io.opentelemetry.instrumentation.api.semconv.http HttpServerRoute HttpServerRouteSource)
+           (io.opentelemetry.semconv ClientAttributes
                                      ErrorAttributes
                                      HttpAttributes
                                      ServerAttributes
@@ -128,6 +129,7 @@
     {:keys [context]
      :or   {context (context/dyn)}}]
    (when route
+     (HttpServerRoute/update context HttpServerRouteSource/SERVER_FILTER route)
      (span/add-span-data! {:context    context
                            :name       (str (str/upper-case (name request-method)) " " route)
                            :attributes {HttpAttributes/HTTP_ROUTE route}}))))
