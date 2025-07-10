@@ -135,19 +135,19 @@
    applications run with the OpenTelemetry instrumentation agent."
   []
   {:name  ::active-requests
-   :enter (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
+   :enter (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
                 :as ctx}]
             (add-active-requests! 1
                                   (active-requests-attrs server-request-attrs)
                                   server-span-context)
             ctx)
-   :leave (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
+   :leave (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
                 :as ctx}]
             (add-active-requests! -1
                                   (active-requests-attrs server-request-attrs)
                                   server-span-context)
             ctx)
-   :error (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
+   :error (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
                 :as ctx} e]
             (add-active-requests! -1
                                   (active-requests-attrs server-request-attrs)
@@ -199,7 +199,7 @@
   {:name  ::request-duration
    :enter (fn [ctx]
             (assoc ctx ::start-time (nano-time!)))
-   :leave (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
+   :leave (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
                 ::keys [start-time]
                 :keys  [response]
                 :as    ctx}]
@@ -208,7 +208,7 @@
                               (or (:status response) 404)
                               server-span-context)
             ctx)
-   :error (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
+   :error (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
                 ::keys [start-time]
                 :as    ctx} e]
             (record-duration! start-time
@@ -258,7 +258,7 @@
    applications run with the OpenTelemetry instrumentation agent."
   []
   {:name  ::request-size
-   :leave (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
+   :leave (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
                 :keys [response]
                 :as   ctx}]
             (record-request-size!
@@ -266,7 +266,7 @@
              (or (:status response) 404)
              server-span-context)
             ctx)
-   :error (fn [{:io.opentelemetry/keys [server-request-attrs server-span-context]
+   :error (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
                 :as ctx} e]
             (record-request-size!
              server-request-attrs
