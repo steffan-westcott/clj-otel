@@ -43,7 +43,7 @@ create spans. Note: `new-span!` is now a macro.
 These can be used as an alternative to the deprecated `wrap-exception-event` to record uncaught exceptions before they are transformed.
 - [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
 - Bump deps
-* [MAINT] OpenTelemetry `1.51.0`, semconv `1.34.0`
+* [MAINT] OpenTelemetry `1.51.0`, semconv `1.34.0`, instrumentation `2.17.1-alpha`
 * [MAINT] Clojure `1.12.1` However `clj-otel` retains compatibility with Clojure `1.10.3` and later.
 
 === `0.2.8` (2025-05-22)
