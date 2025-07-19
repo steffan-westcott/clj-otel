@@ -1,7 +1,7 @@
 (ns example.puzzle-service.explicit-async.requests
   "Requests to other microservices, explicit async implementation."
   (:require [clojure.core.async :as async]
-            [example.common.core-async.utils :as async']
+            [com.xadecimal.async-style :as style]
             [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
             [reitit.ring :as ring]
@@ -72,8 +72,8 @@
                                     :query-params {:type (name word-type)}
                                     :accept       :json
                                     :as           :json})]
-    (async'/go-try
-      (let [{:keys [status body]} (async'/<? <response)]
+    (style/async
+      (let [{:keys [status body]} (style/await <response)]
         (if (= 200 status)
           (:word body)
           (throw (ex-info "Unexpected HTTP response"

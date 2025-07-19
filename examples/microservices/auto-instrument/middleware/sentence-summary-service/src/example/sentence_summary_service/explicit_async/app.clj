@@ -1,30 +1,27 @@
 (ns example.sentence-summary-service.explicit-async.app
   "Application logic, explicit async implementation."
-  (:require [clojure.core.async :as async]
-            [clojure.string :as str]
-            [example.common.core-async.utils :as async']
+  (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.sentence-summary-service.explicit-async.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn- <word-lengths
-  "Get the word lengths and return a channel containing a value for each word
+  "Get the word lengths and return a channel of a vector containing each word
    length."
   [components context words]
 
-  ;; Start a new internal span that ends when the source channel (returned by
-  ;; the body) closes or 6000 milliseconds have elapsed. Returns a dest channel
-  ;; with buffer size 3. Values are piped from source to dest irrespective of
-  ;; timeout. Context containing internal span is assigned to `context*`.
-  (async'/<with-span-binding [context* {:parent     context
+  ;; Wrap channel with an asynchronous internal span. Context containing
+  ;; internal span is assigned to `context*`.
+  (style'/style-span-binding [context* {:parent     context
                                         :name       "Getting word lengths"
                                         :attributes {:system/words words}}]
-    6000
-    3
 
-    (let [chs (map #(requests/<get-word-length components context* %) words)]
-      (async/merge chs))))
+    (style/all (map (fn [word]
+                      (requests/<get-word-length components context* word))
+                    words))))
 
 
 
@@ -61,12 +58,7 @@
   "Builds a summary of the words in the sentence and returns a channel of the
    summary value."
   [components context sentence]
-  (let [words        (str/split sentence #",")
-        <all-lengths (<word-lengths components context words)
-        <lengths     (async'/<into?? [] <all-lengths)]
-    (async'/go-try
-      (try
-        (let [lengths (async'/<? <lengths)]
-          (summary components context lengths))
-        (finally
-          (async'/close-and-drain!! <all-lengths))))))
+  (let [words (str/split sentence #",")]
+    (-> (<word-lengths components context words)
+        (style/then (fn [lengths]
+                      (summary components context lengths))))))

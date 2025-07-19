@@ -37,11 +37,13 @@
   "with-value!" :arg1-body
 
   ;; examples
-  "catch-all" :flow-body
-  "go-try" :flow-body
-  "catch-response" :arg1-body
-  "go-try-response" :arg1-body
-  "<with-span-binding" :binding
+  "async" :flow-body
+  "async-bound-style-span" :arg1-body
+  "blocking" :flow-body
+  "compute" :flow-body
+  "clet" :binding
+  "style-span-binding" :binding
+  "style-span-binding'" :binding
 
   ;; core.async
   "go" :flow-body

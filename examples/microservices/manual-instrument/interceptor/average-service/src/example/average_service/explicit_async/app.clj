@@ -1,7 +1,8 @@
 (ns example.average-service.explicit-async.app
   "Application logic, explicit async implementation."
-  (:require [example.average-service.explicit-async.requests :as requests]
-            [example.common.core-async.utils :as async']
+  (:require [com.xadecimal.async-style :as style]
+            [example.average-service.explicit-async.requests :as requests]
+            [example.common.async-style.utils :as style']
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
@@ -31,19 +32,15 @@
   "Calculate the average of the nums and return a channel of the result."
   [components context nums]
 
-  ;; Start a new internal span that ends when the source channel (returned by
-  ;; the body) closes or 3000 milliseconds have elapsed. Returns a dest channel
-  ;; with buffer size 1. Values are piped from source to dest irrespective of
-  ;; timeout. Context containing internal span is assigned to `context*`.
-  (async'/<with-span-binding [context* {:parent     context
+  ;; Wrap channel with an asynchronous internal span. Context containing
+  ;; internal span is assigned to `context*`.
+  (style'/style-span-binding [context* {:parent     context
                                         :name       "Calculating average"
                                         :attributes {:system/nums nums}}]
-    3000
-    1
 
     (let [<sum (requests/<get-sum components context* nums)]
-      (async'/go-try
-        (divide context* (async'/<? <sum) (count nums))))))
+      (style/async
+        (divide context* (style/await <sum) (count nums))))))
 
 
 
@@ -52,19 +49,15 @@
    returns a channel of the result."
   [{:keys [instruments]
     :as   components} context nums]
-  (let [odds          (filter odd? nums)
-        evens         (filter even? nums)
-        <odds-average (when (seq odds)
-                        (<average components context odds))
-        <evens-average (when (seq evens)
-                         (<average components context evens))]
-    (async'/go-try
-      (let [odds-average  (when <odds-average
-                            (async'/<? <odds-average))
-            evens-average (when <evens-average
-                            (async'/<? <evens-average))
-            result        {:odds  odds-average
-                           :evens evens-average}]
+  (let [odds  (filter odd? nums)
+        evens (filter even? nums)]
+    (style/async
+      (style/clet [odds-average  (when (seq odds)
+                                   (<average components context odds))
+                   evens-average (when (seq evens)
+                                   (<average components context evens))
+                   result        {:odds  odds-average
+                                  :evens evens-average}]
 
         ;; Add event to span
         (span/add-span-data! {:context context

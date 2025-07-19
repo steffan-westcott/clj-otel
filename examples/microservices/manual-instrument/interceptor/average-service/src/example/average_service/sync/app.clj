@@ -25,8 +25,12 @@
 (defn- average
   "Calculate the average of the nums."
   [components nums]
-  (let [sum (requests/get-sum components nums)]
-    (divide sum (count nums))))
+
+  ;; Wrap synchronous function body with an internal span.
+  (span/with-span! ["Calculating average" {:system/nums nums}]
+
+    (let [sum (requests/get-sum components nums)]
+      (divide sum (count nums)))))
 
 
 

@@ -7,15 +7,16 @@
 
 
 (defn- planet-statistics
-  "Get all statistics of a planet and return single-valued map values of each
-   statistic."
+  "Get all statistics of a planet and return a map of statistics."
   [components planet]
 
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! ["Getting planet statistics" {:system/planet planet}]
 
-    ;; Use `doall` to force lazy sequence to be realized within span
-    (doall (map #(requests/get-statistic-value components planet %) [:diameter :gravity]))))
+    (apply merge
+           (map (fn [statistic]
+                  (requests/get-statistic-value components planet statistic))
+                [:diameter :gravity]))))
 
 
 
@@ -47,6 +48,5 @@
 (defn planet-report
   "Builds a report of planet statistics and returns report string."
   [components planet]
-  (let [all-statistics   (planet-statistics components planet)
-        statistic-values (into {} all-statistics)]
-    (format-report components planet statistic-values)))
+  (let [statistics (planet-statistics components planet)]
+    (format-report components planet statistics)))

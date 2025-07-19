@@ -27,6 +27,9 @@
            com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry-java17"}
 
+           ;; async/await functions built on core.async
+           com.xadecimal/async-style {:mvn/version "0.1.0"}
+
            ;; hato HTTP client
            hato/hato {:mvn/version "1.0.0"}
 
@@ -48,8 +51,8 @@
            metosin/reitit-middleware {:mvn/version "0.9.1"}
            metosin/reitit-ring {:mvn/version "0.9.1"}
 
-           ;; Utilities for core.async
-           org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}
+           ;; Utilities for async-style
+           org.example/common.async-style.utils {:local/root "../../../../common/async-style.utils"}
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../../../../common/system"}

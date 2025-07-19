@@ -42,6 +42,7 @@ create spans. Note: `new-span!` is now a macro.
 - [ADD] New middleware `span/wrap-span` and `span/wrap-bound-span` to create a span around subsequent processing.
 These can be used as an alternative to the deprecated `wrap-exception-event` to record uncaught exceptions before they are transformed.
 - [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
+- [ADD] Refactored async microservices examples to use https://github.com/xadecimal/async-style[`async-style`], a higher level library over `core.async`.
 - Bump deps
 * [MAINT] OpenTelemetry `1.51.0`, semconv `1.34.0`, instrumentation `2.17.1-alpha`
 * [MAINT] Clojure `1.12.1` However `clj-otel` retains compatibility with Clojure `1.10.3` and later.

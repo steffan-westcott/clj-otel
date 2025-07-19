@@ -1,55 +1,55 @@
 (ns example.puzzle-service.explicit-async.app
   "Application logic, explicit async implementation."
   (:require [clojure.string :as str]
-            [example.common.core-async.utils :as async']
+            [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.puzzle-service.explicit-async.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span])
-  (:import (clojure.lang PersistentQueue)))
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(defn- <random-words
-  "Get random words of the requested types and return a channel containing
-   a value for each word."
+(defn- <scramble
+  "Given a word, returns a channel containing a string of the scrambled word.
+   This 'CPU intensive' function runs on the compute-pool."
+  [context word]
+  (style/compute
+
+    ;; Wrap synchronous function body with an internal span. Context containing
+    ;; internal span is assigned to `context*`.
+    (span/with-span-binding [context* {:parent     context
+                                       :name       "Scrambling word"
+                                       :attributes {:system/word word}}]
+
+      (Thread/sleep 5)
+      (let [scrambled-word (->> word
+                                seq
+                                shuffle
+                                (apply str))]
+
+        ;; Add more attributes to internal span
+        (span/add-span-data! {:context    context*
+                              :attributes {:service.puzzle/scrambled-word scrambled-word}})
+
+        scrambled-word))))
+
+
+
+(defn- <scrambled-random-words
+  "Gets random words of the requested word types, scrambles them and returns
+   a channel of a vector containing the scrambled words."
   [components context word-types]
 
-  ;; Start a new internal span that ends when the source channel (returned by
-  ;; the body) closes or 5000 milliseconds have elapsed. Returns a dest channel
-  ;; with buffer size 2. Values are piped from source to dest irrespective of
-  ;; timeout. Context containing internal span is assigned to `context*`.
-  (async'/<with-span-binding [context* {:parent     context
-                                        :name       "Getting random words"
-                                        :attributes {:system/word-types word-types}}]
-    5000
-    2
-
-    (let [<words* (map #(requests/<get-random-word components context* %) word-types)]
-      (async'/<concat <words*))))
-
-
-
-(defn- scramble
-  "Scrambles a given word."
-  [context word]
-
-  ;; Wrap synchronous function body with an internal span. Context containing
+  ;; Wrap channel with an asynchronous internal span. Context containing
   ;; internal span is assigned to `context*`.
-  (span/with-span-binding [context* {:parent     context
-                                     :name       "Scrambling word"
-                                     :attributes {:system/word word}}]
+  (style'/style-span-binding [context* {:name       "Getting scrambled random words"
+                                        :attributes {:system/word-types word-types}
+                                        :parent     context}]
 
-    (Thread/sleep 5)
-    (let [scrambled-word (->> word
-                              seq
-                              shuffle
-                              (apply str))]
-
-      ;; Add more attributes to internal span
-      (span/add-span-data! {:context    context*
-                            :attributes {:service.puzzle/scrambled-word scrambled-word}})
-
-      scrambled-word)))
-
+    (style/all (map (fn [word-type]
+                      (-> (requests/<get-random-word components context* word-type)
+                          (style/then (fn [word]
+                                        (<scramble context* word)))))
+                    word-types))))
 
 
 (defn <generate-puzzle
@@ -57,24 +57,17 @@
    requested word types and returns a channel of the puzzle string."
   [{:keys [instruments]
     :as   components} context word-types]
-  (let [<words (<random-words components context word-types)]
-    (async'/go-try
-      (try
-        (loop [scrambled-words PersistentQueue/EMPTY]
-          (if-let [word (async'/<? <words)]
-            (recur (conj scrambled-words (scramble context word)))
-            (do
+  (-> (<scrambled-random-words components context word-types)
+      (style/then (fn [scrambled-words]
 
-              ;; Add event to span
-              (span/add-span-data! {:context context
-                                    :event   {:name       "Completed setting puzzle"
-                                              :attributes {:system/puzzle scrambled-words}}})
+                    ;; Add event to span
+                    (span/add-span-data! {:context context
+                                          :event   {:name       "Completed setting puzzle"
+                                                    :attributes {:system/puzzle scrambled-words}}})
 
-              ;; Update puzzle-size metric
-              (instrument/record! (:puzzle-size-letters instruments)
-                                  {:context context
-                                   :value   (reduce + (map count scrambled-words))})
+                    ;; Update puzzle-size metric
+                    (instrument/record! (:puzzle-size-letters instruments)
+                                        {:context context
+                                         :value   (reduce + (map count scrambled-words))})
 
-              (str/join " " scrambled-words))))
-        (finally
-          (async'/close-and-drain!! <words))))))
+                    (str/join " " scrambled-words)))))

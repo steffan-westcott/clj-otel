@@ -1,8 +1,9 @@
 (ns example.average-service.explicit-async.routes
   "HTTP routes, explicit async implementation."
   (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
             [example.average-service.explicit-async.app :as app]
-            [example.common.core-async.utils :as async']
+            [example.common.async-style.utils :as style']
             [io.pedestal.http.route :as route]
             [ring.util.response :as response]))
 
@@ -15,8 +16,8 @@
 
 
 (def get-average
-  "Interceptor that returns a channel of an HTTP response containing calculated
-   averages of the odd and even numbers."
+  "Interceptor that returns a channel of ctx with response containing
+   calculated averages of the odd and even numbers."
   {:name  ::get-average
    :enter (fn [{:keys [io.opentelemetry/server-span-context request]
                 :as   ctx}]
@@ -24,11 +25,10 @@
                   num-strs (->> (str/split num-str #",")
                                 (map str/trim)
                                 (filter seq))
-                  nums     (map #(Integer/parseInt %) num-strs)
-                  <avs     (app/<averages (:components request) server-span-context nums)]
-              (async'/go-try-response ctx
-                (let [avs (async'/<? <avs)]
-                  (response/response {:average avs})))))})
+                  nums     (map #(Integer/parseInt %) num-strs)]
+              (-> (app/<averages (:components request) server-span-context nums)
+                  (style/then #(response/response {:average %}))
+                  (style'/<assoc-response ctx))))})
 
 
 

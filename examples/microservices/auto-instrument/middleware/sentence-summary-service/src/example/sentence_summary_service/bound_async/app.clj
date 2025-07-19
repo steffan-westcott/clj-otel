@@ -1,27 +1,24 @@
 (ns example.sentence-summary-service.bound-async.app
   "Application logic, bound async implementation."
-  (:require [clojure.core.async :as async]
-            [clojure.string :as str]
-            [example.common.core-async.utils :as async']
+  (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.sentence-summary-service.bound-async.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn- <word-lengths
-  "Get the word lengths and return a channel containing a value for each word
-  length."
+  "Get the word lengths and return a channel of a vector containing each word
+   length."
   [components words]
 
-  ;; Start a new internal span that ends when the source channel (returned by
-  ;; the body) closes or 6000 milliseconds have elapsed. Returns a dest channel
-  ;; with buffer size 3. Values are piped from source to dest irrespective of
-  ;; timeout.
-  (async'/<with-bound-span ["Getting word lengths" {:system/words words}]
-                           6000
-                           3
+  ;; Wrap channel with an asynchronous internal span.
+  (style'/async-bound-style-span ["Getting word lengths" {:system/words words}]
 
-                           (async/merge (map #(requests/<get-word-length components %) words))))
+    (style/all (map (fn [word]
+                      (requests/<get-word-length components word))
+                    words))))
 
 
 
@@ -52,12 +49,7 @@
   "Builds a summary of the words in the sentence and returns a channel of the
   summary value."
   [components sentence]
-  (let [words        (str/split sentence #",")
-        <all-lengths (<word-lengths components words)
-        <lengths     (async'/<into?? [] <all-lengths)]
-    (async'/go-try
-      (try
-        (let [lengths (async'/<? <lengths)]
-          (summary components lengths))
-        (finally
-          (async'/close-and-drain!! <all-lengths))))))
+  (let [words (str/split sentence #",")]
+    (-> (<word-lengths components words)
+        (style/then (fn [lengths]
+                      (summary components lengths))))))

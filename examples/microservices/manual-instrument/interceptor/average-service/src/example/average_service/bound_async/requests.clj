@@ -2,8 +2,8 @@
   "Requests to other microservices, bound async implementation."
   (:require [clojure.core.async :as async]
             [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
             [example.average-service.env :refer [config]]
-            [example.common.core-async.utils :as async']
             [hato.client :as client]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
@@ -70,8 +70,8 @@
                                     :query-params {:nums (str/join "," nums)}
                                     :accept       :json
                                     :as           :json})]
-    (async'/go-try
-      (let [response (async'/<? <response)
+    (style/async
+      (let [response (style/await <response)
             {:keys [status body]} response]
         (if (= 200 status)
           (:sum body)

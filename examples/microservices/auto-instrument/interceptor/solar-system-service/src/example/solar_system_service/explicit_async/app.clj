@@ -1,31 +1,27 @@
 (ns example.solar-system-service.explicit-async.app
   "Application logic, explicit async implementation."
-  (:require [clojure.core.async :as async]
-            [clojure.string :as str]
-            [example.common.core-async.utils :as async']
+  (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.solar-system-service.explicit-async.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn <planet-statistics
-  "Get all statistics of a planet and return a channel containing a
-   single-valued map values of each statistic."
+  "Get all statistics of a planet and return a channel of a map of statistics."
   [components context planet]
 
-  ;; Start a new internal span that ends when the source channel (returned by
-  ;; the body) closes or 4000 milliseconds have elapsed. Returns a dest channel
-  ;; with buffer size 2. Values are piped from source to dest irrespective of
-  ;; timeout. Context containing internal span is assigned to `context*`.
-  (async'/<with-span-binding [context* {:parent     context
+  ;; Wrap channel with an asynchronous internal span. Context containing
+  ;; internal span is assigned to `context*`.
+  (style'/style-span-binding [context* {:parent     context
                                         :name       "Getting planet statistics"
                                         :attributes {:system/planet planet}}]
-    4000
-    2
 
-    (let [chs (map #(requests/<get-statistic-value components context* planet %)
-                   [:diameter :gravity])]
-      (async/merge chs))))
+    (-> (style/all (map (fn [statistic]
+                          (requests/<get-statistic-value components context* planet statistic))
+                        [:diameter :gravity]))
+        (style/then #(apply merge %)))))
 
 
 
@@ -61,14 +57,9 @@
 
 
 (defn <planet-report
-  "Builds a report of planet statistics and results a channel of the report
+  "Builds a report of planet statistics and returns a channel of the report
    string."
   [components context planet]
-  (let [<all-statistics   (<planet-statistics components context planet)
-        <statistic-values (async'/<into?? {} <all-statistics)]
-    (async'/go-try
-      (try
-        (let [statistics-values (async'/<? <statistic-values)]
-          (format-report components context planet statistics-values))
-        (finally
-          (async'/close-and-drain!! <all-statistics))))))
+  (-> (<planet-statistics components context planet)
+      (style/then (fn [statistics]
+                    (format-report components context planet statistics)))))

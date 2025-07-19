@@ -12,6 +12,9 @@
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
+           ;; async/await functions built on core.async
+           com.xadecimal/async-style {:mvn/version "0.1.0"}
+
            ;; hato HTTP client
            hato/hato {:mvn/version "1.0.0"}
 
@@ -21,8 +24,8 @@
            io.pedestal/pedestal.route {:mvn/version "0.7.2"}
            io.pedestal/pedestal.service {:mvn/version "0.7.2"}
 
-           ;; Utilities for core.async
-           org.example/common.core-async.utils {:local/root "../../../../common/core-async.utils"}
+           ;; Utilities for async-style
+           org.example/common.async-style.utils {:local/root "../../../../common/async-style.utils"}
 
            ;; Interceptor utilities
            org.example/common.interceptor.utils {:local/root "../../../../common/interceptor.utils"}

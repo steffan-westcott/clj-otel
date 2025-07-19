@@ -1,7 +1,7 @@
 (ns example.sentence-summary-service.bound-async.requests
   "Requests to other microservices, bound async implementation."
   (:require [clojure.core.async :as async]
-            [example.common.core-async.utils :as async']
+            [com.xadecimal.async-style :as style]
             [example.sentence-summary-service.env :refer [config]]
             [hato.client :as client]
             [reitit.ring :as ring]
@@ -49,8 +49,8 @@
                                     :query-params {:word word}
                                     :accept       :json
                                     :as           :json})]
-    (async'/go-try
-      (let [{:keys [status body]} (async'/<? <response)]
+    (style/async
+      (let [{:keys [status body]} (style/await <response)]
         (if (= 200 status)
           (:length body)
           (throw (ex-info "Unexpected HTTP response"

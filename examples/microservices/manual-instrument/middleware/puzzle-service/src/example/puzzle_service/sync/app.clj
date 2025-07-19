@@ -6,18 +6,6 @@
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(defn- random-words
-  "Get random words of the requested types."
-  [components word-types]
-
-  ;; Wrap the synchronous body in a new internal span.
-  (span/with-span! ["Getting random words" {:system/word-types word-types}]
-
-    ;; Use `doall` to force lazy sequence to be realized within span
-    (doall (map #(requests/get-random-word components %) word-types))))
-
-
-
 (defn- scramble
   "Scrambles a given word."
   [word]
@@ -36,13 +24,27 @@
 
 
 
+(defn- scrambled-random-words
+  "Gets random words of the requested word types, scrambles them and returns
+   a vector containing the scrambled words."
+  [components word-types]
+
+  ;; Wrap the synchronous body in a new internal span.
+  (span/with-span! ["Getting scrambled random words" {:system/word-types word-types}]
+
+    ;; Use `mapv` to force all scrambled words to be realized within span
+    (mapv (fn [word-type]
+            (scramble (requests/get-random-word components word-type)))
+          word-types)))
+
+
+
 (defn generate-puzzle
   "Constructs a puzzle string containing scrambled random words of the
    requested word types."
   [{:keys [instruments]
     :as   components} word-types]
-  (let [words (random-words components word-types)
-        scrambled-words (map scramble words)]
+  (let [scrambled-words (scrambled-random-words components word-types)]
 
     ;; Add event to span
     (span/add-event! "Completed setting puzzle" {:system/puzzle scrambled-words})

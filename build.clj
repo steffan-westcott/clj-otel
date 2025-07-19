@@ -41,7 +41,7 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-instrumentation-runtime-telemetry-java17"])
 
 (def ^:private demo-project-paths
-  ["examples/common/core-async.utils"
+  ["examples/common/async-style.utils"
    "examples/common/interceptor.utils"
    "examples/common/load-gen"
    "examples/common/log4j2.utils"

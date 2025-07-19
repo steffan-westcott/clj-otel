@@ -7,14 +7,16 @@
 
 
 (defn- word-lengths
-  "Get the word lengths."
+  "Get the word lengths and return a vector containing each word length."
   [components words]
 
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! ["Getting word lengths" {:system/words words}]
 
-    ;; Use `doall` to force lazy sequence to be realized within span
-    (doall (map #(requests/get-word-length components %) words))))
+    ;; Use `mapv` to force all word lengths to be realized within span
+    (mapv (fn [word]
+            (requests/get-word-length components word))
+          words)))
 
 
 

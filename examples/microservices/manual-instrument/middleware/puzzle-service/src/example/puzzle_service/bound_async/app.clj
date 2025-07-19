@@ -1,48 +1,48 @@
 (ns example.puzzle-service.bound-async.app
   "Application logic, bound async implementation."
   (:require [clojure.string :as str]
-            [example.common.core-async.utils :as async']
+            [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.puzzle-service.bound-async.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span])
-  (:import (clojure.lang PersistentQueue)))
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(defn <random-words
-  "Get random words of the requested types and return a channel containing
-   a value for each word."
+(defn <scramble
+  "Given a word, returns a channel containing a string of the scrambled word.
+   This 'CPU intensive' function runs on the compute-pool."
+  [word]
+  (style/compute
+
+    ;; Wrap synchronous function body with an internal span.
+    (span/with-bound-span! ["Scrambling word" {:system/word word}]
+
+      (Thread/sleep 5)
+      (let [scrambled-word (->> word
+                                seq
+                                shuffle
+                                (apply str))]
+
+        ;; Add more attributes to internal span
+        (span/add-span-data! {:attributes {:service.puzzle/scrambled-word scrambled-word}})
+
+        scrambled-word))))
+
+
+
+(defn- <scrambled-random-words
+  "Gets random words of the requested word types, scrambles them and returns
+   a channel of a vector containing the scrambled words."
   [components word-types]
 
-  ;; Start a new internal span that ends when the source channel (returned by
-  ;; the body) closes or 5000 milliseconds have elapsed. Returns a dest channel
-  ;; with buffer size 2. Values are piped from source to dest irrespective of
-  ;; timeout.
-  (async'/<with-bound-span ["Getting random words" {:system/word-types word-types}]
-                           5000
-                           2
+  ;; Wrap channel with an asynchronous internal span.
+  (style'/async-bound-style-span ["Getting scrambled random words" {:system/word-types word-types}]
 
-                           (async'/<concat (map #(requests/<get-random-word components %)
-                                                word-types))))
-
-
-
-(defn scramble
-  "Scrambles a given word."
-  [word]
-
-  ;; Wrap synchronous function body with an internal span.
-  (span/with-bound-span! ["Scrambling word" {:system/word word}]
-
-    (Thread/sleep 5)
-    (let [scrambled-word (->> word
-                              seq
-                              shuffle
-                              (apply str))]
-
-      ;; Add more attributes to internal span
-      (span/add-span-data! {:attributes {:service.puzzle/scrambled-word scrambled-word}})
-
-      scrambled-word)))
+    (style/all (map (fn [word-type]
+                      (-> (requests/<get-random-word components word-type)
+                          (style/then (fn [word]
+                                        (<scramble word)))))
+                    word-types))))
 
 
 
@@ -51,21 +51,14 @@
    requested word types and returns a channel of the puzzle string."
   [{:keys [instruments]
     :as   components} word-types]
-  (let [<words (<random-words components word-types)]
-    (async'/go-try
-      (try
-        (loop [scrambled-words PersistentQueue/EMPTY]
-          (if-let [word (async'/<? <words)]
-            (recur (conj scrambled-words (scramble word)))
-            (do
+  (-> (<scrambled-random-words components word-types)
+      (style/then (fn [scrambled-words]
 
-              ;; Add event to span
-              (span/add-event! "Completed setting puzzle" {:system/puzzle scrambled-words})
+                    ;; Add event to span
+                    (span/add-event! "Completed setting puzzle" {:system/puzzle scrambled-words})
 
-              ;; Update puzzle-size metric
-              (instrument/record! (:puzzle-size-letters instruments)
-                                  {:value (reduce + (map count scrambled-words))})
+                    ;; Update puzzle-size metric
+                    (instrument/record! (:puzzle-size-letters instruments)
+                                        {:value (reduce + (map count scrambled-words))})
 
-              (str/join " " scrambled-words))))
-        (finally
-          (async'/close-and-drain!! <words))))))
+                    (str/join " " scrambled-words)))))

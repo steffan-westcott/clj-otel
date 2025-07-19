@@ -1,29 +1,24 @@
 (ns example.solar-system-service.bound-async.app
   "Application logic, bound async implementation."
-  (:require [clojure.core.async :as async]
-            [clojure.string :as str]
-            [example.common.core-async.utils :as async']
+  (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.solar-system-service.bound-async.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn <planet-statistics
-  "Get all statistics of a planet and return a channel containing a
-   single-valued map values of each statistic."
+  "Get all statistics of a planet and return a channel of a map of statistics."
   [components planet]
 
-  ;; Start a new internal span that ends when the source channel (returned by
-  ;; the body) closes or 4000 milliseconds have elapsed. Returns a dest channel
-  ;; with buffer size 2. Values are piped from source to dest irrespective of
-  ;; timeout.
-  (async'/<with-bound-span ["Getting planet statistics" {:system/planet planet}]
-                           4000
-                           2
+  ;; Wrap channel with an asynchronous internal span.
+  (style'/async-bound-style-span ["Getting planet statistics" {:system/planet planet}]
 
-                           (let [chs (map #(requests/<get-statistic-value components planet %)
-                                          [:diameter :gravity])]
-                             (async/merge chs))))
+    (-> (style/all (map (fn [statistic]
+                          (requests/<get-statistic-value components planet statistic))
+                        [:diameter :gravity]))
+        (style/then #(apply merge %)))))
 
 
 
@@ -31,8 +26,7 @@
   "Returns a report string of the given planet and statistic values."
   [{:keys [instruments]} planet statistic-values]
 
-  ;; Wrap synchronous function body with an internal span. Context containing
-  ;; internal span is assigned to `context*`.
+  ;; Wrap synchronous function body with an internal span.
   (span/with-bound-span! ["Formatting report"
                           {:system/planet planet
                            :service.solar-system.report/statistic-values statistic-values}]
@@ -57,11 +51,6 @@
   "Builds a report of planet statistics and results a channel of the report
    string."
   [components planet]
-  (let [<all-statistics   (<planet-statistics components planet)
-        <statistic-values (async'/<into?? {} <all-statistics)]
-    (async'/go-try
-      (try
-        (let [statistics-values (async'/<? <statistic-values)]
-          (format-report components planet statistics-values))
-        (finally
-          (async'/close-and-drain!! <all-statistics))))))
+  (-> (<planet-statistics components planet)
+      (style/then (fn [statistics]
+                    (format-report components planet statistics)))))

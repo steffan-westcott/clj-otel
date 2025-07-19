@@ -1,7 +1,7 @@
 (ns example.solar-system-service.bound-async.requests
   "Requests to other microservices, bound async implementation."
   (:require [clojure.core.async :as async]
-            [example.common.core-async.utils :as async']
+            [com.xadecimal.async-style :as style]
             [example.solar-system-service.env :refer [config]]
             [hato.client :as client]
             [steffan-westcott.clj-otel.context :as context]))
@@ -50,8 +50,8 @@
                                     :url    (str endpoint path)
                                     :accept :json
                                     :as     :json})]
-    (async'/go-try
-      (let [response (async'/<? <response)
+    (style/async
+      (let [response (style/await <response)
             {:keys [status body]} response]
         (if (= 200 status)
           {statistic (:statistic body)}
