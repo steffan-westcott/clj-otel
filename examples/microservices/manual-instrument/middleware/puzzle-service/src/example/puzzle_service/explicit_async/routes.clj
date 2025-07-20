@@ -1,6 +1,7 @@
 (ns example.puzzle-service.explicit-async.routes
   "HTTP routes, explicit async implementation."
   (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
             [example.common.async-style.utils :as style']
             [example.puzzle-service.explicit-async.app :as app]
             [ring.util.response :as response]
@@ -19,12 +20,10 @@
   [components
    {::span/keys [wrap-span-context]
     {{:keys [types]} :query} :parameters} respond raise]
-  (let [word-types (map keyword (str/split types #","))
-        <puzzle    (app/<generate-puzzle components wrap-span-context word-types)]
-    (style'/ch->respond-raise <puzzle
-                              (fn [puzzle]
-                                (respond (response/response {:puzzle puzzle})))
-                              raise)))
+  (let [word-types (map keyword (str/split types #","))]
+    (-> (app/<generate-puzzle components wrap-span-context word-types)
+        (style/then #(response/response {:puzzle %}))
+        (style'/ch->respond-raise respond raise))))
 
 
 (defn routes

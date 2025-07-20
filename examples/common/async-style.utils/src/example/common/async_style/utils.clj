@@ -1,5 +1,6 @@
 (ns example.common.async-style.utils
-  (:require [com.xadecimal.async-style :as style]
+  (:require [clojure.core.async :as async]
+            [com.xadecimal.async-style :as style]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
@@ -55,6 +56,18 @@
       (if (style/ok? x)
         (respond x)
         (raise x)))))
+
+
+
+(defn <respond-raise
+  "Calls `f` with function arguments `respond` and `raise`, then returns
+   channel with value passed by either function."
+  [f]
+  (let [<ch     (async/promise-chan)
+        respond #(async/put! <ch %)
+        raise   respond]
+    (f respond raise)
+    <ch))
 
 
 

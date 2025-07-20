@@ -1,62 +1,55 @@
 (ns example.average-service.bound-async.requests
   "Requests to other microservices, bound async implementation."
-  (:require [clojure.core.async :as async]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
             [example.average-service.env :refer [config]]
+            [example.common.async-style.utils :as style']
             [hato.client :as client]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
 
 
-(defn- client-request
-  "Make an asynchronous HTTP request using `hato`."
-  [client request respond raise]
-
-  (let [request (conj request
-                      {:async?           true
-                       :throw-exceptions false
-                       :http-client      client})]
-
-    ;; Manually create a client span. The client span is ended when either a
-    ;; response or exception is returned.
-    (span/async-bound-span (trace-http/client-span-opts request)
-                           (fn [respond* raise*]
-
-                             (let [;; Propagate context containing client span to remote
-                                   ;; server by injecting headers. This enables span
-                                   ;; correlation to make distributed traces.
-                                   request' (update request :headers merge (context/->headers))]
-
-                               ;; Use `bound-fn` to ensure respond/raise fns use bound context
-                               (client/request request'
-                                               (bound-fn [response]
-
-                                                 ;; Add HTTP response data to the client span.
-                                                 (trace-http/add-client-span-response-data!
-                                                  response)
-
-                                                 (respond* response))
-                                               (bound-fn [e]
-
-                                                 ;; Add error information to client span.
-                                                 (trace-http/add-client-span-response-data!
-                                                  {:io.opentelemetry.api.trace.span.attrs/error-type
-                                                   e})
-                                                 (raise* e)))))
-                           respond
-                           raise)))
-
-
-
 (defn- <client-request
-  "Make an asynchronous HTTP request and return a channel of the response."
+  "Make an asynchronous HTTP request using `hato` and return a channel of the
+   response."
   [client request]
-  (let [<ch    (async/chan)
-        put-ch #(async/put! <ch %)]
-    (client-request client request put-ch put-ch)
-    <ch))
+  (style'/<respond-raise
+   (fn [respond raise]
+     (let [request (conj request
+                         {:async?           true
+                          :throw-exceptions false
+                          :http-client      client})]
+
+       ;; Manually create a client span. The client span is ended when either a
+       ;; response or exception is returned.
+       (span/async-bound-span (trace-http/client-span-opts request)
+                              (fn [respond* raise*]
+
+                                (let [;; Propagate context containing client span to remote
+                                      ;; server by injecting headers. This enables span
+                                      ;; correlation to make distributed traces.
+                                      request' (update request :headers merge (context/->headers))]
+
+                                  ;; Use `bound-fn` to ensure respond/raise fns use bound
+                                  ;; context
+                                  (client/request
+                                   request'
+                                   (bound-fn [response]
+
+                                     ;; Add HTTP response data to the client span.
+                                     (trace-http/add-client-span-response-data!
+                                      response)
+
+                                     (respond* response))
+                                   (bound-fn [e]
+
+                                     ;; Add error information to client span.
+                                     (trace-http/add-client-span-response-data!
+                                      {:io.opentelemetry.api.trace.span.attrs/error-type e})
+                                     (raise* e)))))
+                              respond
+                              raise)))))
 
 
 

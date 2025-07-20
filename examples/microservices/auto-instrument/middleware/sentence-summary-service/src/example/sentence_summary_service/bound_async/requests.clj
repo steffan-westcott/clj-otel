@@ -1,41 +1,35 @@
 (ns example.sentence-summary-service.bound-async.requests
   "Requests to other microservices, bound async implementation."
-  (:require [clojure.core.async :as async]
-            [com.xadecimal.async-style :as style]
+  (:require [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.sentence-summary-service.env :refer [config]]
             [hato.client :as client]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.context :as context]))
 
-(defn- client-request
-  "Make an asynchronous HTTP request using `hato`."
-  [client request respond raise]
-
-  (let [request (conj request
-                      {:async?           true
-                       :throw-exceptions false
-                       :http-client      client})]
-
-    ;; Set the current context to the bound context just while the client request
-    ;; is created. This ensures the client span created by the agent will have the
-    ;; correct parent context.
-    (context/with-bound-context!
-
-      ;; hato request is automatically wrapped in a client span created by the
-      ;; OpenTelemetry instrumentation agent. The agent also propagates the
-      ;; context containing the client span to the remote HTTP server by
-      ;; injecting headers into the request.
-      (client/request request respond raise))))
-
-
 
 (defn- <client-request
-  "Make an asynchronous HTTP request and return a channel of the response."
+  "Make an asynchronous HTTP request using `hato` and return a channel of the
+   response."
   [client request]
-  (let [<ch    (async/chan)
-        put-ch #(async/put! <ch %)]
-    (client-request client request put-ch put-ch)
-    <ch))
+  (style'/<respond-raise
+   (fn [respond raise]
+     (let [request (conj request
+                         {:async?           true
+                          :throw-exceptions false
+                          :http-client      client})]
+
+       ;; Set the current context to the bound context just while the
+       ;; client request is created. This ensures the client span created
+       ;; by the agent will have the correct parent context.
+       (context/with-bound-context!
+
+         ;; hato request is automatically wrapped in a client span
+         ;; created by the OpenTelemetry instrumentation agent. The
+         ;; agent also propagates the context containing the client span
+         ;; to the remote HTTP server by injecting headers into the
+         ;; request.
+         (client/request request respond raise))))))
 
 
 

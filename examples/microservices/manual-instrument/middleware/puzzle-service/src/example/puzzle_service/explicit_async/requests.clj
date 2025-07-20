@@ -1,7 +1,7 @@
 (ns example.puzzle-service.explicit-async.requests
   "Requests to other microservices, explicit async implementation."
-  (:require [clojure.core.async :as async]
-            [com.xadecimal.async-style :as style]
+  (:require [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
             [reitit.ring :as ring]
@@ -10,53 +10,46 @@
             [steffan-westcott.clj-otel.context :as context]))
 
 
-(defn- client-request
-  "Make an asynchronous HTTP request using `hato`."
-  [client context request respond raise]
-
-  (let [request (conj request
-                      {:async?           true
-                       :throw-exceptions false
-                       :http-client      client})]
-
-    ;; Manually create a client span with `context` as the parent context.
-    ;; Context containing client span is assigned to `context*`. Client span is
-    ;; ended when either a response or exception is returned.
-    (span/async-span
-     (trace-http/client-span-opts request {:parent context})
-     (fn [context* respond* raise*]
-
-       (let [;; Propagate context containing client span to remote
-             ;; server by injecting headers. This enables span
-             ;; correlation to make distributed traces.
-             request' (update request :headers merge (context/->headers {:context context*}))]
-
-         (client/request request'
-                         (fn [response]
-
-                           ;; Add HTTP response data to the client span.
-                           (trace-http/add-client-span-response-data! response {:context context*})
-
-                           (respond* response))
-                         (fn [e]
-
-                           ;; Add error information to the client span.
-                           (trace-http/add-client-span-response-data!
-                            {:io.opentelemetry.api.trace.span.attrs/error-type e}
-                            {:context context*})
-                           (raise* e)))))
-     respond
-     raise)))
-
-
-
 (defn- <client-request
-  "Make an asynchronous HTTP request and return a channel of the response."
+  "Make an asynchronous HTTP request using `hato` and return a channel of the
+   response."
   [client context request]
-  (let [<ch    (async/chan)
-        put-ch #(async/put! <ch %)]
-    (client-request client context request put-ch put-ch)
-    <ch))
+  (style'/<respond-raise
+   (fn [respond raise]
+     (let [request (conj request
+                         {:async?           true
+                          :throw-exceptions false
+                          :http-client      client})]
+
+       ;; Manually create a client span with `context` as the parent context.
+       ;; Context containing client span is assigned to `context*`. Client span is
+       ;; ended when either a response or exception is returned.
+       (span/async-span
+        (trace-http/client-span-opts request {:parent context})
+        (fn [context* respond* raise*]
+
+          (let [;; Propagate context containing client span to remote
+                ;; server by injecting headers. This enables span
+                ;; correlation to make distributed traces.
+                request' (update request :headers merge (context/->headers {:context context*}))]
+
+            (client/request request'
+                            (fn [response]
+
+                              ;; Add HTTP response data to the client span.
+                              (trace-http/add-client-span-response-data! response
+                                                                         {:context context*})
+
+                              (respond* response))
+                            (fn [e]
+
+                              ;; Add error information to the client span.
+                              (trace-http/add-client-span-response-data!
+                               {:io.opentelemetry.api.trace.span.attrs/error-type e}
+                               {:context context*})
+                              (raise* e)))))
+        respond
+        raise)))))
 
 
 

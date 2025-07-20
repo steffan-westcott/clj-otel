@@ -1,6 +1,7 @@
 (ns example.sentence-summary-service.explicit-async.routes
   "HTTP routes, explicit async implementation."
-  (:require [example.common.async-style.utils :as style']
+  (:require [com.xadecimal.async-style :as style]
+            [example.common.async-style.utils :as style']
             [example.sentence-summary-service.explicit-async.app :as app]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -18,11 +19,9 @@
   [components
    {::span/keys [wrap-span-context]
     {{:keys [sentence]} :query} :parameters} respond raise]
-  (let [<summary (app/<build-summary components wrap-span-context sentence)]
-    (style'/ch->respond-raise <summary
-                              (fn [summary]
-                                (respond (response/response summary)))
-                              raise)))
+  (-> (app/<build-summary components wrap-span-context sentence)
+      (style/then #(response/response %))
+      (style'/ch->respond-raise respond raise)))
 
 
 
