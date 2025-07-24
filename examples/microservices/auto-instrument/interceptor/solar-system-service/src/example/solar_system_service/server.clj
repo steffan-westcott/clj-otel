@@ -27,7 +27,8 @@
        (concat (;; As this application is run with the OpenTelemetry instrumentation agent,
                 ;; a server span will be provided by the agent and there is no need to
                 ;; create another one.
-                trace-http/server-span-interceptors {:create-span? false})
+                trace-http/server-span-interceptors {:set-bound-context? (= "bound-async"
+                                                                            (:server-impl config))})
 
                ;; Negotiate content formats
                [(interceptor-utils/content-negotiation-interceptor)]

@@ -17,8 +17,7 @@
                 ;; agent, create a server span for each request. Because all request
                 ;; processing for this service is synchronous, the current context is set
                 ;; for each request.
-                trace-http/server-span-interceptors {:create-span?         true
-                                                     :set-current-context? true})
+                trace-http/server-span-interceptors {:create-span? true})
 
                ;; Add metric that records the number of active HTTP requests
                [(metrics-http-server/active-requests-interceptor)]

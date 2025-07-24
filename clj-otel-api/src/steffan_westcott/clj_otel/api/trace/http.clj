@@ -483,10 +483,12 @@
    and semantic attribute `err.type` is set to the string (or class name of
    `Throwable`) value of `:io.opentelemetry.api.trace.span.attrs/error-type`.
 
-   No matter how the server span is created, the context containing the server
-   span is set as the bound context and the value of
-   `:io.opentelemetry/server-span-context` in both the interceptor context and
-   request maps.
+   When `:set-bound-context?` is true, the bound context is set to the context
+   containing the server span.
+
+   No matter how the server span is created,
+   `:io.opentelemetry/server-span-context` in both the interceptor context
+   and request maps are set to the context containing the server span.
 
    May take an option map as follows:
 
@@ -494,10 +496,11 @@
    |---------------------------|-------------|
    |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
    |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
+   |`:set-bound-context?`      | When true, sets the bound context to the context containing the server span (default: false).
    |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
   ([]
    (server-span-interceptors {}))
-  ([{:keys [create-span? set-current-context?]
+  ([{:keys [create-span? set-current-context? set-bound-context?]
      :or   {set-current-context? true}
      :as   create-span-opts}]
    (cond-> []
@@ -508,7 +511,7 @@
      :always            (conj (execution-id-interceptor))
      :always            (conj (copy-context-interceptor))
      (and create-span? set-current-context?) (conj (current-context-interceptor))
-     :always            (conj (bound-context-interceptor)))))
+     set-bound-context? (conj (bound-context-interceptor)))))
 
 (defn route-interceptor
   "Returns a Pedestal interceptor that adds a matched route to the server span

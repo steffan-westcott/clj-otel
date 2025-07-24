@@ -26,6 +26,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.9` (in progress)
 
+- [FIX] [BREAK] Added option `:set-bound-context?` to `server-span-interceptors`, with default `false`.
+Previously, bound context was always set, which prevented correct use of current context in subsequent processing.
 - [FIX] In HTTP server spans, ensure values of multiple request headers with same name are captured as an array.
 Also, do not normalize `-` to `_` in header names.
 - [FIX] More robust processing of potentially incomplete Ring request maps to extract server span attributes.
