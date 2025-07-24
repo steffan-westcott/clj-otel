@@ -19,16 +19,17 @@
   "Interceptor that returns a channel of ctx with response containing
    calculated averages of the odd and even numbers."
   {:name  ::get-average
-   :enter (fn [{:keys [io.opentelemetry/server-span-context request]
-                :as   ctx}]
-            (let [num-str  (get-in request [:query-params :nums])
-                  num-strs (->> (str/split num-str #",")
-                                (map str/trim)
-                                (filter seq))
-                  nums     (map #(Integer/parseInt %) num-strs)]
-              (-> (app/<averages (:components request) server-span-context nums)
-                  (style/then #(response/response {:average %}))
-                  (style'/<assoc-response ctx))))})
+   :enter (fn [{{:keys [components query-params]} :request
+                :as ctx}]
+            (-> (style'/route-span-binding [context ctx]
+                  (let [num-str  (get query-params :nums)
+                        num-strs (->> (str/split num-str #",")
+                                      (map str/trim)
+                                      (filter seq))
+                        nums     (map #(Integer/parseInt %) num-strs)]
+                    (-> (app/<averages components context nums)
+                        (style/then #(response/response {:average %})))))
+                (style'/<assoc-response ctx)))})
 
 
 

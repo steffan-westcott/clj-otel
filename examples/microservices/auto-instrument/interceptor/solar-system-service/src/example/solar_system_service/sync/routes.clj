@@ -2,7 +2,8 @@
   "HTTP routes, synchronous implementation."
   (:require [example.solar-system-service.sync.app :as app]
             [io.pedestal.http.route :as route]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn get-ping
@@ -15,9 +16,10 @@
 (defn get-statistics
   "Returns a response containing a formatted report of the planet's statistic values."
   [{:keys [components query-params]}]
-  (let [planet (keyword (get query-params :planet))
-        report (app/planet-report components planet)]
-    (response/response {:statistics report})))
+  (span/with-span! "Handling route"
+    (let [planet (keyword (get query-params :planet))
+          report (app/planet-report components planet)]
+      (response/response {:statistics report}))))
 
 
 

@@ -3,7 +3,8 @@
   (:require [clojure.string :as str]
             [example.sum-service.app :as app]
             [io.pedestal.http.route :as route]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn get-ping
@@ -16,16 +17,17 @@
 (defn get-sum
   "Returns a response containing the sum of the `nums` query parameters."
   [{:keys [components query-params]}]
-  (let [num-str (:nums query-params)
-        nums    (map #(Integer/parseInt %) (str/split num-str #","))]
+  (span/with-span! "Handling route"
+    (let [num-str (:nums query-params)
+          nums    (map #(Integer/parseInt %) (str/split num-str #","))]
 
-    ;; Simulate a client error when first number argument is zero. Exception data is added as
-    ;; attributes to the exception event by default.
-    (if (= 0 (first nums))
-      (throw (ex-info "Zero argument"
-                      {:http.response/status 400
-                       :system/error         :service.sum.errors/zero-argument}))
-      (response/response {:sum (app/sum components nums)}))))
+      ;; Simulate a client error when first number argument is zero. Exception data is added as
+      ;; attributes to the exception event by default.
+      (if (= 0 (first nums))
+        (throw (ex-info "Zero argument"
+                        {:http.response/status 400
+                         :system/error         :service.sum.errors/zero-argument}))
+        (response/response {:sum (app/sum components nums)})))))
 
 
 

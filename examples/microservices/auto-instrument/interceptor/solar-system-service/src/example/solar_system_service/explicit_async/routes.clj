@@ -18,12 +18,13 @@
   "Interceptor that returns a channel of ctx with response containing a
    formatted report of the planet's statistic values."
   {:name  ::get-statistics
-   :enter (fn [{:keys [io.opentelemetry/server-span-context request]
-                :as   ctx}]
-            (let [planet (keyword (get-in request [:query-params :planet]))]
-              (-> (app/<planet-report (:components request) server-span-context planet)
-                  (style/then #(response/response {:statistics %}))
-                  (style'/<assoc-response ctx))))})
+   :enter (fn [{{:keys [components query-params]} :request
+                :as ctx}]
+            (-> (style'/route-span-binding [context ctx]
+                  (let [planet (keyword (get query-params :planet))]
+                    (-> (app/<planet-report components context planet)
+                        (style/then #(response/response {:statistics %})))))
+                (style'/<assoc-response ctx)))})
 
 
 

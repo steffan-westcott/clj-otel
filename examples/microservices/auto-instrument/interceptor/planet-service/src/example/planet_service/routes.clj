@@ -3,7 +3,8 @@
   (:require [clojure.string :as str]
             [example.planet-service.app :as app]
             [io.pedestal.http.route :as route]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn- get-ping
@@ -16,17 +17,18 @@
 (defn- get-planet-statistic
   "Returns a response containing the requested planet statistic."
   [{:keys [components path-params]}]
-  (let [{:keys [planet statistic]} path-params
-        planet    (keyword planet)
-        statistic (keyword statistic)]
+  (span/with-span! "Handling route"
+    (let [{:keys [planet statistic]} path-params
+          planet    (keyword planet)
+          statistic (keyword statistic)]
 
-    ;; Simulate a client error when requesting data on Pluto. Exception data is added as
-    ;; attributes to the exception event by default.
-    (if (= planet :pluto)
-      (throw (ex-info "Pluto is not a full planet"
-                      {:http.response/status 400
-                       :service/error        :service.planet.errors/pluto-not-full-planet}))
-      (response/response {:statistic (app/planet-statistic components planet statistic)}))))
+      ;; Simulate a client error when requesting data on Pluto. Exception data is added as
+      ;; attributes to the exception event by default.
+      (if (= planet :pluto)
+        (throw (ex-info "Pluto is not a full planet"
+                        {:http.response/status 400
+                         :service/error        :service.planet.errors/pluto-not-full-planet}))
+        (response/response {:statistic (app/planet-statistic components planet statistic)})))))
 
 
 

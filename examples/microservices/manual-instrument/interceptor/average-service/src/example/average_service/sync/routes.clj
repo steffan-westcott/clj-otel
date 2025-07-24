@@ -3,7 +3,8 @@
   (:require [clojure.string :as str]
             [example.average-service.sync.app :as app]
             [io.pedestal.http.route :as route]
-            [ring.util.response :as response]))
+            [ring.util.response :as response]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn get-ping
@@ -16,14 +17,15 @@
 (defn get-average
   "Returns an HTTP response containing calculated averages of the odd and even numbers."
   [request]
-  (let [{:keys [components query-params]} request
-        num-str  (get query-params :nums)
-        num-strs (->> (str/split num-str #",")
-                      (map str/trim)
-                      (filter seq))
-        nums     (map #(Integer/parseInt %) num-strs)
-        avs      (app/averages components nums)]
-    (response/response {:average avs})))
+  (span/with-span! "Handling route"
+    (let [{:keys [components query-params]} request
+          num-str  (get query-params :nums)
+          num-strs (->> (str/split num-str #",")
+                        (map str/trim)
+                        (filter seq))
+          nums     (map #(Integer/parseInt %) num-strs)
+          avs      (app/averages components nums)]
+      (response/response {:average avs}))))
 
 
 

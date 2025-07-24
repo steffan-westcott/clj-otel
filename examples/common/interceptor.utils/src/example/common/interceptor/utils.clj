@@ -20,10 +20,9 @@
   []
   {:name  ::exception-response
    :error (fn [ctx e]
-            (let [exception (get (ex-data e) :exception e)
-                  status    (:http.response/status (ex-data exception) 500)
-                  resp      (-> (response/response {:message (ex-message exception)})
-                                (response/status status))]
+            (let [ex   (get (ex-data e) :exception e)
+                  resp (-> (response/response {:message (ex-message ex)})
+                           (response/status (:http.response/status (ex-data ex) 500)))]
               (assoc ctx :response resp)))})
 
 

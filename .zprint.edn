@@ -42,6 +42,8 @@
   "blocking" :flow-body
   "compute" :flow-body
   "clet" :binding
+  "route-bound-span" :flow-body
+  "route-span-binding" :binding
   "style-span-binding" :binding
   "style-span-binding'" :binding
 

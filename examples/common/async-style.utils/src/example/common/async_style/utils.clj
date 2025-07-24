@@ -76,9 +76,36 @@
    value if exception is an `IExceptionInfo` instance, 500 Server Error
    otherwise."
   [e]
-  (let [resp   (response/response (ex-message e))
-        status (:http.response/status (ex-data e) 500)]
-    (response/status resp status)))
+  (-> (response/response {:message (ex-message e)})
+      (response/status (:http.response/status (ex-data e) 500))))
+
+
+
+(defmacro route-span-binding
+  "Asynchronously starts a new span around processing for a route with Pedestal
+   context `ctx`, binding `context` to the new context containing the span.
+   The span is created as a child of the server span. `body` is expected to
+   give a channel which will contain the response."
+  [[context ctx] & body]
+  `(let [span-opts# (span/span-opts* {:name   "Handling route"
+                                      :parent (:io.opentelemetry/server-span-context ~ctx)}
+                                     ~(:line (meta &form))
+                                     ~*file*
+                                     (util/fn-name))]
+     (style-span-binding' [~context span-opts#]
+       ~@body)))
+
+
+
+(defmacro route-bound-span
+  "Asynchronously starts a new span around processing for a route and sets the
+   bound context to the new context containing the span. `body` is expected to
+   give a channel which will contain the response."
+  [& body]
+  `(let [span-opts# (span/span-opts* "Handling route" ~(:line (meta &form)) ~*file* (util/fn-name))]
+     (style-span-binding' [context# span-opts#]
+       (context/bind-context! context#
+         ~@body))))
 
 
 
