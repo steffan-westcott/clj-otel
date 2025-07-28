@@ -9,15 +9,15 @@
            aero/aero {:mvn/version "1.1.6"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.19.1"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.19.1"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.19.2"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.19.2"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
            ;; Ring-Jetty web server integration
-           info.sunng/ring-jetty9-adapter {:mvn/version "0.37.4"}
-           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.1.7"}
+           info.sunng/ring-jetty9-adapter {:mvn/version "0.37.5"}
+           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.1.9"}
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}
@@ -36,10 +36,10 @@
                                 io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.17.1-alpha"}
 
                                 ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation
-                                org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.0"}
-                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.25.0"}
-                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.25.0"}
-                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.25.0"}}
+                                org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.1"}
+                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.25.1"}
+                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.25.1"}
+                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.25.1"}}
 
                    :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                                 "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
