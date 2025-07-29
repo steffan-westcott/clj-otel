@@ -122,7 +122,7 @@ services:
 
   # Loki
   loki:
-    image: grafana/loki:3.5.0
+    image: grafana/loki:3.5.3
     volumes:
       - ./loki.yaml:/etc/loki.yaml
     command: -config.file=/etc/loki.yaml
@@ -130,7 +130,7 @@ services:
 
   # Tempo
   tempo:
-    image: grafana/tempo:2.7.2
+    image: grafana/tempo:2.8.1
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
     command:
@@ -150,7 +150,7 @@ services:
 
   # Grafana
   grafana:
-    image: grafana/grafana-oss:12.0.0
+    image: grafana/grafana-oss:12.1.0
     volumes:
       - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml:ro
       - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/grafana-dashboards.yaml:ro
