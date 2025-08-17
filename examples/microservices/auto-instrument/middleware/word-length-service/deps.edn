@@ -33,7 +33,7 @@
  :aliases {:otel  {:jvm-opts ["-javaagent:../../../../opentelemetry-javaagent.jar"]}
 
            :log4j {:extra-deps {;; Log4j2 OTLP appender
-                                io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.17.1-alpha"}
+                                io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.19.0-alpha"}
 
                                 ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation
                                 org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.1"}
