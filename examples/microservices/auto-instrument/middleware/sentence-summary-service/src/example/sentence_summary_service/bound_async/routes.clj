@@ -1,7 +1,7 @@
 (ns example.sentence-summary-service.bound-async.routes
   "HTTP routes, bound async implementation."
   (:require [com.xadecimal.async-style :as style]
-            [example.common.async-style.utils :as style']
+            [example.common.async.async-style :as style']
             [example.sentence-summary-service.bound-async.app :as app]
             [ring.util.response :as response]))
 

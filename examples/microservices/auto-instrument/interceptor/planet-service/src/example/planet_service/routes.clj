@@ -17,7 +17,10 @@
 (defn- get-planet-statistic
   "Returns a response containing the requested planet statistic."
   [{:keys [components path-params]}]
+
+  ;; Ensure uncaught exceptions are recorded before they are transformed
   (span/with-span! "Handling route"
+
     (let [{:keys [planet statistic]} path-params
           planet    (keyword planet)
           statistic (keyword statistic)]

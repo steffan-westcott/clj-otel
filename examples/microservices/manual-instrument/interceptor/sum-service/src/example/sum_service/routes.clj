@@ -17,7 +17,10 @@
 (defn get-sum
   "Returns a response containing the sum of the `nums` query parameters."
   [{:keys [components query-params]}]
+
+  ;; Ensure uncaught exceptions are recorded before they are transformed
   (span/with-span! "Handling route"
+
     (let [num-str (:nums query-params)
           nums    (map #(Integer/parseInt %) (str/split num-str #","))]
 

@@ -17,8 +17,8 @@
            io.pedestal/pedestal.route {:mvn/version "0.7.2"}
            io.pedestal/pedestal.service {:mvn/version "0.7.2"}
 
-           ;; Interceptor utilities
-           org.example/common.interceptor.utils {:local/root "../../../../common/interceptor.utils"}
+           ;; Common async utilities
+           org.example/common.async {:local/root "../../../../common/async"}
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../../../../common/system"}}

@@ -2,7 +2,7 @@
   "HTTP routes, bound async implementation."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
-            [example.common.async-style.utils :as style']
+            [example.common.async.async-style :as style']
             [example.puzzle-service.bound-async.app :as app]
             [ring.util.response :as response]))
 

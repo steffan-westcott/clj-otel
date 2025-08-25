@@ -1,6 +1,7 @@
-(ns example.common.interceptor.utils
+(ns example.common.async.interceptor
   "Common interceptors for examples."
   (:require [clojure.data.json :as json]
+            [example.common.async.response :as common-response]
             [io.pedestal.http :as http]
             [io.pedestal.http.content-negotiation :as content-negotiation]
             [ring.util.response :as response]))
@@ -21,8 +22,7 @@
   {:name  ::exception-response
    :error (fn [ctx e]
             (let [ex   (get (ex-data e) :exception e)
-                  resp (-> (response/response {:message (ex-message ex)})
-                           (response/status (:http.response/status (ex-data ex) 500)))]
+                  resp (common-response/exception-response ex)]
               (assoc ctx :response resp)))})
 
 
@@ -70,3 +70,4 @@
                      :response
                      (-> (response/response {:message "Not found"})
                          (response/status 404)))))})
+

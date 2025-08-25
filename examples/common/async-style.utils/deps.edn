@@ -1,9 +1,0 @@
-;!zprint {:width 140}
-
-{:paths ["src"]
-
- :deps  {org.clojure/clojure       {:mvn/version "1.12.1"}
-         org.clojure/core.async    {:mvn/version "1.8.741"}
-         com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}
-         com.xadecimal/async-style {:mvn/version "0.1.0"}
-         ring/ring-core            {:mvn/version "1.14.2"}}}

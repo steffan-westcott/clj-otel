@@ -1,6 +1,8 @@
 (ns example.solar-system-service.server
   "HTTP server components."
-  (:require [example.common.interceptor.utils :as interceptor-utils]
+  (:require [example.common.async.interceptor :as common-interceptor]
+            [example.solar-system-service.async-cf-bound.routes :as async-cf-bound-routes]
+            [example.solar-system-service.async-cf-explicit.routes :as async-cf-explicit-routes]
             [example.solar-system-service.bound-async.routes :as bound-async-routes]
             [example.solar-system-service.env :refer [config]]
             [example.solar-system-service.explicit-async.routes :as explicit-async-routes]
@@ -10,13 +12,21 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
 
 
+(defn- using-bound-context?
+  []
+  (boolean (#{"bound-async" "async-cf-bound"} (:server-impl config))))
+
+
+
 (defn- routes
   "Route data for all routes, according to configured server implementation."
   []
   (case (:server-impl config)
-    "sync"           (sync-routes/routes)
-    "bound-async"    (bound-async-routes/routes)
-    "explicit-async" (explicit-async-routes/routes)))
+    "sync"              (sync-routes/routes)
+    "bound-async"       (bound-async-routes/routes)
+    "explicit-async"    (explicit-async-routes/routes)
+    "async-cf-bound"    (async-cf-bound-routes/routes)
+    "async-cf-explicit" (async-cf-explicit-routes/routes)))
 
 
 
@@ -27,14 +37,13 @@
        (concat (;; As this application is run with the OpenTelemetry instrumentation agent,
                 ;; a server span will be provided by the agent and there is no need to
                 ;; create another one.
-                trace-http/server-span-interceptors {:set-bound-context? (= "bound-async"
-                                                                            (:server-impl config))})
+                trace-http/server-span-interceptors {:set-bound-context? (using-bound-context?)})
 
                ;; Negotiate content formats
-               [(interceptor-utils/content-negotiation-interceptor)]
+               [(common-interceptor/content-negotiation-interceptor)]
 
                ;; Coerce HTTP response format
-               [(interceptor-utils/coerce-response-interceptor)]
+               [(common-interceptor/coerce-response-interceptor)]
 
                ;; Default Pedestal interceptor stack
                default-interceptors
@@ -43,10 +52,10 @@
                [(trace-http/route-interceptor)]
 
                ;; Convert exception to HTTP response
-               [(interceptor-utils/exception-response-interceptor)]
+               [(common-interceptor/exception-response-interceptor)]
 
                ;; Add system components to context
-               [(interceptor-utils/components-interceptor components)])))
+               [(common-interceptor/components-interceptor components)])))
 
 
 
@@ -57,7 +66,7 @@
        ::http/type    :jetty
        ::http/host    "0.0.0.0"
        ::http/join?   false
-       ::http/not-found-interceptor (interceptor-utils/not-found-interceptor)
+       ::http/not-found-interceptor (common-interceptor/not-found-interceptor)
        ::http/tracing nil}
       (merge (:service-map config))
       (http/default-interceptors)

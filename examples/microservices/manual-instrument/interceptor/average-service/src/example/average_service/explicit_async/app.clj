@@ -2,7 +2,7 @@
   "Application logic, explicit async implementation."
   (:require [com.xadecimal.async-style :as style]
             [example.average-service.explicit-async.requests :as requests]
-            [example.common.async-style.utils :as style']
+            [example.common.async.async-style :as style']
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 

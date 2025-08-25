@@ -1,7 +1,7 @@
 (ns example.sentence-summary-service.explicit-async.routes
   "HTTP routes, explicit async implementation."
   (:require [com.xadecimal.async-style :as style]
-            [example.common.async-style.utils :as style']
+            [example.common.async.async-style :as style']
             [example.sentence-summary-service.explicit-async.app :as app]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))

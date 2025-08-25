@@ -1,0 +1,66 @@
+(ns example.sentence-summary-service.async-cf-explicit.app
+  "Application logic, async CompletableFuture implementation using explicit
+   context."
+  (:require [clojure.string :as str]
+            [example.sentence-summary-service.async-cf-explicit.requests :as requests]
+            [qbits.auspex :as aus]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
+
+
+(defn- <word-lengths
+  "Given a collection of words, returns a `CompletableFuture` of a list
+   containing each word length."
+  [components context words]
+
+  ;; Wrap CompletableFuture with an asynchronous internal span. Context
+  ;; containing internal span is assigned to `context*`.
+  (span/cf-span-binding [context* {:parent     context
+                                   :name       "Getting word lengths"
+                                   :attributes {:system/words words}}]
+
+    (aus/all' (map (fn [word]
+                     (requests/<get-word-length components context* word))
+                   words))))
+
+
+
+(defn- summary
+  "Returns a summary of the given word lengths."
+  [{:keys [instruments]} context lengths]
+
+  ;; Wrap synchronous function body with an internal span. Context containing
+  ;; internal span is assigned to `context*`.
+  (span/with-span-binding [context* {:parent     context
+                                     :name       "Building sentence summary"
+                                     :attributes {:system/word-lengths lengths}}]
+
+    (Thread/sleep 25)
+    (let [result {:words (count lengths)
+                  :shortest-length (apply min lengths)
+                  :longest-length (apply max lengths)}]
+
+      ;; Add more attributes to internal span
+      (span/add-span-data! {:context    context*
+                            :attributes {:service.sentence-summary.summary/word-count (:words
+                                                                                       result)}})
+
+      ;; Update words-count metric
+      (instrument/record! (:sentence-length instruments)
+                          {:context context*
+                           :value   (count lengths)})
+
+      result)))
+
+
+
+(defn <build-summary
+  "Builds a summary of the words in the sentence and returns a
+   `CompletableFuture` of the summary value."
+  [components context sentence]
+  (let [words (str/split sentence #",")]
+    (-> (<word-lengths components context words)
+        (aus/then (fn [lengths]
+                    (summary components context lengths))))))
+
+

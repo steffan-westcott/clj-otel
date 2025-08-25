@@ -1,7 +1,7 @@
 (ns example.solar-system-service.explicit-async.requests
   "Requests to other microservices, explicit async implementation."
   (:require [com.xadecimal.async-style :as style]
-            [example.common.async-style.utils :as style']
+            [example.common.async.async-style :as style']
             [example.solar-system-service.env :refer [config]]
             [hato.client :as client]
             [steffan-westcott.clj-otel.context :as context]))

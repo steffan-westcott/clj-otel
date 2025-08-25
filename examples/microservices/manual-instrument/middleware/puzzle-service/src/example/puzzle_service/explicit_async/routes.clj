@@ -2,7 +2,7 @@
   "HTTP routes, explicit async implementation."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
-            [example.common.async-style.utils :as style']
+            [example.common.async.async-style :as style']
             [example.puzzle-service.explicit-async.app :as app]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))

@@ -16,7 +16,10 @@
 (defn get-statistics
   "Returns a response containing a formatted report of the planet's statistic values."
   [{:keys [components query-params]}]
+
+  ;; Ensure uncaught exceptions are recorded before they are transformed
   (span/with-span! "Handling route"
+
     (let [planet (keyword (get query-params :planet))
           report (app/planet-report components planet)]
       (response/response {:statistics report}))))

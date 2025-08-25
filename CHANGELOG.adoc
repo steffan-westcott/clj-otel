@@ -37,6 +37,7 @@ This ensures measurements captured by the agent for HTTP server span metrics hav
 - [FIX] Ensure provided interceptors correctly set attributes for manually created HTTP server span metrics.
 - [FIX] Do not include app-root in server span names.
 - [ADD] New macros `span/async-bound-cf-span` and `span/cf-span-binding`, supporting wrapping of spans around `CompletableFuture` async code, using both bound and explicit context.
+The microservices examples have been extended to demonstrate use of these macros.
 - [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.
 This is implemented using the StackWalker API for performance reasons, starting in Java 9.
 If StackWalker is not available, the attribute is not populated.

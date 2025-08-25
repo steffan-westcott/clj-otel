@@ -1,7 +1,7 @@
 (ns example.puzzle-service.explicit-async.requests
   "Requests to other microservices, explicit async implementation."
   (:require [com.xadecimal.async-style :as style]
-            [example.common.async-style.utils :as style']
+            [example.common.async.async-style :as style']
             [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
             [reitit.ring :as ring]

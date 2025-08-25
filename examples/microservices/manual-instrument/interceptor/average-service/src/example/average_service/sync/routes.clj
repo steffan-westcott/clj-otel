@@ -17,7 +17,10 @@
 (defn get-average
   "Returns an HTTP response containing calculated averages of the odd and even numbers."
   [request]
+
+  ;; Ensure uncaught exceptions are recorded before they are transformed
   (span/with-span! "Handling route"
+
     (let [{:keys [components query-params]} request
           num-str  (get query-params :nums)
           num-strs (->> (str/split num-str #",")

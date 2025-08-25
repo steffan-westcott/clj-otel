@@ -9,6 +9,9 @@
            ;; Application configuration
            aero/aero {:mvn/version "1.1.6"}
 
+           ;; Clojure wrapper for CompletableFuture
+           cc.qbits/auspex {:mvn/version "1.0.3"}
+
            ;; Cheshire JSON processing
            cheshire/cheshire {:mvn/version "6.0.0"}
 
@@ -51,8 +54,8 @@
            metosin/reitit-middleware {:mvn/version "0.9.1"}
            metosin/reitit-ring {:mvn/version "0.9.1"}
 
-           ;; Utilities for async-style
-           org.example/common.async-style.utils {:local/root "../../../../common/async-style.utils"}
+           ;; Common async utilities
+           org.example/common.async {:local/root "../../../../common/async"}
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../../../../common/system"}

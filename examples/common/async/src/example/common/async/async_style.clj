@@ -1,7 +1,8 @@
-(ns example.common.async-style.utils
+(ns example.common.async.async-style
+  "Common utilities for async-style."
   (:require [clojure.core.async :as async]
             [com.xadecimal.async-style :as style]
-            [ring.util.response :as response]
+            [example.common.async.response :as common-response]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.util :as util]))
@@ -71,16 +72,6 @@
 
 
 
-(defn exception-response
-  "Converts exception to a response, with status set to `:http.response/status`
-   value if exception is an `IExceptionInfo` instance, 500 Server Error
-   otherwise."
-  [e]
-  (-> (response/response {:message (ex-message e)})
-      (response/status (:http.response/status (ex-data e) 500))))
-
-
-
 (defmacro route-span-binding
   "Asynchronously starts a new span around processing for a route with Pedestal
    context `ctx`, binding `context` to the new context containing the span.
@@ -115,5 +106,5 @@
    first transformed to a response."
   [<ch ctx]
   (-> <ch
-      (style/catch exception-response)
+      (style/catch common-response/exception-response)
       (style/then #(assoc ctx :response %))))

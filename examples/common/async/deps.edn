@@ -1,0 +1,22 @@
+;!zprint {:width 140}
+
+{:paths ["src"]
+
+ :deps  {org.clojure/clojure       {:mvn/version "1.12.1"}
+         org.clojure/core.async    {:mvn/version "1.8.741"}
+         org.clojure/data.json     {:mvn/version "2.5.1"}
+
+         ;; Clojure wrapper for CompletableFuture
+         cc.qbits/auspex           {:mvn/version "1.0.3"}
+
+         ;; Clojure wrapper of OpenTelemetry API
+         com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}
+
+         ;; async/await functions built on core.async
+         com.xadecimal/async-style {:mvn/version "0.1.0"}
+
+         ;; Pedestal HTTP service
+         io.pedestal/pedestal.service {:mvn/version "0.7.2"}
+
+         ;; HTTP server abstraction
+         ring/ring-core            {:mvn/version "1.14.2"}}}

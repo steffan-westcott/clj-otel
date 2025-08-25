@@ -1,8 +1,9 @@
 ;!zprint {:width 140}
 
 {:config-paths ["../clj-otel-api/resources/clj-kondo.exports/com.github.steffan-westcott/clj-otel-api"]
- :lint-as      {example.common.async-style.utils/route-span-binding clojure.core/let
-                example.common.async-style.utils/style-span-binding clojure.core/let
+ :lint-as      {example.common.async.async-style/route-span-binding clojure.core/let
+                example.common.async.async-style/style-span-binding clojure.core/let
+                example.common.async.auspex/route-span-binding clojure.core/let
                 com.xadecimal.async-style/clet clojure.core/let}
  :linters      {:consistent-alias  {:aliases {clojure.core.async async
                                               clojure.string str

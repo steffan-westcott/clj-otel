@@ -1,6 +1,6 @@
 (ns example.sum-service.server
   "HTTP server components."
-  (:require [example.common.interceptor.utils :as interceptor-utils]
+  (:require [example.common.async.interceptor :as common-interceptor]
             [example.sum-service.env :refer [config]]
             [example.sum-service.routes :as routes]
             [io.pedestal.http :as http]
@@ -23,10 +23,10 @@
                [(metrics-http-server/active-requests-interceptor)]
 
                ;; Negotiate content formats
-               [(interceptor-utils/content-negotiation-interceptor)]
+               [(common-interceptor/content-negotiation-interceptor)]
 
                ;; Coerce HTTP response format
-               [(interceptor-utils/coerce-response-interceptor)]
+               [(common-interceptor/coerce-response-interceptor)]
 
                ;; Default Pedestal interceptor stack
                default-interceptors
@@ -38,10 +38,10 @@
                (metrics-http-server/metrics-by-route-interceptors)
 
                ;; Convert exception to HTTP response
-               [(interceptor-utils/exception-response-interceptor)]
+               [(common-interceptor/exception-response-interceptor)]
 
                ;; Add system components to context
-               [(interceptor-utils/components-interceptor components)])))
+               [(common-interceptor/components-interceptor components)])))
 
 
 
@@ -53,7 +53,7 @@
        ::http/type    :jetty
        ::http/host    "0.0.0.0"
        ::http/join?   false
-       ::http/not-found-interceptor (interceptor-utils/not-found-interceptor)
+       ::http/not-found-interceptor (common-interceptor/not-found-interceptor)
        ::http/tracing nil}
       (merge (:service-map config))
       (http/default-interceptors)
