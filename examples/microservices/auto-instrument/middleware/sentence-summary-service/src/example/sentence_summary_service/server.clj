@@ -2,9 +2,10 @@
   "HTTP server and handler components."
   (:require [example.sentence-summary-service.async-cf-bound.routes :as async-cf-bound-routes]
             [example.sentence-summary-service.async-cf-explicit.routes :as async-cf-explicit-routes]
-            [example.sentence-summary-service.bound-async.routes :as bound-async-routes]
+            [example.sentence-summary-service.async-chan-bound.routes :as async-chan-bound-routes]
+            [example.sentence-summary-service.async-chan-explicit.routes :as
+             async-chan-explicit-routes]
             [example.sentence-summary-service.env :refer [config]]
-            [example.sentence-summary-service.explicit-async.routes :as explicit-async-routes]
             [example.sentence-summary-service.sync.routes :as sync-routes]
             [muuntaja.core :as m]
             [reitit.coercion.malli :as coercion-malli]
@@ -26,7 +27,7 @@
 
 (defn- using-bound-context?
   []
-  (boolean (#{"bound-async" "async-cf-bound"} (:server-impl config))))
+  (boolean (#{"async-cf-bound" "async-chan-bound"} (:server-impl config))))
 
 
 
@@ -34,11 +35,11 @@
   "Route data for all routes, according to configured server implementation."
   [components]
   (case (:server-impl config)
-    "sync"              (sync-routes/routes components)
-    "bound-async"       (bound-async-routes/routes components)
-    "explicit-async"    (explicit-async-routes/routes components)
-    "async-cf-bound"    (async-cf-bound-routes/routes components)
-    "async-cf-explicit" (async-cf-explicit-routes/routes components)))
+    "async-cf-bound" (async-cf-bound-routes/routes components)
+    "async-cf-explicit" (async-cf-explicit-routes/routes components)
+    "async-chan-bound" (async-chan-bound-routes/routes components)
+    "async-chan-explicit" (async-chan-explicit-routes/routes components)
+    "sync" (sync-routes/routes components)))
 
 
 

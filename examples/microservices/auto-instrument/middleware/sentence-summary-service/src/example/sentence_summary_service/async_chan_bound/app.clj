@@ -1,0 +1,55 @@
+(ns example.sentence-summary-service.async-chan-bound.app
+  "Application logic, core.async implementation using bound context."
+  (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
+            [example.common.async.async-style :as style']
+            [example.sentence-summary-service.async-chan-bound.requests :as requests]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
+
+
+(defn- <word-lengths
+  "Get the word lengths and return a channel of a vector containing each word
+   length."
+  [components words]
+
+  ;; Wrap channel with an asynchronous internal span.
+  (style'/async-bound-style-span ["Getting word lengths" {:system/words words}]
+
+    (style/all (map (fn [word]
+                      (requests/<get-word-length components word))
+                    words))))
+
+
+
+(defn- summary
+  "Returns a summary of the given word lengths."
+  [{:keys [instruments]} lengths]
+
+  ;; Wrap synchronous function body with an internal span.
+  (span/with-bound-span! ["Building sentence summary" {:system/word-lengths lengths}]
+
+    (Thread/sleep 25)
+    (let [result {:words (count lengths)
+                  :shortest-length (apply min lengths)
+                  :longest-length (apply max lengths)}]
+
+      ;; Add more attributes to internal span
+      (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:words
+                                                                                       result)}})
+
+      ;; Update words-count metric
+      (instrument/record! (:sentence-length instruments) {:value (count lengths)})
+
+      result)))
+
+
+
+(defn <build-summary
+  "Builds a summary of the words in the sentence and returns a channel of the
+  summary value."
+  [components sentence]
+  (let [words (str/split sentence #",")]
+    (-> (<word-lengths components words)
+        (style/then (fn [lengths]
+                      (summary components lengths))))))

@@ -119,11 +119,12 @@ Breaking API changes may still be made, but there should be few, if any.
 *** Trace semantics conventions support for https://github.com/open-telemetry/semantic-conventions/blob/main/docs/exceptions/exceptions-spans.md[recording exceptions] is complete.
 *** Trace semantics support for https://github.com/open-telemetry/semantic-conventions/blob/main/docs/http/http-spans.md[HTTP spans] in applications run without the OpenTelemetry instrumentation agent is limited.
 *** Support for wrapping asynchronous Clojure code in spans is complete.
-The API is minimal and low-level, supporting any async library that works with callbacks.
-The examples include applications using https://github.com/xadecimal/async-style[`async-style`] and https://clojure.github.io/core.async/index.html[`core.async.flow`].
+There is a callback-based API and support for `CompletableFuture`.
+The examples include applications using `CompletableFuture` with https://github.com/mpenet/auspex[`auspex`] and `core.async` with https://github.com/xadecimal/async-style[`async-style`].
+There is also a demonstration https://clojure.github.io/core.async/index.html[`core.async.flow`] instrumented application.
 ** Coverage of the Metrics API is complete.
 *** Metrics HTTP semantics support for applications run without the OpenTelemetry instrumentation agent is very limited.
-** There is currently no coverage of the Logs API.
+** There is currently no coverage of the Logs API, but OpenTelemetry log exporters work as expected without `clj-otel` assistance.
 * For the programmatic configuration of the OpenTelemetry SDK:
 ** Coverage of Traces `TracerProvider` is complete.
 ** Coverage of Metrics `MeterProvider` is in progress.

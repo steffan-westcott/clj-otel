@@ -2,9 +2,9 @@
   "HTTP server and handler components."
   (:require [example.puzzle-service.async-cf-bound.routes :as async-cf-bound-routes]
             [example.puzzle-service.async-cf-explicit.routes :as async-cf-explicit-routes]
-            [example.puzzle-service.bound-async.routes :as bound-async-routes]
+            [example.puzzle-service.async-chan-bound.routes :as async-chan-bound-routes]
+            [example.puzzle-service.async-chan-explicit.routes :as async-chan-explicit-routes]
             [example.puzzle-service.env :refer [config]]
-            [example.puzzle-service.explicit-async.routes :as explicit-async-routes]
             [example.puzzle-service.sync.routes :as sync-routes]
             [muuntaja.core :as m]
             [reitit.coercion.malli :as coercion-malli]
@@ -27,7 +27,7 @@
 
 (defn- using-bound-context?
   []
-  (boolean (#{"bound-async" "async-cf-bound"} (:server-impl config))))
+  (boolean (#{"async-cf-bound" "async-chan-bound"} (:server-impl config))))
 
 
 
@@ -35,11 +35,11 @@
   "Route data for all routes, according to configured server implementation."
   [components]
   (case (:server-impl config)
-    "sync"              (sync-routes/routes components)
-    "bound-async"       (bound-async-routes/routes components)
-    "explicit-async"    (explicit-async-routes/routes components)
-    "async-cf-bound"    (async-cf-bound-routes/routes components)
-    "async-cf-explicit" (async-cf-explicit-routes/routes components)))
+    "async-cf-bound" (async-cf-bound-routes/routes components)
+    "async-cf-explicit" (async-cf-explicit-routes/routes components)
+    "async-chan-bound" (async-chan-bound-routes/routes components)
+    "async-chan-explicit" (async-chan-explicit-routes/routes components)
+    "sync" (sync-routes/routes components)))
 
 
 

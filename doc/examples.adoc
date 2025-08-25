@@ -266,19 +266,39 @@ Wait for the command to complete before proceeding to the next step.
 
 * For all microservices examples, run one of the following commands corresponding to your choice of implementation for the head microservice:
 +
+** Synchronous implementation
++
 [source,bash]
 ----
 SERVER=sync ./up.sh
 ----
 +
-[source,bash]
-----
-SERVER=bound-async ./up.sh
-----
+** core.async implementation, using bound context
 +
 [source,bash]
 ----
-SERVER=explicit-async ./up.sh
+SERVER=async-chan-bound ./up.sh
+----
++
+** core.async implementation, using explicit context
++
+[source,bash]
+----
+SERVER=async-chan-explicit ./up.sh
+----
++
+** `CompletableFuture` implementation, using bound context
++
+[source,bash]
+----
+SERVER=async-cf-bound ./up.sh
+----
++
+** `CompletableFuture` implementation, using explicit context
++
+[source,bash]
+----
+SERVER=async-cf-explicit ./up.sh
 ----
 
 * For all other examples, run the following command
