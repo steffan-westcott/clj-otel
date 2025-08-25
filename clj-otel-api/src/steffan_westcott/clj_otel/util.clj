@@ -3,8 +3,8 @@
   (:require [camel-snake-kebab.core :as csk])
   (:import (clojure.lang IPersistentVector Named)
            (java.time Duration Instant)
-           (java.util.concurrent TimeUnit)
-           (java.util.function Function)
+           (java.util.concurrent CompletionException ExecutionException TimeUnit)
+           (java.util.function BiConsumer Function Supplier)
            (java.util.stream Stream)))
 
 (defprotocol AsDuration
@@ -85,3 +85,35 @@
                      .getClassName
                      Compiler/demunge)
              nil))
+
+(defn supplier
+  "Returns a `Supplier` implementation for function `f` that takes no args."
+  [f]
+  (reify
+   Supplier
+     (get [_]
+       (f))))
+
+(defn function
+  "Returns a `Function` implementation for function `f` that takes one arg."
+  [f]
+  (reify
+   Function
+     (apply [_ x]
+       (f x))))
+
+(defn biconsumer
+  "Returns a `BiConsumer` implementation for function `f` that takes 2 args
+   and the result is discarded."
+  [f]
+  (reify
+   BiConsumer
+     (accept [_ x y]
+       (f x y))))
+
+(defn unwrap-cf-exception
+  "Unwraps an exception thrown from a `CompletableFuture`."
+  [e]
+  (if (or (instance? ExecutionException e) (instance? CompletionException e))
+    (or (ex-cause e) e)
+    e))

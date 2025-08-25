@@ -11,7 +11,8 @@
            (io.opentelemetry.api.trace Span SpanBuilder SpanContext SpanKind StatusCode Tracer)
            (io.opentelemetry.context Context)
            (io.opentelemetry.semconv CodeAttributes)
-           (io.opentelemetry.semconv.incubating ThreadIncubatingAttributes)))
+           (io.opentelemetry.semconv.incubating ThreadIncubatingAttributes)
+           (java.util.concurrent CompletableFuture)))
 
 (def ^:private default-library
   (get-in config [:defaults :instrumentation-library]))
@@ -178,8 +179,9 @@
    the new span. Does not mutate the current context. The span must be ended by
    evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
    level helpers [[with-span!]], [[with-bound-span!]], [[with-span-binding]],
-   [[async-span]] and [[async-bound-span]] instead of this macro to reliably
-   manage the context and end the span.
+   [[async-span]], [[async-bound-span]], [[cf-span-binding]] or
+   [[async-bound-cf-span]] instead of this macro to reliably manage the context
+   and end the span.
 
    `span-opts` is a single expression that may be one of several types.
 
@@ -383,10 +385,11 @@
 (defmacro with-span-binding
   "Starts a new span, binds `context` to the new context containing the span
    and evaluates `body`. The span is ended on completion of body evaluation.
-   It is expected `body` provides a synchronous result, use [[async-span]]
-   or [[async-bound-span]] instead for working with asynchronous functions. Does
-   not use nor set the current context. `span-opts` is the same as for
-   [[new-span!]]. See also [[with-span!]] and [[with-bound-span!]]."
+   It is expected `body` provides a synchronous result, use [[async-span]],
+   [[async-bound-span]], [[cf-span-binding]] or [[async-bound-cf-span]] instead
+   for working with asynchronous functions. Does not use nor set the current
+   context. `span-opts` is the same as for [[new-span!]]. See also
+   [[with-span!]] and [[with-bound-span!]]."
   [[context span-opts] & body]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
      (with-span-binding' [~context span-opts#]
@@ -396,10 +399,10 @@
   "Starts a new span, sets the current context to the new context containing
    the span and evaluates `body`. The current context is restored to its
    previous value and the span is ended on completion of body evaluation.
-   It is expected `body` provides a synchronous result, use [[async-span]]
-   or [[async-bound-span]] instead for working with asynchronous functions.
-   `span-opts` is the same as for [[new-span!]]. See also [[with-bound-span!]]
-   and [[with-span-binding]]."
+   It is expected `body` provides a synchronous result, use [[async-span]],
+   [[async-bound-span]], [[cf-span-binding]] or [[async-bound-cf-span]] instead
+   for working with asynchronous functions. `span-opts` is the same as for
+   [[new-span!]]. See also [[with-bound-span!]] and [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
      (with-span-binding' [context# span-opts#]
@@ -410,10 +413,11 @@
   "Starts a new span, sets the bound context to the new context containing the
    span and evaluates `body`. The bound context is restored to its previous
    value and the span is ended on completion of body evaluation. It is expected
-   `body` provides a synchronous result, use [[async-span]] or
-   [[async-bound-span]] instead for working with asynchronous functions. Does
-   not use nor set the current context. `span-opts` is the same as for
-   [[new-span!]]. See also [[with-span!]] and [[with-span-binding]]."
+   `body` provides a synchronous result, use [[async-span]],
+   [[async-bound-span]], [[cf-span-binding]] or [[async-bound-cf-span]] instead
+   for working with asynchronous functions. Does not use nor set the current
+   context. `span-opts` is the same as for [[new-span!]]. See also
+   [[with-span!]] and [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
      (with-span-binding' [context# span-opts#]
@@ -498,6 +502,50 @@
   [span-opts f respond raise]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
      (async-bound-span' span-opts# ~f ~respond ~raise)))
+
+(defmacro cf-span-binding
+  "Returns a `CompletableFuture` that starts a new span, binds `context` to the
+   new context containing the span and evaluates `body` which is expected give
+   a `CompletableFuture` that may use any specified `Executor`. The span is
+   ended on completion. Asynchronous functions within `body` should be defined
+   using `bound-fn` or similar to convey bindings."
+  ^CompletableFuture [[context span-opts] & body]
+  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+     (.thenCompose (CompletableFuture/supplyAsync (util/supplier #(new-span!' span-opts#)))
+                   (util/function (bound-fn [context#]
+                                    (.whenComplete ^CompletableFuture
+                                                   (let [~context context#]
+                                                     ~@body)
+                                                   (util/biconsumer
+                                                    (fn [_# e#]
+                                                      (when e#
+                                                        (add-exception! (util/unwrap-cf-exception
+                                                                         e#)
+                                                                        {:context context#}))
+                                                      (end-span! {:context context#})))))))))
+
+(defmacro async-bound-cf-span
+  "Returns a `CompletableFuture` that starts a new span, sets the bound context
+   to the new context containing the span and evaluates `body` which is
+   expected give a `CompletableFuture` that may use any specified `Executor`.
+   The span is ended on completion. Asynchronous functions within `body` should
+   be defined using `bound-fn` or similar to convey bindings such as the bound
+   context."
+  ^CompletableFuture [span-opts & body]
+  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+     (.thenCompose (CompletableFuture/supplyAsync (util/supplier (bound-fn []
+                                                                   (new-span!' span-opts#))))
+                   (util/function (bound-fn [context#]
+                                    (.whenComplete
+                                     ^CompletableFuture
+                                     (context/bind-context! context#
+                                       ~@body)
+                                     (util/biconsumer (fn [_# e#]
+                                                        (when e#
+                                                          (add-exception! (util/unwrap-cf-exception
+                                                                           e#)
+                                                                          {:context context#}))
+                                                        (end-span! {:context context#})))))))))
 
 (defn wrap-span
   "Ring middleware to create a span around subsequent request processing.

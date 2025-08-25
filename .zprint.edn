@@ -28,6 +28,7 @@
 
   ;; clj-otel-api
   "bind-context!" :arg1-body
+  "cf-span-binding" :binding
   "with-bound-context!" :flow-body
   "with-bound-span!" :arg1-body
   "with-context!" :arg1-body
