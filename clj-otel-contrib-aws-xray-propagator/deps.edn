@@ -2,4 +2,4 @@
 
 {:paths ["src"]
  :deps  {org.clojure/clojure {:mvn/version "1.12.2"}
-         io.opentelemetry.contrib/opentelemetry-aws-xray-propagator {:mvn/version "1.48.0-alpha"}}}
+         io.opentelemetry.contrib/opentelemetry-aws-xray-propagator {:mvn/version "1.49.0-alpha"}}}
