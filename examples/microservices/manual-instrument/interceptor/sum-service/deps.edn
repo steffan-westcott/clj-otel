@@ -38,9 +38,9 @@
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.74.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.74.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.74.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.75.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.75.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.75.0"}
 
           }
 
@@ -63,4 +63,4 @@
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.1"}
                                  nrepl/nrepl           {:mvn/version "1.3.1"}
-                                 http-kit/http-kit     {:mvn/version "2.8.0"}}}}}
+                                 http-kit/http-kit     {:mvn/version "2.8.1"}}}}}
