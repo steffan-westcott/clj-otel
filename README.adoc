@@ -26,7 +26,7 @@ image::doc/images/grafana-dashboard.png[Metrics displayed in Grafana,width=600,l
 
 == Requirements
 
-`clj-otel` is tested with Clojure 1.12.2 and is based on the reference https://github.com/open-telemetry/opentelemetry-java[OpenTelemetry for Java] implementation, which supports Java 8 and higher.
+`clj-otel` requires Clojure 1.10.3 or higher and is based on https://github.com/open-telemetry/opentelemetry-java[OpenTelemetry for Java], which supports Java 8 and higher.
 
 == Quickstart
 

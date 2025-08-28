@@ -36,6 +36,8 @@ Also, do not normalize `-` to `_` in header names.
 This ensures measurements captured by the agent for HTTP server span metrics have the `http.route` attribute.
 - [FIX] Ensure provided interceptors correctly set attributes for manually created HTTP server span metrics.
 - [FIX] Do not include app-root in server span names.
+- [FIX] Removed Clojure dependency from `clj-otel` modules.
+`clj-otel` consumers should provide the Clojure version to use in their dependencies.
 - [ADD] New macros `span/async-bound-cf-span` and `span/cf-span-binding`, supporting wrapping of spans around `CompletableFuture` async code, using both bound and explicit context.
 The microservices examples have been extended to demonstrate use of these macros.
 - [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.
@@ -49,7 +51,6 @@ These can be used as an alternative to the deprecated `wrap-exception-event` to 
 - [ADD] Refactored async microservices examples to use https://github.com/xadecimal/async-style[`async-style`], a higher level library over `core.async`.
 - Bump deps
 * [MAINT] OpenTelemetry `1.53.0`, semconv `1.34.0`, instrumentation `2.19.0-alpha`
-* [MAINT] Clojure `1.12.2` However `clj-otel` retains compatibility with Clojure `1.10.3` and later.
 
 === `0.2.8` (2025-05-22)
 
