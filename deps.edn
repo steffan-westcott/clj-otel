@@ -1,8 +1,8 @@
 ;!zprint {:width 140}
 
 {:deps    {org.clojure/clojure {:mvn/version "1.12.2"}}
- :aliases {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.10.9"
-                                                               :git/sha "e405aac"}
+ :aliases {:build {:deps       {io.github.clojure/tools.build {:git/tag "v0.10.10"
+                                                               :git/sha "deedd62"}
                                 slipset/deps-deploy {:mvn/version "0.2.2"}
                                 io.github.seancorfield/build-uber-log4j2-handler {:git/tag "v2.25.1"
                                                                                   :git/sha "1cfab45"}}
