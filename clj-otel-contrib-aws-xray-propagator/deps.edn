@@ -1,4 +1,5 @@
 ;!zprint {:width 140}
 
 {:paths ["src"]
- :deps  {io.opentelemetry.contrib/opentelemetry-aws-xray-propagator {:mvn/version "1.49.0-alpha"}}}
+ :deps  {org.clojure/clojure {:mvn/version "1.10.3"}
+         io.opentelemetry.contrib/opentelemetry-aws-xray-propagator {:mvn/version "1.49.0-alpha"}}}

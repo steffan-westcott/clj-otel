@@ -266,7 +266,7 @@ clojure -A:deps -T:build help/doc"
   (run-task {:main-opts
              ["--directory" (str/join ":" project-paths)
               "--skip" "pom"
-              "--exclude" (str/join ":" group-artifact-ids)
+              "--exclude" (str/join ":" (conj group-artifact-ids "org.clojure/clojure"))
               "--no-changes"]}
             [:antq]))
 

@@ -1,7 +1,8 @@
 ;!zprint {:width 140}
 
 {:paths ["src"]
- :deps  {io.opentelemetry.instrumentation/opentelemetry-resources
+ :deps  {org.clojure/clojure {:mvn/version "1.10.3"}
+         io.opentelemetry.instrumentation/opentelemetry-resources
          {:mvn/version "2.19.0-alpha"
           :exclusions  [io.opentelemetry.instrumentation/opentelemetry-instrumentation-api
                         io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-semconv]}}}
