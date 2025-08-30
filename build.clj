@@ -10,10 +10,12 @@ clojure -T:build lint
 To see a description of all build scripts:
 
 clojure -A:deps -T:build help/doc"
-  (:require [clojure.java.io :as io]
+  (:require [clojure.data.xml :as xml]
+            [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.tools.build.api :as b]
             [clojure.tools.deps :as t]
+            [clojure.zip :as zip]
             [deps-deploy.deps-deploy :as dd]
             [org.corfield.log4j2-conflict-handler :refer [log4j2-conflict-handler]])
   (:import (java.nio.file FileSystems)))
@@ -65,6 +67,8 @@ clojure -A:deps -T:build help/doc"
    "examples/square-app"
    "examples/word-stream-app"
    "tutorial/instrumented"])
+
+(xml/alias-uri 'pom "http://maven.apache.org/POM/4.0.0")
 
 (defn- library-project?
   [root-path]
@@ -179,6 +183,41 @@ clojure -A:deps -T:build help/doc"
                    :main-args (into (:main-opts combined) main-opts)})]
     (checked-process command)))
 
+(defn- add-provided-deps
+  "Adds `deps` as dependencies with `provided` scope to `pom` zipper."
+  [pom deps]
+  (let [deps-loc (->> pom
+                      (iterate zip/next)
+                      (filter #(= ::pom/dependencies (:tag (zip/node %))))
+                      first)
+        provided-deps-elems (map (fn [[k v]]
+                                   (xml/sexp-as-element
+                                    [::pom/dependency
+                                     [::pom/groupId (namespace k)]
+                                     [::pom/artifactId (name k)]
+                                     [::pom/version (:mvn/version v)]
+                                     [::pom/scope "provided"]]))
+                                 deps)]
+    (reduce zip/append-child deps-loc provided-deps-elems)))
+
+(defn- write-pom*
+  "Writes `pom.xml` and `pom.properties` files. Same as
+  `clojure.tools.build.api/write-pom`, but also includes `extra-deps` in
+  `provided` alias as dependencies with `provided` scope."
+  [{:keys [group-id artifact-id]
+    :as   opts}]
+  (println "Writing POM files for" (group-artifact-id group-id artifact-id) "...")
+  (b/write-pom opts)
+  (when-let [provided-deps (-> opts
+                               :basis
+                               :aliases
+                               :provided
+                               :extra-deps)]
+    (let [pom (-> (with-open [reader (io/reader (b/pom-path opts))]
+                    (zip/xml-zip (xml/parse reader {:skip-whitespace true})))
+                  (add-provided-deps provided-deps))]
+      (spit (b/pom-path opts) (xml/indent-str (zip/root pom))))))
+
 (defn- clean-artifact
   [{:keys [target-dir]}]
   (println "Cleaning build dir" target-dir "...")
@@ -188,8 +227,7 @@ clojure -A:deps -T:build help/doc"
   [{:keys [class-dir jar-file resource-dirs src-dirs]
     :as   opts}]
   (clean-artifact opts)
-  (println "Writing pom.xml ...")
-  (b/write-pom opts)
+  (write-pom* opts)
   (println "Building jar" jar-file "...")
   (b/copy-dir {:src-dirs   (into src-dirs resource-dirs)
                :target-dir class-dir})
