@@ -213,10 +213,13 @@ clojure -A:deps -T:build help/doc"
                                :aliases
                                :provided
                                :extra-deps)]
-    (let [pom (-> (with-open [reader (io/reader (b/pom-path opts))]
-                    (zip/xml-zip (xml/parse reader {:skip-whitespace true})))
-                  (add-provided-deps provided-deps))]
-      (spit (b/pom-path opts) (xml/indent-str (zip/root pom))))))
+    (let [pom-str (with-open [reader (io/reader (b/pom-path opts))]
+                    (-> (xml/parse reader {:skip-whitespace true})
+                        zip/xml-zip
+                        (add-provided-deps provided-deps)
+                        zip/root
+                        xml/indent-str))]
+      (spit (b/pom-path opts) pom-str))))
 
 (defn- clean-artifact
   [{:keys [target-dir]}]
