@@ -48,18 +48,6 @@
 
 
 
-(defn ch->respond-raise
-  "Asynchronously takes a single value from channel `ch` and invokes callback
-   function `respond` or `raise`."
-  [<ch respond raise]
-  (style/async
-    (let [x (style/await* <ch)]
-      (if (style/ok? x)
-        (respond x)
-        (raise x)))))
-
-
-
 (defn <respond-raise
   "Calls `f` with function arguments `respond` and `raise`, then returns
    channel with value passed by either function."

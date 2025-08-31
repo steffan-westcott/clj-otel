@@ -1,7 +1,6 @@
 (ns example.sentence-summary-service.async-chan-bound.routes
   "HTTP routes, core.async implementation using bound context."
   (:require [com.xadecimal.async-style :as style]
-            [example.common.async.async-style :as style']
             [example.sentence-summary-service.async-chan-bound.app :as app]
             [ring.util.response :as response]))
 
@@ -18,7 +17,7 @@
   [components {{{:keys [sentence]} :query} :parameters} respond raise]
   (-> (app/<build-summary components sentence)
       (style/then #(response/response %))
-      (style'/ch->respond-raise respond raise)))
+      (style/handle respond raise)))
 
 
 

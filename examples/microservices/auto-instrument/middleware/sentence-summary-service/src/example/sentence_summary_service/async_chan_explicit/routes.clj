@@ -1,7 +1,6 @@
 (ns example.sentence-summary-service.async-chan-explicit.routes
   "HTTP routes, core.async implementation using explicit context."
   (:require [com.xadecimal.async-style :as style]
-            [example.common.async.async-style :as style']
             [example.sentence-summary-service.async-chan-explicit.app :as app]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -21,7 +20,7 @@
     {{:keys [sentence]} :query} :parameters} respond raise]
   (-> (app/<build-summary components wrap-span-context sentence)
       (style/then #(response/response %))
-      (style'/ch->respond-raise respond raise)))
+      (style/handle respond raise)))
 
 
 

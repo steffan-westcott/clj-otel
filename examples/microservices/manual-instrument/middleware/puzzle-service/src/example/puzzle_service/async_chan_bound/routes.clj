@@ -2,7 +2,6 @@
   "HTTP routes, core.async implementation using bound context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
-            [example.common.async.async-style :as style']
             [example.puzzle-service.async-chan-bound.app :as app]
             [ring.util.response :as response]))
 
@@ -20,7 +19,7 @@
   (let [word-types (map keyword (str/split types #","))]
     (-> (app/<generate-puzzle components word-types)
         (style/then #(response/response {:puzzle %}))
-        (style'/ch->respond-raise respond raise))))
+        (style/handle respond raise))))
 
 
 (defn routes

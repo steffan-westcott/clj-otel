@@ -2,7 +2,6 @@
   "HTTP routes, core.async implementation using explicit context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
-            [example.common.async.async-style :as style']
             [example.puzzle-service.async-chan-explicit.app :as app]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -23,7 +22,7 @@
   (let [word-types (map keyword (str/split types #","))]
     (-> (app/<generate-puzzle components wrap-span-context word-types)
         (style/then #(response/response {:puzzle %}))
-        (style'/ch->respond-raise respond raise))))
+        (style/handle respond raise))))
 
 
 (defn routes
