@@ -36,10 +36,13 @@ Also, do not normalize `-` to `_` in header names.
 This ensures measurements captured by the agent for HTTP server span metrics have the `http.route` attribute.
 - [FIX] Ensure provided interceptors correctly set attributes for manually created HTTP server span metrics.
 - [FIX] Do not include app-root in server span names.
-- [FIX] Removed Clojure dependency from `clj-otel` modules.
-`clj-otel` consumers should provide the Clojure version to use in their dependencies.
+- [FIX] Set minimal version of Clojure dependency in `clj-otel` modules to 1.10.3.
+- [ADD] New macros `style-span/async-bound-style-span` and `style-span/style-span-binding`.
+These macros wrap spans around async code using https://github.com/xadecimal/async-style[`async-style`], a library that provides higher level functions built on `core.async`.
+The macros support bound and explicit context.
+`async-style` is an optional dependency; it must be added as a dependency to an application to use the new macros.
 - [ADD] New macros `span/async-bound-cf-span` and `span/cf-span-binding`, supporting wrapping of spans around `CompletableFuture` async code, using both bound and explicit context.
-The microservices examples have been extended to demonstrate use of these macros.
+- [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
 - [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.
 This is implemented using the StackWalker API for performance reasons, starting in Java 9.
 If StackWalker is not available, the attribute is not populated.
@@ -47,8 +50,6 @@ If StackWalker is not available, the attribute is not populated.
 create spans. Note: `new-span!` is now a macro.
 - [ADD] New middleware `span/wrap-span` and `span/wrap-bound-span` to create a span around subsequent processing.
 These can be used as an alternative to the deprecated `wrap-exception-event` to record uncaught exceptions before they are transformed.
-- [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
-- [ADD] Refactored async microservices examples to use https://github.com/xadecimal/async-style[`async-style`], a higher level library over `core.async`.
 - Bump deps
 * [MAINT] OpenTelemetry `1.53.0`, semconv `1.34.0`, instrumentation `2.19.0-alpha`
 

@@ -2,10 +2,10 @@
   "Application logic, core.async implementation using explicit context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
-            [example.common.async.async-style :as style']
             [example.solar-system-service.async-chan-explicit.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span]
+            [steffan-westcott.clj-otel.api.trace.style-span :as sspan]))
 
 
 (defn <planet-statistics
@@ -14,9 +14,9 @@
 
   ;; Wrap channel with an asynchronous internal span. Context containing
   ;; internal span is assigned to `context*`.
-  (style'/style-span-binding [context* {:parent     context
-                                        :name       "Getting planet statistics"
-                                        :attributes {:system/planet planet}}]
+  (sspan/style-span-binding [context* {:parent     context
+                                       :name       "Getting planet statistics"
+                                       :attributes {:system/planet planet}}]
 
     (-> (style/all (map (fn [statistic]
                           (requests/<get-statistic-value components context* planet statistic))

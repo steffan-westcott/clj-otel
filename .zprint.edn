@@ -27,8 +27,11 @@
   "finally" :flow-body
 
   ;; clj-otel-api
+  "async-bound-style-span" :arg1-body
   "bind-context!" :arg1-body
   "cf-span-binding" :binding
+  "style-span-binding" :binding
+  "style-span-binding'" :binding
   "with-bound-context!" :flow-body
   "with-bound-span!" :arg1-body
   "with-context!" :arg1-body
@@ -37,16 +40,15 @@
   "with-span-binding'" :binding
   "with-value!" :arg1-body
 
-  ;; examples
+  ;; async-style
   "async" :flow-body
-  "async-bound-style-span" :arg1-body
   "blocking" :flow-body
-  "compute" :flow-body
   "clet" :binding
+  "compute" :flow-body
+
+  ;; examples
   "route-bound-span" :flow-body
   "route-span-binding" :binding
-  "style-span-binding" :binding
-  "style-span-binding'" :binding
 
   ;; core.async
   "go" :flow-body

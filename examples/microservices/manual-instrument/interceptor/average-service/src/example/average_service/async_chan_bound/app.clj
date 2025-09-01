@@ -2,9 +2,9 @@
   "Application logic, core.async implementation using bound context."
   (:require [com.xadecimal.async-style :as style]
             [example.average-service.async-chan-bound.requests :as requests]
-            [example.common.async.async-style :as style']
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span]
+            [steffan-westcott.clj-otel.api.trace.style-span :as sspan]))
 
 
 (defn divide
@@ -29,7 +29,7 @@
   [components nums]
 
   ;; Wrap channel with an asynchronous internal span.
-  (style'/async-bound-style-span ["Calculating average" {:system/nums nums}]
+  (sspan/async-bound-style-span ["Calculating average" {:system/nums nums}]
 
     (let [<sum (requests/<get-sum components nums)]
       (style/async

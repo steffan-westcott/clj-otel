@@ -2,10 +2,10 @@
   "Application logic, core.async implementation using explicit context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
-            [example.common.async.async-style :as style']
             [example.puzzle-service.async-chan-explicit.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span]
+            [steffan-westcott.clj-otel.api.trace.style-span :as sspan]))
 
 
 (defn- <scramble
@@ -41,9 +41,9 @@
 
   ;; Wrap channel with an asynchronous internal span. Context containing
   ;; internal span is assigned to `context*`.
-  (style'/style-span-binding [context* {:name       "Getting scrambled random words"
-                                        :attributes {:system/word-types word-types}
-                                        :parent     context}]
+  (sspan/style-span-binding [context* {:name       "Getting scrambled random words"
+                                       :attributes {:system/word-types word-types}
+                                       :parent     context}]
 
     (style/all (map (fn [word-type]
                       (-> (requests/<get-random-word components context* word-type)
