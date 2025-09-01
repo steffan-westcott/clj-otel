@@ -27,11 +27,11 @@
   "finally" :flow-body
 
   ;; clj-otel-api
-  "async-bound-style-span" :arg1-body
+  "async-bound-chan-span" :arg1-body
   "bind-context!" :arg1-body
   "cf-span-binding" :binding
-  "style-span-binding" :binding
-  "style-span-binding'" :binding
+  "chan-span-binding" :binding
+  "chan-span-binding'" :binding
   "with-bound-context!" :flow-body
   "with-bound-span!" :arg1-body
   "with-context!" :arg1-body

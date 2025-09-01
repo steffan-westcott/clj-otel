@@ -4,8 +4,8 @@
             [com.xadecimal.async-style :as style]
             [example.sentence-summary-service.async-chan-bound.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.api.trace.style-span :as sspan]))
+            [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn- <word-lengths
@@ -14,7 +14,7 @@
   [components words]
 
   ;; Wrap channel with an asynchronous internal span.
-  (sspan/async-bound-style-span ["Getting word lengths" {:system/words words}]
+  (chan-span/async-bound-chan-span ["Getting word lengths" {:system/words words}]
 
     (style/all (map (fn [word]
                       (requests/<get-word-length components word))

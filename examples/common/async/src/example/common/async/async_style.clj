@@ -3,8 +3,8 @@
   (:require [clojure.core.async :as async]
             [com.xadecimal.async-style :as style]
             [example.common.async.response :as common-response]
+            [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
             [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.api.trace.style-span :as sspan]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.util :as util]))
 
@@ -32,7 +32,7 @@
                                      ~(:line (meta &form))
                                      ~*file*
                                      (util/fn-name))]
-     (sspan/style-span-binding' [~context span-opts#]
+     (chan-span/chan-span-binding' [~context span-opts#]
        ~@body)))
 
 
@@ -43,7 +43,7 @@
    give a channel which will contain the response."
   [& body]
   `(let [span-opts# (span/span-opts* "Handling route" ~(:line (meta &form)) ~*file* (util/fn-name))]
-     (sspan/style-span-binding' [context# span-opts#]
+     (chan-span/chan-span-binding' [context# span-opts#]
        (context/bind-context! context#
          ~@body))))
 

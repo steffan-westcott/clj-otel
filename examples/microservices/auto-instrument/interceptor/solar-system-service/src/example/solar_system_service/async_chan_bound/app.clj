@@ -4,8 +4,8 @@
             [com.xadecimal.async-style :as style]
             [example.solar-system-service.async-chan-bound.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.api.trace.style-span :as sspan]))
+            [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
+            [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
 (defn <planet-statistics
@@ -13,7 +13,8 @@
   [components planet]
 
   ;; Wrap channel with an asynchronous internal span.
-  (sspan/async-bound-style-span ["Getting planet statistics" {:system/planet planet}]
+  (chan-span/async-bound-chan-span
+    ["Getting planet statistics" {:system/planet planet}]
 
     (-> (style/all (map (fn [statistic]
                           (requests/<get-statistic-value components planet statistic))
