@@ -192,7 +192,6 @@ A trace comprises a tree of *spans*, where a span represents a *unit of work* in
 Parent-child relationships between spans describe dependencies between them.
 The *root span* of a trace typically describes the entire transaction.
 The other spans represent units of work performed as part of the transaction.
-Traces provide *context* for system activity performed in spans.
 
 Span data may include a *span kind*, name, attributes, start/end timestamps, links to other spans, a list of events and a status.
 
@@ -301,7 +300,9 @@ It is provided as a convenience when manually instrumenting asynchronous code.
 If used, it overrides the default (current) context used for `clj-otel` functions.
 
 NOTE: https://clojure.org/reference/vars#conveyance[Binding conveyance] is a Clojure feature that conveys dynamic var bindings between blocks of asynchronous code.
-See also `clojure.core` functions https://clojuredocs.org/clojure.core/binding[`binding`], https://clojuredocs.org/clojure.core/bound-fn[`bound-fn`] and https://clojuredocs.org/clojure.core/bound-fn*[`bound-fn*`].
+Clojure's `future` provides binding conveyance, as does `core.async` across parking operations in `go` blocks.
+For other provision of binding conveyance, see `clojure.core` functions https://clojuredocs.org/clojure.core/binding[`binding`], https://clojuredocs.org/clojure.core/bound-fn[`bound-fn`] and https://clojuredocs.org/clojure.core/bound-fn*[`bound-fn*`].
+When using async features that do not have built-in Clojure support, such as Java's `CompletableFuture`, facilities like `bound-fn` should be used to establish binding conveyance if required.
 
 [#_context_propagation]
 === Context propagation

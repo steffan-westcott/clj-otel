@@ -1,6 +1,7 @@
 (ns steffan-westcott.clj-otel.api.trace.chan-span
   "Macros for creating spans around core.async channels that are settled with
-   a single value, either a result or an exception."
+   a single value, either a result or an exception. To use this namespace, add
+   dependency `org.clojure/core.async`."
   (:require [clojure.core.async :as async]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]

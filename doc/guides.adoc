@@ -36,6 +36,8 @@ To add telemetry to a library or application, use xref:concepts.adoc#_automatic_
 
 ==== Create synchronous span
 
+Choose the relevant option based on the use of current, bound or explicit context:
+
 ===== Create a synchronous span using the current context
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to wrap a body of forms in a xref:concepts.adoc#_traces[span], where the xref:concepts.adoc#_current_context[current context] is used to keep track of (potentially nested) spans:
@@ -67,31 +69,93 @@ The new context containing the new span is bound to `context*` in this example:
 ----
 (defn get-nums [context args]
   (span/with-span-binding [context* {:parent context
-                                     :name "Getting numbers"}]
+                                     :name   "Getting numbers"}]
     (fetch-nums context* args)))
 ----
 
 ==== Create asynchronous span
+[#_create_an_asynchronous_span]
 
-===== Create an asynchronous span using the bound context
+Choose the relevant option based on the type of asynchronous code and use of bound or explicit context:
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-bound-span[`steffan-westcott.clj-otel.api.trace.span/async-bound-span`] to start a new span, where the context to use is the xref:concepts.adoc#_bound_context[bound context]. The new span ends when either success/failure callback `respond`/`raise` is evaluated:
+===== Create an asynchronous span around a `core.async` channel
+
+====== With bound context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.chan-span#async-bound-chan-span[`steffan-westcott.clj-otel.api.trace.chan-span/async-bound-chan-span`] to wrap a channel in a new span, where the context to use is the bound context:
++
+[source,clojure]
+----
+(defn <get-nums [args]
+  (chan-span/async-bound-chan-span {:name "Getting numbers"
+                                    :kind :client}
+    (<fetch-nums args))) ; channel
+----
+
+====== With explicit context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.chan-span#chan-span-binding[`steffan-westcott.clj-otel.api.trace.chan-span/chan-span-binding`] to wrap a channel in a new span, where the context to use is passed in as the `:parent` option.
+The new context containing the new span is bound to `context*` in this example:
++
+[source,clojure]
+----
+(defn <get-nums [context args]
+  (chan-span/chan-span-binding [context* {:parent context
+                                          :name   "Getting numbers"
+                                          :kind   :client}]
+    (<fetch-nums context* args))) ; channel
+----
+
+===== Create an asynchronous span around `CompletableFuture` async code
+
+====== With bound context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-bound-cf-span[`steffan-westcott.clj-otel.api.trace.span/async-bound-cf-span`] to wrap a `CompletableFuture` in a new span, where the context to use is the bound context:
++
+[source,clojure]
+----
+(defn <get-nums [args]
+  (span/async-bound-cf-span {:name "Getting numbers"
+                             :kind :client}
+    (<fetch-nums args))) ; CompletableFuture
+----
+
+====== With explicit context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#cf-span-binding[`steffan-westcott.clj-otel.api.trace.span/cf-span-binding`] to wrap a `CompletableFuture` in a new span, where the context to use is passed in as the `:parent` option.
+The new context containing the new span is bound to `context*` in this example:
++
+[source,clojure]
+----
+(defn <get-nums [context args]
+  (span/cf-span-binding [context* {:parent context
+                                   :name   "Getting numbers"
+                                   :kind   :client}]
+    (<fetch-nums context* args))) ; CompletableFuture
+----
+
+===== Create an asynchronous span around code with callbacks
+
+====== With bound context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-bound-span[`steffan-westcott.clj-otel.api.trace.span/async-bound-span`] to start a new span, where the context to use is the bound context.
+The new span ends when either success/failure callback `respond`/`raise` is evaluated:
 +
 [source,clojure]
 ----
 (defn get-nums-async [args respond raise]
   (span/async-bound-span {:name "Getting numbers"
                           :kind :client}
-                         (fn [respond* raise*]
-                           (fetch-nums-async args respond* raise*))
-                         respond
-                         raise))
+    (fn [respond* raise*]
+      (fetch-nums-async args respond* raise*))
+      respond
+      raise))
 ----
 
-[#_create_an_asynchronous_span]
-===== Create an asynchronous span using explicit context
+====== With explicit context
 
-* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-span[`steffan-westcott.clj-otel.api.trace.span/async-span`] to start a new span, where the context to use is passed in as the `:parent` option. The new spans ends when either success/failure callback `respond`/`raise` is evaluated:
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#async-span[`steffan-westcott.clj-otel.api.trace.span/async-span`] to start a new span, where the context to use is passed in as the `:parent` option.
+The new spans ends when either success/failure callback `respond`/`raise` is evaluated:
 +
 [source,clojure]
 ----
@@ -99,10 +163,10 @@ The new context containing the new span is bound to `context*` in this example:
   (span/async-span {:parent context
                     :name   "Getting numbers"
                     :kind   :client}
-                   (fn [context* respond* raise*]
-                     (fetch-nums-async context* args respond* raise*))
-                   respond
-                   raise))
+    (fn [context* respond* raise*]
+      (fetch-nums-async context* args respond* raise*))
+      respond
+      raise))
 ----
 
 ==== Add attributes to a span
