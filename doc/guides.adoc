@@ -743,7 +743,7 @@ See xref:reference.adoc#_java_exporter_libraries[Java exporter libraries support
 This is not needed if gRPC is not used by any exporters or the application.
 
 * Configure the SDK using properties and environment variables.
-** See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure[SDK autoconfigure configuration documentation] for details on all autoconfiguration options.
+** See https://opentelemetry.io/docs/languages/java/configuration/#zero-code-sdk-autoconfigure[SDK autoconfigure configuration documentation] for details on all autoconfiguration options.
 
 * At application start, use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure/CURRENT/api/steffan-westcott.clj-otel.sdk.autoconfigure#init-otel-sdk![`steffan-westcott.clj-otel.sdk.autoconfigure/init-otel-sdk!`] to initialise a configured SDK instance.
 By default, the instance is set as the default `OpenTelemetry` used by `clj-otel` and a JVM shutdown hook is registered to close it.

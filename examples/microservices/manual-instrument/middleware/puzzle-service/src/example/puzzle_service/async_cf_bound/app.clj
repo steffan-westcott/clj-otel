@@ -11,22 +11,22 @@
 (defn- <scramble
   "Given a word, returns a `CompletableFuture` of a scrambled word string."
   [word]
-  (aus/future (bound-fn []
+  (aus/future
+    (bound-fn []
 
-                ;; Wrap synchronous function body with an internal span.
-                (span/with-bound-span! ["Scrambling word" {:system/word word}]
+      ;; Wrap synchronous function body with an internal span.
+      (span/with-bound-span! ["Scrambling word" {:system/word word}]
 
-                  (Thread/sleep 5)
-                  (let [scrambled-word (->> word
-                                            seq
-                                            shuffle
-                                            (apply str))]
+        (Thread/sleep 5)
+        (let [scrambled-word (->> word
+                                  seq
+                                  shuffle
+                                  (apply str))]
 
-                    ;; Add more attributes to internal span
-                    (span/add-span-data! {:attributes {:service.puzzle/scrambled-word
-                                                       scrambled-word}})
+          ;; Add more attributes to internal span
+          (span/add-span-data! {:attributes {:service.puzzle/scrambled-word scrambled-word}})
 
-                    scrambled-word)))))
+          scrambled-word)))))
 
 
 

@@ -42,6 +42,7 @@ This ensures measurements captured by the agent for HTTP server span metrics hav
 - [ADD] New macros `span/async-bound-cf-span` and `span/cf-span-binding`, supporting wrapping of spans around `CompletableFuture` async code, using both bound and explicit context.
 - [ADD] Refactored and extended microservice examples to demonstrate the new macros supporting async spans.
 https://github.com/xadecimal/async-style[`async-style`] and https://github.com/mpenet/auspex/[`auspex`] libraries are used in the examples for higher level wrappers over `core.async` and `CompletableFuture`, but neither library is used by `clj-otel` itself.
+- [ADD] New example `anonymise-app` that demonstrates async spans with several async libraries: `async-style`, `auspex`, https://github.com/funcool/promesa[`promesa`] and https://github.com/igrishaev/whew[`whew`].
 - [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
 - [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.
 This is implemented using the StackWalker API for performance reasons, starting in Java 9.

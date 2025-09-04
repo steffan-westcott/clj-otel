@@ -36,6 +36,28 @@ In your own libraries and applications, use `:mvn/version` instead, as shown in 
 +
 Select an example from the following list and change the current directory to the path shown
 
+* `examples/anonymise-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+    end
+    localhost --> otel-collector
+----
++
+endif::[]
+A small application `anonymise-app` run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
+This demonstrates creating spans around asynchronous code using several async libraries:
++
+** https://github.com/xadecimal/async-style[`async-style`], a higher level library built on `core.async`
+** https://github.com/mpenet/auspex/[`auspex`], a `CompletableFuture` wrapper
+** https://github.com/funcool/promesa[`promesa`], a `CompletableFuture` wrapper
+** https://github.com/igrishaev/whew[`whew`], another `CompletableFuture` wrapper
+
 * `examples/countries-service`
 +
 ifdef::env-github[[source,mermaid]]

@@ -39,13 +39,14 @@
   [with-system-fn]
   (let [system-p (promise)
         stop-p   (promise)
-        runner   (future (try
-                           (with-system-fn (fn wait [system]
-                                             (deliver system-p system)
-                                             @stop-p))
-                           (catch Throwable e
-                             (deliver system-p e)
-                             (throw e))))
+        runner   (future
+                   (try
+                     (with-system-fn (fn wait [system]
+                                       (deliver system-p system)
+                                       @stop-p))
+                     (catch Throwable e
+                       (deliver system-p e)
+                       (throw e))))
         stop-fn  (fn []
                    (deliver stop-p nil)
                    @runner)]

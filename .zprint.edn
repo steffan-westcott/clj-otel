@@ -57,4 +57,7 @@
   "with-project-root" :arg1-body
 
   ;; Compojure
-  "defroutes" :arg1-body}}
+  "defroutes" :arg1-body
+
+  ;; Promesa
+  "future" :flow-body}}

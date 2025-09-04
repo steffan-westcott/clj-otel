@@ -1,0 +1,19 @@
+services:
+
+  # Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:1.71.0
+    ports:
+      - "16686:16686"  # Jaeger web interface
+
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector:0.130.1
+    volumes:
+      - ./otel-collector.yaml:/etc/otel-collector.yaml
+    command:
+      - --config=/etc/otel-collector.yaml
+    ports:
+      - "4318:4318"    # OTLP HTTP receiver
+    depends_on:
+      - jaeger

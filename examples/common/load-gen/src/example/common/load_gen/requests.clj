@@ -38,6 +38,7 @@
    perform an async HTTP req at system time t. It is assumed t monotonically
    increases in the sequence."
   [client signal]
-  (future (doseq [[t req] signal]
-            (sleep-until t)
-            (do-request client req))))
+  (future
+    (doseq [[t req] signal]
+      (sleep-until t)
+      (do-request client req))))

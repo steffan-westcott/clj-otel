@@ -12,25 +12,25 @@
   "Given a word, returns a `CompletableFuture` of a scrambled word string."
   [context word]
   (aus/future
-   (fn []
+    (fn []
 
-     ;; Wrap synchronous function body with an internal span. Context containing
-     ;; internal span is assigned to `context*`.
-     (span/with-span-binding [context* {:parent     context
-                                        :name       "Scrambling word"
-                                        :attributes {:system/word word}}]
+      ;; Wrap synchronous function body with an internal span. Context containing
+      ;; internal span is assigned to `context*`.
+      (span/with-span-binding [context* {:parent     context
+                                         :name       "Scrambling word"
+                                         :attributes {:system/word word}}]
 
-       (Thread/sleep 5)
-       (let [scrambled-word (->> word
-                                 seq
-                                 shuffle
-                                 (apply str))]
+        (Thread/sleep 5)
+        (let [scrambled-word (->> word
+                                  seq
+                                  shuffle
+                                  (apply str))]
 
-         ;; Add more attributes to internal span
-         (span/add-span-data! {:context    context*
-                               :attributes {:service.puzzle/scrambled-word scrambled-word}})
+          ;; Add more attributes to internal span
+          (span/add-span-data! {:context    context*
+                                :attributes {:service.puzzle/scrambled-word scrambled-word}})
 
-         scrambled-word)))))
+          scrambled-word)))))
 
 
 
