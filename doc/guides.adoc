@@ -80,6 +80,11 @@ Choose the relevant option based on the type of asynchronous code and use of bou
 
 ===== Create an asynchronous span around a `core.async` channel
 
+NOTE: `clj-otel` supports creating spans around `core.async` channels which are settled with a single result or exception value.
+Channels used in this manner can be considered to work like promises.
+
+TIP: Consider using a higher level library for working with promise-like `core.async` channels, such as https://github.com/xadecimal/async-style[`async-style`].
+
 ====== With bound context
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.chan-span#async-bound-chan-span[`steffan-westcott.clj-otel.api.trace.chan-span/async-bound-chan-span`] to wrap a channel in a new span, where the context to use is the bound context:
@@ -107,6 +112,8 @@ The new context containing the new span is bound to `context*` in this example:
 ----
 
 ===== Create an asynchronous span around `CompletableFuture` async code
+
+TIP: There are several libraries available that wrap Java's `CompletableFuture` for more idiomatic use in Clojure, such as https://github.com/mpenet/auspex/[`auspex`], https://github.com/funcool/promesa[`promesa`] and https://github.com/igrishaev/whew[`whew`].
 
 ====== With bound context
 
