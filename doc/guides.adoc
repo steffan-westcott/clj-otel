@@ -141,6 +141,34 @@ The new context containing the new span is bound to `context*` in this example:
     (<fetch-nums context* args))) ; CompletableFuture
 ----
 
+===== Create an asynchronous span around a `Manifold` deferred
+
+====== With bound context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.d-span#async-bound-d-span[`steffan-westcott.clj-otel.api.trace.d-span/async-bound-d-span`] to wrap a deferred in a new span, where the context to use is the bound context:
++
+[source,clojure]
+----
+(defn <get-nums [args]
+  (d-span/async-bound-d-span {:name "Getting numbers"
+                              :kind :client}
+    (<fetch-nums args))) ; deferred
+----
+
+====== With explicit context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.d-span#d-span-binding[`steffan-westcott.clj-otel.api.trace.d-span/d-span-binding`] to wrap a deferred in a new span, where the context to use is passed in as the `:parent` option.
+The new context containing the new span is bound to `context*` in this example:
++
+[source,clojure]
+----
+(defn <get-nums [context args]
+  (d-span/d-span-binding [context* {:parent context
+                                    :name   "Getting numbers"
+                                    :kind   :client}]
+    (<fetch-nums context* args))) ; deferred
+----
+
 ===== Create an asynchronous span around code with callbacks
 
 ====== With bound context

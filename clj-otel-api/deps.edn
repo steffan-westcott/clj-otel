@@ -7,4 +7,5 @@
            io.opentelemetry.instrumentation/opentelemetry-instrumentation-api {:mvn/version "2.19.0"}
            io.opentelemetry.semconv/opentelemetry-semconv {:mvn/version "1.34.0"}
            io.opentelemetry.semconv/opentelemetry-semconv-incubating {:mvn/version "1.34.0-alpha"}}
- :aliases {:provided {:extra-deps {org.clojure/core.async {:mvn/version "1.9.808-alpha1"}}}}}
+ :aliases {:provided {:extra-deps {org.clojure/core.async {:mvn/version "1.9.808-alpha1"}
+                                   manifold/manifold      {:mvn/version "0.4.3"}}}}}

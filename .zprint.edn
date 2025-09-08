@@ -32,6 +32,8 @@
   "cf-span-binding" :binding
   "chan-span-binding" :binding
   "chan-span-binding'" :binding
+  "d-span-binding" :binding
+  "d-span-binding'" :binding
   "with-bound-context!" :flow-body
   "with-bound-span!" :arg1-body
   "with-context!" :arg1-body

@@ -37,12 +37,13 @@ This ensures measurements captured by the agent for HTTP server span metrics hav
 - [FIX] Ensure provided interceptors correctly set attributes for manually created HTTP server span metrics.
 - [FIX] Do not include app-root in server span names.
 - [FIX] Set minimal version of Clojure dependency in `clj-otel` modules to 1.10.3.
-- [ADD] New macros `chan-span/async-bound-chan-span` and `chan-span/chan-span-binding`, supporting wrapping of spans around `core.async` channels, using both bound and explicit context.
-`core.async` is an optional dependency; it must be added as a dependency to an application to use the new macros.
-- [ADD] New macros `span/async-bound-cf-span` and `span/cf-span-binding`, supporting wrapping of spans around `CompletableFuture` async code, using both bound and explicit context.
+- [ADD] New macros for wrapping spans around asynchronous code, using bound or explicit context.
+Support is provided for several async libraries:
+* `core.async`: Macros `chan-span/async-bound-chan-span` and `chan-span/chan-span-binding`
+* `CompletableFuture` compatible such as `auspex`, `promesa` and `whew`: Macros `span/async-bound-cf-span` and `span/cf-span-binding`
+* `Manifold`: Macros `d-span/async-bound-d-span` and `d-span/d-span-binding`
 - [ADD] Refactored and extended microservice examples to demonstrate the new macros supporting async spans.
-https://github.com/xadecimal/async-style[`async-style`] and https://github.com/mpenet/auspex/[`auspex`] libraries are used in the examples for higher level wrappers over `core.async` and `CompletableFuture`, but neither library is used by `clj-otel` itself.
-- [ADD] New example `anonymise-app` that demonstrates async spans with several async libraries: `async-style`, `auspex`, https://github.com/funcool/promesa[`promesa`] and https://github.com/igrishaev/whew[`whew`].
+- [ADD] New example `anonymise-app` that demonstrates async spans with several async libraries.
 - [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
 - [ADD] By default, populate `code.function.name` attribute to name of function containing the start of each span.
 This is implemented using the StackWalker API for performance reasons, starting in Java 9.
