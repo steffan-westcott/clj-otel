@@ -34,17 +34,17 @@
   "Get a single statistic value of a planet and return a `CompletableFuture` of
    a single-valued map of the statistic and its value."
   [{:keys [client]} planet statistic]
-  (let [endpoint (get-in config [:endpoints :planet-service])
-        path     (str "/planets/" (name planet) "/" (name statistic))]
-    (-> (<client-request client
-                         {:method :get
-                          :url    (str endpoint path)
-                          :accept :json
-                          :as     :json})
-        (aus/then (bound-fn [{:keys [status body]}]
-                    (if (= 200 status)
-                      {statistic (:statistic body)}
-                      (throw (ex-info (str status " HTTP response")
-                                      {:http.response/status status
-                                       :service/error
-                                       :service.errors/unexpected-http-response}))))))))
+  (let [endpoint  (get-in config [:endpoints :planet-service])
+        path      (str "/planets/" (name planet) "/" (name statistic))
+        <response (<client-request client
+                                   {:method :get
+                                    :url    (str endpoint path)
+                                    :accept :json
+                                    :as     :json})]
+    (aus/then <response
+              (fn [{:keys [status body]}]
+                (if (= 200 status)
+                  {statistic (:statistic body)}
+                  (throw (ex-info (str status " HTTP response")
+                                  {:http.response/status status
+                                   :service/error :service.errors/unexpected-http-response})))))))

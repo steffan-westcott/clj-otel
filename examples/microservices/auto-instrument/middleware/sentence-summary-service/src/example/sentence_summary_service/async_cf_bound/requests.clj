@@ -42,7 +42,7 @@
                           :query-params {:word word}
                           :accept       :json
                           :as           :json})
-        (aus/then (bound-fn [{:keys [status body]}]
+        (aus/then (fn [{:keys [status body]}]
                     (if (= 200 status)
                       (:length body)
                       (throw (ex-info (str status " HTTP response")

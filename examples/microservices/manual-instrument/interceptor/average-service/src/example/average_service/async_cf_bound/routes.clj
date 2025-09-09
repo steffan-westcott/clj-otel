@@ -32,7 +32,7 @@
                                                               (filter seq))
                                                 nums     (map #(Integer/parseInt %) num-strs)]
                                             (-> (app/<averages components nums)
-                                                (aus/then (bound-fn [averages]
+                                                (aus/then (fn [averages]
                                                             (response/response {:average
                                                                                 averages}))))))
                 (aus'/<cf-response ctx)))})

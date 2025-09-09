@@ -46,6 +46,9 @@
            ;; Automatically adds OpenTelemetry resources to exported telemetry
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.19.0-alpha"}
 
+           ;; Asynchronous event programming
+           manifold/manifold {:mvn/version "0.4.3"}
+
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}
            metosin/malli {:mvn/version "0.19.1"}

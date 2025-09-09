@@ -9,10 +9,12 @@
 (defn <replace-names
   "Returns a CompletableFuture containing string `s` with names replaced by `***`."
   [context s]
-  (span/cf-span-binding [_ {:parent context
-                            :name   "Replacing names"}]
+  (span/cf-span-binding [context* {:parent context
+                                   :name   "Replacing names"}]
     (prom/future
       (Thread/sleep 100)
+      (span/add-span-data! {:context context*
+                            :event   {:name "Nearly done"}})
       (str/replace s #"\b(alice|bob)\b" "***"))))
 
 

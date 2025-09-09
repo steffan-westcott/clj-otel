@@ -18,7 +18,6 @@
                          (respond response)))))
 
 
-
 (defn <cf-response
   "Returns a channel that will contain ctx with HTTP response attached. The
    response is taken from the completion of `^CompletableFuture cf`. If `cf`
@@ -26,7 +25,7 @@
   [cf ctx]
   (let [ch (async/promise-chan)]
     (aus/when-complete cf
-                       (bound-fn [response e]
+                       (fn [response e]
                          (async/put!
                           ch
                           (assoc ctx
@@ -35,6 +34,7 @@
                                    (common-response/exception-response (aus/ex-unwrap e))
                                    response)))))
     ch))
+
 
 (defmacro route-span-binding
   "Asynchronously starts a new span around processing for a route with Pedestal

@@ -43,17 +43,17 @@
 (defn <get-sum
   "Get the sum of the nums and return a `CompletableFuture` of the result."
   [{:keys [client]} nums]
-  (let [endpoint (get-in config [:endpoints :sum-service])]
-    (-> (<client-request client
-                         {:method       :get
-                          :url          (str endpoint "/sum")
-                          :query-params {:nums (str/join "," nums)}
-                          :accept       :json
-                          :as           :json})
-        (aus/then (bound-fn [{:keys [status body]}]
-                    (if (= 200 status)
-                      (:sum body)
-                      (throw (ex-info (str status " HTTP response")
-                                      {:http.response/status status
-                                       :service/error
-                                       :service.errors/unexpected-http-response}))))))))
+  (let [endpoint  (get-in config [:endpoints :sum-service])
+        <response (<client-request client
+                                   {:method       :get
+                                    :url          (str endpoint "/sum")
+                                    :query-params {:nums (str/join "," nums)}
+                                    :accept       :json
+                                    :as           :json})]
+    (aus/then <response
+              (fn [{:keys [status body]}]
+                (if (= 200 status)
+                  (:sum body)
+                  (throw (ex-info (str status " HTTP response")
+                                  {:http.response/status status
+                                   :service/error :service.errors/unexpected-http-response})))))))

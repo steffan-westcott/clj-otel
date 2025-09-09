@@ -27,6 +27,9 @@
            io.pedestal/pedestal.route {:mvn/version "0.7.2"}
            io.pedestal/pedestal.service {:mvn/version "0.7.2"}
 
+           ;; Asynchronous event programming
+           manifold/manifold {:mvn/version "0.4.3"}
+
            ;; Common async utilities
            org.example/common.async {:local/root "../../../../common/async"}
 

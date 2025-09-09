@@ -9,7 +9,8 @@
            com.github.igrishaev/whew {:mvn/version "0.1.1"}
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
            com.xadecimal/async-style {:mvn/version "0.1.0"}
-           funcool/promesa           {:mvn/version "11.0.678"}}
+           funcool/promesa           {:mvn/version "11.0.678"}
+           manifold/manifold         {:mvn/version "0.4.3"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../opentelemetry-javaagent.jar"
                               "-Dotel.resource.attributes=service.name=anonymise-app"

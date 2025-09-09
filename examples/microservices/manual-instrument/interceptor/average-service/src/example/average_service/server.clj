@@ -4,6 +4,8 @@
             [example.average-service.async-cf-explicit.routes :as async-cf-explicit-routes]
             [example.average-service.async-chan-bound.routes :as async-chan-bound-routes]
             [example.average-service.async-chan-explicit.routes :as async-chan-explicit-routes]
+            [example.average-service.async-d-bound.routes :as async-d-bound-routes]
+            [example.average-service.async-d-explicit.routes :as async-d-explicit-routes]
             [example.average-service.env :refer [config]]
             [example.average-service.sync.routes :as sync-routes]
             [example.common.async.interceptor :as common-interceptor]
@@ -15,7 +17,7 @@
 
 (defn- using-bound-context?
   []
-  (boolean (#{"async-cf-bound" "async-chan-bound"} (:server-impl config))))
+  (boolean (#{"async-cf-bound" "async-chan-bound" "async-d-bound"} (:server-impl config))))
 
 
 
@@ -29,11 +31,13 @@
   "Route data for all routes, according to configured server implementation."
   []
   (case (:server-impl config)
-    "async-cf-bound" (async-cf-bound-routes/routes)
+    "async-cf-bound"    (async-cf-bound-routes/routes)
     "async-cf-explicit" (async-cf-explicit-routes/routes)
-    "async-chan-bound" (async-chan-bound-routes/routes)
+    "async-chan-bound"  (async-chan-bound-routes/routes)
     "async-chan-explicit" (async-chan-explicit-routes/routes)
-    "sync" (sync-routes/routes)))
+    "async-d-bound"     (async-d-bound-routes/routes)
+    "async-d-explicit"  (async-d-explicit-routes/routes)
+    "sync"              (sync-routes/routes)))
 
 
 

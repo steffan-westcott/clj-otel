@@ -27,7 +27,7 @@
 
                                           (let [planet (keyword (get query-params :planet))]
                                             (-> (app/<planet-report components planet)
-                                                (aus/then (bound-fn [stats]
+                                                (aus/then (fn [stats]
                                                             (response/response {:statistics
                                                                                 stats}))))))
                 (aus'/<cf-response ctx)))})

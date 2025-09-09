@@ -4,6 +4,8 @@
             [example.puzzle-service.async-cf-explicit.routes :as async-cf-explicit-routes]
             [example.puzzle-service.async-chan-bound.routes :as async-chan-bound-routes]
             [example.puzzle-service.async-chan-explicit.routes :as async-chan-explicit-routes]
+            [example.puzzle-service.async-d-bound.routes :as async-d-bound-routes]
+            [example.puzzle-service.async-d-explicit.routes :as async-d-explicit-routes]
             [example.puzzle-service.env :refer [config]]
             [example.puzzle-service.sync.routes :as sync-routes]
             [muuntaja.core :as m]
@@ -27,7 +29,7 @@
 
 (defn- using-bound-context?
   []
-  (boolean (#{"async-cf-bound" "async-chan-bound"} (:server-impl config))))
+  (boolean (#{"async-cf-bound" "async-chan-bound" "async-d-bound"} (:server-impl config))))
 
 
 
@@ -35,11 +37,13 @@
   "Route data for all routes, according to configured server implementation."
   [components]
   (case (:server-impl config)
-    "async-cf-bound" (async-cf-bound-routes/routes components)
+    "async-cf-bound"    (async-cf-bound-routes/routes components)
     "async-cf-explicit" (async-cf-explicit-routes/routes components)
-    "async-chan-bound" (async-chan-bound-routes/routes components)
+    "async-chan-bound"  (async-chan-bound-routes/routes components)
     "async-chan-explicit" (async-chan-explicit-routes/routes components)
-    "sync" (sync-routes/routes components)))
+    "async-d-bound"     (async-d-bound-routes/routes components)
+    "async-d-explicit"  (async-d-explicit-routes/routes components)
+    "sync"              (sync-routes/routes components)))
 
 
 

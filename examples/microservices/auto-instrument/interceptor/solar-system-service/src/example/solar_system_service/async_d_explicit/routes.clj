@@ -1,9 +1,9 @@
-(ns example.solar-system-service.async-cf-explicit.routes
-  "HTTP routes, async CompletableFuture implementation using explicit context."
-  (:require [example.common.async.auspex :as aus']
-            [example.solar-system-service.async-cf-explicit.app :as app]
+(ns example.solar-system-service.async-d-explicit.routes
+  "HTTP routes, Manifold implementation using explicit context."
+  (:require [example.common.async.manifold :as d']
+            [example.solar-system-service.async-d-explicit.app :as app]
             [io.pedestal.http.route :as route]
-            [qbits.auspex :as aus]
+            [manifold.deferred :as d]
             [ring.util.response :as response]))
 
 
@@ -22,13 +22,13 @@
                 :as ctx}]
 
             ;; Ensure uncaught exceptions are recorded before they are transformed
-            (-> (aus'/route-span-binding [context ctx]
+            (-> (d'/route-span-binding [context ctx]
 
                   (let [planet (keyword (get query-params :planet))]
                     (-> (app/<planet-report components context planet)
-                        (aus/then (fn [stats]
+                        (d/chain' (fn [stats]
                                     (response/response {:statistics stats}))))))
-                (aus'/<cf-response ctx)))})
+                (d'/<d-response ctx)))})
 
 
 
@@ -38,4 +38,3 @@
   (route/expand-routes
    #{["/ping" :get `get-ping] ;
      ["/statistics" :get `get-statistics]}))
-

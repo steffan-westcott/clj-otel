@@ -1,21 +1,21 @@
-(ns example.average-service.async-chan-explicit.requests
-  "Requests to other microservices, core.async implementation using explicit
+(ns example.average-service.async-d-explicit.requests
+  "Requests to other microservices, Manifold implementation using explicit
    context."
   (:require [clojure.string :as str]
-            [com.xadecimal.async-style :as style]
             [example.average-service.env :refer [config]]
-            [example.common.async.async-style :as style']
+            [example.common.async.manifold :as d']
             [hato.client :as client]
+            [manifold.deferred :as d]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
 
 
 (defn- <client-request
-  "Make an asynchronous HTTP request using `hato` and return a channel of the
+  "Make an asynchronous HTTP request using `hato` and return a deferred of the
    response."
   [client context request]
-  (style'/<respond-raise
+  (d'/<respond-raise
    (fn [respond raise]
      (let [request (conj request
                          {:async?           true
@@ -56,7 +56,7 @@
 
 
 (defn <get-sum
-  "Get the sum of the nums and return a channel of the result."
+  "Get the sum of the nums and return a deferred of the result."
   [{:keys [client]} context nums]
   (let [endpoint  (get-in config [:endpoints :sum-service])
         <response (<client-request client
@@ -66,10 +66,10 @@
                                     :query-params {:nums (str/join "," nums)}
                                     :accept       :json
                                     :as           :json})]
-    (style/then <response
-                (fn [{:keys [status body]}]
-                  (if (= 200 status)
-                    (:sum body)
-                    (throw (ex-info (str status " HTTP response")
-                                    {:http.response/status status
-                                     :service/error :service.errors/unexpected-http-response})))))))
+    (d/chain' <response
+              (fn [{:keys [status body]}]
+                (if (= 200 status)
+                  (:sum body)
+                  (throw (ex-info (str status " HTTP response")
+                                  {:http.response/status status
+                                   :service/error :service.errors/unexpected-http-response})))))))

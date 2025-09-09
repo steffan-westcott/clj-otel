@@ -1,21 +1,21 @@
-(ns example.average-service.async-chan-explicit.requests
-  "Requests to other microservices, core.async implementation using explicit
+(ns example.puzzle-service.async-d-explicit.requests
+  "Requests to other microservices, Manifold implementation using explicit
    context."
-  (:require [clojure.string :as str]
-            [com.xadecimal.async-style :as style]
-            [example.average-service.env :refer [config]]
-            [example.common.async.async-style :as style']
+  (:require [example.common.async.manifold :as d']
+            [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
+            [manifold.deferred :as d]
+            [reitit.ring :as ring]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
 
 
 (defn- <client-request
-  "Make an asynchronous HTTP request using `hato` and return a channel of the
+  "Make an asynchronous HTTP request using `hato` and return a deferred of the
    response."
   [client context request]
-  (style'/<respond-raise
+  (d'/<respond-raise
    (fn [respond raise]
      (let [request (conj request
                          {:async?           true
@@ -55,21 +55,25 @@
 
 
 
-(defn <get-sum
-  "Get the sum of the nums and return a channel of the result."
-  [{:keys [client]} context nums]
-  (let [endpoint  (get-in config [:endpoints :sum-service])
+(defn <get-random-word
+  "Get a random word string of the requested type and return a deferred of the
+   word."
+  [{:keys [client]} context word-type]
+  (let [endpoint  (get-in config [:endpoints :random-word-service])
         <response (<client-request client
                                    context
                                    {:method       :get
-                                    :url          (str endpoint "/sum")
-                                    :query-params {:nums (str/join "," nums)}
+                                    :url          (str endpoint "/random-word")
+                                    :query-params {:type (name word-type)}
                                     :accept       :json
                                     :as           :json})]
-    (style/then <response
-                (fn [{:keys [status body]}]
-                  (if (= 200 status)
-                    (:sum body)
-                    (throw (ex-info (str status " HTTP response")
-                                    {:http.response/status status
-                                     :service/error :service.errors/unexpected-http-response})))))))
+    (d/chain' <response
+              (fn [{:keys [status body]}]
+                (if (= 200 status)
+                  (:word body)
+                  (throw (ex-info "Unexpected HTTP response"
+                                  {:type          ::ring/response
+                                   :response      {:status status
+                                                   :body   {:error "Unexpected HTTP response"}}
+                                   :service/error :service.errors/unexpected-http-response})))))))
+

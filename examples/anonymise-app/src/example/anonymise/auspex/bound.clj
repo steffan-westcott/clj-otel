@@ -10,8 +10,9 @@
   [s]
   (span/async-bound-cf-span "Replacing names"
                             (aus/future
-                              (fn []
+                              (bound-fn []
                                 (Thread/sleep 100)
+                                (span/add-event! "Nearly done")
                                 (str/replace s #"\b(alice|bob)\b" "***")))))
 
 

@@ -43,19 +43,19 @@
   "Get a random word string of the requested type and return a
    `CompletableFuture` of the word."
   [{:keys [client]} word-type]
-  (let [endpoint (get-in config [:endpoints :random-word-service])]
-    (-> (<client-request client
-                         {:method       :get
-                          :url          (str endpoint "/random-word")
-                          :query-params {:type (name word-type)}
-                          :accept       :json
-                          :as           :json})
-        (aus/then (bound-fn [{:keys [status body]}]
-                    (if (= 200 status)
-                      (:word body)
-                      (throw (ex-info (str status " HTTP response")
-                                      {:type ::ring/response
-                                       :response {:status status
-                                                  :body   {:error "Unexpected HTTP response"}}
-                                       :service/error
-                                       :service.errors/unexpected-http-response}))))))))
+  (let [endpoint  (get-in config [:endpoints :random-word-service])
+        <response (<client-request client
+                                   {:method       :get
+                                    :url          (str endpoint "/random-word")
+                                    :query-params {:type (name word-type)}
+                                    :accept       :json
+                                    :as           :json})]
+    (aus/then <response
+              (fn [{:keys [status body]}]
+                (if (= 200 status)
+                  (:word body)
+                  (throw (ex-info (str status " HTTP response")
+                                  {:type          ::ring/response
+                                   :response      {:status status
+                                                   :body   {:error "Unexpected HTTP response"}}
+                                   :service/error :service.errors/unexpected-http-response})))))))

@@ -11,6 +11,7 @@
   (span/async-bound-cf-span "Replacing names"
                             (prom/future
                               (Thread/sleep 100)
+                              (span/add-event! "Nearly done")
                               (str/replace s #"\b(alice|bob)\b" "***"))))
 
 

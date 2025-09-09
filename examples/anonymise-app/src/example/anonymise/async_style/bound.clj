@@ -1,7 +1,6 @@
 (ns example.anonymise.async-style.bound
   "core.async with async-style library, using bound context"
-  (:require [clojure.core.async :as async]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
             [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -13,6 +12,7 @@
   (chan-span/async-bound-chan-span "Replacing names"
     (style/async
       (Thread/sleep 100)
+      (span/add-event! "Nearly done")
       (str/replace s #"\b(alice|bob)\b" "***"))))
 
 

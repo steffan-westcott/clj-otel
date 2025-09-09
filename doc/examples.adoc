@@ -55,6 +55,7 @@ This demonstrates creating spans around asynchronous code using several async li
 +
 ** https://github.com/xadecimal/async-style[`async-style`], a higher level library built on `core.async`
 ** https://github.com/mpenet/auspex/[`auspex`], a `CompletableFuture` wrapper
+** https://github.com/clj-commons/manifold[`Manifold`], asynchronous event library
 ** https://github.com/funcool/promesa[`promesa`], a `CompletableFuture` wrapper
 ** https://github.com/igrishaev/whew[`whew`], another `CompletableFuture` wrapper
 
@@ -321,6 +322,20 @@ SERVER=async-cf-bound ./up.sh
 [source,bash]
 ----
 SERVER=async-cf-explicit ./up.sh
+----
++
+** `Manifold` implementation, using bound context
++
+[source,bash]
+----
+SERVER=async-d-bound ./up.sh
+----
++
+** `Manifold` implementation, using explicit context
++
+[source,bash]
+----
+SERVER=async-d-explicit ./up.sh
 ----
 
 * For all other examples, run the following command

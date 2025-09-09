@@ -1,9 +1,9 @@
-(ns example.average-service.async-cf-bound.app
-  "Application logic, async CompletableFuture implementation using bound
-   context."
-  (:require [example.average-service.async-cf-bound.requests :as requests]
-            [qbits.auspex :as aus]
+(ns example.average-service.async-d-bound.app
+  "Application logic, Manifold implementation using bound context."
+  (:require [example.average-service.async-d-bound.requests :as requests]
+            [manifold.deferred :as d]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
+            [steffan-westcott.clj-otel.api.trace.d-span :as d-span]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
@@ -25,31 +25,30 @@
 
 
 (defn <average
-  "Calculate the average of the nums and return a `CompletableFuture` of the
-   result."
+  "Calculate the average of the nums and return a deferred of the result."
   [components nums]
 
-  ;; Wrap CompletableFuture with an asynchronous internal span.
-  (span/async-bound-cf-span ["Calculating average" {:system/nums nums}]
+  ;; Wrap deferred with an asynchronous internal span.
+  (d-span/async-bound-d-span ["Calculating average" {:system/nums nums}]
 
-                            (-> (requests/<get-sum components nums)
-                                (aus/then (bound-fn [sum]
-                                            (divide sum (count nums)))))))
+                             (-> (requests/<get-sum components nums)
+                                 (d/chain' (bound-fn [sum]
+                                             (divide sum (count nums)))))))
 
 
 
 (defn <averages
   "Calculates the averages of the odd numbers and the even numbers of nums and
-   returns a `CompletableFuture` of the result."
+   returns a deferred of the result."
   [{:keys [instruments]
     :as   components} nums]
   (let [odds  (filter odd? nums)
         evens (filter even? nums)]
-    (-> (aus/all [(when (seq odds)
-                    (<average components odds))
-                  (when (seq evens)
-                    (<average components evens))])
-        (aus/then
+    (-> (d/zip (when (seq odds)
+                 (<average components odds))
+               (when (seq evens)
+                 (<average components evens)))
+        (d/chain'
          (bound-fn [[odds-average evens-average]]
            (let [result {:odds  odds-average
                          :evens evens-average}]

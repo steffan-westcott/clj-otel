@@ -9,10 +9,12 @@
 (defn <replace-names
   "Returns a channel containing string `s` with names replaced by `***`."
   [context s]
-  (chan-span/chan-span-binding [_ {:parent context
-                                   :name   "Replacing names"}]
+  (chan-span/chan-span-binding [context* {:parent context
+                                          :name   "Replacing names"}]
     (style/async
       (Thread/sleep 100)
+      (span/add-span-data! {:context context*
+                            :event   {:name "Nearly done"}})
       (str/replace s #"\b(alice|bob)\b" "***"))))
 
 
