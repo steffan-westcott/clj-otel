@@ -4,7 +4,7 @@
  :deps    {org.clojure/clojure {:mvn/version "1.10.3"}
            com.github.steffan-westcott/clj-otel-api {:local/root "../clj-otel-api"}
            com.github.steffan-westcott/clj-otel-sdk-common {:local/root "../clj-otel-sdk-common"}
-           io.opentelemetry/opentelemetry-sdk {:mvn/version "1.53.0"}}
+           io.opentelemetry/opentelemetry-sdk {:mvn/version "1.54.0"}}
  :aliases {:release  {:override-deps {com.github.steffan-westcott/clj-otel-api        {:mvn/version "0.2.9"}
                                       com.github.steffan-westcott/clj-otel-sdk-common {:mvn/version "0.2.9"}}}
            :snapshot {:override-deps {com.github.steffan-westcott/clj-otel-api        {:mvn/version "0.2.9-SNAPSHOT"}

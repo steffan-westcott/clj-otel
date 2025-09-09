@@ -28,7 +28,7 @@
            info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.1.11"}
 
            ;; OpenTelemetry exporter that uses OTLP
-           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.53.0"}
+           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.54.0"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.19.0-alpha"}

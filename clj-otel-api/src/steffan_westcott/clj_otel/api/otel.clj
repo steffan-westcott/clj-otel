@@ -27,7 +27,7 @@
   "Sets the global `OpenTelemetry` instance declared by OpenTelemetry Java. The
    global instance may be set once only. Any attempts to set the global instance
    more than once will result in error."
-  [open-telemetry]
+  [^OpenTelemetry open-telemetry]
   (GlobalOpenTelemetry/set open-telemetry))
 
 (defn set-default-otel!

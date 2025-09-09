@@ -2,4 +2,4 @@
 
 {:paths ["src"]
  :deps  {org.clojure/clojure {:mvn/version "1.10.3"}
-         io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.53.0"}}}
+         io.opentelemetry/opentelemetry-exporter-logging {:mvn/version "1.54.0"}}}
