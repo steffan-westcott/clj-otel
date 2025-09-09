@@ -5,4 +5,5 @@
            steffan-westcott.clj-otel.api.trace.d-span/d-span-binding        clojure.core/let
            steffan-westcott.clj-otel.api.trace.d-span/d-span-binding'       clojure.core/let
            steffan-westcott.clj-otel.api.trace.span/cf-span-binding         clojure.core/let
+           steffan-westcott.clj-otel.api.trace.span/cf-span-binding'        clojure.core/let
            steffan-westcott.clj-otel.api.trace.span/with-span-binding       clojure.core/let}}

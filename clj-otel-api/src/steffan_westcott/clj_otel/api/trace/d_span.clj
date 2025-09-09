@@ -12,11 +12,15 @@
   `(d/chain' (d/future
                (span/new-span!' ~span-opts))
              (fn [context#]
-               (let [~context context#]
-                 (-> (do
+               (try
+                 (-> (let [~context context#]
                        ~@body)
                      (d/on-realized identity #(span/add-exception! % {:context context#}))
-                     (d/finally' #(span/end-span! {:context context#})))))))
+                     (d/finally' #(span/end-span! {:context context#})))
+                 (catch Throwable e#
+                   (span/add-exception! e# {:context context#})
+                   (span/end-span! {:context context#})
+                   (throw e#))))))
 
 (defmacro d-span-binding
   "Asynchronously starts a new span, binds `context` to the new context

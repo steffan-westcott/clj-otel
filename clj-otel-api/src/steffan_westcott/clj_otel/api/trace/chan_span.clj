@@ -11,13 +11,18 @@
 (defmacro ^:no-doc chan-span-binding'
   [[context span-opts] & body]
   `(async/go
-     (let [~context (span/new-span!' ~span-opts)
-           x#       (async/<! (do
-                                ~@body))]
-       (when (instance? Throwable x#)
-         (span/add-exception! x# {:context ~context}))
-       (span/end-span! {:context ~context})
-       x#)))
+     (let [~context (span/new-span!' ~span-opts)]
+       (try
+         (let [x# (async/<! (do
+                              ~@body))]
+           (when (instance? Throwable x#)
+             (span/add-exception! x# {:context ~context}))
+           (span/end-span! {:context ~context})
+           x#)
+         (catch Throwable e#
+           (span/add-exception! e# {:context ~context})
+           (span/end-span! {:context ~context})
+           (throw e#))))))
 
 (defmacro chan-span-binding
   "Asynchronously starts a new span, binds `context` to the new context

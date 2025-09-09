@@ -30,6 +30,7 @@
   "async-bound-chan-span" :arg1-body
   "bind-context!" :arg1-body
   "cf-span-binding" :binding
+  "cf-span-binding'" :binding
   "chan-span-binding" :binding
   "chan-span-binding'" :binding
   "d-span-binding" :binding

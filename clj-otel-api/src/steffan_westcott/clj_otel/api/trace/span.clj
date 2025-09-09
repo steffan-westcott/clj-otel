@@ -503,16 +503,13 @@
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
      (async-bound-span' span-opts# ~f ~respond ~raise)))
 
-(defmacro cf-span-binding
-  "Returns a `CompletableFuture` that starts a new span, binds `context` to the
-   new context containing the span and evaluates `body` which is expected give
-   a `CompletableFuture` that may use any specified `Executor`. The span is
-   ended on completion. Asynchronous functions within `body` should be defined
-   using `bound-fn` or similar to convey bindings."
+#_{:clj-kondo/ignore [:missing-docstring]}
+(defmacro ^:no-doc cf-span-binding'
   ^CompletableFuture [[context span-opts] & body]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
-     (.thenCompose (CompletableFuture/supplyAsync (util/supplier #(new-span!' span-opts#)))
-                   (util/function (bound-fn [context#]
+  `(.thenCompose (CompletableFuture/supplyAsync (util/supplier (bound-fn []
+                                                                 (new-span!' ~span-opts))))
+                 (util/function (bound-fn [context#]
+                                  (try
                                     (.whenComplete ^CompletableFuture
                                                    (let [~context context#]
                                                      ~@body)
@@ -522,7 +519,22 @@
                                                         (add-exception! (util/unwrap-cf-exception
                                                                          e#)
                                                                         {:context context#}))
-                                                      (end-span! {:context context#})))))))))
+                                                      (end-span! {:context context#}))))
+                                    (catch Throwable e#
+                                      (add-exception! e# {:context context#})
+                                      (end-span! {:context context#})
+                                      (throw e#)))))))
+
+(defmacro cf-span-binding
+  "Returns a `CompletableFuture` that starts a new span, binds `context` to the
+   new context containing the span and evaluates `body` which is expected give
+   a `CompletableFuture` that may use any specified `Executor`. The span is
+   ended on completion. Asynchronous functions within `body` should be defined
+   using `bound-fn` or similar to convey bindings."
+  ^CompletableFuture [[context span-opts] & body]
+  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+     (cf-span-binding' [~context span-opts#]
+       ~@body)))
 
 (defmacro async-bound-cf-span
   "Returns a `CompletableFuture` that starts a new span, sets the bound context
@@ -533,19 +545,9 @@
    context."
   ^CompletableFuture [span-opts & body]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
-     (.thenCompose (CompletableFuture/supplyAsync (util/supplier (bound-fn []
-                                                                   (new-span!' span-opts#))))
-                   (util/function (bound-fn [context#]
-                                    (.whenComplete
-                                     ^CompletableFuture
-                                     (context/bind-context! context#
-                                       ~@body)
-                                     (util/biconsumer (fn [_# e#]
-                                                        (when e#
-                                                          (add-exception! (util/unwrap-cf-exception
-                                                                           e#)
-                                                                          {:context context#}))
-                                                        (end-span! {:context context#})))))))))
+     (cf-span-binding' [context# span-opts#]
+       (context/bind-context! context#
+         ~@body))))
 
 (defn wrap-span
   "Ring middleware to create a span around subsequent request processing.
