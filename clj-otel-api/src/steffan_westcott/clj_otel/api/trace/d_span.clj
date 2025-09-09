@@ -9,15 +9,14 @@
 #_{:clj-kondo/ignore [:missing-docstring]}
 (defmacro ^:no-doc d-span-binding'
   [[context span-opts] & body]
-  `(let [span-opts# (span/span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
-     (d/chain' (d/future
-                 (span/new-span!' span-opts#))
-               (fn [context#]
-                 (let [~context context#]
-                   (-> (do
-                         ~@body)
-                       (d/on-realized identity #(span/add-exception! % {:context context#}))
-                       (d/finally' #(span/end-span! {:context context#}))))))))
+  `(d/chain' (d/future
+               (span/new-span!' ~span-opts))
+             (fn [context#]
+               (let [~context context#]
+                 (-> (do
+                       ~@body)
+                     (d/on-realized identity #(span/add-exception! % {:context context#}))
+                     (d/finally' #(span/end-span! {:context context#})))))))
 
 (defmacro d-span-binding
   "Asynchronously starts a new span, binds `context` to the new context
