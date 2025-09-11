@@ -1,24 +1,25 @@
 (ns example.sentence-summary-service.server
   "HTTP server and handler components."
-  (:require [example.sentence-summary-service.async-cf-bound.routes :as async-cf-bound-routes]
-            [example.sentence-summary-service.async-cf-explicit.routes :as async-cf-explicit-routes]
-            [example.sentence-summary-service.async-chan-bound.routes :as async-chan-bound-routes]
-            [example.sentence-summary-service.async-chan-explicit.routes :as
-             async-chan-explicit-routes]
-            [example.sentence-summary-service.async-d-bound.routes :as async-d-bound-routes]
-            [example.sentence-summary-service.async-d-explicit.routes :as async-d-explicit-routes]
-            [example.sentence-summary-service.env :refer [config]]
-            [example.sentence-summary-service.sync.routes :as sync-routes]
-            [muuntaja.core :as m]
-            [reitit.coercion.malli :as coercion-malli]
-            [reitit.ring :as ring]
-            [reitit.ring.coercion :as coercion]
-            [reitit.ring.middleware.exception :as exception]
-            [reitit.ring.middleware.muuntaja :as muuntaja]
-            [reitit.ring.middleware.parameters :as parameters]
-            [ring.adapter.jetty9 :as jetty]
-            [steffan-westcott.clj-otel.api.trace.http :as trace-http]
-            [steffan-westcott.clj-otel.api.trace.span :as span])
+  (:require
+    [example.sentence-summary-service.async-cf-bound.routes :as async-cf-bound-routes]
+    [example.sentence-summary-service.async-cf-explicit.routes :as async-cf-explicit-routes]
+    [example.sentence-summary-service.async-chan-bound.routes :as async-chan-bound-routes]
+    [example.sentence-summary-service.async-chan-explicit.routes :as async-chan-explicit-routes]
+    [example.sentence-summary-service.async-d-bound.routes :as async-d-bound-routes]
+    [example.sentence-summary-service.async-d-explicit.routes :as async-d-explicit-routes]
+    [example.sentence-summary-service.async-task-explicit.routes :as async-task-explicit-routes]
+    [example.sentence-summary-service.env :refer [config]]
+    [example.sentence-summary-service.sync.routes :as sync-routes]
+    [muuntaja.core :as m]
+    [reitit.coercion.malli :as coercion-malli]
+    [reitit.ring :as ring]
+    [reitit.ring.coercion :as coercion]
+    [reitit.ring.middleware.exception :as exception]
+    [reitit.ring.middleware.muuntaja :as muuntaja]
+    [reitit.ring.middleware.parameters :as parameters]
+    [ring.adapter.jetty9 :as jetty]
+    [steffan-westcott.clj-otel.api.trace.http :as trace-http]
+    [steffan-westcott.clj-otel.api.trace.span :as span])
   (:import (org.eclipse.jetty.server Server)))
 
 
@@ -43,6 +44,7 @@
     "async-chan-explicit" (async-chan-explicit-routes/routes components)
     "async-d-bound"     (async-d-bound-routes/routes components)
     "async-d-explicit"  (async-d-explicit-routes/routes components)
+    "async-task-explicit" (async-task-explicit-routes/routes components)
     "sync"              (sync-routes/routes components)))
 
 

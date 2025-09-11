@@ -49,6 +49,9 @@
            ;; Asynchronous event programming
            manifold/manifold {:mvn/version "0.4.3"}
 
+           ;; Functional effects and streaming
+           missionary/missionary {:mvn/version "b.46"}
+
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}
            metosin/malli {:mvn/version "0.19.1"}

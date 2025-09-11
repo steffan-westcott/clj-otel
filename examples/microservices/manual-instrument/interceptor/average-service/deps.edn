@@ -38,6 +38,9 @@
            io.pedestal/pedestal.route {:mvn/version "0.7.2"}
            io.pedestal/pedestal.service {:mvn/version "0.7.2"}
 
+           ;; Functional effects and streaming
+           missionary/missionary {:mvn/version "b.46"}
+
            ;; Common async utilities
            org.example/common.async {:local/root "../../../../common/async"}
 

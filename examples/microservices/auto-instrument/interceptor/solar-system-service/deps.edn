@@ -30,6 +30,9 @@
            ;; Asynchronous event programming
            manifold/manifold {:mvn/version "0.4.3"}
 
+           ;; Functional effects and streaming
+           missionary/missionary {:mvn/version "b.46"}
+
            ;; Common async utilities
            org.example/common.async {:local/root "../../../../common/async"}
 

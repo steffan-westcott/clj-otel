@@ -6,6 +6,7 @@
             [example.puzzle-service.async-chan-explicit.routes :as async-chan-explicit-routes]
             [example.puzzle-service.async-d-bound.routes :as async-d-bound-routes]
             [example.puzzle-service.async-d-explicit.routes :as async-d-explicit-routes]
+            [example.puzzle-service.async-task-explicit.routes :as async-task-explicit-routes]
             [example.puzzle-service.env :refer [config]]
             [example.puzzle-service.sync.routes :as sync-routes]
             [muuntaja.core :as m]
@@ -43,6 +44,7 @@
     "async-chan-explicit" (async-chan-explicit-routes/routes components)
     "async-d-bound"     (async-d-bound-routes/routes components)
     "async-d-explicit"  (async-d-explicit-routes/routes components)
+    "async-task-explicit" (async-task-explicit-routes/routes components)
     "sync"              (sync-routes/routes components)))
 
 

@@ -6,6 +6,7 @@
             [example.average-service.async-chan-explicit.routes :as async-chan-explicit-routes]
             [example.average-service.async-d-bound.routes :as async-d-bound-routes]
             [example.average-service.async-d-explicit.routes :as async-d-explicit-routes]
+            [example.average-service.async-task-explicit.routes :as async-task-explicit-routes]
             [example.average-service.env :refer [config]]
             [example.average-service.sync.routes :as sync-routes]
             [example.common.async.interceptor :as common-interceptor]
@@ -37,6 +38,7 @@
     "async-chan-explicit" (async-chan-explicit-routes/routes)
     "async-d-bound"     (async-d-bound-routes/routes)
     "async-d-explicit"  (async-d-explicit-routes/routes)
+    "async-task-explicit" (async-task-explicit-routes/routes)
     "sync"              (sync-routes/routes)))
 
 
