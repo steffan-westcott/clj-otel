@@ -5,16 +5,25 @@
                 example.common.async.async-style/style-span-binding clojure.core/let
                 example.common.async.auspex/route-span-binding clojure.core/let
                 example.common.async.manifold/route-span-binding clojure.core/let
+                example.common.async.missionary/route-span-binding clojure.core/let
                 com.xadecimal.async-style/clet clojure.core/let}
  :linters      {:consistent-alias  {:aliases {clojure.core.async async
                                               clojure.string str
+                                              com.xadecimal.async-style style
+                                              manifold.deferred d
+                                              missionary.core m
+                                              promesa.core prom
+                                              qbits.auspex aus
                                               steffan-westcott.clj-otel.api.attributes attr
                                               steffan-westcott.clj-otel.api.baggage baggage
                                               steffan-westcott.clj-otel.api.otel otel
-                                              steffan-westcott.clj-otel.sdk.otel-sdk sdk
+                                              steffan-westcott.clj-otel.api.trace.chan-span chan-span
+                                              steffan-westcott.clj-otel.api.trace.d-span d-span
                                               steffan-westcott.clj-otel.api.trace.http trace-http
                                               steffan-westcott.clj-otel.api.trace.span span
-                                              steffan-westcott.clj-otel.api.trace.chan-span chan-span
-                                              steffan-westcott.clj-otel.context context}}
+                                              steffan-westcott.clj-otel.api.trace.task-span task-span
+                                              steffan-westcott.clj-otel.context context
+                                              steffan-westcott.clj-otel.sdk.otel-sdk sdk
+                                              whew.core whew}}
                 :unsorted-required-namespaces {:level :warning}
                 :missing-docstring {:level :warning}}}

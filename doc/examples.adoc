@@ -337,6 +337,13 @@ SERVER=async-d-bound ./up.sh
 ----
 SERVER=async-d-explicit ./up.sh
 ----
++
+** `Missionary` implementation, using explicit context
++
+[source,bash]
+----
+SERVER=async-task-explicit ./up.sh
+----
 
 * For all other examples, run the following command
 +

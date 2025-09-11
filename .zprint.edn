@@ -35,6 +35,8 @@
   "chan-span-binding'" :binding
   "d-span-binding" :binding
   "d-span-binding'" :binding
+  "task-span-binding" :binding
+  "task-span-binding'" :binding
   "with-bound-context!" :flow-body
   "with-bound-span!" :arg1-body
   "with-context!" :arg1-body
@@ -61,6 +63,10 @@
 
   ;; Compojure
   "defroutes" :arg1-body
+
+  ;; Missionary
+  "sp" :flow-body
+  "via" :arg1-body
 
   ;; Promesa
   "future" :flow-body}}

@@ -119,8 +119,8 @@ Breaking API changes may still be made, but there should be few, if any.
 *** Trace semantics conventions support for https://github.com/open-telemetry/semantic-conventions/blob/main/docs/exceptions/exceptions-spans.md[recording exceptions] is complete.
 *** Trace semantics support for https://github.com/open-telemetry/semantic-conventions/blob/main/docs/http/http-spans.md[HTTP spans] in applications run without the OpenTelemetry instrumentation agent is limited.
 *** Support for wrapping asynchronous Clojure code in spans is complete.
-There is support for `core.async` channels, `CompletableFuture`, `Manifold` deferreds and a callback API.
-The examples include applications using `core.async` with https://github.com/xadecimal/async-style[`async-style`], `CompletableFuture` with https://github.com/mpenet/auspex/[`auspex`], https://github.com/funcool/promesa[`promesa`] and https://github.com/igrishaev/whew[`whew`], and https://github.com/clj-commons/manifold[`Manifold`] deferreds.
+There is support for `core.async` channels, `CompletableFuture`, `Manifold` deferreds, `Missionary` tasks and a callback API.
+The examples include applications using `core.async` with https://github.com/xadecimal/async-style[`async-style`], `CompletableFuture` with https://github.com/mpenet/auspex/[`auspex`], https://github.com/funcool/promesa[`promesa`] and https://github.com/igrishaev/whew[`whew`], https://github.com/clj-commons/manifold[`Manifold`] deferreds and https://github.com/leonoel/missionary[`Missionary`] tasks.
 There is also a demonstration https://clojure.github.io/core.async/index.html[`core.async.flow`] instrumented application.
 ** Coverage of the Metrics API is complete.
 *** Metrics HTTP semantics support for applications run without the OpenTelemetry instrumentation agent is very limited.

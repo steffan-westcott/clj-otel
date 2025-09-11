@@ -169,6 +169,25 @@ The new context containing the new span is bound to `context*` in this example:
     (<fetch-nums context* args))) ; deferred
 ----
 
+===== Create an asynchronous span around a `Missionary` task
+
+WARNING: Missionary does not support dynamic var bindings in tasks or flows.
+Therefore, it is not possible to use bound context.
+
+====== With explicit context
+
+* Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.task-span#task-span-binding[`steffan-westcott.clj-otel.api.trace.task-span/task-span-binding`] to wrap a task in a new span, where the context to use is passed in as the `:parent` option.
+The new context containing the new span is bound to `context*` in this example:
++
+[source,clojure]
+----
+(defn <get-nums [context args]
+  (task-span/task-span-binding [context* {:parent context
+                                          :name   "Getting numbers"
+                                          :kind   :client}]
+    (<fetch-nums context* args))) ; task
+----
+
 ===== Create an asynchronous span around code with callbacks
 
 ====== With bound context

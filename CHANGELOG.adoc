@@ -42,6 +42,7 @@ Support is provided for several async libraries:
 * `core.async`: Macros `chan-span/async-bound-chan-span` and `chan-span/chan-span-binding`
 * `CompletableFuture` compatible such as `auspex`, `promesa` and `whew`: Macros `span/async-bound-cf-span` and `span/cf-span-binding`
 * `Manifold`: Macros `d-span/async-bound-d-span` and `d-span/d-span-binding`
+* `Missionary`: Macro `task-span/task-span-binding`
 - [ADD] Refactored and extended microservice examples to demonstrate the new macros supporting async spans.
 - [ADD] New example `anonymise-app` that demonstrates async spans with several async libraries.
 - [ADD] New example `word-stream-app` that demonstrates manual instrumentation of a `core.async.flow` application.
