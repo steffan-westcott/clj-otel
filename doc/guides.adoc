@@ -83,6 +83,8 @@ Choose the relevant option based on the type of asynchronous code and use of bou
 NOTE: `clj-otel` supports creating spans around `core.async` channels which are settled with a single result or exception value.
 Channels used in this manner can be considered to work like promises.
 
+* Ensure `org.clojure/core.async` has been added as a dependency to your application.
+
 TIP: Consider using a higher level library for working with promise-like `core.async` channels, such as https://github.com/xadecimal/async-style[`async-style`].
 
 ====== With bound context
@@ -143,6 +145,8 @@ The new context containing the new span is bound to `context*` in this example:
 
 ===== Create an asynchronous span around a `Manifold` deferred
 
+* Ensure `manifold/manifold` has been added as a dependency to your application.
+
 ====== With bound context
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.d-span#async-bound-d-span[`steffan-westcott.clj-otel.api.trace.d-span/async-bound-d-span`] to wrap a deferred in a new span, where the context to use is the bound context:
@@ -170,6 +174,8 @@ The new context containing the new span is bound to `context*` in this example:
 ----
 
 ===== Create an asynchronous span around a `Missionary` task
+
+* Ensure `missionary/missionary` has been added as a dependency to your application.
 
 WARNING: Missionary does not support dynamic var bindings in tasks or flows.
 Therefore, it is not possible to use bound context.

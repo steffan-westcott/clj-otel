@@ -56,6 +56,7 @@ This demonstrates creating spans around asynchronous code using several async li
 ** https://github.com/xadecimal/async-style[`async-style`], a higher level library built on `core.async`
 ** https://github.com/mpenet/auspex/[`auspex`], a `CompletableFuture` wrapper
 ** https://github.com/clj-commons/manifold[`Manifold`], asynchronous event library
+** https://github.com/leonoel/missionary[`Missionary`], functional effect and streaming library
 ** https://github.com/funcool/promesa[`promesa`], a `CompletableFuture` wrapper
 ** https://github.com/igrishaev/whew[`whew`], another `CompletableFuture` wrapper
 
