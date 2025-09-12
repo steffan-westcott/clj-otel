@@ -13,11 +13,11 @@
            cc.qbits/auspex {:mvn/version "1.0.3"}
 
            ;; Cheshire JSON processing
-           cheshire/cheshire {:mvn/version "6.0.0"}
+           cheshire/cheshire {:mvn/version "6.1.0"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.19.2"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.19.2"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.20.0"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.20.0"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
@@ -37,8 +37,8 @@
            hato/hato {:mvn/version "1.0.0"}
 
            ;; Ring-Jetty web server integration
-           info.sunng/ring-jetty9-adapter {:mvn/version "0.37.6"}
-           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.1.11"}
+           info.sunng/ring-jetty9-adapter {:mvn/version "0.38.0"}
+           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.1"}
 
            ;; OpenTelemetry exporter that uses OTLP
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.54.0"}
@@ -91,5 +91,5 @@
 
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.1"}
-                                 nrepl/nrepl           {:mvn/version "1.3.1"}
+                                 nrepl/nrepl           {:mvn/version "1.4.0"}
                                  http-kit/http-kit     {:mvn/version "2.8.1"}}}}}
