@@ -30,7 +30,7 @@
                                      "-Dotel.logs.exporter=none"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
-                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.19.0-alpha"}
+                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.20.0-alpha"}
 
                                      ;; Enable export of telemetry using OpenTelemetry Protocol (OTLP)
                                      io.opentelemetry/opentelemetry-exporter-otlp       {:mvn/version "1.54.0"}
@@ -51,6 +51,6 @@
 
                                      ;; Add trace_id, span_id and trace_flags to Log4j2 NDC
                                      io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure
-                                     {:mvn/version "2.19.0-alpha"}}
+                                     {:mvn/version "2.20.0-alpha"}}
                         :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                                      "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}

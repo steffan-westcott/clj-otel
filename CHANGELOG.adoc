@@ -54,7 +54,7 @@ create spans. Note: `new-span!` is now a macro.
 - [ADD] New middleware `span/wrap-span` and `span/wrap-bound-span` to create a span around subsequent processing.
 These can be used as an alternative to the deprecated `wrap-exception-event` to record uncaught exceptions before they are transformed.
 - Bump deps
-* [MAINT] OpenTelemetry `1.54.0`, semconv `1.34.0`, instrumentation `2.19.0-alpha`
+* [MAINT] OpenTelemetry `1.54.0`, semconv `1.37.0`, instrumentation `2.20.0-alpha`
 
 === `0.2.8` (2025-05-22)
 
