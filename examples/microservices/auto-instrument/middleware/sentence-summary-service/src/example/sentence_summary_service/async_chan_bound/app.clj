@@ -22,26 +22,27 @@
 
 
 
-(defn- summary
-  "Returns a summary of the given word lengths."
+(defn- <summary
+  "Returns a channel of a summary of the given word lengths."
   [{:keys [instruments]} lengths]
+  (style/compute
 
-  ;; Wrap synchronous function body with an internal span.
-  (span/with-bound-span! ["Building sentence summary" {:system/word-lengths lengths}]
+    ;; Wrap synchronous function body with an internal span.
+    (span/with-bound-span! ["Building sentence summary" {:system/word-lengths lengths}]
 
-    (Thread/sleep 25)
-    (let [result {:words (count lengths)
-                  :shortest-length (apply min lengths)
-                  :longest-length (apply max lengths)}]
+      (Thread/sleep 25) ; pretend to be CPU intensive
+      (let [result {:words (count lengths)
+                    :shortest-length (apply min lengths)
+                    :longest-length (apply max lengths)}]
 
-      ;; Add more attributes to internal span
-      (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:words
-                                                                                       result)}})
+        ;; Add more attributes to internal span
+        (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:words
+                                                                                         result)}})
 
-      ;; Update words-count metric
-      (instrument/record! (:sentence-length instruments) {:value (count lengths)})
+        ;; Update words-count metric
+        (instrument/record! (:sentence-length instruments) {:value (count lengths)})
 
-      result)))
+        result))))
 
 
 
@@ -52,4 +53,4 @@
   (let [words (str/split sentence #",")]
     (-> (<word-lengths components words)
         (style/then (fn [lengths]
-                      (summary components lengths))))))
+                      (<summary components lengths))))))

@@ -2,6 +2,7 @@
   "Application logic, async CompletableFuture implementation using bound
    context."
   (:require [clojure.string :as str]
+            [example.common.async.exec :as exec]
             [example.puzzle-service.async-cf-bound.requests :as requests]
             [qbits.auspex :as aus]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -17,7 +18,7 @@
       ;; Wrap synchronous function body with an internal span.
       (span/with-bound-span! ["Scrambling word" {:system/word word}]
 
-        (Thread/sleep 5)
+        (Thread/sleep 5) ; pretend to be CPU intensive
         (let [scrambled-word (->> word
                                   seq
                                   shuffle
@@ -26,7 +27,8 @@
           ;; Add more attributes to internal span
           (span/add-span-data! {:attributes {:service.puzzle/scrambled-word scrambled-word}})
 
-          scrambled-word)))))
+          scrambled-word)))
+    exec/cpu))
 
 
 

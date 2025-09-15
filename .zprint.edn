@@ -64,6 +64,9 @@
   ;; Compojure
   "defroutes" :arg1-body
 
+  ;; Manifold
+  "future-with" :arg1-body
+
   ;; Missionary
   "sp" :flow-body
   "via" :arg1-body

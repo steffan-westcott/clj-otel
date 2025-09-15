@@ -27,7 +27,7 @@
   ;; Wrap synchronous function body with an internal span.
   (span/with-span! ["Building sentence summary" {:system/word-lengths lengths}]
 
-    (Thread/sleep 25)
+    (Thread/sleep 25) ; pretend to be CPU intensive
     (let [result {:words (count lengths)
                   :shortest-length (apply min lengths)
                   :longest-length (apply max lengths)}]

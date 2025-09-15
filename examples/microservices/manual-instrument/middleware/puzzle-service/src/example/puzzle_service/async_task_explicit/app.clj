@@ -19,7 +19,7 @@
                                        :name       "Scrambling word"
                                        :attributes {:system/word word}}]
 
-      (Thread/sleep 5)
+      (Thread/sleep 5) ; pretend to be CPU intensive
       (let [scrambled-word (->> word
                                 seq
                                 shuffle

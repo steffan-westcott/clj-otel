@@ -1,6 +1,7 @@
 (ns example.puzzle-service.async-d-bound.app
   "Application logic, Manifold implementation using bound context."
   (:require [clojure.string :as str]
+            [example.common.async.exec :as exec]
             [example.puzzle-service.async-d-bound.requests :as requests]
             [manifold.deferred :as d]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -11,12 +12,12 @@
 (defn <scramble
   "Given a word, returns a deferred containing a string of the scrambled word."
   [word]
-  (d/future
+  (d/future-with exec/cpu
 
     ;; Wrap synchronous function body with an internal span.
     (span/with-bound-span! ["Scrambling word" {:system/word word}]
 
-      (Thread/sleep 5)
+      (Thread/sleep 5) ; pretend to be CPU intensive
       (let [scrambled-word (->> word
                                 seq
                                 shuffle

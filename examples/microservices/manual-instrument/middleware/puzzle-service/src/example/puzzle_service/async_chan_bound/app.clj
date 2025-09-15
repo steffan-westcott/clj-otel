@@ -9,15 +9,14 @@
 
 
 (defn <scramble
-  "Given a word, returns a channel containing a string of the scrambled word.
-   This 'CPU intensive' function runs on the compute-pool."
+  "Given a word, returns a channel containing a string of the scrambled word."
   [word]
   (style/compute
 
     ;; Wrap synchronous function body with an internal span.
     (span/with-bound-span! ["Scrambling word" {:system/word word}]
 
-      (Thread/sleep 5)
+      (Thread/sleep 5) ; pretend to be CPU intensive
       (let [scrambled-word (->> word
                                 seq
                                 shuffle

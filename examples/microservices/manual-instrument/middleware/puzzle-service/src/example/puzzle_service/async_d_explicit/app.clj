@@ -1,6 +1,7 @@
 (ns example.puzzle-service.async-d-explicit.app
   "Application logic, Manifold implementation using explicit context."
   (:require [clojure.string :as str]
+            [example.common.async.exec :as exec]
             [example.puzzle-service.async-d-explicit.requests :as requests]
             [manifold.deferred :as d]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -11,7 +12,7 @@
 (defn <scramble
   "Given a word, returns a deferred containing a string of the scrambled word."
   [context word]
-  (d/future
+  (d/future-with exec/cpu
 
     ;; Wrap synchronous function body with an internal span. Context containing
     ;; internal span is assigned to `context*`.
@@ -19,7 +20,7 @@
                                        :name       "Scrambling word"
                                        :attributes {:system/word word}}]
 
-      (Thread/sleep 5)
+      (Thread/sleep 5) ; pretend to be CPU intensive
       (let [scrambled-word (->> word
                                 seq
                                 shuffle

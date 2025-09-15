@@ -2,29 +2,33 @@
   "Application logic, async CompletableFuture implementation using explicit
    context."
   (:require [example.average-service.async-cf-explicit.requests :as requests]
+            [example.common.async.exec :as exec]
             [qbits.auspex :as aus]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(defn divide
+(defn <divide
   "Divides x by y."
   [context x y]
+  (aus/future
+    (fn []
 
-  ;; Wrap synchronous function body with an internal span. Context containing
-  ;; internal span is assigned to `context*`.
-  (span/with-span-binding [context* {:parent     context
-                                     :name       "Calculating division"
-                                     :attributes {:service.average.divide/parameters [x y]}}]
+      ;; Wrap synchronous function body with an internal span. Context containing
+      ;; internal span is assigned to `context*`.
+      (span/with-span-binding [context* {:parent     context
+                                         :name       "Calculating division"
+                                         :attributes {:service.average.divide/parameters [x y]}}]
 
-    (Thread/sleep 10)
-    (let [result (double (/ x y))]
+        (Thread/sleep 10) ; pretend to be CPU intensive
+        (let [result (double (/ x y))]
 
-      ;; Add more attributes to internal span
-      (span/add-span-data! {:context    context*
-                            :attributes {:service.average.divide/result result}})
+          ;; Add more attributes to internal span
+          (span/add-span-data! {:context    context*
+                                :attributes {:service.average.divide/result result}})
 
-      result)))
+          result)))
+    exec/cpu))
 
 
 
@@ -40,8 +44,8 @@
                                    :attributes {:system/nums nums}}]
 
     (-> (requests/<get-sum components context* nums)
-        (aus/then (fn [sum]
-                    (divide context* sum (count nums)))))))
+        (aus/fmap (fn [sum]
+                    (<divide context* sum (count nums)))))))
 
 
 

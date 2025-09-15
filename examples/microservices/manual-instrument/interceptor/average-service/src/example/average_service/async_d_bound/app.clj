@@ -1,26 +1,28 @@
 (ns example.average-service.async-d-bound.app
   "Application logic, Manifold implementation using bound context."
   (:require [example.average-service.async-d-bound.requests :as requests]
+            [example.common.async.exec :as exec]
             [manifold.deferred :as d]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.d-span :as d-span]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
-(defn divide
-  "Divides x by y."
+(defn <divide
+  "Divides x by y and returns a deferred of the result."
   [x y]
+  (d/future-with exec/cpu
 
-  ;; Wrap synchronous function body with an internal span.
-  (span/with-bound-span! ["Calculating division" {:service.average.divide/parameters [x y]}]
+    ;; Wrap synchronous function body with an internal span.
+    (span/with-bound-span! ["Calculating division" {:service.average.divide/parameters [x y]}]
 
-    (Thread/sleep 10)
-    (let [result (double (/ x y))]
+      (Thread/sleep 10) ; pretend to be CPU intensive
+      (let [result (double (/ x y))]
 
-      ;; Add more attributes to internal span
-      (span/add-span-data! {:attributes {:service.average.divide/result result}})
+        ;; Add more attributes to internal span
+        (span/add-span-data! {:attributes {:service.average.divide/result result}})
 
-      result)))
+        result))))
 
 
 
@@ -33,7 +35,7 @@
 
                              (-> (requests/<get-sum components nums)
                                  (d/chain' (bound-fn [sum]
-                                             (divide sum (count nums)))))))
+                                             (<divide sum (count nums)))))))
 
 
 

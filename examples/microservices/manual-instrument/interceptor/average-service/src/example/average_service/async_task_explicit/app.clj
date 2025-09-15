@@ -18,7 +18,7 @@
                                        :name       "Calculating division"
                                        :attributes {:service.average.divide/parameters [x y]}}]
 
-      (Thread/sleep 10)
+      (Thread/sleep 10) ; pretend to be CPU intensive
       (let [result (double (/ x y))]
 
         ;; Add more attributes to internal span

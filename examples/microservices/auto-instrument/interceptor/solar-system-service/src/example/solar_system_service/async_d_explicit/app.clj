@@ -2,6 +2,7 @@
   "Application logic, async Manifold implementation using explicit
    context."
   (:require [clojure.string :as str]
+            [example.common.async.exec :as exec]
             [example.solar-system-service.async-d-explicit.requests :as requests]
             [manifold.deferred :as d]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -29,34 +30,40 @@
 
 
 
-(defn format-report
-  "Returns a report string of the given planet and statistic values."
+(defn <format-report
+  "Returns a deferred of a report string of the given planet and statistic values."
   [{:keys [instruments]} context planet statistic-values]
+  (d/future-with exec/cpu
 
-  ;; Wrap synchronous function body with an internal span. Context containing
-  ;; internal span is assigned to `context*`.
-  (span/with-span-binding [context* {:parent     context
-                                     :name       "Formatting report"
-                                     :attributes {:system/planet planet
-                                                  :service.solar-system.report/statistic-values
-                                                  statistic-values}}]
+    ;; Wrap synchronous function body with an internal span. Context containing
+    ;; internal span is assigned to `context*`.
+    (span/with-span-binding [context* {:parent     context
+                                       :name       "Formatting report"
+                                       :attributes {:system/planet planet
+                                                    :service.solar-system.report/statistic-values
+                                                    statistic-values}}]
 
-    (Thread/sleep 25)
-    (let [planet' (str/capitalize (name planet))
-          {:keys [diameter gravity]} statistic-values
-          report
-          (str "The planet " planet' " has diameter " diameter "km and gravity " gravity "m/s^2.")]
+      (Thread/sleep 25) ; pretend to be CPU intensive
+      (let [planet' (str/capitalize (name planet))
+            {:keys [diameter gravity]} statistic-values
+            report  (str "The planet "
+                         planet'
+                         " has diameter "
+                         diameter
+                         "km and gravity "
+                         gravity
+                         "m/s^2.")]
 
-      ;; Add more attributes to internal span
-      (span/add-span-data! {:context    context*
-                            :attributes {:service.solar-system.report/length (count report)}})
+        ;; Add more attributes to internal span
+        (span/add-span-data! {:context    context*
+                              :attributes {:service.solar-system.report/length (count report)}})
 
-      ;; Update report-count metric
-      (instrument/add! (:reports-created instruments)
-                       {:context context*
-                        :value   1})
+        ;; Update report-count metric
+        (instrument/add! (:reports-created instruments)
+                         {:context context*
+                          :value   1})
 
-      report)))
+        report))))
 
 
 
@@ -66,4 +73,4 @@
   [components context planet]
   (-> (<planet-statistics components context planet)
       (d/chain' (fn [statistics]
-                  (format-report components context planet statistics)))))
+                  (<format-report components context planet statistics)))))

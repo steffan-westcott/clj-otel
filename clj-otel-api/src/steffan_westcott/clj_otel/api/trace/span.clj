@@ -385,10 +385,8 @@
 (defmacro with-span-binding
   "Starts a new span, binds `context` to the new context containing the span
    and evaluates `body`. The span is ended on completion of body evaluation.
-   It is expected `body` provides a synchronous result, use [[async-span]],
-   [[async-bound-span]], [[cf-span-binding]] or [[async-bound-cf-span]] instead
-   for working with asynchronous functions. Does not use nor set the current
-   context. `span-opts` is the same as for [[new-span!]]. See also
+   It is expected `body` provides a synchronous result. Does not use nor set
+   the current context. `span-opts` is the same as for [[new-span!]]. See also
    [[with-span!]] and [[with-bound-span!]]."
   [[context span-opts] & body]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
@@ -399,10 +397,9 @@
   "Starts a new span, sets the current context to the new context containing
    the span and evaluates `body`. The current context is restored to its
    previous value and the span is ended on completion of body evaluation.
-   It is expected `body` provides a synchronous result, use [[async-span]],
-   [[async-bound-span]], [[cf-span-binding]] or [[async-bound-cf-span]] instead
-   for working with asynchronous functions. `span-opts` is the same as for
-   [[new-span!]]. See also [[with-bound-span!]] and [[with-span-binding]]."
+   It is expected `body` provides a synchronous result. `span-opts` is the same
+   as for [[new-span!]]. See also [[with-bound-span!]] and
+   [[with-span-binding]]."
   [span-opts & body]
   `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
      (with-span-binding' [context# span-opts#]
@@ -413,9 +410,7 @@
   "Starts a new span, sets the bound context to the new context containing the
    span and evaluates `body`. The bound context is restored to its previous
    value and the span is ended on completion of body evaluation. It is expected
-   `body` provides a synchronous result, use [[async-span]],
-   [[async-bound-span]], [[cf-span-binding]] or [[async-bound-cf-span]] instead
-   for working with asynchronous functions. Does not use nor set the current
+   `body` provides a synchronous result. Does not use nor set the current
    context. `span-opts` is the same as for [[new-span!]]. See also
    [[with-span!]] and [[with-span-binding]]."
   [span-opts & body]

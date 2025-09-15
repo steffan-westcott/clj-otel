@@ -29,7 +29,7 @@
                     {:system/planet planet
                      :service.solar-system.report/statistic-values statistic-values}]
 
-    (Thread/sleep 25)
+    (Thread/sleep 25) ; pretend to be CPU intensive
     (let [planet' (str/capitalize (name planet))
           {:keys [diameter gravity]} statistic-values
           report
