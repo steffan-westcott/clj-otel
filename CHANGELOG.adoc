@@ -24,14 +24,14 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
-=== `0.2.9` (in progress)
+=== `0.2.9` (2025-09-15)
 
 - [FIX] [BREAK] Added option `:set-bound-context?` to `server-span-interceptors`, with default `false`.
 Previously, bound context was always set, which prevented correct use of current context in subsequent processing.
 - [FIX] In HTTP server spans, ensure values of multiple request headers with same name are captured as an array.
 Also, do not normalize `-` to `_` in header names.
 - [FIX] More robust processing of potentially incomplete Ring request maps to extract server span attributes.
-- [FIX] To ensure HTTP/2 compatibility, read server name and port from Ring request map rather than `Host` header, which is supported in HTTP/1.1 only.
+- [FIX] To ensure HTTP/2 compatibility, read server name and port from Ring request map rather than `Host` header, which is mandatory in HTTP/1.1 only.
 - [FIX] Pass HTTP route data to the instrumentation agent when present.
 This ensures measurements captured by the agent for HTTP server span metrics have the `http.route` attribute.
 - [FIX] Ensure provided interceptors correctly set attributes for manually created HTTP server span metrics.
