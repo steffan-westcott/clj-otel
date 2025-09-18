@@ -24,6 +24,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
+=== `0.2.10` (in progress)
+
 === `0.2.9` (2025-09-15)
 
 - [FIX] [BREAK] Added option `:set-bound-context?` to `server-span-interceptors`, with default `false`.
