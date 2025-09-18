@@ -177,11 +177,7 @@
 (defmacro new-span!
   "Low level macro that starts a new span and returns the context containing
    the new span. Does not mutate the current context. The span must be ended by
-   evaluating [[end-span!]] to avoid broken traces and memory leaks. Use higher
-   level helpers [[with-span!]], [[with-bound-span!]], [[with-span-binding]],
-   [[async-span]], [[async-bound-span]], [[cf-span-binding]] or
-   [[async-bound-cf-span]] instead of this macro to reliably manage the context
-   and end the span.
+   evaluating [[end-span!]] to avoid broken traces and memory leaks.
 
    `span-opts` is a single expression that may be one of several types.
 

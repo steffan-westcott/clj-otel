@@ -97,8 +97,13 @@ The following sections are incomplete selections of open-source software (OSS) a
 
 === OSS telemetry visualization backends
 
+* https://github.com/coroot/coroot[Coroot]
+* https://www.elastic.co/observability/application-performance-monitoring[Elastic APM]
 * https://grafana.com/[Grafana]
 * https://www.jaegertracing.io/[Jaeger]
+* https://github.com/oneuptime/oneuptime[OneUptime]
+* https://openobserve.ai/[OpenObserve]
+* https://github.com/parseablehq/parseable[Parseable]
 * https://prometheus.io/[Prometheus]
 * https://signoz.io/[SigNoz]
 * https://zipkin.io/[Zipkin]
@@ -112,30 +117,32 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://aws.amazon.com/xray/[AWS X-Ray]
 * https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview[Azure Application Insights]
 * https://betterstack.com/[Better Stack]
+* https://www.bugsnag.com/[Bugsnag]
 * https://www.causely.io/[Causely]
 * https://chronosphere.io/[Chronosphere]
 * https://coralogix.com/[Coralogix]
 * https://www.dash0.com/[Dash0]
 * https://www.datadoghq.com/[Datadog]
 * https://www.dynatrace.com/[Dynatrace]
-* https://www.elastic.co/observability/application-performance-monitoring[Elastic APM]
 * https://gigapipe.com/qryn/[Gigapipe qryn]
 * https://cloud.google.com/trace[Google Cloud Trace]
 * https://grafana.com/products/cloud/[Grafana Cloud]
+* https://www.groundcover.com/[groundcover]
 * https://gethelios.dev/[Helios]
 * https://www.honeycomb.io/[Honeycomb]
 * https://www.hyperdx.io/[HyperDX]
 * https://www.instana.com/[Instana]
 * https://www.kloudfuse.com/[Kloudfuse]
 * https://www.kloudmate.com/[KloudMate]
+* https://last9.io/[Last9]
 * https://www.logicmonitor.com/[LogicMonitor]
 * https://logz.io/[Logz.io]
 * https://lumigo.io/[Lumigo]
 * https://newrelic.com/[New Relic]
 * https://www.observeinc.com/[Observe Inc.]
 * https://oneuptime.com/[OneUptime]
-* https://openobserve.ai/[OpenObserve]
 * https://docs.oracle.com/en-us/iaas/application-performance-monitoring/index.html[Oracle Cloud Infrastructure APM]
+* https://www.randoli.io/[Randoli]
 * https://www.servicenow.com/products/observability.html[ServiceNow Cloud Observability]
 * https://www.servicepilot.com/[ServicePilot]
 * https://www.splunk.com/en_us/products/apm-application-performance-monitoring.html[Splunk APM]
@@ -447,8 +454,10 @@ The following are alternative telemetry projects in the Clojure ecosystem, conce
 
 * https://github.com/BrunoBonacci/mulog[μ/log] : Micro-logging library that logs events and data, not words
 * https://github.com/taoensso/telemere[Telemere] : Structured telemetry library for Clojure/Script, with native OpenTelemetry support
+* https://github.com/taoensso/trove[Trove] : Logging facade, alternative to `tools.logging`
 * https://github.com/amperity/ken[ken] : Observability library to instrument Clojure code
-* https://github.com/henryw374/clojure.log4j2[clojure.log4j2] : Sugar for using https://logging.apache.org/log4j/2.x/[Log4j2] from clojure, including `MapMessage` support
+* https://github.com/seancorfield/logging4j2[logging4j2] : Clojure wrapper for https://logging.apache.org/log4j/2.x/[Log4j2]
+* https://github.com/henryw374/clojure.log4j2[clojure.log4j2] : Sugar for using Log4j2 from clojure, including `MapMessage` support
 * https://github.com/viesti/timbre-json-appender[timbre-json-appender] : Structured log appender for Timbre using jsonista
 * https://github.com/logicblocks/cartus[cartus] : Structured logging abstraction with multiple backends
 * https://cambium-clojure.github.io/[Cambium] : Structured logging for Clojure
