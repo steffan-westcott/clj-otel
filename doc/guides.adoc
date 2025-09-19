@@ -822,7 +822,7 @@ For an example application `my-app` that exports traces only using OTLP over gRP
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"
                      "-Dotel.exporter.otlp.traces.protocol=grpc"]
-          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.54.0"}
+          :extra-deps {io.opentelemetry/opentelemetry-exporter-otlp               {:mvn/version "1.54.1"}
                        io.opentelemetry.instrumentation/opentelemetry-resources   {:mvn/version "2.20.0-alpha"}
                        io.grpc/grpc-netty-shaded                                  {:mvn/version "1.75.0"}
                        io.grpc/grpc-protobuf                                      {:mvn/version "1.75.0"}
