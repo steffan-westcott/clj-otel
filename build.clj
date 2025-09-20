@@ -103,7 +103,7 @@ clojure -A:deps -T:build help/doc"
   (delay (b/git-process {:git-args "rev-parse HEAD"})))
 
 (defn- artifact-opts
-  [{:keys [aliases artifact-id group-id root-path tag]}]
+  [{:keys [aliases artifact-id group-id main root-path tag uber-classifier]}]
   {:artifact-id       artifact-id
    :basis             (b/create-basis {:aliases aliases})
    :class-dir         "target/classes"
@@ -111,26 +111,35 @@ clojure -A:deps -T:build help/doc"
    :group-id          group-id
    :jar-file          (format "target/%s-%s.jar" artifact-id version)
    :lib               (symbol group-id artifact-id)
+   :main              main
+   :native-file       (format "target/%s" artifact-id)
    :resource-dirs     ["resources"]
    :root-path         root-path
    :scm               {:tag tag}
    :src-dirs          ["src"]
    :src-pom           "template/pom.xml"
    :target-dir        "target"
+   :uber-file         (format "target/%s-%s.jar" artifact-id uber-classifier)
    :version           version})
 
 (defn- project-artifact-opts
-  [root-path]
-  (artifact-opts {:artifact-id (artifact-id root-path)
-                  :aliases     (when
-                                 (library-project? root-path)
-                                 [(if snapshot?
-                                    :snapshot
-                                    :release)])
-                  :group-id    (group-id root-path)
-                  :root-path   root-path
-                  :tag         (when (library-project? root-path)
-                                 @head-sha-1)}))
+  ([root-path] (project-artifact-opts root-path {}))
+  ([root-path opts]
+   (artifact-opts {:artifact-id     (artifact-id root-path)
+                   :aliases         (into (if (library-project? root-path)
+                                            (if snapshot?
+                                              [:snapshot]
+                                              [:release])
+                                            [:otel])
+                                          (:aliases opts))
+                   :group-id        (group-id root-path)
+                   :root-path       root-path
+                   :main            (or (:main opts)
+                                        (when-not (library-project? root-path)
+                                          (symbol (str "example." (artifact-id root-path)))))
+                   :tag             (when (library-project? root-path)
+                                      @head-sha-1)
+                   :uber-classifier (or (:uber-classifier opts) "all")})))
 
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
@@ -227,15 +236,41 @@ clojure -A:deps -T:build help/doc"
   (println "Cleaning build dir" target-dir "...")
   (b/delete {:path target-dir}))
 
-(defn- jar-artifact
-  [{:keys [class-dir jar-file resource-dirs src-dirs]
+(defn- src-artifact
+  [{:keys [class-dir resource-dirs src-dirs]
     :as   opts}]
   (clean-artifact opts)
+  (println "Copying src and resource dirs ...")
+  (b/copy-dir {:src-dirs   (into src-dirs resource-dirs)
+               :target-dir class-dir}))
+
+(defn- jar-artifact
+  [{:keys [jar-file]
+    :as   opts}]
+  (src-artifact opts)
   (write-pom* opts)
   (println "Building jar" jar-file "...")
-  (b/copy-dir {:src-dirs   (into src-dirs resource-dirs)
-               :target-dir class-dir})
   (b/jar opts))
+
+(defn- uberjar-artifact
+  [{:keys [uber-file]
+    :as   opts}]
+  (src-artifact opts)
+  (println "Compiling Clojure source files ...")
+  (b/compile-clj opts)
+  (println "Building AOT compiled uberjar" uber-file "...")
+  (b/uber opts))
+
+(defn- native-artifact
+  [{:keys [native-file uber-file]
+    :as   opts}]
+  (uberjar-artifact opts)
+  (println "Compiling native image ...")
+  (checked-process {:command-args ["native-image"   ;
+                                   "-jar" uber-file ;
+                                   "--features=clj_easy.graal_build_time.InitClojureClasses" ;
+                                   "--no-fallback" ;
+                                   "-o" native-file]}))
 
 (defn- install-artifact
   [{:keys [group-id artifact-id]
@@ -265,6 +300,28 @@ clojure -A:deps -T:build help/doc"
   (doseq [root-path project-paths]
     (b/with-project-root root-path
       (clean-artifact {:target-dir "target"}))))
+
+(defn uber
+  "Build uberjar for demo project that has -main fn.
+
+  Invoke with e.g.
+  clojure -T:build uber :path '\"examples/divisor-app\"'"
+  [{:keys [path]}]
+  (b/with-project-root path
+    (uberjar-artifact (project-artifact-opts path))))
+
+(defn native
+  "Build native executable for demo project that has -main fn. Assumes a
+  working installation of GraalVM native-image. Also assumes project alias
+  :native that has extra-dep com.github.clj-easy/graal-build-time.
+
+  Invoke with e.g.
+  clojure -T:build native :path '\"examples/divisor-app\"'"
+  [{:keys [path]}]
+  (b/with-project-root path
+    (native-artifact (project-artifact-opts path
+                                            {:aliases         [:native]
+                                             :uber-classifier "native"}))))
 
 (defn install
   "Build all clj-otel-* library JAR files then install them in the local Maven

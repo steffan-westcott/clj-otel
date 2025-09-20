@@ -13,7 +13,8 @@
     [steffan-westcott.clj-otel.resource.resources :as res]
     [steffan-westcott.clj-otel.sdk.meter-provider :as meter]
     [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk])
-  (:import (java.util.concurrent TimeUnit)))
+  (:import (java.util.concurrent TimeUnit))
+  (:gen-class))
 
 (defonce
   ^{:doc "Delay containing a counter that records the number of factorials
@@ -27,11 +28,12 @@
 
 
 (defn init-otel!
-  "Configure and initialise the OpenTelemetry SDK as the global OpenTelemetry
+  "Configure and initialise the OpenTelemetry SDK as the default OpenTelemetry
    instance used by the application. This function should be evaluated before
    performing any OpenTelemetry API operations such as tracing. This function
    may be evaluated once only, any attempts to evaluate it more than once will
-   result in error."
+   result in error. A shutdown hook is registered that close the OpenTelemetry
+   instance when the application closes."
   []
   (sdk/init-otel-sdk!
 
@@ -80,14 +82,6 @@
 
 
 
-(defn close-otel!
-  "Shut down OpenTelemetry SDK processes. This should be called before the
-   application exits."
-  []
-  (sdk/close-otel-sdk!))
-
-
-
 (defn factorial
   "Returns the factorial of a number."
   [n]
@@ -97,6 +91,15 @@
          inc
          (range 1)
          (reduce *))))
+
+
+
+(defn -main
+  "Application Uberjar/native entry point. Programmatically configures
+   OpenTelemetry and exercises the application."
+  [& _args]
+  (init-otel!)
+  (println (factorial 5)))
 
 
 

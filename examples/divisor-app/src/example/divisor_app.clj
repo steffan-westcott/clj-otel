@@ -3,7 +3,8 @@
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
              runtime-telemetry]
-            [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig]))
+            [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig])
+  (:gen-class))
 
 (defonce
   ^{:doc "Delay containing counter that records the number of greatest common divisors calculated."}
@@ -14,11 +15,14 @@
                                  :description
                                  "The number of greatest common divisors calculated"})))
 
+
 (defn- gcd*
   [x y]
   (if (zero? x)
     y
     (recur (mod y x) x)))
+
+
 
 (defn gcd
   "Returns the greatest common divisor of x and y."
@@ -27,6 +31,16 @@
     (span/add-event! "my event")
     (instrument/add! @gcd-count {:value 1})
     (gcd* x y)))
+
+
+
+(defn -main
+  "Application Uberjar/native entry point. Initialises autoconfigured
+   OpenTelemetry and exercises the application."
+  [& _args]
+  (autoconfig/init-otel-sdk!)
+  (println (gcd 18 24)))
+
 
 ;;;;;;;;;;;;;
 

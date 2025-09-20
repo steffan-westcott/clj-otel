@@ -53,4 +53,7 @@
                                      io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure
                                      {:mvn/version "2.20.0-alpha"}}
                         :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                                     "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}
+                                     "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
+
+           ;; Initialise Clojure classes at build time with GraalVM native-image
+           :native     {:extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}}}}}
