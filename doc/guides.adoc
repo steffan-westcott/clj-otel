@@ -94,8 +94,8 @@ TIP: Consider using a higher level library for working with promise-like `core.a
 [source,clojure]
 ----
 (defn <get-nums [args]
-  (chan-span/async-bound-chan-span {:name "Getting numbers"
-                                    :kind :client}
+  (chan-span/async-bound-chan-span {:name      "Getting numbers"
+                                    :span-kind :client}
     (<fetch-nums args))) ; channel
 ----
 
@@ -107,9 +107,9 @@ The new context containing the new span is bound to `context*` in this example:
 [source,clojure]
 ----
 (defn <get-nums [context args]
-  (chan-span/chan-span-binding [context* {:parent context
-                                          :name   "Getting numbers"
-                                          :kind   :client}]
+  (chan-span/chan-span-binding [context* {:parent    context
+                                          :name      "Getting numbers"
+                                          :span-kind :client}]
     (<fetch-nums context* args))) ; channel
 ----
 
@@ -124,8 +124,8 @@ TIP: There are several libraries available that wrap Java's `CompletableFuture` 
 [source,clojure]
 ----
 (defn <get-nums [args]
-  (span/async-bound-cf-span {:name "Getting numbers"
-                             :kind :client}
+  (span/async-bound-cf-span {:name      "Getting numbers"
+                             :span-kind :client}
     (<fetch-nums args))) ; CompletableFuture
 ----
 
@@ -137,9 +137,9 @@ The new context containing the new span is bound to `context*` in this example:
 [source,clojure]
 ----
 (defn <get-nums [context args]
-  (span/cf-span-binding [context* {:parent context
-                                   :name   "Getting numbers"
-                                   :kind   :client}]
+  (span/cf-span-binding [context* {:parent    context
+                                   :name      "Getting numbers"
+                                   :span-kind :client}]
     (<fetch-nums context* args))) ; CompletableFuture
 ----
 
@@ -154,8 +154,8 @@ The new context containing the new span is bound to `context*` in this example:
 [source,clojure]
 ----
 (defn <get-nums [args]
-  (d-span/async-bound-d-span {:name "Getting numbers"
-                              :kind :client}
+  (d-span/async-bound-d-span {:name      "Getting numbers"
+                              :span-kind :client}
     (<fetch-nums args))) ; deferred
 ----
 
@@ -167,9 +167,9 @@ The new context containing the new span is bound to `context*` in this example:
 [source,clojure]
 ----
 (defn <get-nums [context args]
-  (d-span/d-span-binding [context* {:parent context
-                                    :name   "Getting numbers"
-                                    :kind   :client}]
+  (d-span/d-span-binding [context* {:parent    context
+                                    :name      "Getting numbers"
+                                    :span-kind :client}]
     (<fetch-nums context* args))) ; deferred
 ----
 
@@ -188,9 +188,9 @@ The new context containing the new span is bound to `context*` in this example:
 [source,clojure]
 ----
 (defn <get-nums [context args]
-  (task-span/task-span-binding [context* {:parent context
-                                          :name   "Getting numbers"
-                                          :kind   :client}]
+  (task-span/task-span-binding [context* {:parent    context
+                                          :name      "Getting numbers"
+                                          :span-kind :client}]
     (<fetch-nums context* args))) ; task
 ----
 
@@ -204,8 +204,8 @@ The new span ends when either success/failure callback `respond`/`raise` is eval
 [source,clojure]
 ----
 (defn get-nums-async [args respond raise]
-  (span/async-bound-span {:name "Getting numbers"
-                          :kind :client}
+  (span/async-bound-span {:name      "Getting numbers"
+                          :span-kind :client}
     (fn [respond* raise*]
       (fetch-nums-async args respond* raise*))
       respond
@@ -220,9 +220,9 @@ The new spans ends when either success/failure callback `respond`/`raise` is eva
 [source,clojure]
 ----
 (defn get-nums-async [context args respond raise]
-  (span/async-span {:parent context
-                    :name   "Getting numbers"
-                    :kind   :client}
+  (span/async-span {:parent    context
+                    :name      "Getting numbers"
+                    :span-kind :client}
     (fn [context* respond* raise*]
       (fetch-nums-async context* args respond* raise*))
       respond
