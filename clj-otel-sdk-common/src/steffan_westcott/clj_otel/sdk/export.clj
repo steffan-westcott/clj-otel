@@ -35,7 +35,9 @@
     (ProxyOptions/create proxy-selector)
     (ProxyOptions/create socket-address)))
 
-(def ^:no-doc keyword->MemoryMode
-  "Map from keyword to MemoryMode. Internal use only."
-  {:reusable-data  MemoryMode/REUSABLE_DATA
-   :immutable-data MemoryMode/IMMUTABLE_DATA})
+(defn ^:no-doc keyword->MemoryMode
+  "Given a keyword, returns MemoryMode. Internal use only."
+  ^MemoryMode [k]
+  (case k
+    :reusable-data  MemoryMode/REUSABLE_DATA
+    :immutable-data MemoryMode/IMMUTABLE_DATA))

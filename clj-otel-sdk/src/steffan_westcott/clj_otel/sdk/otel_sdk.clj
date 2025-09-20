@@ -176,7 +176,7 @@
     :or   {set-as-default         true
            set-as-global          false
            register-shutdown-hook true
-           propagators            propagators/default}}]
+           propagators            (propagators/default)}}]
   (let [resource (res/merge-resources-with-default service-name resources)
         builder  (doto (OpenTelemetrySdk/builder)
                    (.setPropagators (propagators/context-propagators propagators))

@@ -60,17 +60,21 @@
   ^Tracer []
   (swap! default-tracer #(or % (get-tracer))))
 
-(def ^:private keyword->StatusCode
-  {:unset StatusCode/UNSET
-   :ok    StatusCode/OK
-   :error StatusCode/ERROR})
+(defn ^:private keyword->StatusCode
+  ^StatusCode [k]
+  (case k
+    :unset StatusCode/UNSET
+    :ok    StatusCode/OK
+    :error StatusCode/ERROR))
 
-(def ^:private keyword->SpanKind
-  {:internal SpanKind/INTERNAL
-   :server   SpanKind/SERVER
-   :client   SpanKind/CLIENT
-   :producer SpanKind/PRODUCER
-   :consumer SpanKind/CONSUMER})
+(defn ^:private keyword->SpanKind
+  ^SpanKind [k]
+  (case k
+    :internal SpanKind/INTERNAL
+    :server   SpanKind/SERVER
+    :client   SpanKind/CLIENT
+    :producer SpanKind/PRODUCER
+    :consumer SpanKind/CONSUMER))
 
 (defn get-span
   "Gets the span from a given context, or the bound or current context if none

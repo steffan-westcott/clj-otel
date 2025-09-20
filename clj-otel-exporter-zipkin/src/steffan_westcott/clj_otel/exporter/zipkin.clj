@@ -38,5 +38,6 @@
                    compression         (.setCompression compression)
                    meter-provider      (.setMeterProvider meter-provider)
                    internal-telemetry-version (.setInternalTelemetryVersion
-                                               (common/keyword->InternalTelemetryVersion)))]
+                                               (common/keyword->InternalTelemetryVersion
+                                                internal-telemetry-version)))]
      (.build builder))))

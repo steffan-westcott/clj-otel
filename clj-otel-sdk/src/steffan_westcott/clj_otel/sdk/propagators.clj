@@ -5,8 +5,9 @@
             [steffan-westcott.clj-otel.propagator.w3c-trace-context :as w3c-trace])
   (:import (io.opentelemetry.context.propagation ContextPropagators TextMapPropagator)))
 
-(def default
-  "Default collection of context propagators"
+(defn default
+  "Returns collection of default context propagators."
+  []
   [(w3c-trace/w3c-trace-context-propagator) (w3c-baggage/w3c-baggage-propagator)])
 
 (defn context-propagators
