@@ -18,7 +18,7 @@
 
  :aliases {;; Autoconfiguration properties and selected dependencies
            :otel       {:jvm-opts   [;; Name the instrumented application or service
-                                     "-Dotel.resource.attributes=service.name=divisor-app"
+                                     "-Dotel.service.name=divisor-app"
 
                                      ;; Export metrics to Prometheus via HTTP server for scraping
                                      "-Dotel.metrics.exporter=prometheus"

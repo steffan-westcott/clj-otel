@@ -781,7 +781,7 @@ For an example application `my-app` that exports traces only using OTLP over gRP
 {;; ...
  :aliases {
    :otel {:jvm-opts ["-javaagent:path/to/opentelemetry-javaagent.jar"
-                     "-Dotel.resource.attributes=service.name=my-app"
+                     "-Dotel.service.name=my-app"
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"
@@ -817,7 +817,7 @@ For an example application `my-app` that exports traces only using OTLP over gRP
 {;; ...
  :deps {com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure {:mvn/version "0.2.9"}}
  :aliases {
-   :otel {:jvm-opts ["-Dotel.resource.attributes=service.name=my-app"
+   :otel {:jvm-opts ["-Dotel.service.name=my-app"
                      "-Dotel.traces.exporter=otlp"
                      "-Dotel.metrics.exporter=none"
                      "-Dotel.logs.exporter=none"

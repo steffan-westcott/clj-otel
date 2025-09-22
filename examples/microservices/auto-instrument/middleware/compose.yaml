@@ -13,7 +13,8 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=word-length-service,service.instance.id=word-length-service-1"
+      OTEL_SERVICE_NAME: "word-length-service"
+      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=word-length-service-1"
     ports:
       - "8091:8091"      # nREPL server
     volumes:
@@ -47,7 +48,8 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=sentence-summary-service,service.instance.id=sentence-summary-service-1"
+      OTEL_SERVICE_NAME: "sentence-summary-service"
+      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=sentence-summary-service-1"
       SERVER:
     ports:
       - "8090:8090"      # nREPL server

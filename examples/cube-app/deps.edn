@@ -13,7 +13,7 @@
                               "-javaagent:../opentelemetry-javaagent.jar"
 
                               ;; Name the instrumented application or service
-                              "-Dotel.resource.attributes=service.name=cube-app"
+                              "-Dotel.service.name=cube-app"
 
                               ;; Set metric export to every 5 seconds
                               "-Dotel.metric.export.interval=5000"

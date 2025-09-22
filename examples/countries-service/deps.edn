@@ -22,7 +22,7 @@
                               "-javaagent:../opentelemetry-javaagent.jar"
 
                               ;; Name the instrumented application or service
-                              "-Dotel.resource.attributes=service.name=countries-service"
+                              "-Dotel.service.name=countries-service"
 
                               ;; Set metric export to every 5 seconds
                               "-Dotel.metric.export.interval=5000"

@@ -18,7 +18,7 @@
 
  :aliases {;; Autoconfiguration properties and selected dependencies
            :otel       {:jvm-opts   [;; Name the instrumented application or service
-                                     "-Dotel.resource.attributes=service.name=square-app"
+                                     "-Dotel.service.name=square-app"
 
                                      ;; Set metric export to every 10 seconds
                                      "-Dotel.metric.export.interval=10000"

@@ -14,7 +14,7 @@
                               "-javaagent:../opentelemetry-javaagent.jar"
 
                               ;; Name the instrumented application or service
-                              "-Dotel.resource.attributes=service.name=word-stream-app"
+                              "-Dotel.service.name=word-stream-app"
 
                               ;; Set metric export to every 5 seconds
                               "-Dotel.metric.export.interval=5000"

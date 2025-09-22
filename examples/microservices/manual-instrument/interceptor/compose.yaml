@@ -13,7 +13,8 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=sum-service,service.instance.id=sum-service-1"
+      OTEL_SERVICE_NAME: "sum-service"
+      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=sum-service-1"
     volumes:
       - m2:/root/.m2
       - gitlibs:/root/.gitlibs
@@ -48,7 +49,8 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=average-service,service.instance.id=average-service-1"
+      OTEL_SERVICE_NAME: "average-service"
+      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=average-service-1"
       SERVER:
     volumes:
       - m2:/root/.m2

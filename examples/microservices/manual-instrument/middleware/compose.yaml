@@ -13,7 +13,8 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=random-word-service,service.instance.id=random-word-service-1"
+      OTEL_SERVICE_NAME: "random-word-service"
+      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=random-word-service-1"
     ports:
       - "8091:8091"      # nREPL server
     volumes:
@@ -48,7 +49,8 @@ services:
     image: clojure:temurin-22-tools-deps-alpine
     env_file: compose.env
     environment:
-      OTEL_RESOURCE_ATTRIBUTES: "service.name=puzzle-service,service.instance.id=puzzle-service-1"
+      OTEL_SERVICE_NAME: "puzzle-service"
+      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=puzzle-service-1"
       SERVER:
     ports:
       - "8090:8090"      # nREPL server

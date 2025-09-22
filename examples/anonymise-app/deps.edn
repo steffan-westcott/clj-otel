@@ -14,7 +14,7 @@
            missionary/missionary     {:mvn/version "b.46"}}
 
  :aliases {:otel  {:jvm-opts ["-javaagent:../opentelemetry-javaagent.jar"
-                              "-Dotel.resource.attributes=service.name=anonymise-app"
+                              "-Dotel.service.name=anonymise-app"
                               "-Dotel.metrics.exporter=none"
                               "-Dotel.logs.exporter=none"]}
 
