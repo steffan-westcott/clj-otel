@@ -28,8 +28,7 @@
 
   ;; Initialise OpenTelemetry SDK instance and set as default used by `clj-otel`
   (defonce _otel-sdk
-    (autoconfig/init-otel-sdk! {:prop-overrides (fn [_]
-                                                  {"otel.service.name" "oblong-app"})}))
+    (autoconfig/init-otel-sdk!))
 
   ;; Optional - Add JVM metrics in export
   (defonce jvm-reg
