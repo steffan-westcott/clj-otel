@@ -26,10 +26,10 @@
            org.example/common.system {:local/root "../common/system"}
 
            ;; PostgreSQL JDBC driver
-           org.postgresql/postgresql {:mvn/version "42.7.7"}
+           org.postgresql/postgresql {:mvn/version "42.7.8"}
 
            ;; Ring-Jetty web server integration
-           ring/ring-jetty-adapter {:mvn/version "1.15.1"}}
+           ring/ring-jetty-adapter {:mvn/version "1.15.2"}}
 
  :aliases {;; Include this alias to export telemetry data
            :otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
@@ -45,10 +45,10 @@
                               "-Dotel.logs.exporter=none"]}
 
            ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
-           :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.1"}
-                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.25.1"}
-                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.25.1"}
-                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.25.1"}}
+           :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.2"}
+                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.25.2"}
+                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.25.2"}
+                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.25.2"}}
                    :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                                 "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 

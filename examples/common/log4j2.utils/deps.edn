@@ -2,4 +2,4 @@
 
 {:paths ["src"]
 
- :deps  {org.apache.logging.log4j/log4j-api {:mvn/version "2.25.1"}}}
+ :deps  {org.apache.logging.log4j/log4j-api {:mvn/version "2.25.2"}}}
