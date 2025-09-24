@@ -1,7 +1,6 @@
 (ns example.solar-system-service.sync.routes
   "HTTP routes, synchronous implementation."
   (:require [example.solar-system-service.sync.app :as app]
-            [io.pedestal.http.route :as route]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
@@ -29,6 +28,5 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/statistics" :get `get-statistics]}))
+  #{["/ping" :get get-ping] ;
+    ["/statistics" :get get-statistics]})

@@ -591,7 +591,6 @@ This is the same example using Reitit as above, for an application run without t
 NOTE: Pedestal version 0.7.0 introduced OpenTelemetry support.
 Its support includes a new interceptor `io.pedestal.http.tracing/request-tracing-interceptor`, which is enabled in Pedestal's default interceptors.
 This overlaps functionality with `clj-otel` provided interceptors, so should not be used together.
-To disable `request-tracing-interceptor`, set `:io.pedestal.http/tracing` to `nil` in the service map used to initialise the Pedestal HTTP server.
 
 * Use https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#server-span-interceptors[`steffan-westcott.clj-otel.api.trace.http/server-span-interceptors`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.http#route-interceptor[`steffan-westcott.clj-otel.api.trace.http/route-interceptor`] to add HTTP server span support to a Pedestal HTTP service.
 +
@@ -603,35 +602,30 @@ An example using Jetty in an application run with the agent
 [source,clojure]
 ----
 (ns example.service
-  (:require [io.pedestal.http :as http]
+  (:require [example.interceptors :as example-interceptors]
+            [io.pedestal.connector :as conn]
+            [io.pedestal.http.body-params :as body-params]
+            [io.pedestal.http.content-negotiation :as content-negotiation]
+            [io.pedestal.http.jetty :as jetty]
             [io.pedestal.http.route :as route]
-            [io.pedestal.interceptor :as interceptor]
+            [io.pedestal.service.interceptors :as interceptors]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
 
-(def routes
-  (route/expand-routes ... ))
-
-(defn update-default-interceptors [default-interceptors]
-  (map interceptor/interceptor
-       (concat (trace-http/server-span-interceptors {:create-span? false})
-               default-interceptors
-               [(trace-http/route-interceptor)])))
-
-(defn service [service-map]
-  (-> service-map
-      (http/default-interceptors)
-      (update ::http/interceptors update-default-interceptors)
-      (http/create-server)))
-
-(def service-map
-  {::http/routes  routes
-   ::http/type    :jetty
-   ::http/port    8080
-   ::http/join?   false
-   ::http/tracing nil})
-
-(defonce server
-  (http/start (service service-map)))
+(defn connector []
+  (-> (conn/default-connector-map 8080)
+      (conn/with-interceptors
+        (concat
+          (trace-http/server-span-interceptors)
+          [(content-negotiation/negotiate-content [ ... ])]
+          [(example-interceptors/coerce-response-interceptor)]
+          [interceptors/not-found]
+          [route/query-params]
+          [(body-params/body-params)]
+          [(example-interceptors/exception-response-interceptor)]))
+      (conn/with-routes #{ ... })
+      (conn/with-interceptor (trace-http/route-interceptor))
+      (jetty/create-connector {})
+      (conn/start!)))
 ----
 +
 Optionally, to add some HTTP server metrics for applications run without the OpenTelemetry instrumentation agent, add interceptors https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#active-requests-interceptor[`steffan-westcott.clj-otel.api.metrics.http.server/active-requests-interceptor`] and https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.metrics.http.server#metrics-by-route-interceptors[`steffan-westcott.clj-otel.api.metrics.http.server/metrics-by-route-interceptors`]
@@ -641,38 +635,35 @@ This is the same example as above, for an application run without the agent
 [source,clojure]
 ----
 (ns example.service
-  (:require [io.pedestal.http :as http]
+  (:require [example.interceptors :as example-interceptors]
+            [io.pedestal.connector :as conn]
+            [io.pedestal.http.body-params :as body-params]
+            [io.pedestal.http.content-negotiation :as content-negotiation]
+            [io.pedestal.http.jetty :as jetty]
             [io.pedestal.http.route :as route]
-            [io.pedestal.interceptor :as interceptor]
+            [io.pedestal.service.interceptors :as interceptors]
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
 
-(def routes
-  (route/expand-routes ... ))
-
-(defn update-default-interceptors [default-interceptors]
-  (map interceptor/interceptor
-       (concat (trace-http/server-span-interceptors {:create-span? true})
-               [(metrics-http-server/active-requests-interceptor)]
-               default-interceptors
-               [(trace-http/route-interceptor)]
-               (metrics-http-server/metrics-by-route-interceptors))))
-
-(defn service [service-map]
-  (-> service-map
-      (http/default-interceptors)
-      (update ::http/interceptors update-default-interceptors)
-      (http/create-server)))
-
-(def service-map
-  {::http/routes  routes
-   ::http/type    :jetty
-   ::http/port    8080
-   ::http/join?   false
-   ::http/tracing nil})
-
-(defonce server
-  (http/start (service service-map)))
+(defn connector []
+  (-> (conn/default-connector-map 8080)
+      (conn/with-interceptors
+        (concat
+          (trace-http/server-span-interceptors {:create-span true})
+          [(metrics-http-server/active-requests-interceptor)]
+          [(content-negotiation/negotiate-content [ ... ])]
+          [(example-interceptors/coerce-response-interceptor)]
+          [interceptors/not-found]
+          [route/query-params]
+          [(body-params/body-params)]
+          [(example-interceptors/exception-response-interceptor)]))
+      (conn/with-routes #{ ... })
+      (conn/with-interceptors
+        (concat
+          [(trace-http/route-interceptor)]
+          (metrics-http-server/metrics-by-route-interceptors)))
+      (jetty/create-connector {})
+      (conn/start!)))
 ----
 
 ==== Manually add route data to a server span

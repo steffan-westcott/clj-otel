@@ -3,7 +3,6 @@
   (:require [com.xadecimal.async-style :as style]
             [example.common.async.async-style :as style']
             [example.solar-system-service.async-chan-bound.app :as app]
-            [io.pedestal.http.route :as route]
             [ring.util.response :as response]))
 
 
@@ -34,6 +33,5 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/statistics" :get `get-statistics]}))
+  #{["/ping" :get get-ping] ;
+    ["/statistics" :get get-statistics]})

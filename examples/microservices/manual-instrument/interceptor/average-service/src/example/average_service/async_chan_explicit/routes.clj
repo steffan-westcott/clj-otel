@@ -4,7 +4,6 @@
             [com.xadecimal.async-style :as style]
             [example.average-service.async-chan-explicit.app :as app]
             [example.common.async.async-style :as style']
-            [io.pedestal.http.route :as route]
             [ring.util.response :as response]))
 
 
@@ -39,6 +38,5 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/average" :get `get-average]}))
+  #{["/ping" :get get-ping] ;
+    ["/average" :get get-average]})

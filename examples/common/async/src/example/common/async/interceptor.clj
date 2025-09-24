@@ -2,8 +2,8 @@
   "Common interceptors for examples."
   (:require [clojure.data.json :as json]
             [example.common.async.response :as common-response]
-            [io.pedestal.http :as http]
             [io.pedestal.http.content-negotiation :as content-negotiation]
+            [io.pedestal.http.response :as pedestal-response]
             [ring.util.response :as response]))
 
 
@@ -64,7 +64,7 @@
   {:name  ::not-found
    :leave (fn [{:keys [response]
                 :as   ctx}]
-            (if (http/response? response)
+            (if (pedestal-response/response? response)
               ctx
               (assoc ctx
                      :response

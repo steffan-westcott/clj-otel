@@ -22,14 +22,12 @@
               client      (client/client)
               components  (closeable {:instruments @instruments
                                       :client      client})
-              service-map (closeable (server/service-map @components))
-              server      (closeable (server/server @service-map) server/stop-server)]
+              connector   (closeable (server/connector @components) server/stop-connector)]
     (f {:config      @config
         :instruments @instruments
         :client      client
         :components  @components
-        :service-map @service-map
-        :server      @server})))
+        :connector   @connector})))
 
 
 

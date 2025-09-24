@@ -2,7 +2,6 @@
   "HTTP routes, Manifold implementation using bound context."
   (:require [example.common.async.manifold :as d']
             [example.solar-system-service.async-d-bound.app :as app]
-            [io.pedestal.http.route :as route]
             [manifold.deferred :as d]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.d-span :as d-span]))
@@ -37,6 +36,5 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/statistics" :get `get-statistics]}))
+  #{["/ping" :get get-ping] ;
+    ["/statistics" :get get-statistics]})

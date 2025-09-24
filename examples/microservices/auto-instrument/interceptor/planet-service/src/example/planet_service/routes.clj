@@ -2,7 +2,6 @@
   "HTTP routes"
   (:require [clojure.string :as str]
             [example.planet-service.app :as app]
-            [io.pedestal.http.route :as route]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
@@ -38,9 +37,8 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping]
-     ["/planets/:planet/:statistic" :get `get-planet-statistic ;
-      :constraints
-      {:planet    (re-pattern (str/join "|" (map name (keys app/planet-statistics))))
-       :statistic #"diameter|gravity"}]}))
+  #{["/ping" :get get-ping]
+    ["/planets/:planet/:statistic" :get get-planet-statistic ;
+     :constraints
+     {:planet    (re-pattern (str/join "|" (map name (keys app/planet-statistics))))
+      :statistic #"diameter|gravity"}]})

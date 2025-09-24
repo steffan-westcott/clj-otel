@@ -12,6 +12,9 @@
            ;; Clojure wrapper for CompletableFuture
            cc.qbits/auspex {:mvn/version "1.0.3"}
 
+           ;; JSON parsing
+           cheshire/cheshire {:mvn/version "6.1.0"}
+
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
@@ -22,10 +25,10 @@
            hato/hato {:mvn/version "1.0.0"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.7.2"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.7.2"}
-           io.pedestal/pedestal.route {:mvn/version "0.7.2"}
-           io.pedestal/pedestal.service {:mvn/version "0.7.2"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.route {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.service {:mvn/version "0.8.0"}
 
            ;; Asynchronous event programming
            manifold/manifold {:mvn/version "0.4.3"}
@@ -56,4 +59,5 @@
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.1"}
                                  nrepl/nrepl           {:mvn/version "1.4.0"}
-                                 http-kit/http-kit     {:mvn/version "2.8.1"}}}}}
+                                 http-kit/http-kit     {:mvn/version "2.8.1"}}
+                   :jvm-opts    ["-Dio.pedestal.dev-mode=true"]}}}

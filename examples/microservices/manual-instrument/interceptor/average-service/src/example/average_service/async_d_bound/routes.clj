@@ -3,7 +3,6 @@
   (:require [clojure.string :as str]
             [example.average-service.async-d-bound.app :as app]
             [example.common.async.manifold :as d']
-            [io.pedestal.http.route :as route]
             [manifold.deferred :as d]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.d-span :as d-span]))
@@ -42,6 +41,5 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/average" :get `get-average]}))
+  #{["/ping" :get get-ping] ;
+    ["/average" :get get-average]})

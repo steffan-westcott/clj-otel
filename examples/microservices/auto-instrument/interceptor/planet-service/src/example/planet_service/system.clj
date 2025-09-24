@@ -19,13 +19,11 @@
   (with-open [config      (closeable (env/set-config!))
               instruments (closeable (metrics/instruments))
               components  (closeable {:instruments @instruments})
-              service-map (closeable (server/service-map @components))
-              server      (closeable (server/server @service-map) server/stop-server)]
+              connector   (closeable (server/connector @components) server/stop-connector)]
     (f {:config      @config
         :instruments @instruments
         :components  @components
-        :service-map @service-map
-        :server      @server})))
+        :connector   @connector})))
 
 
 

@@ -2,7 +2,6 @@
   "HTTP routes, synchronous implementation."
   (:require [clojure.string :as str]
             [example.average-service.sync.app :as app]
-            [io.pedestal.http.route :as route]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
@@ -35,6 +34,5 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/average" :get `get-average]}))
+  #{["/ping" :get get-ping] ;
+    ["/average" :get get-average]})

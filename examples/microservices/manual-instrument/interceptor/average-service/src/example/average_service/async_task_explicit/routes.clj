@@ -3,7 +3,6 @@
   (:require [clojure.string :as str]
             [example.average-service.async-task-explicit.app :as app]
             [example.common.async.missionary :as m']
-            [io.pedestal.http.route :as route]
             [missionary.core :as m]
             [ring.util.response :as response]))
 
@@ -40,7 +39,6 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/average" :get `get-average]}))
+  #{["/ping" :get get-ping] ;
+    ["/average" :get get-average]})
 

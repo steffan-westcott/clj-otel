@@ -27,15 +27,13 @@
               _logging        (closeable (logging/install! @otel-sdk))
               instruments     (closeable (metrics/instruments))
               components      (closeable {:instruments @instruments})
-              service-map     (closeable (server/service-map @components))
-              server          (closeable (server/server @service-map) server/stop-server)]
+              connector       (closeable (server/connector @components) server/stop-connector)]
     (f {:config          @config
         :otel-sdk        @otel-sdk
         :runtime-metrics runtime-metrics
         :instruments     @instruments
         :components      @components
-        :service-map     @service-map
-        :server          @server})))
+        :connector       @connector})))
 
 
 

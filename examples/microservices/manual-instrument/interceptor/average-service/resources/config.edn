@@ -2,5 +2,6 @@
  :nrepl       {:bind "0.0.0.0"
                :port 8090}
  :server-impl #or [#env SERVER "sync"]
- :service-map {:io.pedestal.http/port 8080
-               :io.pedestal.http/container-options {:max-threads 16}}}
+ :connector   {:host          "0.0.0.0"
+               :port          8080
+               :jetty-options {:max-threads 16}}}

@@ -2,7 +2,6 @@
   "HTTP routes, async CompletableFuture implementation using bound context."
   (:require [example.common.async.auspex :as aus']
             [example.solar-system-service.async-cf-bound.app :as app]
-            [io.pedestal.http.route :as route]
             [qbits.auspex :as aus]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -37,6 +36,5 @@
 (defn routes
   "Routes for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/statistics" :get `get-statistics]}))
+  #{["/ping" :get get-ping] ;
+    ["/statistics" :get get-statistics]})

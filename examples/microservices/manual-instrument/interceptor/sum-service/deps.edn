@@ -26,10 +26,10 @@
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.20.1-alpha"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.7.2"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.7.2"}
-           io.pedestal/pedestal.route {:mvn/version "0.7.2"}
-           io.pedestal/pedestal.service {:mvn/version "0.7.2"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.route {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.service {:mvn/version "0.8.0"}
 
            ;; Common async utilities
            org.example/common.async {:local/root "../../../../common/async"}
@@ -63,4 +63,5 @@
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.1"}
                                  nrepl/nrepl           {:mvn/version "1.4.0"}
-                                 http-kit/http-kit     {:mvn/version "2.8.1"}}}}}
+                                 http-kit/http-kit     {:mvn/version "2.8.1"}}
+                   :jvm-opts    ["-Dio.pedestal.dev-mode=true"]}}}

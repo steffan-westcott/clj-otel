@@ -2,7 +2,6 @@
   "HTTP routes."
   (:require [clojure.string :as str]
             [example.sum-service.app :as app]
-            [io.pedestal.http.route :as route]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
@@ -37,6 +36,5 @@
 (defn routes
   "Route maps for the service."
   []
-  (route/expand-routes
-   #{["/ping" :get `get-ping] ;
-     ["/sum" :get `get-sum]}))
+  #{["/ping" :get get-ping] ;
+    ["/sum" :get get-sum]})
