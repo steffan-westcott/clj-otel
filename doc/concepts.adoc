@@ -417,6 +417,7 @@ The reference is `nil` until set, and may be set once only.
 The global `OpenTelemetry` reference is always automatically set when running an application with the OpenTelemetry instrumentation agent.
 
 WARNING: It is discouraged to set the global `OpenTelemetry` reference when using the autoconfigure SDK extension or programmatically configuring the SDK.
+However, it may be necessary to set it when other telemetry libraries used by the application assume it has been set.
 
 ==== Default `OpenTelemetry`
 
