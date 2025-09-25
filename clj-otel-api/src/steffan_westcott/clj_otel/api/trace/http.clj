@@ -129,7 +129,7 @@
     {:keys [context]
      :or   {context (context/dyn)}}]
    (when route
-     (HttpServerRoute/update context HttpServerRouteSource/SERVER_FILTER route)
+     (HttpServerRoute/update context HttpServerRouteSource/CONTROLLER route)
      (span/add-span-data! {:context    context
                            :name       (str (str/upper-case (name request-method)) " " route)
                            :attributes {HttpAttributes/HTTP_ROUTE route}}))))
