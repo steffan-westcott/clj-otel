@@ -27,6 +27,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 === `0.2.10` (in progress)
 
 - [FIX] Fixed some cases where HTTP route data was not set correctly when using the instrumentation agent.
+- [ADD] By default, populate span attribute for source code column number.
 - [ADD] New option `:prop-overrides` on `steffan-westcott.clj-otel.sdk.autoconfigure/init-otel-sdk!` to override default config values.
 - Bump deps
 * [MAINT] OpenTelemetry `1.54.1`, instrumentation `2.20.1-alpha`

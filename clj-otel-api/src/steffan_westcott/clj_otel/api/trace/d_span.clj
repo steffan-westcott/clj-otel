@@ -28,7 +28,11 @@
    value. The span is ended when the `body` deferred yields a value. Returns a
    deferred that yields the same value."
   [[context span-opts] & body]
-  `(let [span-opts# (span/span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span/span-opts* ~span-opts
+                                     ~(:line (meta &form))
+                                     ~(:column (meta &form))
+                                     ~*file*
+                                     (util/fn-name))]
      (d-span-binding' [~context span-opts#]
        ~@body)))
 
@@ -39,7 +43,11 @@
    ended when the `body` deferred yields a value. Returns a deferred that
    yields the same value."
   [span-opts & body]
-  `(let [span-opts# (span/span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span/span-opts* ~span-opts
+                                     ~(:line (meta &form))
+                                     ~(:column (meta &form))
+                                     ~*file*
+                                     (util/fn-name))]
      (d-span-binding' [context# span-opts#]
        (context/bind-context! context#
          ~@body))))

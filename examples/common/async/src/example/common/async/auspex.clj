@@ -45,6 +45,7 @@
   `(let [span-opts# (span/span-opts* {:name   "Handling route"
                                       :parent (:io.opentelemetry/server-span-context ~ctx)}
                                      ~(:line (meta &form))
+                                     ~(:column (meta &form))
                                      ~*file*
                                      (util/fn-name))]
      (span/cf-span-binding [~context span-opts#]

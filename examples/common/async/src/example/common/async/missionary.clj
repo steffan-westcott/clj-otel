@@ -16,6 +16,7 @@
   `(let [span-opts# (span/span-opts* {:name   "Handling route"
                                       :parent (:io.opentelemetry/server-span-context ~ctx)}
                                      ~(:line (meta &form))
+                                     ~(:column (meta &form))
                                      ~*file*
                                      (util/fn-name))]
      (task-span/task-span-binding' [~context span-opts#]

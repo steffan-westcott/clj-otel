@@ -137,10 +137,11 @@
 
 #_{:clj-kondo/ignore [:missing-docstring]}
 (defn ^:no-doc span-opts*
-  [span-opts line file f-name]
-  (let [source-defaults (cond-> {:line line
-                                 :file file}
-                          f-name (assoc :fn f-name))]
+  [span-opts line col file f-name]
+  (let [source-defaults {:line line
+                         :col  col
+                         :file file
+                         :fn   f-name}]
     (update (as-span-opts span-opts) :source #(into source-defaults %))))
 
 #_{:clj-kondo/ignore [:missing-docstring]}
@@ -206,7 +207,11 @@
    (qualified) name and map of attributes. All other options take default values
    shown above."
   [span-opts]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (new-span!' span-opts#)))
 
 (defn- add-event-data!
@@ -389,7 +394,11 @@
    the current context. `span-opts` is the same as for [[new-span!]]. See also
    [[with-span!]] and [[with-bound-span!]]."
   [[context span-opts] & body]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (with-span-binding' [~context span-opts#]
        ~@body)))
 
@@ -401,7 +410,11 @@
    as for [[new-span!]]. See also [[with-bound-span!]] and
    [[with-span-binding]]."
   [span-opts & body]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (with-span-binding' [context# span-opts#]
        (context/with-context! context#
          ~@body))))
@@ -414,7 +427,11 @@
    context. `span-opts` is the same as for [[new-span!]]. See also
    [[with-span!]] and [[with-span-binding]]."
   [span-opts & body]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (with-span-binding' [context# span-opts#]
        (context/bind-context! context#
          ~@body))))
@@ -455,7 +472,11 @@
    `raise*` are callback functions to be used by `f`. All callback functions
    take a single argument, `raise` and `raise*` take a `Throwable` instance."
   [span-opts f respond raise]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (async-span' span-opts# ~f ~respond ~raise)))
 
 #_{:clj-kondo/ignore [:missing-docstring]}
@@ -495,7 +516,11 @@
    callback functions to be used by `f`. All callback functions take a single
    argument, `raise` and `raise*` take a `Throwable` instance."
   [span-opts f respond raise]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (async-bound-span' span-opts# ~f ~respond ~raise)))
 
 #_{:clj-kondo/ignore [:missing-docstring]}
@@ -527,7 +552,11 @@
    ended on completion. Asynchronous functions within `body` should be defined
    using `bound-fn` or similar to convey bindings."
   ^CompletableFuture [[context span-opts] & body]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (cf-span-binding' [~context span-opts#]
        ~@body)))
 
@@ -539,7 +568,11 @@
    be defined using `bound-fn` or similar to convey bindings such as the bound
    context."
   ^CompletableFuture [span-opts & body]
-  `(let [span-opts# (span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span-opts* ~span-opts
+                                ~(:line (meta &form))
+                                ~(:column (meta &form))
+                                ~*file*
+                                (util/fn-name))]
      (cf-span-binding' [context# span-opts#]
        (context/bind-context! context#
          ~@body))))

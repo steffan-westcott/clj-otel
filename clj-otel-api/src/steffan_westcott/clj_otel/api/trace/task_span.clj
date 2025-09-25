@@ -26,6 +26,10 @@
    value. The span is ended when the `body` task yields a value. Returns a
    task that yields the same value."
   [[context span-opts] & body]
-  `(let [span-opts# (span/span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span/span-opts* ~span-opts
+                                     ~(:line (meta &form))
+                                     ~(:column (meta &form))
+                                     ~*file*
+                                     (util/fn-name))]
      (task-span-binding' [~context span-opts#]
        ~@body)))

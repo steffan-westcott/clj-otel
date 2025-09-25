@@ -31,7 +31,11 @@
    exception is put on the channel). Returns a channel that settles with the
    same value."
   [[context span-opts] & body]
-  `(let [span-opts# (span/span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span/span-opts* ~span-opts
+                                     ~(:line (meta &form))
+                                     ~(:column (meta &form))
+                                     ~*file*
+                                     (util/fn-name))]
      (chan-span-binding' [~context span-opts#]
        ~@body)))
 
@@ -42,7 +46,11 @@
    ended when the `body` channel is settled (a result or exception is put on
    the channel). Returns a channel that settles with the same value."
   [span-opts & body]
-  `(let [span-opts# (span/span-opts* ~span-opts ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span/span-opts* ~span-opts
+                                     ~(:line (meta &form))
+                                     ~(:column (meta &form))
+                                     ~*file*
+                                     (util/fn-name))]
      (chan-span-binding' [context# span-opts#]
        (context/bind-context! context#
          ~@body))))

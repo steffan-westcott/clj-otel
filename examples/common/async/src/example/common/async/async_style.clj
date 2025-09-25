@@ -30,6 +30,7 @@
   `(let [span-opts# (span/span-opts* {:name   "Handling route"
                                       :parent (:io.opentelemetry/server-span-context ~ctx)}
                                      ~(:line (meta &form))
+                                     ~(:column (meta &form))
                                      ~*file*
                                      (util/fn-name))]
      (chan-span/chan-span-binding' [~context span-opts#]
@@ -42,7 +43,11 @@
    bound context to the new context containing the span. `body` is expected to
    give a channel which will contain the response."
   [& body]
-  `(let [span-opts# (span/span-opts* "Handling route" ~(:line (meta &form)) ~*file* (util/fn-name))]
+  `(let [span-opts# (span/span-opts* "Handling route"
+                                     ~(:line (meta &form))
+                                     ~(:column (meta &form))
+                                     ~*file*
+                                     (util/fn-name))]
      (chan-span/chan-span-binding' [context# span-opts#]
        (context/bind-context! context#
          ~@body))))
