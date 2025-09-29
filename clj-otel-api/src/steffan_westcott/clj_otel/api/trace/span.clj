@@ -26,7 +26,7 @@
    |`:name`          | Name of the *instrumentation* library, not the *instrumented* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: See `config.edn` resource file).
    |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
    |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
-   |`:open-telemetry`| `OpenTelemetry` instance to get tracer from (default: global `OpenTelemetry` instance)."
+   |`:open-telemetry`| `OpenTelemetry` instance to get tracer from (default: default `OpenTelemetry` instance)."
   (^Tracer []
    (get-tracer {}))
   (^Tracer
@@ -149,35 +149,32 @@
   ^Context [span-opts]
   (let [{:keys [^Tracer tracer name parent links attributes ^Thread thread source span-kind
                 timestamp]
-         :or   {name       ""
-                parent     (context/dyn)
-                attributes {}
-                thread     (Thread/currentThread)
-                source     {}}}
+         :or   {name   ""
+                parent (context/dyn)
+                thread (Thread/currentThread)}}
         (as-span-opts span-opts)
 
-        tracer' (or tracer (get-default-tracer!))
-        parent-context (or parent (context/root))
+        tracer (or tracer (get-default-tracer!))
+        parent (or parent (context/root))
         {:keys [fn line col file]} source
-        default-attributes (cond-> {}
-                             thread (assoc ThreadIncubatingAttributes/THREAD_NAME
-                                           (.getName thread)
-                                           ThreadIncubatingAttributes/THREAD_ID
-                                           (.getId thread))
-                             fn     (assoc CodeAttributes/CODE_FUNCTION_NAME fn)
-                             line   (assoc CodeAttributes/CODE_LINE_NUMBER line)
-                             col    (assoc CodeAttributes/CODE_COLUMN_NUMBER col)
-                             file   (assoc CodeAttributes/CODE_FILE_PATH file))
-        attributes' (merge default-attributes attributes)
-        builder (cond-> (.spanBuilder tracer' (str name))
-                  :always   (.setParent parent-context)
+        attributes (into (cond-> {CodeAttributes/CODE_FUNCTION_NAME fn
+                                  CodeAttributes/CODE_LINE_NUMBER   line
+                                  CodeAttributes/CODE_COLUMN_NUMBER col
+                                  CodeAttributes/CODE_FILE_PATH     file}
+                           thread (assoc ThreadIncubatingAttributes/THREAD_NAME
+                                         (.getName thread)
+                                         ThreadIncubatingAttributes/THREAD_ID
+                                         (.getId thread)))
+                         attributes)
+        builder (cond-> (.spanBuilder tracer (str name))
+                  :always   (.setParent parent)
                   links     (add-links links)
-                  :always   (.setAllAttributes (attr/->attributes attributes'))
+                  :always   (.setAllAttributes (attr/->attributes attributes))
                   span-kind (.setSpanKind (keyword->SpanKind span-kind))
                   timestamp (as-> b (let [[amount unit] (util/timestamp timestamp)]
                                       (.setStartTimestamp b amount unit))))
         span (.startSpan builder)]
-    (context/assoc-value parent-context span)))
+    (context/assoc-value parent span)))
 
 (defmacro new-span!
   "Low level macro that starts a new span and returns the context containing
@@ -195,7 +192,7 @@
    |`:parent`    | Context used to take parent span. If `nil` or no span is available in the context, the root context is used instead (default: bound or current context).
    |`:links`     | Collection of links to add to span. Each link is `[sc]` or `[sc attr-map]`, where `sc` is a `SpanContext`, `Span` or `Context` containing the linked span and `attr-map` is a map of attributes of the link (default: no links).
    |`:attributes`| Map of additional attributes for the span (default: no attributes).
-   |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Data on this thread is merged with the `:attributes` value (default: current thread).
+   |`:thread`    | Thread identified as that which started the span, or `nil` for no thread. Thread details are merged with the `:attributes` value (default: current thread).
    |`:source`    | Map describing source code where span is started. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: `:fn`, `:line` and `:file` where `new-span!` is expanded).
    |`:span-kind` | Span kind, one of `:internal`, `:server`, `:client`, `:producer`, `:consumer` (default: `:internal`). See also `SpanKind`.
    |`:timestamp` | Start timestamp for the span. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).

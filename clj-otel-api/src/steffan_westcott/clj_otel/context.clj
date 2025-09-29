@@ -35,7 +35,7 @@
 
 (defn dyn
   "Returns the bound context, which is stored in a Clojure dynamic var. If no
-   context is bound, the current context is returned instead."
+   context is bound, the current context or root context is returned instead."
   ^Context []
   (or *bound-context* (current)))
 

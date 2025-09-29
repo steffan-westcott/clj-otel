@@ -13,84 +13,87 @@
            (java.util List Map)))
 
 (defprotocol AsValue
-  (value ^io.opentelemetry.api.common.Value [x]
-   "Returns `io.opentelemetry.api.common.Value` instance containing x."))
+  (wrap ^io.opentelemetry.api.common.Value [x]
+   "Returns `io.opentelemetry.api.common.Value` instance containing value `x`,
+    where `x` is a string, keyword, boolean, long, double, byte array, map, or
+    seqable coll. `x` may have nested structure. Keywords and map keys are
+    transformed to strings."))
 
 (extend-protocol AsValue
  nil
-   (value [_]
+   (wrap [_]
      nil)
  io.opentelemetry.api.common.Value
-   (value [x]
+   (wrap [x]
      x)
  String
-   (value [x]
+   (wrap [x]
      (io.opentelemetry.api.common.Value/of x))
  Keyword
-   (value [x]
+   (wrap [x]
      (io.opentelemetry.api.common.Value/of (str x)))
  Boolean
-   (value [x]
+   (wrap [x]
      (io.opentelemetry.api.common.Value/of x))
  Long
-   (value [x]
+   (wrap [x]
      (io.opentelemetry.api.common.Value/of x))
  Double
-   (value [x]
+   (wrap [x]
      (io.opentelemetry.api.common.Value/of x))
  Map
-   (value [x]
+   (wrap [x]
      (io.opentelemetry.api.common.Value/of ^"[Lio.opentelemetry.api.common.KeyValue;"
                                            (into-array KeyValue
                                                        (map (fn [[k v]]
-                                                              (KeyValue/of (str k) (value v)))
+                                                              (KeyValue/of (str k) (wrap v)))
                                                             x))))
  Seqable
-   (value [xs]
-     (io.opentelemetry.api.common.Value/of ^List (map value xs)))
+   (wrap [xs]
+     (io.opentelemetry.api.common.Value/of ^List (map wrap xs)))
  Object
-   (value [x]
+   (wrap [x]
      (io.opentelemetry.api.common.Value/of (str x))))
 
 ;; Declared separately to work around older Clojure compiler issues
 #_:clj-kondo/ignore
 (extend-protocol AsValue
  (Class/forName "[B")
- (value [x]
+ (wrap [x]
    (io.opentelemetry.api.common.Value/of ^bytes x)))
 
 (defprotocol Value
-  (get-value [^io.opentelemetry.api.common.Value x]
-   "Returns value contained in x."))
+  (unwrap [^io.opentelemetry.api.common.Value v]
+   "Returns value contained in v."))
 
 (extend-protocol Value
  nil
-   (get-value [_]
+   (unwrap [_]
      nil)
  ValueString
-   (get-value [x]
-     (.getValue x))
+   (unwrap [v]
+     (.getValue v))
  ValueBoolean
-   (get-value [x]
-     (.getValue x))
+   (unwrap [v]
+     (.getValue v))
  ValueLong
-   (get-value [x]
-     (.getValue x))
+   (unwrap [v]
+     (.getValue v))
  ValueDouble
-   (get-value [x]
-     (.getValue x))
+   (unwrap [v]
+     (.getValue v))
  ValueBytes
-   (get-value [x]
-     (let [^ByteBuffer byte-buffer (.getValue x)
+   (unwrap [v]
+     (let [^ByteBuffer byte-buffer (.getValue v)
            arr (byte-array (.limit byte-buffer))]
        (.get byte-buffer 0 arr)
        arr))
  ValueArray
-   (get-value [xs]
-     (map get-value (.getValue xs)))
+   (unwrap [v]
+     (mapv unwrap (.getValue v)))
  KeyValueList
-   (get-value [xs]
+   (unwrap [v]
      (persistent! (reduce (fn [m ^KeyValue kv]
-                            (assoc! m (.getKey kv) (get-value (.getValue kv))))
+                            (assoc! m (.getKey kv) (unwrap (.getValue kv))))
                           (transient {})
-                          (.getValue xs)))))
+                          (.getValue v)))))

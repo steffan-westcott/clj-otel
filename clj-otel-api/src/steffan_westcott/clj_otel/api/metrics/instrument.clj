@@ -38,7 +38,7 @@
    |`:name`          | Name of the *instrumentation* library, not the *instrumented* library e.g. `\"io.opentelemetry.contrib.mongodb\"` (default: See `config.edn` resource file).
    |`:version`       | Instrumentation library version e.g. `\"1.0.0\"` (default: See `config.edn` resource file).
    |`:schema-url`    | URL of OpenTelemetry schema used by this instrumentation library (default: See `config.edn` resource file).
-   |`:open-telemetry`| `OpenTelemetry` instance to get meter from (default: global `OpenTelemetry` instance)."
+   |`:open-telemetry`| `OpenTelemetry` instance to get meter from (default: default `OpenTelemetry` instance)."
   (^Meter []
    (get-meter {}))
   (^Meter
@@ -294,12 +294,12 @@
   ([{:keys [^Meter meter name instrument-type measurement-type unit description
             explicit-bucket-boundaries-advice]
      :or   {measurement-type :long}} observe]
-   (let [meter'  (or meter (get-default-meter!))
+   (let [meter   (or meter (get-default-meter!))
          builder (cond-> (case instrument-type
-                           :counter         (.counterBuilder meter' name)
-                           :up-down-counter (.upDownCounterBuilder meter' name)
-                           :histogram       (.histogramBuilder meter' name)
-                           :gauge           (.gaugeBuilder meter' name))
+                           :counter         (.counterBuilder meter name)
+                           :up-down-counter (.upDownCounterBuilder meter name)
+                           :histogram       (.histogramBuilder meter name)
+                           :gauge           (.gaugeBuilder meter name))
                    unit        (set-unit unit)
                    description (set-description description)
                    :always     (set-type measurement-type)

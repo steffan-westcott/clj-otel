@@ -110,6 +110,10 @@
 (defn emit
   "Emits a log record.
 
+   IMPORTANT: This function is for use by logging libraries only. To add
+   logging to an application or general library, use a logging library that has
+   OpenTelemetry log signal support instead e.g. Log4j2, Timbre.
+
    Takes an option map as below. The defaults for `:context` and `:thread` may
    be suitable only if `emit` is evaluated synchronously when the log record
    occurs.
@@ -120,7 +124,7 @@
    |`:context`           | Context of the log record. If `nil`, use the root context (default: bound or current context).
    |`:severity`          | `^io.opentelemetry.api.logs.Severity` or keyword `:traceN`, `:debugN`, `:infoN`, `:warnN`, `:errorN`, `:fatalN` where `N` is nothing or `2`, `3`, `4` (default: nil).
    |`:severity-text`     | Short name of log record severity (default: nil).
-   |`:body`              | Body of log record; may be string, keyword, boolean, long, double, map or seqable coll. Body may have nested structure. Keywords and map keys are transformed to strings (default: nil).
+   |`:body`              | Body of log record; may be string, keyword, boolean, long, double, byte array, map or seqable coll. Body may have nested structure. Keywords and map keys are transformed to strings (default: nil).
    |`:attributes`        | Map of additional attributes for the log record (default: no attributes).
    |`:exception`         | Exception to attach to log record. Exception details are merged with the `:attributes` value (default: nil).
    |`:thread`            | Thread where the log record occurred, or `nil` for no thread. Thread details are merged with the `:attributes` value (default: current thread).
@@ -164,7 +168,7 @@
           :always            (.setContext context)
           severity           (.setSeverity (as-severity severity))
           severity-text      (.setSeverityText severity-text)
-          body               (.setBody (value/value body))
+          body               (.setBody (value/wrap body))
           ;; TODO: Use ExtendedAttributes when API becomes available
           :always            (.setAllAttributes (attr/->attributes attributes))
           timestamp          (as-> b (let [[amount unit] (util/timestamp timestamp)]
