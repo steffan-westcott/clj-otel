@@ -70,11 +70,11 @@
           attribute-type (if AttributeKey?
                            (.getType ^AttributeKey k)
                            (attribute-type-of v))
-          k' (if AttributeKey?
-               k
-               (attribute-key attribute-type (attribute-name k)))
-          v' (attribute-value attribute-type v)]
-      [k' v'])))
+          k (if AttributeKey?
+              k
+              (attribute-key attribute-type (attribute-name k)))
+          v (attribute-value attribute-type v)]
+      [k v])))
 
 (defn ->map
   "Converts an `Attributes` instance to an attribute map. Each key of the

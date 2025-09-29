@@ -435,27 +435,27 @@
 
 #_{:clj-kondo/ignore [:missing-docstring]}
 (defn ^:no-doc async-span'
-  [span-opts f respond raise]
+  [span-opts f respond' raise']
   (try
     (let [context (new-span!' span-opts)]
       (try
         (f context
-           (fn [response]
+           (fn respond [response]
              (end-span! {:context context})
-             (respond response))
-           (fn [e]
+             (respond' response))
+           (fn raise [e]
              (if (instance? Throwable e)
                (add-exception! e {:context context})
                (add-span-data! {:context context
                                 :status  {:code :error}}))
              (end-span! {:context context})
-             (raise e)))
+             (raise' e)))
         (catch Throwable e
           (add-exception! e {:context context})
           (end-span! {:context context})
-          (raise e))))
+          (raise' e))))
     (catch Throwable e
-      (raise e))))
+      (raise' e))))
 
 (defmacro async-span
   "Starts a new span and immediately returns evaluation of function `f`.
@@ -478,27 +478,27 @@
 
 #_{:clj-kondo/ignore [:missing-docstring]}
 (defn ^:no-doc async-bound-span'
-  [span-opts f respond raise]
+  [span-opts f respond' raise']
   (try
     (let [context (new-span!' span-opts)]
       (context/bind-context! context
         (try
-          (f (fn [response]
+          (f (fn respond [response]
                (end-span! {:context context})
-               (respond response))
-             (fn [e]
+               (respond' response))
+             (fn raise [e]
                (if (instance? Throwable e)
                  (add-exception! e {:context context})
                  (add-span-data! {:context context
                                   :status  {:code :error}}))
                (end-span! {:context context})
-               (raise e)))
+               (raise' e)))
           (catch Throwable e
             (add-exception! e {:context context})
             (end-span! {:context context})
-            (raise e)))))
+            (raise' e)))))
     (catch Throwable e
-      (raise e))))
+      (raise' e))))
 
 (defmacro async-bound-span
   "Starts a new span, sets the bound context to the new context containing the
@@ -581,19 +581,19 @@
    `::wrap-span`. For an asynchronous request, the context containing the new
    span is added to the request map with key `context-key`, default is
    `::wrap-span-context`."
-  ([handler] (wrap-span handler (constantly ::wrap-span)))
-  ([handler span-opts-fn] (wrap-span handler span-opts-fn ::wrap-span-context))
-  ([handler span-opts-fn context-key]
-   (fn
+  ([handler'] (wrap-span handler' (constantly ::wrap-span)))
+  ([handler' span-opts-fn] (wrap-span handler' span-opts-fn ::wrap-span-context))
+  ([handler' span-opts-fn context-key]
+   (fn handler
      ([request]
       (with-span! (span-opts-fn request)
-        (handler request)))
+        (handler' request)))
      ([request respond raise]
       (async-span (span-opts-fn request)
-                  (fn [context respond* raise*]
-                    (handler (assoc request context-key context)
-                             respond*
-                             raise*))
+                  (fn f [context respond* raise*]
+                    (handler' (assoc request context-key context)
+                              respond*
+                              raise*))
                   respond
                   raise)))))
 
@@ -604,16 +604,16 @@
    `::wrap-span`. For an asynchronous request, the context containing the new
    span is set as the bound context. The bound context is restored to its
    original value when the span ends."
-  ([handler] (wrap-bound-span handler (constantly ::wrap-bound-span)))
-  ([handler span-opts-fn]
-   (fn
+  ([handler'] (wrap-bound-span handler' (constantly ::wrap-bound-span)))
+  ([handler' span-opts-fn]
+   (fn handler
      ([request]
       (with-span! (span-opts-fn request)
-        (handler request)))
+        (handler' request)))
      ([request respond raise]
       (async-bound-span (span-opts-fn request)
-                        (fn [respond* raise*]
-                          (handler request respond* raise*))
+                        (fn f [respond* raise*]
+                          (handler' request respond* raise*))
                         respond
                         raise)))))
 
@@ -628,13 +628,13 @@
    adding HTTP server span support to HTTP services."
   [context-key span-opts-fn]
   {:name  ::span
-   :enter (fn [ctx]
-            (let [context (new-span!' (span-opts-fn ctx))]
+   :enter (fn enter [ctx]
+            (let [context (new-span! (span-opts-fn ctx))]
               (assoc ctx context-key context)))
-   :leave (fn [ctx]
+   :leave (fn leave [ctx]
             (end-span! {:context (get ctx context-key)})
             ctx)
-   :error (fn [ctx e]
+   :error (fn error [ctx e]
             (let [context (get ctx context-key)]
               (add-interceptor-exception! e {:context context})
               (end-span! {:context context})

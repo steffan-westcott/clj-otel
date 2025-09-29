@@ -61,11 +61,11 @@
            .findFirst
            (.orElse nil)))))
 
-(defmacro ^:private source-if
+(defmacro ^:private compile-if
   [test true-expr false-expr]
   (if (eval test)
-    true-expr
-    false-expr))
+    `~true-expr
+    `~false-expr))
 
 (defn ^:private class-exists?
   [class-name]
@@ -79,16 +79,16 @@
    nil; `(doto (Throwable.) .fillInStackTrace)` is not used to examine the
    stack, as that has poor performance with deep stacks."
   []
-  (source-if (class-exists? "java.lang.StackWalker")
-             (some-> ^java.lang.StackWalker$StackFrame
-                     (.walk (java.lang.StackWalker/getInstance) third-element)
-                     .getClassName
-                     Compiler/demunge)
-             nil))
+  (compile-if (class-exists? "java.lang.StackWalker")
+              (some-> ^java.lang.StackWalker$StackFrame
+                      (.walk (java.lang.StackWalker/getInstance) third-element)
+                      .getClassName
+                      Compiler/demunge)
+              nil))
 
 (defn supplier
   "Returns a `Supplier` implementation for function `f` that takes no args."
-  [f]
+  ^Supplier [f]
   (reify
    Supplier
      (get [_]
@@ -96,7 +96,7 @@
 
 (defn function
   "Returns a `Function` implementation for function `f` that takes one arg."
-  [f]
+  ^Function [f]
   (reify
    Function
      (apply [_ x]
@@ -105,7 +105,7 @@
 (defn biconsumer
   "Returns a `BiConsumer` implementation for function `f` that takes 2 args
    and the result is discarded."
-  [f]
+  ^BiConsumer [f]
   (reify
    BiConsumer
      (accept [_ x y]

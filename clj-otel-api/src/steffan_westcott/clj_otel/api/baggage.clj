@@ -29,11 +29,11 @@
 
 (defn- put-entry
   [^BaggageBuilder builder k v]
-  (let [k' (name k)]
+  (let [k (name k)]
     (if (string? v)
-      (.put builder k' v)
+      (.put builder k v)
       (let [[value metadata] v]
-        (.put builder k' value (BaggageEntryMetadata/create metadata))))))
+        (.put builder k value (BaggageEntryMetadata/create metadata))))))
 
 (defn ->map
   "Converts a `Baggage` instance to a map. Each key of the returned map is a

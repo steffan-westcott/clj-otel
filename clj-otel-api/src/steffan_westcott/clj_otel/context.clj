@@ -112,13 +112,13 @@
    in the interceptor context map with key `scope-key`."
   [context-key scope-key]
   {:name  ::current-context
-   :enter (fn [ctx]
+   :enter (fn enter [ctx]
             (let [scope (set-current! (get ctx context-key))]
               (assoc ctx scope-key scope)))
-   :leave (fn [ctx]
+   :leave (fn leave [ctx]
             (close-scope! (get ctx scope-key))
             ctx)
-   :error (fn [ctx e]
+   :error (fn error [ctx e]
             (close-scope! (get ctx scope-key))
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
 
@@ -129,9 +129,9 @@
    context is unset when this interceptor exits (either `leave` or `error`)."
   [context-key]
   {:name  ::bound-context
-   :enter (fn [ctx]
+   :enter (fn enter [ctx]
             (update ctx :bindings assoc #'*bound-context* (get ctx context-key)))
-   :leave (fn [ctx]
+   :leave (fn leave [ctx]
             (update ctx :bindings dissoc #'*bound-context*))})
 
 (def ^:private map-setter

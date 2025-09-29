@@ -124,7 +124,9 @@ The examples include applications using `core.async` with https://github.com/xad
 There is also a demonstration https://clojure.github.io/core.async/index.html[`core.async.flow`] instrumented application.
 ** Coverage of the Metrics API is complete.
 *** Metrics HTTP semantics support for applications run without the OpenTelemetry instrumentation agent is very limited.
-** There is currently no coverage of the Logs API, but OpenTelemetry log exporters work as expected without `clj-otel` assistance.
+** Coverage of Logs API is complete.
+Note that the Logs API is for use by logging libraries only.
+For applications and general libraries, use a logging library with OpenTelemetry logging signal support, such as Log4j2, Timbre etc.
 * For the programmatic configuration of the OpenTelemetry SDK:
 ** Coverage of Traces `TracerProvider` is complete.
 ** Coverage of Metrics `MeterProvider` is in progress.

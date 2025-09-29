@@ -103,31 +103,31 @@
   "Ring middleware to add support for metric `http.server.active_requests`.
    This middleware should not be used for applications run with the
    OpenTelemetry instrumentation agent."
-  [handler]
-  (fn
+  [handler']
+  (fn handler
     ([{:keys [io.opentelemetry/server-request-attrs]
        :as   request}]
      (let [attrs (active-requests-attrs server-request-attrs)]
        (add-active-requests! 1 attrs)
        (try
-         (handler request)
+         (handler' request)
          (finally
            (add-active-requests! -1 attrs)))))
     ([{:keys [io.opentelemetry/server-request-attrs io.opentelemetry/server-span-context]
-       :as   request} respond raise]
+       :as   request} respond' raise']
      (let [attrs (active-requests-attrs server-request-attrs)]
        (add-active-requests! 1 attrs server-span-context)
        (try
-         (handler request
-                  (fn [response]
-                    (add-active-requests! -1 attrs server-span-context)
-                    (respond response))
-                  (fn [e]
-                    (add-active-requests! -1 attrs server-span-context)
-                    (raise e)))
+         (handler' request
+                   (fn respond [response]
+                     (add-active-requests! -1 attrs server-span-context)
+                     (respond' response))
+                   (fn raise [e]
+                     (add-active-requests! -1 attrs server-span-context)
+                     (raise' e)))
          (catch Throwable e
            (add-active-requests! -1 attrs server-span-context)
-           (raise e)))))))
+           (raise' e)))))))
 
 (defn active-requests-interceptor
   "Returns a Pedestal interceptor to add support for metric
@@ -135,20 +135,20 @@
    applications run with the OpenTelemetry instrumentation agent."
   []
   {:name  ::active-requests
-   :enter (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
-                :as ctx}]
+   :enter (fn enter [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
+                      :as ctx}]
             (add-active-requests! 1
                                   (active-requests-attrs server-request-attrs)
                                   server-span-context)
             ctx)
-   :leave (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
-                :as ctx}]
+   :leave (fn leave [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
+                      :as ctx}]
             (add-active-requests! -1
                                   (active-requests-attrs server-request-attrs)
                                   server-span-context)
             ctx)
-   :error (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
-                :as ctx} e]
+   :error (fn error [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
+                      :as ctx} e]
             (add-active-requests! -1
                                   (active-requests-attrs server-request-attrs)
                                   server-span-context)
@@ -158,38 +158,38 @@
   "Ring middleware to add support for metric `http.server.duration`. This
    middleware should not be used for applications run with the OpenTelemetry
    instrumentation agent."
-  [handler]
-  (fn
+  [handler']
+  (fn handler
     ([{:keys [io.opentelemetry/server-request-attrs]
        :as   request}]
      (let [start-time (nano-time!)]
        (try
-         (let [response (handler request)]
+         (let [response (handler' request)]
            (record-duration! start-time server-request-attrs (:status response))
            response)
          (catch Throwable e
            (record-duration! start-time server-request-attrs 500)
            (throw e)))))
     ([{:keys [io.opentelemetry/server-request-attrs io.opentelemetry/server-span-context]
-       :as   request} respond raise]
+       :as   request} respond' raise']
      (let [start-time (nano-time!)]
        (try
-         (handler request
-                  (fn [response]
-                    (record-duration! start-time
-                                      server-request-attrs
-                                      (:status response)
-                                      server-span-context)
-                    (respond response))
-                  (fn [e]
-                    (record-duration! start-time
-                                      server-request-attrs
-                                      500
-                                      server-span-context)
-                    (raise e)))
+         (handler' request
+                   (fn respond [response]
+                     (record-duration! start-time
+                                       server-request-attrs
+                                       (:status response)
+                                       server-span-context)
+                     (respond' response))
+                   (fn raise [e]
+                     (record-duration! start-time
+                                       server-request-attrs
+                                       500
+                                       server-span-context)
+                     (raise' e)))
          (catch Throwable e
            (record-duration! start-time server-request-attrs 500 server-span-context)
-           (raise e)))))))
+           (raise' e)))))))
 
 (defn request-duration-interceptor
   "Returns a Pedestal interceptor to add support for metric
@@ -197,20 +197,20 @@
    run with the OpenTelemetry instrumentation agent."
   []
   {:name  ::request-duration
-   :enter (fn [ctx]
+   :enter (fn enter [ctx]
             (assoc ctx ::start-time (nano-time!)))
-   :leave (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
-                ::keys [start-time]
-                :keys  [response]
-                :as    ctx}]
+   :leave (fn leave [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
+                      ::keys [start-time]
+                      :keys  [response]
+                      :as    ctx}]
             (record-duration! start-time
                               server-request-attrs
                               (or (:status response) 404)
                               server-span-context)
             ctx)
-   :error (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
-                ::keys [start-time]
-                :as    ctx} e]
+   :error (fn error [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
+                      ::keys [start-time]
+                      :as    ctx} e]
             (record-duration! start-time
                               server-request-attrs
                               500
@@ -221,36 +221,36 @@
   "Ring middleware to add support for metric `http.server.request.size`. This
    middleware should not be used for applications run with the OpenTelemetry
    instrumentation agent."
-  [handler]
-  (fn
+  [handler']
+  (fn handler
     ([{:keys [io.opentelemetry/server-request-attrs]
        :as   request}]
      (try
-       (let [response (handler request)]
+       (let [response (handler' request)]
          (record-request-size! server-request-attrs (:status response))
          response)
        (catch Throwable e
          (record-request-size! server-request-attrs 500)
          (throw e))))
     ([{:keys [io.opentelemetry/server-request-attrs io.opentelemetry/server-span-context]
-       :as   request} respond raise]
+       :as   request} respond' raise']
      (try
-       (handler request
-                (fn [response]
-                  (record-request-size!
-                   server-request-attrs
-                   (:status response)
-                   server-span-context)
-                  (respond response))
-                (fn [e]
-                  (record-request-size!
-                   server-request-attrs
-                   500
-                   server-span-context)
-                  (raise e)))
+       (handler' request
+                 (fn respond [response]
+                   (record-request-size!
+                    server-request-attrs
+                    (:status response)
+                    server-span-context)
+                   (respond' response))
+                 (fn raise [e]
+                   (record-request-size!
+                    server-request-attrs
+                    500
+                    server-span-context)
+                   (raise' e)))
        (catch Throwable e
          (record-request-size! server-request-attrs 500 server-span-context)
-         (raise e))))))
+         (raise' e))))))
 
 (defn request-size-interceptor
   "Returns a Pedestal interceptor to add support for metric
@@ -258,16 +258,16 @@
    applications run with the OpenTelemetry instrumentation agent."
   []
   {:name  ::request-size
-   :leave (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
-                :keys [response]
-                :as   ctx}]
+   :leave (fn leave [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
+                      :keys [response]
+                      :as   ctx}]
             (record-request-size!
              server-request-attrs
              (or (:status response) 404)
              server-span-context)
             ctx)
-   :error (fn [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
-                :as ctx} e]
+   :error (fn error [{{:io.opentelemetry/keys [server-request-attrs server-span-context]} :request
+                      :as ctx} e]
             (record-request-size!
              server-request-attrs
              500

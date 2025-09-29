@@ -204,12 +204,12 @@
 ;;; Ring middleware
 
 (defn- wrap-new-server-span
-  [handler create-span-opts]
-  (fn
+  [handler' create-span-opts]
+  (fn handler
     ([request]
      (span/with-span! (server-span-opts request create-span-opts)
        (try
-         (let [response (handler request)]
+         (let [response (handler' request)]
            (add-server-span-response-data! response)
            response)
          (catch Throwable e
@@ -218,55 +218,55 @@
            (throw e)))))
     ([request respond raise]
      (span/async-span (server-span-opts request create-span-opts)
-                      (fn [context respond* raise*]
-                        (handler (assoc request :io.opentelemetry/server-span-context context)
-                                 (fn [response]
-                                   (add-server-span-response-data! response {:context context})
-                                   (respond* response))
-                                 (fn [e]
-                                   (add-server-span-response-data!
-                                    {:status 500
-                                     :io.opentelemetry.api.trace.span.attrs/error-type e}
-                                    {:context context})
-                                   (raise* e))))
+                      (fn f [context respond* raise*]
+                        (handler' (assoc request :io.opentelemetry/server-span-context context)
+                                  (fn respond [response]
+                                    (add-server-span-response-data! response {:context context})
+                                    (respond* response))
+                                  (fn raise [e]
+                                    (add-server-span-response-data!
+                                     {:status 500
+                                      :io.opentelemetry.api.trace.span.attrs/error-type e}
+                                     {:context context})
+                                    (raise* e))))
                       respond
                       raise))))
 
 (defn- wrap-server-request-attrs
-  [handler {:keys [captured-request-headers]}]
-  (fn
+  [handler' {:keys [captured-request-headers]}]
+  (fn handler
     ([request]
-     (handler (assoc request
-                     :io.opentelemetry/server-request-attrs
-                     (server-request-attrs request captured-request-headers))))
+     (handler' (assoc request
+                      :io.opentelemetry/server-request-attrs
+                      (server-request-attrs request captured-request-headers))))
     ([request respond raise]
-     (handler (assoc request
-                     :io.opentelemetry/server-request-attrs
-                     (server-request-attrs request captured-request-headers))
-              respond
-              raise))))
+     (handler' (assoc request
+                      :io.opentelemetry/server-request-attrs
+                      (server-request-attrs request captured-request-headers))
+               respond
+               raise))))
 
 (defn- wrap-existing-server-span
-  [handler]
-  (fn
+  [handler']
+  (fn handler
     ([request]
-     (handler request)) ; If an exception is thrown, the agent will add an exception event
-    ([request respond raise]
+     (handler' request)) ; If an exception is thrown, the agent will add an exception event
+    ([request respond' raise']
      (let [context (context/dyn)]
-       (handler (assoc request :io.opentelemetry/server-span-context context)
-                respond
-                (fn [e]
-                  (span/add-exception! e {:context context})
-                  (raise e)))))))
+       (handler' (assoc request :io.opentelemetry/server-span-context context)
+                 respond'
+                 (fn raise [e]
+                   (span/add-exception! e {:context context})
+                   (raise' e)))))))
 
 (defn- wrap-bound-context
-  [handler]
-  (fn
+  [handler']
+  (fn handler
     ([request]
-     (handler request))
+     (handler' request))
     ([request respond raise]
      (context/bind-context! (:io.opentelemetry/server-span-context request)
-       (handler request respond raise)))))
+       (handler' request respond raise)))))
 
 (defn wrap-server-span
   "Ring middleware to add HTTP server span support. This middleware can be
@@ -323,54 +323,54 @@
    Ring middleware to add an exception event to the server span. This is
    intended for use by applications which transform the exception to an HTTP
    response in a subsequent middleware."
-  [handler]
-  (fn
+  [handler']
+  (fn handler
     ([request]
      (try
-       (handler request)
+       (handler' request)
        (catch Throwable e
          (span/add-exception! e)
          (throw e))))
     ([{:keys [io.opentelemetry/server-span-context]
-       :as   request} respond raise]
+       :as   request} respond' raise']
      (try
-       (handler request
-                respond
-                (fn [e]
-                  (span/add-exception! e
-                                       {:context server-span-context})
-                  (raise e)))
+       (handler' request
+                 respond'
+                 (fn raise [e]
+                   (span/add-exception! e
+                                        {:context server-span-context})
+                   (raise' e)))
        (catch Throwable e
          (span/add-exception! e
                               {:context server-span-context})
-         (raise e))))))
+         (raise' e))))))
 
 (defn wrap-route
   "Ring middleware to add a matched route to the server span data and Ring
    request map. `route-fn` is a function which given a request returns the
    matched route as a string, or nil if no match."
-  [handler route-fn]
-  (fn
+  [handler' route-fn]
+  (fn handler
     ([{:keys [request-method]
        :as   request}]
      (if-let [route (route-fn request)]
        (do
          (add-route-data! request-method route)
-         (handler (assoc-in request
-                   [:io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
-                   route)))
-       (handler request)))
+         (handler' (assoc-in request
+                    [:io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
+                    route)))
+       (handler' request)))
     ([{:keys [request-method io.opentelemetry/server-span-context]
        :as   request} respond raise]
      (if-let [route (route-fn request)]
        (do
          (add-route-data! request-method route {:context server-span-context})
-         (handler (assoc-in request
-                   [:io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
-                   route)
-                  respond
-                  raise))
-       (handler request respond raise)))))
+         (handler' (assoc-in request
+                    [:io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
+                    route)
+                   respond
+                   raise))
+       (handler' request respond raise)))))
 
 (defn wrap-reitit-route
   "Ring middleware to add matched Reitit route to the server span data and Ring
@@ -396,7 +396,7 @@
 (defn- server-request-attrs-interceptor
   [{:keys [captured-request-headers]}]
   {:name  ::server-request-attrs
-   :enter (fn [ctx]
+   :enter (fn enter [ctx]
             (let [attrs (server-request-attrs (:request ctx) captured-request-headers)]
               (update ctx :request assoc :io.opentelemetry/server-request-attrs attrs)))})
 
@@ -409,12 +409,12 @@
 (defn- response-data-interceptor
   []
   {:name  ::response-data
-   :leave (fn [{:keys [io.opentelemetry/server-span-context response]
-                :as   ctx}]
+   :leave (fn leave [{:keys [io.opentelemetry/server-span-context response]
+                      :as   ctx}]
             (add-server-span-response-data! response {:context server-span-context})
             ctx)
-   :error (fn [{:keys [io.opentelemetry/server-span-context]
-                :as   ctx} e]
+   :error (fn error [{:keys [io.opentelemetry/server-span-context]
+                      :as   ctx} e]
             (add-server-span-response-data! {:status 500
                                              :io.opentelemetry.api.trace.span.attrs/error-type e}
                                             {:context server-span-context})
@@ -423,19 +423,19 @@
 (defn- existing-server-span-interceptor
   []
   {:name  ::existing-server-span
-   :enter (fn [ctx]
+   :enter (fn enter [ctx]
             (assoc ctx :io.opentelemetry/server-span-context (context/dyn)))
-   :error (fn [{:keys [io.opentelemetry/server-span-context]
-                :as   ctx} e]
+   :error (fn error [{:keys [io.opentelemetry/server-span-context]
+                      :as   ctx} e]
             (span/add-interceptor-exception! e {:context server-span-context})
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
 
 (defn- execution-id-interceptor
   []
   {:name  ::execution-id
-   :enter (fn [{:keys [io.opentelemetry/server-span-context
-                       io.pedestal.interceptor.chain/execution-id]
-                :as   ctx}]
+   :enter (fn enter [{:keys [io.opentelemetry/server-span-context
+                             io.pedestal.interceptor.chain/execution-id]
+                      :as   ctx}]
             (span/add-span-data! {:context    server-span-context
                                   :attributes {:io.pedestal.interceptor.chain/execution-id
                                                execution-id}})
@@ -444,8 +444,8 @@
 (defn- copy-context-interceptor
   []
   {:name  ::copy-context
-   :enter (fn [{:keys [io.opentelemetry/server-span-context]
-                :as   ctx}]
+   :enter (fn enter [{:keys [io.opentelemetry/server-span-context]
+                      :as   ctx}]
             (update ctx :request assoc :io.opentelemetry/server-span-context server-span-context))})
 
 (defn- current-context-interceptor
@@ -518,8 +518,8 @@
    data and request map."
   []
   {:name  ::route
-   :enter (fn [{:keys [io.opentelemetry/server-span-context route request]
-                :as   ctx}]
+   :enter (fn enter [{:keys [io.opentelemetry/server-span-context route request]
+                      :as   ctx}]
             (if-let [path (:path route)]
               (do
                 (add-route-data! (:request-method request) path {:context server-span-context})
@@ -540,8 +540,8 @@
    response in a subsequent interceptor."
   []
   {:name  ::exception-event
-   :error (fn [{:keys [io.opentelemetry/server-span-context]
-                :as   ctx} e]
+   :error (fn error [{:keys [io.opentelemetry/server-span-context]
+                      :as   ctx} e]
             (span/add-interceptor-exception! e
                                              {:context server-span-context})
             (assoc ctx :io.pedestal.interceptor.chain/error e))})
