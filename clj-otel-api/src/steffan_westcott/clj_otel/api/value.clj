@@ -9,6 +9,7 @@
                                         ValueDouble
                                         ValueLong
                                         ValueString)
+           (java.nio ByteBuffer)
            (java.util List Map)))
 
 (defprotocol AsValue
@@ -80,7 +81,10 @@
      (.getValue x))
  ValueBytes
    (get-value [x]
-     (.getValue x))
+     (let [^ByteBuffer byte-buffer (.getValue x)
+           arr (byte-array (.limit byte-buffer))]
+       (.get byte-buffer 0 arr)
+       arr))
  ValueArray
    (get-value [xs]
      (map get-value (.getValue xs)))
