@@ -33,7 +33,7 @@ The Logs API is not intended for use by an application or general library.
 - [ADD] By default, populate span attribute for source code column number.
 - [ADD] New option `:prop-overrides` on `steffan-westcott.clj-otel.sdk.autoconfigure/init-otel-sdk!` to override default config values.
 - Bump deps
-* [MAINT] OpenTelemetry `1.54.1`, instrumentation `2.20.1-alpha`
+* [MAINT] OpenTelemetry `1.54.1`, instrumentation `2.20.1`
 
 === `0.2.9` (2025-09-15)
 

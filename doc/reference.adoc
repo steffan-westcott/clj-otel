@@ -18,6 +18,31 @@ NOTE: Most users will need the `clj-otel-api` module only for manual instrumenta
 
 toc::[]
 
+== Latest compatible versions
+
+[%autowidth]
+|===
+| Artifact | Version
+
+| `com.github.steffan-westcott/clj-otel-*`
+| `0.2.9`
+
+| `io.opentelemetry/*`
+| `1.54.0`
+
+| `opentelemetry-javaagent.jar` +
+`io.opentelemetry.instrumentation/*`
+| `2.20.0`
+
+| `io.opentelemetry.semconv/*`
+| `1.37.0`
+|===
+
+WARNING: OpenTelemetry Java occasionally include breaking changes in a release.
+This impacts `clj-otel`, since it is based on OpenTelemetry Java.
+Each `clj-otel` release is designed to be compatible with the latest OpenTelemetry Java artifacts at that point in time.
+`clj-otel` may not work with earlier versions of OpenTelemetry Java artifacts.
+
 == `clj-otel-api`
 
 image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api]
@@ -123,32 +148,32 @@ IMPORTANT: These exporters are included in the OpenTelemetry instrumentation age
 
 ==== `opentelemetry-exporter-otlp`
 
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-otlp[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-otlp]
+image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://search.maven.org/#artifactdetails|io.opentelemetry|opentelemetry-exporter-otlp|1.54.0|]
 
 Configuration of span and metrics exporters using OTLP.
 
 ==== `opentelemetry-exporter-zipkin`
 
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-zipkin[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-zipkin]
+image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://search.maven.org/#artifactdetails|io.opentelemetry|opentelemetry-exporter-zipkin|1.54.0|]
 
 Configuration of span exporter to Zipkin.
 
 ==== `opentelemetry-exporter-prometheus`
 
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-prometheus[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-prometheus]
+image:https://img.shields.io/badge/maven--central-1.54.0--alpha-orange[Maven Central,link=https://search.maven.org/#artifactdetails|io.opentelemetry|opentelemetry-exporter-prometheus|1.54.0-alpha|]
 
 Configuration of metrics exporter to Prometheus.
 
 ==== `opentelemetry-exporter-logging`
 
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-logging[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-logging]
+image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://search.maven.org/#artifactdetails|io.opentelemetry|opentelemetry-exporter-logging|1.54.0|]
 
 Configuration of exporters that log using `java.util.logging`.
 Intended for debugging only.
 
 ==== `opentelemetry-exporter-logging-otlp`
 
-image:https://img.shields.io/maven-central/v/io.opentelemetry/opentelemetry-exporter-logging-otlp[Maven Central,link=https://search.maven.org/artifact/io.opentelemetry/opentelemetry-exporter-logging-otlp]
+image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://search.maven.org/#artifactdetails|io.opentelemetry|opentelemetry-exporter-logging-otlp|1.54.0|]
 
 Configuration of exporters that log OTLP in JSON format using `java.util.logging`.
 Intended for debugging only.
