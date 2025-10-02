@@ -215,7 +215,6 @@
                                                                      :resource       resource
                                                                      :meter-provider meter-provider)
                                                         clock (assoc :clock clock))))
-        _ (println logger-provider)
         builder        (doto (OpenTelemetrySdk/builder)
                          (.setPropagators (propagators/context-propagators propagators))
                          (.setMeterProvider meter-provider)
