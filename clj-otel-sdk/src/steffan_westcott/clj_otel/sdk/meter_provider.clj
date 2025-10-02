@@ -9,8 +9,7 @@
                                          SdkMeterProvider
                                          SdkMeterProviderBuilder
                                          View)
-           (io.opentelemetry.sdk.metrics.export PeriodicMetricReader)
-           (java.util.function Predicate)))
+           (io.opentelemetry.sdk.metrics.export PeriodicMetricReader)))
 
 (defn periodic-metric-reader
   "Returns a `PeriodicMetricReader`. Takes an option map as follows:
@@ -54,13 +53,6 @@
 
       (Aggregation/defaultAggregation))))
 
-(defn- predicate
-  ^Predicate [pred]
-  (reify
-   Predicate
-     (test [_this x]
-       (boolean (pred x)))))
-
 (defn- instrument-type
   [type async?]
   (case type
@@ -90,7 +82,7 @@
                   name             (.setName name)
                   description      (.setDescription description)
                   aggregation      (.setAggregation (map->aggregation aggregation))
-                  attribute-filter (.setAttributeFilter (predicate attribute-filter)))]
+                  attribute-filter (.setAttributeFilter (util/predicate attribute-filter)))]
     (.build builder)))
 
 (defn- register-views

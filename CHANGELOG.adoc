@@ -30,6 +30,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - [ADD] Logs API support.
 This enables a logging library to emit log records.
 The Logs API is not intended for use by an application or general library.
+- [ADD] `LoggerProvider` support in programmatic configuration of the SDK.
 - [ADD] By default, populate span attribute for source code column number.
 - [ADD] New option `:prop-overrides` on `steffan-westcott.clj-otel.sdk.autoconfigure/init-otel-sdk!` to override default config values.
 - Bump deps

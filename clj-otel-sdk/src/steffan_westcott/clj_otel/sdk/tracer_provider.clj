@@ -8,7 +8,11 @@
     (java.util Map)
     (java.util.function Supplier)
     (io.opentelemetry.sdk.trace SdkTracerProvider SdkTracerProviderBuilder SpanLimits SpanProcessor)
-    (io.opentelemetry.sdk.trace.export BatchSpanProcessor SimpleSpanProcessor SpanExporter)
+    (io.opentelemetry.sdk.trace.export BatchSpanProcessor
+                                       BatchSpanProcessorBuilder
+                                       SimpleSpanProcessor
+                                       SimpleSpanProcessorBuilder
+                                       SpanExporter)
     (io.opentelemetry.sdk.trace.samplers Sampler)))
 
 (defprotocol ^:private AsSpanLimits
@@ -39,10 +43,7 @@
      supplier)
  Fn
    (as-SpanLimits-Supplier [supplier]
-     (reify
-      Supplier
-        (get [_]
-          (as-SpanLimits (supplier))))))
+     (util/supplier #(as-SpanLimits (supplier)))))
 
 (defprotocol AsSampler
   (as-Sampler ^Sampler [sampler]
@@ -75,40 +76,47 @@
            ratio        (Sampler/traceIdRatioBased ratio)
            parent-based (map->ParentBasedSampler parent-based))))
 
-(defprotocol ^:private AsSpanProcessor
-  (as-SpanProcessor ^SpanProcessor [span-processor]))
-
 (defn- set-span-limits
   ^SdkTracerProviderBuilder [^SdkTracerProviderBuilder builder span-limits]
   (if (satisfies? AsSpanLimits span-limits)
     (.setSpanLimits builder ^SpanLimits (as-SpanLimits span-limits))
     (.setSpanLimits builder ^Supplier (as-SpanLimits-Supplier span-limits))))
 
+(defprotocol ^:private AsSpanProcessor
+  (as-SpanProcessor ^SpanProcessor [span-processor meter-provider]))
+
 (extend-protocol AsSpanProcessor
  SpanProcessor
-   (as-SpanProcessor [span-processor]
+   (as-SpanProcessor [span-processor _]
      span-processor)
  Map
-   (as-SpanProcessor [span-processor]
-     (let [{:keys [^Iterable exporters batch? schedule-delay exporter-timeout max-queue-size
-                   max-export-batch-size]
+   (as-SpanProcessor [m meter-provider]
+     (let [{:keys [^Iterable exporters export-unsampled-spans? batch? schedule-delay
+                   exporter-timeout max-queue-size max-export-batch-size]
             :or   {batch? true}}
-           span-processor
+           m
 
            composite-exporter (SpanExporter/composite exporters)]
        (if batch?
-         (let [builder (cond-> (BatchSpanProcessor/builder composite-exporter)
-                         schedule-delay        (.setScheduleDelay (util/duration schedule-delay))
-                         exporter-timeout      (.setExporterTimeout (util/duration
-                                                                     exporter-timeout))
-                         max-queue-size        (.setMaxQueueSize max-queue-size)
-                         max-export-batch-size (.setMaxExportBatchSize max-export-batch-size))]
+         (let [^BatchSpanProcessorBuilder builder
+               (cond-> (BatchSpanProcessor/builder composite-exporter)
+                 (some? export-unsampled-spans?) (.setExportUnsampledSpans
+                                                  (boolean export-unsampled-spans?))
+                 schedule-delay        (.setScheduleDelay (util/duration schedule-delay))
+                 exporter-timeout      (.setExporterTimeout (util/duration exporter-timeout))
+                 max-queue-size        (.setMaxQueueSize max-queue-size)
+                 max-export-batch-size (.setMaxExportBatchSize max-export-batch-size)
+                 meter-provider        (.setMeterProvider meter-provider))]
            (.build builder))
-         (SimpleSpanProcessor/create composite-exporter)))))
+         (let [^SimpleSpanProcessorBuilder builder
+               (cond-> (SimpleSpanProcessor/builder composite-exporter)
+                 (some? export-unsampled-spans?) (.setExportUnsampledSpans
+                                                  (boolean export-unsampled-spans?)))]
+           (.build builder))))))
 
 (defn- add-span-processors
-  ^SdkTracerProviderBuilder [builder span-processors]
-  (reduce #(.addSpanProcessor ^SdkTracerProviderBuilder %1 (as-SpanProcessor %2))
+  ^SdkTracerProviderBuilder [builder span-processors meter-provider]
+  (reduce #(.addSpanProcessor ^SdkTracerProviderBuilder %1 (as-SpanProcessor %2 meter-provider))
           builder
           span-processors))
 
@@ -116,12 +124,12 @@
   "Internal function that returns a `SdkTracerProvider`.
    See namespace `steffan-westcott.clj-otel.sdk.otel-sdk`"
   ^SdkTracerProvider
-  [{:keys [span-processors span-limits sampler resource id-generator clock]
-    :or   {span-processors []}}]
-  (let [builder (cond-> (add-span-processors (SdkTracerProvider/builder) span-processors)
-                  span-limits  (set-span-limits span-limits)
-                  sampler      (.setSampler (as-Sampler sampler))
-                  resource     (.setResource (res/as-Resource resource))
-                  id-generator (.setIdGenerator id-generator)
-                  clock        (.setClock clock))]
+  [{:keys [span-processors span-limits sampler resource id-generator clock meter-provider]}]
+  (let [builder
+        (cond-> (add-span-processors (SdkTracerProvider/builder) span-processors meter-provider)
+          span-limits  (set-span-limits span-limits)
+          sampler      (.setSampler (as-Sampler sampler))
+          resource     (.setResource (res/as-Resource resource))
+          id-generator (.setIdGenerator id-generator)
+          clock        (.setClock clock))]
     (.build builder)))

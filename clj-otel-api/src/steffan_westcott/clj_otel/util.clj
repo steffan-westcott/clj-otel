@@ -4,7 +4,7 @@
   (:import (clojure.lang IPersistentVector Named)
            (java.time Duration Instant)
            (java.util.concurrent CompletionException ExecutionException TimeUnit)
-           (java.util.function BiConsumer Function Supplier)
+           (java.util.function BiConsumer Function Predicate Supplier)
            (java.util.stream Stream)))
 
 (defprotocol AsDuration
@@ -110,6 +110,14 @@
    BiConsumer
      (accept [_ x y]
        (f x y))))
+
+(defn predicate
+  "Returns a `Predicate` implementation for function `pred` that takes 1 arg."
+  ^Predicate [pred]
+  (reify
+   Predicate
+     (test [_ x]
+       (boolean (pred x)))))
 
 (defn unwrap-cf-exception
   "Unwraps an exception thrown from a `CompletableFuture`."

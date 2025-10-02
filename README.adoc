@@ -131,12 +131,11 @@ For applications and general libraries, use a logging library with OpenTelemetry
 ** Coverage of Traces `TracerProvider` is complete.
 ** Coverage of Metrics `MeterProvider` is in progress.
 Most configuration options are supported, but some public details of the OpenTelemetry Java SDK are not yet stable.
-** There is currently no coverage of Logging `LoggerProvider`.
+** Coverage of Logs `LoggerProvider` is complete.
 
 == TODO
 
 * For manual instrumentation:
-** Add support for programmatic configuration of `LoggerProvider`
 ** Consider supporting more https://github.com/open-telemetry/semantic-conventions/blob/main/docs/general/trace.md[trace semantics conventions].
 * Maintain parity with the latest version of https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`].
 * Implement integration tests using https://github.com/javahippie/clj-test-containers[clj-test-containers] or similar.

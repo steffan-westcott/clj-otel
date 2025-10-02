@@ -1,6 +1,7 @@
 (ns steffan-westcott.clj-otel.sdk.otel-sdk
   "Programmatic configuration of the OpenTelemetry SDK."
   (:require [steffan-westcott.clj-otel.api.otel :as otel]
+            [steffan-westcott.clj-otel.sdk.logger-provider :as logger]
             [steffan-westcott.clj-otel.sdk.meter-provider :as meter]
             [steffan-westcott.clj-otel.sdk.propagators :as propagators]
             [steffan-westcott.clj-otel.sdk.resources :as res]
@@ -43,9 +44,11 @@
    |`:set-as-global`         | If true, sets the configured SDK instance as the global `OpenTelemetry` instance declared by Java OpenTelemetry (default: `false`).
    |`:register-shutdown-hook`| If true, registers a JVM shutdown hook to close the configured SDK instance (default: `true`).
    |`:resources`             | Collection of resources to merge with default SDK resource and `service-name` resource. Each resource in the collection is either a `Resource` instance or a map with keys `:attributes` (required) and `:schema-url` (optional). The merged resource describes the source of telemetry and is attached to emitted data (default: nil)
+   |`:clock`                 | `Clock` instance used for all temporal needs (default: system clock).
    |`:propagators`           | Collection of `TextMapPropagator` instances used to inject and extract context information using HTTP headers (default: W3C Trace Context and W3C Baggage text map propagators).
-   |`:tracer-provider`       | Option map (see below) to configure `SdkTracerProvider` instance (default: `{}`).
-   |`:meter-provider`        | Option map (see below) to configure `SdkMeterProvider` instance (default: `{}`).
+   |`:tracer-provider`       | Option map (see below) to configure `SdkTracerProvider` instance (default: no tracer provider).
+   |`:meter-provider`        | Option map (see below) to configure `SdkMeterProvider` instance (default: no meter provider).
+   |`:logger-provider`       | Option map (see below) to configure `SdkLoggerProvider` instance (default: no logger provider).
 
 
    ====================================================
@@ -55,22 +58,22 @@
 
    | key              | description |
    |------------------|-------------|
-   |`:span-processors`| Collection of option maps (see table below) or `SpanProcessor` instances. Each member specifies a collection of span exporters and batching to apply to those exporters (default: `[]`).
+   |`:span-processors`| Collection of option maps (see table below) or `SpanProcessor` instances. Each member specifies a collection of span exporters and batching to apply to those exporters (default: nil).
    |`:span-limits`    | Option map (see table below), `SpanLimits`, `Supplier` or fn which returns span limits (default: same as `{}`).
    |`:sampler`        | Option map (see table below) or `Sampler` instance, specifies strategy for sampling spans (default: same as `{:parent-based {}}`).
    |`:id-generator`   | `IdGenerator` instance for generating ids for spans and traces (default: platform specific `IdGenerator`).
-   |`:clock`          | `Clock` instance used for all temporal needs (default: system clock).
 
    `:span-processors` member option map
 
-   | key                    | description |
-   |------------------------|-------------|
-   |`:exporters`            | Collection of `SpanExporter` instances, used to export spans to processing and reporting backends.
-   |`:batch?`               | If true, batches spans for export. If false then export spans individually; generally meant for debug logging exporters only. All options other than `:exporters` are ignored when `:batch` is false (default: `true`).
-   |`:schedule-delay`       | Delay interval between consecutive batched exports. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 5000ms).
-   |`:exporter-timeout`     | Maximum time a batched export will be allowed to run before being cancelled. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 30000ms).
-   |`:max-queue-size`       | Maximum number of spans kept in queue before start dropping (default: 2048).
-   |`:max-export-batch-size`| Maximum batch size for every export, must be smaller or equal to `:max-queue-size` (default: 512).
+   | key                      | description |
+   |--------------------------|-------------|
+   |`:exporters`              | Collection of `SpanExporter` instances, used to export spans to processing and reporting backends.
+   |`:export-unsampled-spans?`| If true, unsampled spans are exported (default: false).
+   |`:batch?`                 | If true, batches spans for export. If false then export spans individually; generally meant for debug logging exporters only. All options below are ignored when `:batch` is false (default: `true`).
+   |`:schedule-delay`         | Delay interval between consecutive batched exports. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 5000ms).
+   |`:exporter-timeout`       | Maximum time a batched export will be allowed to run before being cancelled. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 30000ms).
+   |`:max-queue-size`         | Maximum number of spans kept in queue before start dropping (default: 2048).
+   |`:max-export-batch-size`  | Maximum batch size for every export, must be smaller or equal to `:max-queue-size` (default: 512).
 
    `:span-limits` option map
 
@@ -111,7 +114,6 @@
    |----------|-------------|
    |`:readers`| Collection of option maps (see table below) for specifying metric readers (default: no readers).
    |`:views`  | Collection of option maps (see table below) for specifying views that affect exported metrics (default: no views).
-   |`:clock`  | `Clock` instance used for all temporal needs (default: system clock).
 
    `:readers` member option map
 
@@ -168,25 +170,60 @@
    | key                | description |
    |--------------------|-------------|
    |`:max-buckets`      | Maximum number of positive and negative buckets (default: implementation defined)
-   |`:max-scale`        | Maximum and initial scale (required if `:max-buckets` is specified)."
+   |`:max-scale`        | Maximum and initial scale (required if `:max-buckets` is specified).
+
+
+   ====================================================
+
+
+   `:logger-provider` option map
+
+   | key                    | description |
+   |------------------------|-------------|
+   |`:log-record-processors`| Collection of option maps (see table below) or `LogRecordProcessor` instances. Each member specifies a collection of log record exporters and batching to apply to those exporters (default: nil).
+   |`:log-limits`           | Option map (see table below), `Supplier` or fn which returns option map (default: nil).
+
+   `:log-record-processors` option map
+
+   | key                    | description |
+   |------------------------|-------------|
+   |`:exporters`            | Collection of `SpanExporter` instances, used to export spans to processing and reporting backends.
+   |`:batch?`               | If true, batches spans for export. If false then export spans individually; generally meant for debug logging exporters only. All options other than `:exporters` are ignored when `:batch` is false (default: `true`).
+   |`:schedule-delay`       | Delay interval between consecutive batched exports. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 1000ms).
+   |`:exporter-timeout`     | Maximum time a batched export will be allowed to run before being cancelled. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 30000ms).
+   |`:max-queue-size`       | Maximum number of spans kept in queue before start dropping (default: 2048).
+   |`:max-export-batch-size`| Maximum batch size for every export, must be smaller or equal to `:max-queue-size` (default: 512)."
   ^OpenTelemetrySdk
   [service-name
-   {:keys [set-as-default set-as-global register-shutdown-hook resources propagators tracer-provider
-           meter-provider]
+   {:keys [set-as-default set-as-global register-shutdown-hook resources clock propagators
+           tracer-provider meter-provider logger-provider]
     :or   {set-as-default         true
            set-as-global          false
            register-shutdown-hook true
            propagators            (propagators/default)}}]
-  (let [resource (res/merge-resources-with-default service-name resources)
-        builder  (doto (OpenTelemetrySdk/builder)
-                   (.setPropagators (propagators/context-propagators propagators))
-                   (.setTracerProvider (tracer/sdk-tracer-provider
-                                        (assoc tracer-provider :resource resource)))
-                   (.setMeterProvider (meter/sdk-meter-provider
-                                       (assoc meter-provider :resource resource))))
-        sdk      (if set-as-global
-                   (.buildAndRegisterGlobal builder)
-                   (.build builder))]
+  (let [resource       (res/merge-resources-with-default service-name resources)
+        meter-provider (when meter-provider
+                         (meter/sdk-meter-provider (cond-> (assoc meter-provider :resource resource)
+                                                     clock (assoc :clock clock))))
+        tracer-provider (when tracer-provider
+                          (tracer/sdk-tracer-provider (cond-> (assoc tracer-provider
+                                                                     :resource       resource
+                                                                     :meter-provider meter-provider)
+                                                        clock (assoc :clock clock))))
+        logger-provider (when logger-provider
+                          (logger/sdk-logger-provider (cond-> (assoc logger-provider
+                                                                     :resource       resource
+                                                                     :meter-provider meter-provider)
+                                                        clock (assoc :clock clock))))
+        _ (println logger-provider)
+        builder        (doto (OpenTelemetrySdk/builder)
+                         (.setPropagators (propagators/context-propagators propagators))
+                         (.setMeterProvider meter-provider)
+                         (.setTracerProvider tracer-provider)
+                         (.setLoggerProvider logger-provider))
+        sdk            (if set-as-global
+                         (.buildAndRegisterGlobal builder)
+                         (.build builder))]
     (when register-shutdown-hook
       (add-shutdown-hook! sdk))
     (when set-as-default
