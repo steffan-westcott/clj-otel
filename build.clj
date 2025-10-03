@@ -128,9 +128,9 @@ clojure -A:deps -T:build help/doc"
    (artifact-opts {:artifact-id     (artifact-id root-path)
                    :aliases         (into (if (library-project? root-path)
                                             (if snapshot?
-                                              [:snapshot]
-                                              [:release])
-                                            [:otel])
+                                              #{:snapshot}
+                                              #{:release})
+                                            #{:otel})
                                           (:aliases opts))
                    :group-id        (group-id root-path)
                    :root-path       root-path
@@ -306,9 +306,9 @@ clojure -A:deps -T:build help/doc"
 
   Invoke with e.g.
   clojure -T:build uber :path '\"examples/divisor-app\"'"
-  [{:keys [path]}]
+  [{:keys [path aliases]}]
   (b/with-project-root path
-    (uberjar-artifact (project-artifact-opts path))))
+    (uberjar-artifact (project-artifact-opts path {:aliases aliases}))))
 
 (defn native
   "Build native executable for demo project that has -main fn. Assumes a
@@ -317,10 +317,11 @@ clojure -A:deps -T:build help/doc"
 
   Invoke with e.g.
   clojure -T:build native :path '\"examples/divisor-app\"'"
-  [{:keys [path]}]
+  [{:keys [path aliases]
+    :or   {aliases #{}}}]
   (b/with-project-root path
     (native-artifact (project-artifact-opts path
-                                            {:aliases         [:native]
+                                            {:aliases         (conj aliases :native)
                                              :uber-classifier "native"}))))
 
 (defn install
@@ -367,7 +368,7 @@ clojure -A:deps -T:build help/doc"
               "--skip" "pom"
               "--exclude" (str/join ":" (conj group-artifact-ids "org.clojure/clojure"))
               "--no-changes"]}
-            [:antq]))
+            #{:antq}))
 
 (defn fmt
   "Apply formatting to all *.clj and *.edn source files using zprint. Assumes a
