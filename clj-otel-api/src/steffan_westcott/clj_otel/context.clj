@@ -134,22 +134,30 @@
    :leave (fn leave [ctx]
             (update ctx :bindings dissoc #'*bound-context*))})
 
+(defn ^:private map-setter* []
+  (reify
+    TextMapSetter
+    (set [_ carrier key value]
+      (.put ^Map carrier key value))))
+
+(defn ^:private map-getter* []
+  (reify
+    TextMapGetter
+    (keys [_ carrier]
+      (keys carrier))
+    (get [_ carrier key]
+      (some-> (get carrier (str/lower-case key))
+              (str/split #",")
+              first
+              str/trim))))
+
 (def ^:private map-setter
-  (delay (reify
-          TextMapSetter
-            (set [_ carrier key value]
-              (.put ^Map carrier key value)))))
+  "Cached usage of map-setter*"
+  (memoize map-setter*))
 
 (def ^:private map-getter
-  (delay (reify
-          TextMapGetter
-            (keys [_ carrier]
-              (keys carrier))
-            (get [_ carrier key]
-              (some-> (get carrier (str/lower-case key))
-                      (str/split #",")
-                      first
-                      str/trim)))))
+  "Cached usage of map-getter*"
+  (memoize map-getter*))
 
 (defn ->headers
   "Returns a map to merge into the headers of an HTTP request for the purpose
@@ -166,7 +174,7 @@
   ([{:keys [^Context context ^TextMapPropagator text-map-propagator setter]
      :or   {context (dyn)
             text-map-propagator (otel/get-text-map-propagator)
-            setter  @map-setter}}]
+            setter  (map-setter)}}]
    (let [carrier (HashMap.)]
      (.inject text-map-propagator context carrier setter)
      (into {} carrier))))
@@ -188,5 +196,5 @@
     {:keys [^Context context ^TextMapPropagator text-map-propagator getter]
      :or   {context (dyn)
             text-map-propagator (otel/get-text-map-propagator)
-            getter  @map-getter}}]
+            getter  (map-getter)}}]
    (.extract text-map-propagator context headers getter)))
