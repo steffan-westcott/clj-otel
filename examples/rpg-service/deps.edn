@@ -3,10 +3,12 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.12.2"}
-           org.clojure/tools.logging {:mvn/version "1.3.0"}
 
            ;; Application configuration
            aero/aero {:mvn/version "1.1.6"}
+
+           ;; Wrapper for Log4j2 with MapMessage support
+           com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
@@ -16,6 +18,9 @@
 
            ;; HikariCP JDBC connection pool
            hikari-cp/hikari-cp {:mvn/version "3.3.0"}
+
+           ;; Log4j2 OpenTelemetry appender
+           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.20.1-alpha"}
 
            ;; Reitit HTTP routing and content handling
            metosin/reitit-malli {:mvn/version "0.9.1"}
@@ -39,18 +44,11 @@
                               "-Dotel.service.name=rpg-service"
 
                               ;; Set metric export to every 5 seconds
-                              "-Dotel.metric.export.interval=5000"
+                              "-Dotel.metric.export.interval=5000"]}
 
-                              ;; Disable logs export
-                              "-Dotel.logs.exporter=none"]}
-
-           ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
-           :log4j {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.2"}
-                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.25.2"}
-                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.25.2"}
-                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.25.2"}}
-                   :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
+           ;; (Re)direct clojure.tools.logging and java.util.logging to Log4J2
+           :log4j {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                              "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
            ;; Include this alias for developing in the REPL
            :dev   {:extra-paths ["dev"]

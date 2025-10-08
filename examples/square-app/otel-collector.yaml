@@ -63,3 +63,8 @@ service:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
       exporters: [ debug, prometheusremotewrite ]
+
+    # Enable debug only pipeline for logs, as we lack a proper logging backend
+    logs:
+      receivers: [ otlp ]
+      exporters: [ debug ]

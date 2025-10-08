@@ -2,6 +2,7 @@
   "Core application logic. This is a simple application which performs
    read-only queries on an EQL database and updates query count metrics."
   (:require [honeyeql.core :as heql]
+            [org.corfield.logging4j2 :as log]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
@@ -9,6 +10,9 @@
 (defn- do-query
   "Performs `query` on EQL database `eql-db`."
   [{:keys [eql-db instruments]} subject query]
+
+  (log/debug {:message "Performing query"
+              :query   query})
 
   ;; Increment `:query-count` counter for queries on `subject`
   (instrument/add! (:query-count instruments)

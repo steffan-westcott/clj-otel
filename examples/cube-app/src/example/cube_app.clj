@@ -1,6 +1,7 @@
 (ns example.cube-app
   "An example application demonstrating usage of the OpenTelemetry API with `clj-otel`."
-  (:require [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
+  (:require [org.corfield.logging4j2 :as log]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
@@ -15,6 +16,7 @@
   [n]
   (span/with-span! [::cubing {:app.cube/n n}]
     (span/add-event! "my event")
+    (log/debug "Calculating cube")
     (instrument/add! @cubes-count {:value 1})
     (* n n n)))
 
@@ -27,4 +29,3 @@
 
   ;
 )
-

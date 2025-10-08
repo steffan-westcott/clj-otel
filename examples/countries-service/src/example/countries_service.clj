@@ -7,6 +7,7 @@
             [clojure.string :as str]
             [compojure.core :refer [defroutes context GET] :as compojure]
             [compojure.route :as route]
+            [org.corfield.logging4j2 :as log]
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -68,7 +69,12 @@
     (when (= :irl iso-code)
       (throw (RuntimeException. "Unable to process country statistic")))
 
+    (log/debug {:message   "Looking up country statistic"
+                :iso-code  iso-code
+                :statistic statistic})
     (when-let [stat (get-in country-statistics [iso-code statistic])]
+
+      (log/debug (str "Found stat " stat))
 
       ;; Increment lookup count for statistic
       (instrument/add! @stat-lookup-count

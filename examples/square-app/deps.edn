@@ -3,7 +3,9 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.12.2"}
-           org.clojure/tools.logging {:mvn/version "1.3.0"}
+
+           ;; Wrapper for Log4j2 with MapMessage support
+           com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
@@ -14,17 +16,17 @@
 
            ;; Clojure wrapper of JVM metrics instrumentation
            com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8
-           {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}}
+           {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}
+
+           ;; Log4j2 OpenTelemetry appender
+           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.20.1-alpha"}}
 
  :aliases {;; Autoconfiguration properties and selected dependencies
            :otel       {:jvm-opts   [;; Name the instrumented application or service
                                      "-Dotel.service.name=square-app"
 
                                      ;; Set metric export to every 10 seconds
-                                     "-Dotel.metric.export.interval=10000"
-
-                                     ;; Disable logs export
-                                     "-Dotel.logs.exporter=none"]
+                                     "-Dotel.metric.export.interval=10000"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
                                      io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.20.1-alpha"}
@@ -37,14 +39,6 @@
                                      io.grpc/grpc-protobuf     {:mvn/version "1.75.0"}
                                      io.grpc/grpc-stub         {:mvn/version "1.75.0"}}}
 
-           ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation.
-           :log4j      {:extra-deps {org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.2"}
-                                     org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.25.2"}
-                                     org.apache.logging.log4j/log4j-jul         {:mvn/version "2.25.2"}
-                                     org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.25.2"}
-
-                                     ;; Add trace_id, span_id and trace_flags to Log4j2 NDC
-                                     io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure
-                                     {:mvn/version "2.20.1-alpha"}}
-                        :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                                     "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}
+           ;; (Re)direct clojure.tools.logging and java.util.logging to Log4J2
+           :log4j      {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                                   "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}
