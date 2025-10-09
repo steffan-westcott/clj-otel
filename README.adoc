@@ -112,7 +112,7 @@ See more xref:doc/examples.adoc[information on configuring and running the examp
 
 == Project status
 
-* `clj-otel` is a young, alpha grade project with limited use in a production setting.
+* `clj-otel` is currently used in a small number of independent production settings.
 Breaking API changes may still be made, but there should be few, if any.
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
@@ -127,15 +127,22 @@ There is also a demonstration https://clojure.github.io/core.async/index.html[`c
 ** Coverage of Logs API is complete.
 Note that the Logs API is for use by logging libraries only.
 For applications and general libraries, use a logging library with OpenTelemetry logging signal support, such as Log4j2, Timbre etc.
+These logging libraries support current context only.
 * For the programmatic configuration of the OpenTelemetry SDK:
 ** Coverage of Traces `TracerProvider` is complete.
 ** Coverage of Metrics `MeterProvider` is in progress.
-Most configuration options are supported, but some public details of the OpenTelemetry Java SDK are not yet stable.
-** Coverage of Logs `LoggerProvider` is complete.
+Most configuration options are supported.
+** Coverage of Logs `LoggerProvider` has been implemented, but it is not working correctly with Log4j2 for some unknown reason.
+* Some investigation of `ContextStorageProvider` has been done, as a possible route to make entire Java applications bound context aware.
+However, problems with instrumentation agent integration have ruled this out.
 
 == TODO
 
 * For manual instrumentation:
+** Implement bound context aware log appenders for Log4j2 and Logback.
+** Consider implementing a lightweight logging library that targets solely the Logs API.
+Also, add this logging library as a backend for https://github.com/taoensso/trove[Trove].
+This will enable applications to make full use of the Logs API, which is not possible with other logging libraries.
 ** Consider supporting more https://github.com/open-telemetry/semantic-conventions/blob/main/docs/general/trace.md[trace semantics conventions].
 * Maintain parity with the latest version of https://github.com/open-telemetry/opentelemetry-java[`opentelemetry-java`].
 * Implement integration tests using https://github.com/javahippie/clj-test-containers[clj-test-containers] or similar.
