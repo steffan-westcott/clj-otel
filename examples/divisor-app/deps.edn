@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.2"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
 
            ;; Wrapper for Log4j2 with MapMessage support
            com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
@@ -48,9 +48,9 @@
                                      io.opentelemetry/opentelemetry-exporter-logging          {:mvn/version "1.54.1"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
-           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.75.0"}
-                                     io.grpc/grpc-protobuf     {:mvn/version "1.75.0"}
-                                     io.grpc/grpc-stub         {:mvn/version "1.75.0"}}}
+           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.76.0"}
+                                     io.grpc/grpc-protobuf     {:mvn/version "1.76.0"}
+                                     io.grpc/grpc-stub         {:mvn/version "1.76.0"}}}
 
            ;; (Re)direct clojure.tools.logging and java.util.logging to Log4J2
            :log4j      {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"

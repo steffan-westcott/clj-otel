@@ -40,8 +40,8 @@ The application has no instrumentation initially.
 ----
 {:paths ["src"]
 
- :deps  {org.clojure/clojure     {:mvn/version "1.12.2"}
-         ring/ring-jetty-adapter {:mvn/version "1.15.2"}}}
+ :deps  {org.clojure/clojure     {:mvn/version "1.12.3"}
+         ring/ring-jetty-adapter {:mvn/version "1.15.3"}}}
 ----
 +
 .`./src/tutorial/counter_service.clj`
@@ -130,8 +130,8 @@ Ensure the file is placed in the project root directory (the same directory as `
 ----
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure     {:mvn/version "1.12.2"}
-           ring/ring-jetty-adapter {:mvn/version "1.15.2"}}
+ :deps    {org.clojure/clojure     {:mvn/version "1.12.3"}
+           ring/ring-jetty-adapter {:mvn/version "1.15.3"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.service.name=counter-service"
@@ -177,8 +177,8 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 ----
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure                      {:mvn/version "1.12.2"}
-           ring/ring-jetty-adapter                  {:mvn/version "1.15.2"}
+ :deps    {org.clojure/clojure                      {:mvn/version "1.12.3"}
+           ring/ring-jetty-adapter                  {:mvn/version "1.15.3"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.9"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"

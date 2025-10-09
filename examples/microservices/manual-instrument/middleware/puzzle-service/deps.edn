@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.2"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
            org.clojure/core.async {:mvn/version "1.8.741"}
            org.clojure/tools.logging {:mvn/version "1.3.0"}
 
@@ -54,7 +54,7 @@
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}
-           metosin/malli {:mvn/version "0.19.1"}
+           metosin/malli {:mvn/version "0.19.2"}
            metosin/muuntaja {:mvn/version "0.6.11"}
            metosin/reitit-malli {:mvn/version "0.9.1"}
            metosin/reitit-middleware {:mvn/version "0.9.1"}
@@ -67,9 +67,9 @@
            org.example/common.system {:local/root "../../../../common/system"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.75.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.75.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.75.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.76.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.76.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.76.0"}
 
           }
 

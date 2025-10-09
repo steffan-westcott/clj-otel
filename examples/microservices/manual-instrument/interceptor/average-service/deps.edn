@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.2"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
            org.clojure/core.async {:mvn/version "1.8.741"}
            org.clojure/tools.logging {:mvn/version "1.3.0"}
 
@@ -52,9 +52,9 @@
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
 
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.75.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.75.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.75.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.76.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.76.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.76.0"}
 
           }
 
