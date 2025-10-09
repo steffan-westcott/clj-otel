@@ -10,7 +10,7 @@ services:
 
   # Example microservice planet-service
   planet-service:
-    image: clojure:temurin-22-tools-deps-alpine
+    image: clojure:temurin-25-tools-deps-alpine
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "planet-service"
@@ -45,7 +45,7 @@ services:
 
   # Example microservice solar-system-service
   solar-system-service:
-    image: clojure:temurin-22-tools-deps-alpine
+    image: clojure:temurin-25-tools-deps-alpine
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "solar-system-service"
@@ -83,7 +83,7 @@ services:
 
   # Load generator for solar-system-service
   solar-system-load-gen:
-    image: clojure:temurin-22-tools-deps-alpine
+    image: clojure:temurin-25-tools-deps-alpine
     env_file: compose.env
     ports:
       - "8092:8092"      # nREPL server
@@ -106,7 +106,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.135.0
+    image: otel/opentelemetry-collector-contrib:0.137.0
     environment:
       GOMEMLIMIT: "400MiB"
     volumes:
@@ -141,7 +141,7 @@ services:
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:v3.5.0
+    image: prom/prometheus:v3.6.0
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:
@@ -152,7 +152,7 @@ services:
 
   # Grafana
   grafana:
-    image: grafana/grafana-oss:12.1.1
+    image: grafana/grafana:12.2.0
     volumes:
       - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml:ro
       - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/grafana-dashboards.yaml:ro
