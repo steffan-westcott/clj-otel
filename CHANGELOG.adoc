@@ -32,7 +32,9 @@ This enables a logging library to emit log records.
 The Logs API is not intended for use by an application or general library.
 - [ADD] `LoggerProvider` support in programmatic configuration of the SDK.
 - [ADD] By default, populate span attribute for source code column number.
-- [ADD] New option `:prop-overrides` on `steffan-westcott.clj-otel.sdk.autoconfigure/init-otel-sdk!` to override default config values.
+- [ADD] New options on `steffan-westcott.clj-otel.sdk.autoconfigure/init-otel-sdk!`:
+* `:prop-overrides` to override default config values
+* `:sdk-builder-customizer` to further customize the autoconfigured SDK beyond the provided options
 - Bump deps
 * [MAINT] OpenTelemetry `1.54.1`, instrumentation `2.20.1`
 

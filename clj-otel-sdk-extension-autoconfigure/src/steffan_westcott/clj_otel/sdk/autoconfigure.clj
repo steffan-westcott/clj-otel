@@ -24,17 +24,19 @@
    |`:set-as-default`        | If true, sets the configured SDK instance as the default `OpenTelemetry` instance declared and used by `clj-otel` (default: `true`).
    |`:set-as-global`         | If true, sets the configured SDK instance as the global `OpenTelemetry` instance declared by Java OpenTelemetry (default: `false`).
    |`:register-shutdown-hook`| If true, registers a JVM shutdown hook to close the configured SDK instance (default: `true`).
-   |`:prop-overrides`        | fn that takes io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties and returns a string map of config property names and values to override defaults. Config property lookup precedence is: system property > env var > override > default."
+   |`:prop-overrides`        | fn that takes io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties and returns a string map of config property names and values to override defaults. Config property lookup precedence is: system property > env var > override > default.
+   |`:sdk-builder-customizer`| fn that takes io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdkBuilder and returns it, allowing further customization of the builder before building the SDK instance."
   (^OpenTelemetrySdk [] (init-otel-sdk! {}))
   (^OpenTelemetrySdk
-   [{:keys [set-as-default set-as-global register-shutdown-hook prop-overrides]
+   [{:keys [set-as-default set-as-global register-shutdown-hook prop-overrides sdk-builder-customizer]
      :or   {set-as-default         true
             set-as-global          false
             register-shutdown-hook true}}]
    (let [builder  (cond-> (AutoConfiguredOpenTelemetrySdk/builder)
                     set-as-global  (.setResultAsGlobal)
                     (not register-shutdown-hook) (.disableShutdownHook)
-                    prop-overrides (.addPropertiesCustomizer (util/function prop-overrides)))
+                    prop-overrides (.addPropertiesCustomizer (util/function prop-overrides))
+                    sdk-builder-customizer (sdk-builder-customizer))
          auto-sdk (.build builder)
          sdk      (.getOpenTelemetrySdk auto-sdk)]
      (when set-as-default
