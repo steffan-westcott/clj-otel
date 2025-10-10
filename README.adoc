@@ -8,9 +8,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-api?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api]
+image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api/versions/0.2.9]
 ifndef::env-cljdoc[]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-api[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT]
+image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/0.2.9]
 endif::[]
 image:https://img.shields.io/badge/changelog-grey[changelog,link=CHANGELOG.adoc]
 image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License]

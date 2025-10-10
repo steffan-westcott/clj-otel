@@ -545,9 +545,9 @@
 (defmacro cf-span-binding
   "Returns a `CompletableFuture` that starts a new span, binds `context` to the
    new context containing the span and evaluates `body` which is expected give
-   a `CompletableFuture` that may use any specified `Executor`. The span is
-   ended on completion. Asynchronous functions within `body` should be defined
-   using `bound-fn` or similar to convey bindings."
+   a `CompletableFuture` that may use any `Executor`. The span is ended on
+   completion. Asynchronous functions within `body` should be defined using
+   `bound-fn` or similar to convey bindings."
   ^CompletableFuture [[context span-opts] & body]
   `(let [span-opts# (span-opts* ~span-opts
                                 ~(:line (meta &form))
@@ -560,10 +560,9 @@
 (defmacro async-bound-cf-span
   "Returns a `CompletableFuture` that starts a new span, sets the bound context
    to the new context containing the span and evaluates `body` which is
-   expected give a `CompletableFuture` that may use any specified `Executor`.
-   The span is ended on completion. Asynchronous functions within `body` should
-   be defined using `bound-fn` or similar to convey bindings such as the bound
-   context."
+   expected give a `CompletableFuture` that may use any `Executor`. The span is
+   ended on completion. Asynchronous functions within `body` should be defined
+   using `bound-fn` or similar to convey bindings such as the bound context."
   ^CompletableFuture [span-opts & body]
   `(let [span-opts# (span-opts* ~span-opts
                                 ~(:line (meta &form))

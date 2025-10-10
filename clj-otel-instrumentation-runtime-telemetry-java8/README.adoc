@@ -1,8 +1,8 @@
 = `clj-otel-instrumentation-runtime-telemetry-java8`
 
-image:https://img.shields.io/clojars/v/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8]
+image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/versions/0.2.9]
 ifndef::env-cljdoc[]
-image:https://cljdoc.org/badge/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8]
+image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/0.2.9]
 endif::[]
 image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License]
 image:https://img.shields.io/badge/clojurians-clj--otel-blue.svg?logo=slack[Slack channel,link=https://clojurians.slack.com/messages/clj-otel]

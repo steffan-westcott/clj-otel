@@ -192,7 +192,14 @@
    |`:schedule-delay`       | Delay interval between consecutive batched exports. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 1000ms).
    |`:exporter-timeout`     | Maximum time a batched export will be allowed to run before being cancelled. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 30000ms).
    |`:max-queue-size`       | Maximum number of spans kept in queue before start dropping (default: 2048).
-   |`:max-export-batch-size`| Maximum batch size for every export, must be smaller or equal to `:max-queue-size` (default: 512)."
+   |`:max-export-batch-size`| Maximum batch size for every export, must be smaller or equal to `:max-queue-size` (default: 512).
+
+   `:log-limits` option map
+
+   | key                 | description |
+   |---------------------|-------------|
+   |`:max-attrs`         | Maximum number of attributes attached to the log record (default: 128).
+   |`:max-attr-value-len`| Maximum length of string attribute values and each element of string array attribute values (default: no maximum)."
   ^OpenTelemetrySdk
   [service-name
    {:keys [set-as-default set-as-global register-shutdown-hook resources clock propagators
