@@ -4,7 +4,7 @@
   (:import (clojure.lang IPersistentVector Named)
            (java.time Duration Instant)
            (java.util.concurrent CompletionException ExecutionException TimeUnit)
-           (java.util.function BiConsumer Function Predicate Supplier)
+           (java.util.function BiConsumer BiFunction Function Predicate Supplier)
            (java.util.stream Stream)))
 
 (defprotocol AsDuration
@@ -101,6 +101,14 @@
    Function
      (apply [_ x]
        (f x))))
+
+(defn bifunction
+  "Returns a `BiFunction` implementation for function `f` that takes 2 args."
+  ^BiFunction [f]
+  (reify
+   BiFunction
+     (apply [_ x y]
+       (f x y))))
 
 (defn biconsumer
   "Returns a `BiConsumer` implementation for function `f` that takes 2 args
