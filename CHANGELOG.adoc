@@ -24,6 +24,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
+=== `0.2.11` (in progress)
+
 === `0.2.10` (2025-10-11)
 
 - [FIX] Fixed some cases where HTTP route data was not set correctly when using the instrumentation agent.
