@@ -8,9 +8,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api/versions/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api/versions/0.2.10]
 ifndef::env-cljdoc[]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/0.2.9]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/0.2.10]
 endif::[]
 image:https://img.shields.io/badge/changelog-grey[changelog,link=CHANGELOG.adoc]
 image:https://img.shields.io/github/license/steffan-westcott/clj-otel[License]
@@ -41,7 +41,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 [source,clojure]
 ----
 {;; ...
- :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.9"}}}
+ :deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.10"}}}
 ----
 ** To add traces telemetry, use Clojure functions such as https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/CURRENT/api/steffan-westcott.clj-otel.api.trace.span#with-span![`steffan-westcott.clj-otel.api.trace.span/with-span!`] to create spans with attributes
 +
@@ -82,7 +82,7 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 docker run --rm                            \
            -p 16686:16686                  \
            -p 4318:4318                    \
-           jaegertracing/all-in-one:1.71.0
+           jaegertracing/jaeger:2.11.0
 ----
 
 * To explore application behaviour described by the received telemetry data

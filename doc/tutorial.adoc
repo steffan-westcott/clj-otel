@@ -107,7 +107,7 @@ You will now start a telemetry backend that will receive and display telemetry t
 docker run --rm                            \
            -p 16686:16686                  \
            -p 4318:4318                    \
-           jaegertracing/all-in-one:1.71.0
+           jaegertracing/jaeger:2.11.0
 ----
 
 * Once Jaeger has started, verify you can access the user interface by navigating to http://localhost:16686/search in a web browser.
@@ -179,7 +179,7 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 
  :deps    {org.clojure/clojure                      {:mvn/version "1.12.3"}
            ring/ring-jetty-adapter                  {:mvn/version "1.15.3"}
-           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.9"}}
+           com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.10"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.service.name=counter-service"

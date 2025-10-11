@@ -25,14 +25,14 @@ toc::[]
 | Artifact | Version
 
 | `com.github.steffan-westcott/clj-otel-*`
-| `0.2.9`
+| `0.2.10`
 
 | `io.opentelemetry/*`
-| `1.54.0`
+| `1.54.1`
 
 | `opentelemetry-javaagent.jar` +
 `io.opentelemetry.instrumentation/*`
-| `2.20.0`
+| `2.20.1`
 
 | `io.opentelemetry.semconv/*`
 | `1.37.0`
@@ -45,8 +45,8 @@ Each `clj-otel` release is designed to be compatible with the latest OpenTelemet
 
 == `clj-otel-api`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-api/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-api/0.2.10]
 
 `clj-otel-api` is the main module of `clj-otel`.
 It provides an xref:guides.adoc#_add_manual_instrumentation_to_your_library_or_application_code[idiomatic Clojure wrapper of the OpenTelemetry API for manual instrumentation].
@@ -54,15 +54,15 @@ It also offers xref:guides.adoc#_use_ring_middleware_for_server_span_support[sup
 
 == `clj-otel-sdk`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk/0.2.10]
 
 `clj-otel-sdk` is an optional module which provides xref:guides.adoc#_run_with_programmatically_configured_sdk[programmatic configuration of the OpenTelemetry SDK in Clojure].
 
 == `clj-otel-sdk-common`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-common/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-common/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-common/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-common/0.2.10]
 
 `clj-otel-sdk-common` is an optional module which provides programmatic configuration in Clojure of OpenTelemetry SDK common components such as `Resource` objects.
 This module is used when configuring some exporters.
@@ -73,15 +73,15 @@ These are optional modules which implement instrumentation for applications not 
 
 === `clj-otel-instrumentation-runtime-telemetry-java8`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/0.2.10]
 
 Provide access to OpenTelemetry instrumentation of the JVM runtime for Java 8+.
 
 === `clj-otel-instrumentation-runtime-telemetry-java17`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17/0.2.10]
 
 Provide access to OpenTelemetry instrumentation of the JVM runtime for Java 17+.
 
@@ -91,22 +91,22 @@ These are optional modules used with `clj-otel-sdk` for xref:guides.adoc#_run_wi
 
 === `clj-otel-contrib-aws-resources`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-contrib-aws-resources/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-contrib-aws-resources/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-contrib-aws-resources/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-contrib-aws-resources/0.2.10]
 
 Provides access to `Resource` objects which describe the execution environment on the Amazon Web Services (AWS) platform.
 
 === `clj-otel-contrib-aws-xray-propagator`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-contrib-aws-xray-propagator/0.2.10]
 
 Provides access to a `TextMapPropagator` implementation of the https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader[AWS X-Ray Trace Header propagation protocol].
 
 === `clj-otel-extension-trace-propagators`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-extension-trace-propagators/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-extension-trace-propagators/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-extension-trace-propagators/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-extension-trace-propagators/0.2.10]
 
 Provides access to `TextMapPropagator` implementations of these protocols:
 
@@ -116,22 +116,22 @@ Provides access to `TextMapPropagator` implementations of these protocols:
 
 === `clj-otel-instrumentation-resources`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-resources/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-resources/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-resources/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-resources/0.2.10]
 
 Provides access to `Resource` objects which describe the local host and running process.
 
 === `clj-otel-sdk-extension-autoconfigure`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure/0.2.10]
 
 Provides access to OpenTelemetry SDK configuration using environment variables and system properties.
 
 === `clj-otel-sdk-extension-jaeger-remote-sampler`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-sdk-extension-jaeger-remote-sampler/0.2.10]
 
 Provides access to a `Sampler` that implements the Jaeger remote sampler type.
 
@@ -148,32 +148,32 @@ IMPORTANT: These exporters are included in the OpenTelemetry instrumentation age
 
 ==== `opentelemetry-exporter-otlp`
 
-image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-otlp/1.54.0]
+image:https://img.shields.io/badge/maven--central-1.54.1-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-otlp/1.54.1]
 
 Configuration of span and metrics exporters using OTLP.
 
 ==== `opentelemetry-exporter-zipkin`
 
-image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-zipkin/1.54.0]
+image:https://img.shields.io/badge/maven--central-1.54.1-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-zipkin/1.54.1]
 
 Configuration of span exporter to Zipkin.
 
 ==== `opentelemetry-exporter-prometheus`
 
-image:https://img.shields.io/badge/maven--central-1.54.0--alpha-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-prometheus/1.54.0-alpha]
+image:https://img.shields.io/badge/maven--central-1.54.1--alpha-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-prometheus/1.54.1-alpha]
 
 Configuration of metrics exporter to Prometheus.
 
 ==== `opentelemetry-exporter-logging`
 
-image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-logging/1.54.0]
+image:https://img.shields.io/badge/maven--central-1.54.1-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-logging/1.54.1]
 
 Configuration of exporters that log using `java.util.logging`.
 Intended for debugging only.
 
 ==== `opentelemetry-exporter-logging-otlp`
 
-image:https://img.shields.io/badge/maven--central-1.54.0-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-logging-otlp/1.54.0]
+image:https://img.shields.io/badge/maven--central-1.54.1-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-logging-otlp/1.54.1]
 
 Configuration of exporters that log OTLP in JSON format using `java.util.logging`.
 Intended for debugging only.
@@ -183,37 +183,37 @@ Intended for debugging only.
 
 ==== `clj-otel-exporter-otlp`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-otlp/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-otlp/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp/0.2.10]
 
 Configuration of span and metrics exporters using OTLP.
 
 ==== `clj-otel-exporter-zipkin`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-zipkin/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-zipkin/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-zipkin/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-zipkin/0.2.10]
 
 Configuration of span exporter to Zipkin.
 
 ==== `clj-otel-exporter-prometheus`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-prometheus/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-prometheus/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-prometheus/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-prometheus/0.2.10]
 
 Configuration of metrics exporter to Prometheus.
 
 ==== `clj-otel-exporter-logging`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-logging/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-logging/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-logging/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-logging/0.2.10]
 
 Configuration of exporters that log using `java.util.logging`.
 Intended for debugging only.
 
 ==== `clj-otel-exporter-logging-otlp`
 
-image:https://img.shields.io/badge/clojars-0.2.9-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-logging-otlp/versions/0.2.9]
-image:https://img.shields.io/badge/cljdoc-0.2.9-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-logging-otlp/0.2.9]
+image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-logging-otlp/versions/0.2.10]
+image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-logging-otlp/0.2.10]
 
 Configuration of exporters that log OTLP in JSON format using `java.util.logging`.
 Intended for debugging only.
