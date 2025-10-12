@@ -1,6 +1,6 @@
 (ns steffan-westcott.clj-otel.sdk.autoconfigure
   "Configuration of the OpenTelemetry SDK with environment variables and system
-   properties. See https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure
+   properties. See https://opentelemetry.io/docs/languages/java/configuration/#zero-code-sdk-autoconfigure
    for configuration options."
   (:require [steffan-westcott.clj-otel.api.otel :as otel]
             [steffan-westcott.clj-otel.util :as util])

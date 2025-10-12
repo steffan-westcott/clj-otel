@@ -1,4 +1,4 @@
-(ns steffan-westcott.clj-otel.sdk.logger-provider
+(ns ^:no-doc steffan-westcott.clj-otel.sdk.logger-provider
   "Programmatic configuration of `SdkLoggerProvider`, a component of the
    OpenTelemetry SDK. This namespace is for internal use only."
   (:require [steffan-westcott.clj-otel.sdk.resources :as res]

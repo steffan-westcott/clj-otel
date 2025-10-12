@@ -132,7 +132,7 @@ These logging libraries support current context only.
 ** Coverage of Traces `TracerProvider` is complete.
 ** Coverage of Metrics `MeterProvider` is in progress.
 Most configuration options are supported.
-** Coverage of Logs `LoggerProvider` has been implemented, but it is not working correctly with Log4j2 for some unknown reason.
+** Coverage of Logs `LoggerProvider` has been implemented.
 * Some investigation of `ContextStorageProvider` has been done, as a possible route to make entire Java applications bound context aware.
 However, problems with instrumentation agent integration have ruled this out.
 
