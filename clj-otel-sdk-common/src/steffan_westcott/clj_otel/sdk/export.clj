@@ -35,9 +35,7 @@
     (ProxyOptions/create proxy-selector)
     (ProxyOptions/create socket-address)))
 
-(defn ^:no-doc keyword->MemoryMode
-  "Given a keyword, returns MemoryMode. Internal use only."
-  ^MemoryMode [k]
-  (case k
-    :reusable-data  MemoryMode/REUSABLE_DATA
-    :immutable-data MemoryMode/IMMUTABLE_DATA))
+#_{:clj-kondo/ignore [:missing-docstring]}
+(def ^:no-doc keyword->MemoryMode
+  {:reusable-data  MemoryMode/REUSABLE_DATA
+   :immutable-data MemoryMode/IMMUTABLE_DATA})
