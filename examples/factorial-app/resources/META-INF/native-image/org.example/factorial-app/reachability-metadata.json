@@ -1,0 +1,16 @@
+{
+  "reflection": [
+    {
+      "type": "io.opentelemetry.instrumentation.log4j.appender.v2_17.OpenTelemetryAppender",
+      "methods": [
+        {
+          "name": "builder"
+        }
+      ]
+    },
+    {
+      "type": "io.opentelemetry.instrumentation.log4j.appender.v2_17.OpenTelemetryAppender$Builder",
+      "allDeclaredFields": true
+    }
+  ]
+}
