@@ -77,12 +77,13 @@
     (.build builder)))
 
 (defn- map->view
-  [{:keys [name description aggregation attribute-filter]}]
+  [{:keys [name description aggregation attribute-filter cardinality-limit]}]
   (let [builder (cond-> (View/builder)
                   name             (.setName name)
                   description      (.setDescription description)
                   aggregation      (.setAggregation (map->aggregation aggregation))
-                  attribute-filter (.setAttributeFilter (util/predicate attribute-filter)))]
+                  attribute-filter (.setAttributeFilter (util/predicate attribute-filter))
+                  cardinality-limit (.setCardinalityLimit cardinality-limit))]
     (.build builder)))
 
 (defn- register-views

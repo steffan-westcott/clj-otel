@@ -2,6 +2,9 @@
   "Functions that operate on `io.opentelemetry.api.OpenTelemetry`, the
    entrypoint to telemetry functionality."
   (:import (io.opentelemetry.api GlobalOpenTelemetry OpenTelemetry)
+           (io.opentelemetry.api.logs LoggerProvider)
+           (io.opentelemetry.api.metrics MeterProvider)
+           (io.opentelemetry.api.trace TracerProvider)
            (io.opentelemetry.context.propagation TextMapPropagator)))
 
 (defonce ^:private default-otel
@@ -50,3 +53,27 @@
    (get-text-map-propagator (get-default-otel!)))
   (^TextMapPropagator [^OpenTelemetry open-telemetry]
    (.getTextMapPropagator (.getPropagators open-telemetry))))
+
+(defn get-tracer-provider
+  "Gets the `TracerProvider` of an `OpenTelemetry` instance `open-telemetry`
+   or the default `OpenTelemetry` instance."
+  (^TracerProvider []
+   (get-tracer-provider (get-default-otel!)))
+  (^TracerProvider [^OpenTelemetry open-telemetry]
+   (.getTracerProvider open-telemetry)))
+
+(defn get-meter-provider
+  "Gets the `MeterProvider` of an `OpenTelemetry` instance `open-telemetry`
+   or the default `OpenTelemetry` instance."
+  (^MeterProvider []
+   (get-meter-provider (get-default-otel!)))
+  (^MeterProvider [^OpenTelemetry open-telemetry]
+   (.getMeterProvider open-telemetry)))
+
+(defn get-logger-provider
+  "Gets the `LoggerProvider` of an `OpenTelemetry` instance `open-telemetry`
+   or the default `OpenTelemetry` instance."
+  (^LoggerProvider []
+   (get-logger-provider (get-default-otel!)))
+  (^LoggerProvider [^OpenTelemetry open-telemetry]
+   (.getLogsBridge open-telemetry)))

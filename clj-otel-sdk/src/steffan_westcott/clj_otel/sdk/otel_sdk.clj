@@ -142,12 +142,13 @@
 
    `:view` option map
 
-   | key               | description |
-   |-------------------|-------------|
-   |`:name`            | Name of resulting metric (default: matched instrument name).
-   |`:description`     | String description of resulting metric (default: matched instrument description).
-   |`:aggregation`     | Option map (see table below) describing a single aggregation to use (default: dependent on instrument type).
-   |`:attribute-filter`| Function which takes a string attribute name, which returns truthy result if attribute should be included (default: all attributes included).
+   | key                | description |
+   |--------------------|-------------|
+   |`:name`             | Name of resulting metric (default: matched instrument name).
+   |`:description`      | String description of resulting metric (default: matched instrument description).
+   |`:aggregation`      | Option map (see table below) describing a single aggregation to use (default: dependent on instrument type).
+   |`:attribute-filter` | fn which takes a string attribute name, which returns truthy result if attribute should be included (default: all attributes included).
+   |`:cardinality-limit`| Maximum number of series for a metric (default: 2000).
 
    `:aggregation` option map (one option only)
 

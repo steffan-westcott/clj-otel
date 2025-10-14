@@ -16,7 +16,6 @@
    |`:port`                        | The port to bind to (default: `9464`).
    |`:executor`                    | `ExecutorService` to use for the Prometheus HTTP server (default: a fixed pool of 5 daemon threads).
    |`:registry`                    | `PrometheusRegistry` to use for the HTTP server (default: new registry).
-   |`:otel-scope-enabled`          | True if `otel_scope_*` attributes are generated (default: true).
    |`:label?`                      | fn which takes the name of a resource attribute and returns true if it should be added as a label on each exported metric (default: no attributes added).
    |`:default-aggregation-selector`| Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`).\n
    |`:memory-mode`                 | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`).
@@ -25,16 +24,14 @@
   (^PrometheusHttpServer []
    (http-server {}))
   (^PrometheusHttpServer
-   [{:keys [host port executor registry otel-scope-enabled label? default-aggregation-selector
-            memory-mode ^HttpHandler default-handler ^Authenticator authenticator]
-     :or   {otel-scope-enabled true}}]
+   [{:keys [host port executor registry label? default-aggregation-selector memory-mode
+            ^HttpHandler default-handler ^Authenticator authenticator]}]
    (let [builder
          (cond-> (PrometheusHttpServer/builder)
            host            (.setHost host)
            port            (.setPort port)
            executor        (.setExecutor executor)
            registry        (.setPrometheusRegistry registry)
-           :always         (.setOtelScopeEnabled otel-scope-enabled)
            label?          (.setAllowedResourceAttributesFilter (reify
                                                                  Predicate
                                                                    (test [_ attr-name]
