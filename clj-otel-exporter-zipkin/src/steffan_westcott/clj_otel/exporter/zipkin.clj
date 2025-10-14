@@ -19,7 +19,7 @@
    |`:encoder`                   | `zipkin2.reporter.BytesEncoder` Format used to send span data (default: `SpanBytesEncoder/JSON_V2`).
    |`:local-ip-address-fn`       | 0-arg function that returns `nil` or `InetAddress` of local Zipkin endpoint (default: fn that returns local IP address captured when exporter created).
    |`:compression`               | Method used to compress payloads. Value is string `\"gzip\"` or `\"none\"` (default: `\"gzip\"`).
-   |`:meter-provider`            | ^MeterProvider to collect metrics related to export (default: metrics not collected).
+   |`:meter-provider`            | `MeterProvider` to collect metrics related to export (default: meter provider of global OpenTelemetry).
    |`:internal-telemetry-version`| Self-monitoring telemetry to export, either `:legacy` or `:latest` (default: `:legacy`)."
   (^ZipkinSpanExporter []
    (span-exporter {}))
