@@ -3,7 +3,7 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure       {:mvn/version "1.12.3"}
-           org.clojure/core.async    {:mvn/version "1.9.808-alpha1"}
+           org.clojure/core.async    {:mvn/version "1.9.829-alpha2"}
            cc.qbits/auspex           {:mvn/version "1.0.3"}
            com.github.igrishaev/whew {:mvn/version "0.1.1"}
            com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
