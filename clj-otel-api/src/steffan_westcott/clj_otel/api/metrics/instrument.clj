@@ -52,6 +52,11 @@
                    schema-url (.setSchemaUrl schema-url))]
      (.build builder))))
 
+(defn noop-meter
+  "Gets a no-op meter."
+  ^Meter []
+  (get-meter {:open-telemetry (otel/get-noop)}))
+
 (defonce ^:private default-meter
   (atom nil))
 

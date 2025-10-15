@@ -30,7 +30,7 @@
    |`:timeout`                         | Maximum time to wait for export of a batch of spans. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:connect-timeout`                 | Maximum time to wait for new connections to be established. Value is either a `Duration` or a vector `[amount ^TimeUnit unit]` (default: 10s).
    |`:retry-policy`                    | Option map for retry policy, see `steffan-westcott.clj-otel.sdk.export/retry-policy` (default: same as `(retry-policy)`).
-   |`:meter-provider-fn`               | fn that returns `MeterProvider` to collect metrics related to export (default: meter provider of default OpenTelemetry).
+   |`:meter-provider-fn`               | nil or fn that returns `MeterProvider` to collect metrics related to export. If nil, use no-op `MeterProvider` (default: meter provider of default OpenTelemetry).
    |`:aggregation-temporality-selector`| Function which takes an `InstrumentType` and returns an `AggregationTemporality` (default: same as constantly `AggregationTemporality/CUMULATIVE`).
    |`:default-aggregation-selector`    | Function which takes an `InstrumentType` and returns default `Aggregation` (default: same as `DefaultAggregationSelector/getDefault`).
    |`:memory-mode`                     | Either `:immutable-data` for thread safe or `:reusable-data` for non thread safe (but reduced) data allocations (default: `:reusable-data`).
@@ -47,7 +47,8 @@
             memory-mode service-classloader component-loader executor-service
             internal-telemetry-version]
      :or   {meter-provider-fn otel/get-meter-provider}}]
-   (let [builder
+   (let [meter-provider-fn (or meter-provider-fn (constantly nil))
+         builder
          (cond-> (OtlpGrpcMetricExporter/builder)
            endpoint (.setEndpoint endpoint)
            headers (add-headers headers)
