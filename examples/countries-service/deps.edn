@@ -17,7 +17,7 @@
            compojure/compojure {:mvn/version "1.7.2"}
 
            ;; Log4j2 OpenTelemetry appender
-           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.20.1-alpha"}
+           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.21.0-alpha"}
 
            ;; Ring-Jetty web server integration
            ring/ring-jetty-adapter {:mvn/version "1.15.3"}}

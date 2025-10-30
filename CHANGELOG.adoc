@@ -28,7 +28,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 - [FIX] Prevent initialization of global OpenTelemetry instance during programmatic build of OTLP exporter.
 - Bump deps
-* [MAINT] OpenTelemetry `1.55.0`
+* [MAINT] OpenTelemetry `1.55.0`, instrumentation `2.21.0`
 
 === `0.2.10` (2025-10-11)
 

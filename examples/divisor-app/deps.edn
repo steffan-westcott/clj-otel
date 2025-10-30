@@ -19,7 +19,7 @@
            {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}
 
            ;; Log4j2 OpenTelemetry appender
-           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.20.1-alpha"}}
+           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.21.0-alpha"}}
 
  :aliases {;; Autoconfiguration properties and selected dependencies
            :otel       {:jvm-opts   [;; Name the instrumented application or service
@@ -36,7 +36,7 @@
                                      "-Dotel.logs.exporter=console"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
-                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.20.1-alpha"}
+                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.21.0-alpha"}
 
                                      ;; Enable export of telemetry using OpenTelemetry Protocol (OTLP)
                                      io.opentelemetry/opentelemetry-exporter-otlp             {:mvn/version "1.55.0"}

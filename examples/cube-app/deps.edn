@@ -11,7 +11,7 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
 
            ;; Log4j2 OpenTelemetry appender
-           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.20.1-alpha"}}
+           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.21.0-alpha"}}
 
  :aliases {;; Include this alias to export telemetry data
            :otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
