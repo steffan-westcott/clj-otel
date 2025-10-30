@@ -22,42 +22,39 @@
                          :http-client      client})]
 
       ;; Manually create a client span with `context` as the parent context.
-      ;; Context containing client span is assigned to `context*`. Client span is
-      ;; ended when either a response or exception is returned.
+      ;; Client span is ended when either a response or exception is returned.
       (span/async-span
        (trace-http/client-span-opts request {:parent context})
-       (fn [context* respond* raise*]
+       (fn [context respond raise]
+         (let [respond (fn [response]
 
-         (let [;; Propagate context containing client span to remote
-               ;; server by injecting headers. This enables span
-               ;; correlation to make distributed traces.
-               request' (update request :headers merge (context/->headers {:context context*}))
+                         ;; Add HTTP response data to the client span.
+                         (trace-http/add-client-span-response-data! response
+                                                                    {:context context})
+
+                         (respond response))
+               raise   (fn [e]
+
+                         ;; Add error information to the client span.
+                         (trace-http/add-client-span-response-data!
+                          {:io.opentelemetry.api.trace.span.attrs/error-type e}
+                          {:context context})
+
+                         (raise e))
 
                ^CompletableFuture cf
-               (client/request request'
-                               (fn [response]
+               (client/request
 
-                                 ;; Add HTTP response data to the client span.
-                                 (trace-http/add-client-span-response-data! response
-                                                                            {:context context*})
+                ;; Propagate context containing client span to remote server by injecting
+                ;; headers. This enables span correlation to make distributed traces.
+                (update request :headers merge (context/->headers {:context context}))
 
-                                 (respond* response))
-                               (fn [e]
-
-                                 ;; Add error information to the client span.
-                                 (trace-http/add-client-span-response-data!
-                                  {:io.opentelemetry.api.trace.span.attrs/error-type e}
-                                  {:context context*})
-
-                                 (raise* e)))]
+                respond
+                raise)]
            #(do
               (future-cancel cf)
               (when (future-cancelled? cf)
-                (let [e (CancellationException.)]
-                  (trace-http/add-client-span-response-data!
-                   {:io.opentelemetry.api.trace.span.attrs/error-type e}
-                   {:context context*})
-                  (raise* e))))))
+                (raise (CancellationException.))))))
        respond
        raise))))
 
