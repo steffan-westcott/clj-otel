@@ -6,7 +6,7 @@
             [missionary.core :as m]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.context :as context])
-  (:import (java.util.concurrent CompletableFuture)))
+  (:import (java.util.concurrent CancellationException CompletableFuture)))
 
 
 (defn- <client-request
@@ -30,7 +30,10 @@
                                   ;; span to the remote HTTP server by injecting headers into
                                   ;; the request.
                                   (client/request request respond raise))]
-      #(.cancel cf true))))
+      #(do
+         (future-cancel cf)
+         (when (future-cancelled? cf)
+           (raise (CancellationException.)))))))
 
 
 

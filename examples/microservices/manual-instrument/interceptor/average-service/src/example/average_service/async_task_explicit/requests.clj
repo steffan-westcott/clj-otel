@@ -8,7 +8,7 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context])
-  (:import (java.util.concurrent CompletableFuture)))
+  (:import (java.util.concurrent CancellationException CompletableFuture)))
 
 
 (defn- <client-request
@@ -50,7 +50,14 @@
                                   {:context context*})
 
                                  (raise* e)))]
-           #(.cancel cf true)))
+           #(do
+              (future-cancel cf)
+              (when (future-cancelled? cf)
+                (let [e (CancellationException.)]
+                  (trace-http/add-client-span-response-data!
+                   {:io.opentelemetry.api.trace.span.attrs/error-type e}
+                   {:context context*})
+                  (raise* e))))))
        respond
        raise))))
 
