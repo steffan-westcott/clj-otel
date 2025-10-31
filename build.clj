@@ -23,6 +23,9 @@ clojure -A:deps -T:build help/doc"
 (def ^:private version
   "0.2.11-SNAPSHOT")
 
+(def ^:private library-group-id
+  "com.github.steffan-westcott")
+
 ;; Later artifacts in this vector may depend on earlier artifacts
 (def ^:private library-project-paths
   ["clj-otel-api"
@@ -40,7 +43,8 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-exporter-zipkin"
    "clj-otel-instrumentation-resources"
    "clj-otel-instrumentation-runtime-telemetry-java8"
-   "clj-otel-instrumentation-runtime-telemetry-java17"])
+   "clj-otel-instrumentation-runtime-telemetry-java17"
+   "clj-otel-adapter-log4j"])
 
 (def ^:private demo-project-paths
   ["examples/common/anonymise-app"
@@ -82,7 +86,7 @@ clojure -A:deps -T:build help/doc"
 (defn- group-id
   [root-path]
   (if (library-project? root-path)
-    "com.github.steffan-westcott"
+    library-group-id
     "org.example"))
 
 (defn- artifact-id
@@ -106,10 +110,13 @@ clojure -A:deps -T:build help/doc"
   [{:keys [aliases artifact-id group-id main root-path tag uber-classifier]}]
   {:artifact-id       artifact-id
    :basis             (b/create-basis {:aliases aliases})
+   :basis-provided    (b/create-basis {:aliases (conj aliases :provided)})
    :class-dir         "target/classes"
    :conflict-handlers log4j2-conflict-handler
    :group-id          group-id
    :jar-file          (format "target/%s-%s.jar" artifact-id version)
+   :java-src-dirs     ["java"]
+   :javac-opts        ["--release" "8"]
    :lib               (symbol group-id artifact-id)
    :main              main
    :native-file       (format "target/%s" artifact-id)
@@ -122,24 +129,44 @@ clojure -A:deps -T:build help/doc"
    :uber-file         (format "target/%s-%s.jar" artifact-id uber-classifier)
    :version           version})
 
+(defn- modify-artifact-opts
+  [{:keys [artifact-id]
+    :as   opts}]
+  (case artifact-id
+    "clj-otel-adapter-log4j"
+    (update
+     opts
+     :javac-opts
+     into
+     ["-processor"
+      (str/join ","
+                ["org.apache.logging.log4j.core.config.plugins.processor.GraalVmProcessor"
+                 "org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor"])
+      (format "-Alog4j.graalvm.groupId=%s" library-group-id)
+      (format "-Alog4j.graalvm.artifactId=%s" artifact-id)])
+
+    opts))
+
 (defn- project-artifact-opts
   ([root-path] (project-artifact-opts root-path {}))
   ([root-path opts]
-   (artifact-opts {:artifact-id     (artifact-id root-path)
-                   :aliases         (into (if (library-project? root-path)
-                                            (if snapshot?
-                                              #{:snapshot}
-                                              #{:release})
-                                            #{:otel})
-                                          (:aliases opts))
-                   :group-id        (group-id root-path)
-                   :root-path       root-path
-                   :main            (or (:main opts)
-                                        (when-not (library-project? root-path)
-                                          (symbol (str "example." (artifact-id root-path)))))
-                   :tag             (when (library-project? root-path)
-                                      @head-sha-1)
-                   :uber-classifier (or (:uber-classifier opts) "all")})))
+   (-> {:artifact-id     (artifact-id root-path)
+        :aliases         (into (if (library-project? root-path)
+                                 (if snapshot?
+                                   #{:snapshot}
+                                   #{:release})
+                                 #{:otel})
+                               (:aliases opts))
+        :group-id        (group-id root-path)
+        :root-path       root-path
+        :main            (or (:main opts)
+                             (when-not (library-project? root-path)
+                               (symbol (str "example." (artifact-id root-path)))))
+        :tag             (when (library-project? root-path)
+                               @head-sha-1)
+        :uber-classifier (or (:uber-classifier opts) "all")}
+       artifact-opts
+       modify-artifact-opts)))
 
 (defn- glob-match
   "Returns a predicate which returns true if a single glob `pattern` matches a
@@ -237,16 +264,23 @@ clojure -A:deps -T:build help/doc"
   (b/delete {:path target-dir}))
 
 (defn- src-artifact
-  [{:keys [class-dir resource-dirs src-dirs]
-    :as   opts}]
-  (clean-artifact opts)
+  [{:keys [class-dir resource-dirs src-dirs]}]
   (println "Copying src and resource dirs ...")
   (b/copy-dir {:src-dirs   (into src-dirs resource-dirs)
                :target-dir class-dir}))
 
+(defn- javac-artifact
+  [{:keys [java-src-dirs root-path basis-provided]
+    :as   opts}]
+  (when (seq (apply globs root-path (map #(format "%s/**.java" %) java-src-dirs)))
+    (println "Compiling Java source files ...")
+    (b/javac (assoc opts :src-dirs java-src-dirs :basis basis-provided))))
+
 (defn- jar-artifact
   [{:keys [jar-file]
     :as   opts}]
+  (clean-artifact opts)
+  (javac-artifact opts)
   (src-artifact opts)
   (write-pom* opts)
   (println "Building jar" jar-file "...")
@@ -255,6 +289,8 @@ clojure -A:deps -T:build help/doc"
 (defn- uberjar-artifact
   [{:keys [uber-file]
     :as   opts}]
+  (clean-artifact opts)
+  (javac-artifact opts)
   (src-artifact opts)
   (println "Compiling Clojure source files ...")
   (b/compile-clj opts)
@@ -300,6 +336,15 @@ clojure -A:deps -T:build help/doc"
   (doseq [root-path project-paths]
     (b/with-project-root root-path
       (clean-artifact {:target-dir "target"}))))
+
+(defn javac
+  "Compile Java source files for all clj-otel-* libraries."
+  [_]
+  (doseq [root_path library-project-paths]
+    (b/with-project-root root_path
+      (let [opts (project-artifact-opts root_path)]
+        (clean-artifact opts)
+        (javac-artifact opts)))))
 
 (defn uber
   "Build uberjar for demo project that has -main fn.
