@@ -25,10 +25,10 @@
            hato/hato {:mvn/version "1.0.0"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.8.0"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.8.0"}
-           io.pedestal/pedestal.route {:mvn/version "0.8.0"}
-           io.pedestal/pedestal.service {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.route {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.service {:mvn/version "0.8.1"}
 
            ;; Asynchronous event programming
            manifold/manifold {:mvn/version "0.4.3"}

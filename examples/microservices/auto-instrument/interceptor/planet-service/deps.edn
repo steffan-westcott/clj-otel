@@ -12,10 +12,10 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.8.0"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.8.0"}
-           io.pedestal/pedestal.route {:mvn/version "0.8.0"}
-           io.pedestal/pedestal.service {:mvn/version "0.8.0"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.route {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.service {:mvn/version "0.8.1"}
 
            ;; Common async utilities
            org.example/common.async {:local/root "../../../../common/async"}
