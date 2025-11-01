@@ -23,4 +23,4 @@
                                 "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
            :dev   {:extra-paths ["dev"]
-                   :extra-deps  {nrepl/nrepl {:mvn/version "1.4.0"}}}}}
+                   :extra-deps  {nrepl/nrepl {:mvn/version "1.5.1"}}}}}
