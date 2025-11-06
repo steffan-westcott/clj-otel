@@ -10,6 +10,7 @@
             [org.corfield.logging4j2 :as log]
             [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
+            [steffan-westcott.clj-otel.adapter.log4j :as log4j]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -74,7 +75,7 @@
                 :statistic statistic})
     (when-let [stat (get-in country-statistics [iso-code statistic])]
 
-      (log/debug (str "Found stat " stat))
+      (log/debug "Found stat" stat)
 
       ;; Increment lookup count for statistic
       (instrument/add! @stat-lookup-count
@@ -135,6 +136,9 @@
 
 
 (comment
+
+  ;; Initialize Log4j appender instances
+  (log4j/initialize)
 
   ;; Start the server
   (server {:join? false})

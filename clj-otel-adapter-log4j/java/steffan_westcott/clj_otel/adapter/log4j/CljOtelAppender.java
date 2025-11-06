@@ -14,6 +14,9 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 /**
@@ -22,24 +25,71 @@ import java.util.stream.Collectors;
 @Plugin(name = "CljOtel", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class CljOtelAppender extends AbstractAppender {
 
+    /**
+     * If true, CljOtelAppender instances are initialized.
+     */
+    public static volatile boolean initialized = false;
+
+    /**
+     * Delayed emits while appenders remain uninitialized.
+     */
+    public static final ConcurrentLinkedQueue<Object> delayedEmits = new ConcurrentLinkedQueue<>();
+
+    /**
+     * Protects access to <code>initialized</code> and <code>delayedEmits</code>.
+     */
+    public static final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    /**
+     * If true, include <code>:source</code> location where log record occurred (default: false)
+     */
+    public final boolean codeAttrs;
+
+    /**
+     * If true, include thread data (default: false).
+     */
+    public final boolean experimentalAttrs;
+
+    /**
+     * If true and event is a <code>MapMessage</code>, add content to log record attributes and set log record body to <code>message</code> value (default: false).
+     */
+    public final boolean mapMessageAttrs;
+
+    /**
+     * If true, include Log4j marker as attribute (default: false).
+     */
+    public final boolean markerAttr;
+
+    /**
+     * If true, include all Log4j context data as attributes (default: false).
+     */
+    public final boolean allCdataAttrs;
+
+    /**
+     * Set of keys of Log4j context data to include as attributes, if <code>allCdataAttrs</code> is false (default: no keys).
+     */
+    public final Set<String> cdataAttrs;
+
+    /**
+     * If true, set log record event name as value of <code>event.name</code> in Log4j context data (default: false)."
+     */
+    public final boolean eventName;
+
     private static final String NAMESPACE = "steffan-westcott.clj-otel.adapter.log4j";
-    private final Map<Object, Object> opts;
-    private final IFn emit;
+    private final IFn append;
 
     protected CljOtelAppender(String name, Filter filter, boolean codeAttrs, boolean experimentalAttrs,
                               boolean mapMessageAttrs, boolean markerAttr, Set<String> cdataAttrs, boolean eventName) {
         super(name, filter, null, true, Property.EMPTY_ARRAY);
-        Map<Object, Object> opts = new HashMap<>();
-        opts.put(Clojure.read(":code-attrs?"), codeAttrs);
-        opts.put(Clojure.read(":experimental-attrs?"), experimentalAttrs);
-        opts.put(Clojure.read(":map-message-attrs?"), mapMessageAttrs);
-        opts.put(Clojure.read(":marker-attr?"), markerAttr);
-        opts.put(Clojure.read(":all-cdata-attrs?"), cdataAttrs.size() == 1 && cdataAttrs.contains("*"));
-        opts.put(Clojure.read(":cdata-attrs"), cdataAttrs);
-        opts.put(Clojure.read(":event-name?"), eventName);
-        this.opts = opts;
+        this.codeAttrs = codeAttrs;
+        this.experimentalAttrs = experimentalAttrs;
+        this.mapMessageAttrs = mapMessageAttrs;
+        this.markerAttr = markerAttr;
+        this.allCdataAttrs = cdataAttrs.size() == 1 && cdataAttrs.contains("*");
+        this.cdataAttrs = cdataAttrs;
+        this.eventName = eventName;
         Clojure.var("clojure.core", "require").invoke(Clojure.read(NAMESPACE));
-        emit = Clojure.var(NAMESPACE, "emit");
+        append = Clojure.var(NAMESPACE, "append");
     }
 
     private static Set<String> trimmedSet(String string) {
@@ -60,8 +110,15 @@ public class CljOtelAppender extends AbstractAppender {
                 trimmedSet(cdataAttrsString), eventName);
     }
 
+    /**
+     * Appends a <code>LogEvent</code> by emitting a log record. If `CljOtelAppender`
+     * instances have been initialized, the log record is emitted immediately (but
+     * not necessarily exported). Otherwise, the log record is added to a queue of
+     * delayed emits.
+     * @param event LogEvent to append
+     */
     @Override
     public void append(LogEvent event) {
-        emit.invoke(event, opts);
+        append.invoke(this, event);
     }
 }

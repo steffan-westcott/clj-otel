@@ -7,19 +7,19 @@
            ;; Wrapper for Log4j2 with MapMessage support
            com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
 
+           ;; Log4j2 appender and context data provider
+           com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../clj-otel-adapter-log4j"}
+
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
-
-           ;; Clojure wrapper of autoconfigure OpenTelemetry SDK extension
-           com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure
-           {:local/root "../../clj-otel-sdk-extension-autoconfigure"}
 
            ;; Clojure wrapper of JVM metrics instrumentation
            com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8
            {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}
 
-           ;; Log4j2 OpenTelemetry appender
-           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.21.0-alpha"}}
+           ;; Clojure wrapper of autoconfigure OpenTelemetry SDK extension
+           com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure
+           {:local/root "../../clj-otel-sdk-extension-autoconfigure"}}
 
  :aliases {;; Autoconfiguration properties and selected dependencies
            :otel       {:jvm-opts   [;; Name the instrumented application or service
@@ -52,9 +52,9 @@
                                      io.grpc/grpc-protobuf     {:mvn/version "1.76.0"}
                                      io.grpc/grpc-stub         {:mvn/version "1.76.0"}}}
 
-           ;; (Re)direct clojure.tools.logging and java.util.logging to Log4J2
+           ;; (Re)direct clojure.tools.logging and java.util.logging to Log4j2
            :log4j      {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                                    "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
-           ;; Initialise Clojure classes at build time with GraalVM native-image
+           ;; Initialize Clojure classes at build time with GraalVM native-image
            :native     {:extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}}}}}

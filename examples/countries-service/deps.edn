@@ -10,14 +10,14 @@
            ;; Wrapper for Log4j2 with MapMessage support
            com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
 
+           ;; Log4j2 appender and context data provider
+           com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../clj-otel-adapter-log4j"}
+
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
 
            ;; Compojure HTTP router
            compojure/compojure {:mvn/version "1.7.2"}
-
-           ;; Log4j2 OpenTelemetry appender
-           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.21.0-alpha"}
 
            ;; Ring-Jetty web server integration
            ring/ring-jetty-adapter {:mvn/version "1.15.3"}}
@@ -29,9 +29,13 @@
                               ;; Name the instrumented application or service
                               "-Dotel.service.name=countries-service"
 
+                              ;; Disable agent instrumentation to prevent conflict with clj-otel-adapter-log4j
+                              "-Dotel.instrumentation.log4j-appender.enabled=false"
+                              "-Dotel.instrumentation.log4j-context-data.enabled=false"
+
                               ;; Set metric export to every 5 seconds
                               "-Dotel.metric.export.interval=5000"]}
 
-           ;; (Re)direct clojure.tools.logging and java.util.logging to Log4J2
+           ;; (Re)direct clojure.tools.logging and java.util.logging to Log4j2
            :log4j {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
                               "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}}}

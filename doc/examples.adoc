@@ -29,6 +29,17 @@ See the https://github.com/open-telemetry/opentelemetry-java-instrumentation/rel
 +
 NOTE: The examples assume `opentelemetry-javaagent.jar` version `2.16.0` or later is used.
 
+. *Compile `.java` source code*
++
+Before running certain examples, Java source code in some `clj-otel` modules must be compiled to `.class` files.
+This needs to be done once only.
+Compile the Java source code with the following command
++
+[source,bash]
+----
+clojure -T:build javac
+----
+
 . *Select example*
 +
 WARNING: The examples use `:local/root` to depend on `clj-otel` modules.

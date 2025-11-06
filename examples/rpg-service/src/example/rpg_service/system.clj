@@ -4,6 +4,7 @@
   (:require [example.common.system :refer [closeable]]
             [example.rpg-service.db :as db]
             [example.rpg-service.env :as env]
+            [example.rpg-service.logging :as logging]
             [example.rpg-service.metrics :as metrics]
             [example.rpg-service.server :as server]))
 
@@ -13,6 +14,7 @@
    closed when evaluation completes."
   [f]
   (with-open [config      (closeable (env/set-config!))
+              _logging    (closeable (logging/initialize))
               instruments (closeable (metrics/instruments))
               datasource  (closeable (db/datasource (:datasource @config)) db/stop-datasource)
               eql-db      (closeable (db/eql-db @datasource))

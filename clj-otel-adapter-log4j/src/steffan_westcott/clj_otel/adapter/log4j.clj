@@ -14,7 +14,8 @@
            (org.apache.logging.log4j.core LogEvent)
            (org.apache.logging.log4j.core.time Instant)
            (org.apache.logging.log4j.message MapMessage Message)
-           (org.apache.logging.log4j.spi StandardLevel)))
+           (org.apache.logging.log4j.spi StandardLevel)
+           (steffan_westcott.clj_otel.adapter.log4j CljOtelAppender)))
 
 (def ^:private StandardLevel->Severity
   {StandardLevel/ALL   Severity/TRACE
@@ -28,19 +29,19 @@
 
 (defn- trace-id-key
   []
-  (inst-config/get-string "clj-otel.instrumentation.common.logging.trace-id" "clj_trace_id"))
+  (inst-config/get-string "otel.instrumentation.common.logging.trace-id" "trace_id"))
 
 (defn- span-id-key
   []
-  (inst-config/get-string "clj-otel.instrumentation.common.logging.span-id" "clj_span_id"))
+  (inst-config/get-string "otel.instrumentation.common.logging.span-id" "span_id"))
 
 (defn- trace-flags-key
   []
-  (inst-config/get-string "clj-otel.instrumentation.common.logging.trace-flags" "clj_trace_flags"))
+  (inst-config/get-string "otel.instrumentation.common.logging.trace-flags" "trace_flags"))
 
 (defn- add-baggage?
   []
-  (inst-config/get-boolean "clj-otel.instrumentation.log4j-context-data.add-baggage" false))
+  (inst-config/get-boolean "otel.instrumentation.log4j-context-data.add-baggage" false))
 
 (defn- assoc-all!
   [m kvs]
@@ -61,7 +62,7 @@
                               (trace-flags-key) (.asHex (.getTraceFlags span-context))})
             cdata (reduce (fn [m [k ^BaggageEntry v]]
                             (assoc! m
-                                    (str "clj_baggage." k)
+                                    (str "baggage." k)
                                     (.getValue v)))
                           cdata
                           (when (add-baggage?)
@@ -86,15 +87,12 @@
                                                              (TraceFlags/fromHex trace-flags 0)
                                                              (TraceState/getDefault)))))))
 
-(defn- get-logger
+(defn- get-logger-name
   [^LogEvent event]
-  (let [logger-name (.getLoggerName event)
-        logger-name (if (seq logger-name)
-                      logger-name
-                      "ROOT")]
-    (log-record/get-logger {:name       logger-name
-                            :version    nil
-                            :schema-url nil})))
+  (let [logger-name (.getLoggerName event)]
+    (if (seq logger-name)
+      logger-name
+      "ROOT")))
 
 (defn- get-source
   [^LogEvent event]
@@ -112,23 +110,9 @@
                    (.getNanoOfMillisecond instant))]
       [nanos TimeUnit/NANOSECONDS])))
 
-(defn emit
-  "Emits a log record containing data in ^LogEvent event, with options map as
-   follows:
-
-   | key                  | description |
-   |----------------------|-------------|
-   |`:code-attrs?`        | If true, include `:source` location where log record occurred (default: false).
-   |`:experimental-attrs?`| If true, include thread data (default: false).
-   |`:map-message-attrs?` | If true and event is a `MapMessage`, add content to log record attributes and set log record body to `message` value (default: false).
-   |`:marker-attr?`       | If true, include Log4j marker as attribute (default: false).
-   |`:all-cdata-attrs?`   | If true, include all Log4j context data as attributes (default: false).
-   |`:cdata-attrs`        | Key set of Log4j context data to include as attributes, if `:all-cdata-attrs?` is false (default: no keys).
-   |`:event-name?`        | If true, set log record event name as value of `event.name` in Log4j context data (default: false)."
-  [^LogEvent event
-   {:keys [code-attrs? experimental-attrs? map-message-attrs? marker-attr? all-cdata-attrs?
-           cdata-attrs event-name?]}]
-  (let [logger           (get-logger event)
+(defn- ->log-record
+  [^CljOtelAppender appender ^LogEvent event]
+  (let [logger-name      (get-logger-name event)
         cdata            (.toMap (.getContextData event))
         context          (context/dyn)
         context          (if (identical? (context/root) context)
@@ -147,34 +131,81 @@
         ^Level level     (.getLevel event)
         attributes       (persistent!
                           (cond-> (transient {})
-                            experimental-attrs? (assoc! ThreadIncubatingAttributes/THREAD_NAME
-                                                        (.getThreadName event)
-                                                        ThreadIncubatingAttributes/THREAD_ID
-                                                        (.getThreadId event))
-                            (and map-message? map-message-attrs?)
+                            (.-experimentalAttrs appender) (assoc!
+                                                            ThreadIncubatingAttributes/THREAD_NAME
+                                                            (.getThreadName event)
+                                                            ThreadIncubatingAttributes/THREAD_ID
+                                                            (.getThreadId event))
+                            (and map-message? (.-mapMessageAttrs appender))
                             (assoc-all! (->> (.getData ^MapMessage message)
                                              (remove (fn [[k _]]
                                                        (and check-msg-attr? (= k "message"))))
                                              (map (fn [[k v]] [(str "log4j.map_message." k)
                                                                (str v)]))))
 
-                            marker-attr? (assoc! "log4j.marker" (.getMarker event))
-                            :always (assoc-all! (filter (fn [[k _]]
-                                                          (and (not (and event-name?
-                                                                         (= k "event.name")))
-                                                               (or all-cdata-attrs?
-                                                                   (contains? cdata-attrs k))))
-                                                        cdata))))]
-    (log-record/emit {:logger        logger
-                      :context       context
-                      :severity      (and level (StandardLevel->Severity (.getStandardLevel level)))
-                      :severity-text (and level (.name level))
-                      :body          body
-                      :attributes    attributes
-                      :exception     (.getThrown event)
-                      :thread        nil ; thread added as attributes instead
-                      :timestamp     (get-timestamp event)
-                      :source        (when code-attrs?
-                                       (get-source event))
-                      :event-name    (when event-name?
-                                       (get cdata "event.name"))})))
+                            (.-markerAttr appender) (assoc! "log4j.marker" (.getMarker event))
+                            :always (assoc-all! (filter
+                                                 (fn [[k _]]
+                                                   (and (not (and (.-eventName appender)
+                                                                  (= k "event.name")))
+                                                        (or (.-allCdataAttrs appender)
+                                                            (contains? (.-cdataAttrs appender) k))))
+                                                 cdata))))]
+    {:logger-name   logger-name
+     :context       context
+     :severity      (and level (StandardLevel->Severity (.getStandardLevel level)))
+     :severity-text (and level (.name level))
+     :body          body
+     :attributes    attributes
+     :exception     (.getThrown event)
+     :thread        nil ; thread added as attributes instead
+     :timestamp     (get-timestamp event)
+     :source        (when (.-codeAttrs appender)
+                      (get-source event))
+     :event-name    (when (.-eventName appender)
+                      (get cdata "event.name"))}))
+
+(defn- emit
+  [record]
+  (log-record/emit (assoc record
+                          :logger
+                          (log-record/get-logger {:name       (:logger-name record)
+                                                  :version    nil
+                                                  :schema-url nil}))))
+
+(defn append
+  "Appends a `LogEvent` by emitting as a log record. If `CljOtelAppender`
+   instances have been initialized, the log record is emitted immediately (but
+   not necessarily exported). Otherwise, the log record is added to a queue of
+   delayed emits."
+  [^CljOtelAppender appender ^LogEvent event]
+  (let [record (->log-record appender event)]
+    (if CljOtelAppender/initialized
+      (emit record)
+      (let [read-lock (.readLock CljOtelAppender/lock)]
+        (.lock read-lock)
+        (try
+          (if CljOtelAppender/initialized
+            (emit record)
+            (.offer CljOtelAppender/delayedEmits record))
+          (finally
+            (.unlock read-lock)))))))
+
+(defn initialize
+  "Initializes all `CljOtelAppender` instances such that they emit records
+   immediately on append. Causes queue of delayed emits to be drained.
+
+   This fn should be evaluated as soon as the default or global OpenTelemetry
+   instance has been initialized. LogEvents appended beforehand are added to
+   a queue of delayed emits."
+  []
+  (let [write-lock (.writeLock CljOtelAppender/lock)]
+    (.lock write-lock)
+    (try
+      (set! (. CljOtelAppender -initialized) true)
+      (loop []
+        (when-let [record (.poll CljOtelAppender/delayedEmits)]
+          (emit record)
+          (recur)))
+      (finally
+        (.unlock write-lock)))))

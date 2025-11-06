@@ -7,6 +7,9 @@
            ;; Wrapper for Log4j2 with MapMessage support
            com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
 
+           ;; Log4j2 appender and context data provider
+           com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../clj-otel-adapter-log4j"}
+
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
 
@@ -16,10 +19,7 @@
 
            ;; Clojure wrapper of JVM metrics instrumentation
            com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8
-           {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}
-
-           ;; Log4j2 OpenTelemetry appender
-           io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.21.0-alpha"}}
+           {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}}
 
  :aliases {;; Autoconfiguration properties and selected dependencies
            :otel       {:jvm-opts   [;; Name the instrumented application or service

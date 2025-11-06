@@ -2,8 +2,11 @@
   "A manually instrumented example core.async.flow application."
   (:require [clojure.core.async :as async]
             [clojure.core.async.flow :as flow]
+            [org.corfield.logging4j2 :as log]
+            [steffan-westcott.clj-otel.adapter.log4j :as log4j]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span]
+            [steffan-westcott.clj-otel.context :as context]))
 
 
 
@@ -42,6 +45,13 @@
 
 
 
+(defmacro log-debug
+  "Write debug message to log with context."
+  [context & args]
+  `(context/with-context! ~context
+     (log/debug ~@args)))
+
+
 (defn update-tail
   "core.async.flow step function that updates atom `tail`."
   ([]
@@ -58,6 +68,7 @@
        (instrument/add! @view-update-count
                         {:value      1
                          :attributes {:view :tail}})
+       (log-debug context "Updated tail" t)
        (span/add-span-data! {:context context
                              :event   {:name       "Updated tail"
                                        :attributes {:system/most-recent (peek t)}}})
@@ -85,6 +96,7 @@
        (instrument/add! @view-update-count
                         {:value      1
                          :attributes {:view :mru}})
+       (log-debug context "Updated MRU" m)
        (span/add-span-data! {:context context
                              :event   {:name       "Updated MRU"
                                        :attributes {:system/mru-top3 (first-n m 3)}}})
@@ -124,6 +136,7 @@
                                                       :system/batch-size  size}}})
          [(assoc state :buf buf)
           {:output (map (fn [batch]
+                          (log-debug context "Output batch" batch)
                           {:context context
                            :xs      batch})
                         batches)}])
@@ -135,6 +148,7 @@
                                          :attributes {:system/batch-size (count buf)}}})
          [(assoc state :buf [])
           {:output (when (seq buf)
+                     (log-debug context "Flushing buffer" buf)
                      [{:context context
                        :xs      buf}])}])))))
 
@@ -152,7 +166,6 @@
   ([state _in xs]
 
    (span/with-span-binding [context {:name       (::flow/pid state)
-                                     :parent     nil
                                      :attributes {:system/xs-count (count xs)}}]
      [state
       {:output [{:context context
@@ -184,6 +197,7 @@
 
 
 (comment
+  (log4j/initialize)
   (def ingest-chan
     (async/chan 10))
   (def fl
