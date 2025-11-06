@@ -143,7 +143,8 @@
                                              (map (fn [[k v]] [(str "log4j.map_message." k)
                                                                (str v)]))))
 
-                            (.-markerAttr appender) (assoc! "log4j.marker" (.getMarker event))
+                            (.-markerAttr appender) (assoc! "log4j.marker"
+                                                            (.getName (.getMarker event)))
                             :always (assoc-all! (filter
                                                  (fn [[k _]]
                                                    (and (not (and (.-eventName appender)
