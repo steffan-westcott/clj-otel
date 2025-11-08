@@ -3,10 +3,12 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
-           org.clojure/tools.logging {:mvn/version "1.3.0"}
 
            ;; Application configuration
            aero/aero {:mvn/version "1.1.6"}
+
+           ;; Log4j2 appender and context data provider
+           com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../../../../clj-otel-adapter-log4j"}
 
            ;; Clojure wrapper of OpenTelemetry API
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
@@ -37,6 +39,9 @@
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../../../../common/system"}
 
+           ;; Common functions for Log4j2 logging with context
+           org.example/log4j2.utils {:local/root "../../../../common/log4j2.utils"}
+
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
            ; io.grpc/grpc-netty-shaded {:mvn/version "1.76.0"}
            ; io.grpc/grpc-protobuf {:mvn/version "1.76.0"}
@@ -44,21 +49,9 @@
 
           }
 
- :aliases {:log4j {:extra-deps {;; Log4j2 OTLP appender
-                                io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17 {:mvn/version "2.21.0-alpha"}
-
-                                ;; Add trace_id, span_id and trace_flags to Log4j2 NDC
-                                io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure
-                                {:mvn/version "2.21.0-alpha"}
-
-                                ;; Redirect SLF4J, Apache (Jakarta) Commons Logging and java.util.logging to Log4j2 implementation
-                                org.apache.logging.log4j/log4j-core        {:mvn/version "2.25.2"}
-                                org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.25.2"}
-                                org.apache.logging.log4j/log4j-jul         {:mvn/version "2.25.2"}
-                                org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.25.2"}}
-
-                   :jvm-opts   ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
-                                "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
+ :aliases {:log4j {;; (Re)direct clojure.tools.logging and java.util.logging to Log4j2
+                   :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                              "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
            :dev   {:extra-paths ["dev"]
                    :extra-deps  {org.clojure/data.json {:mvn/version "2.5.1"}

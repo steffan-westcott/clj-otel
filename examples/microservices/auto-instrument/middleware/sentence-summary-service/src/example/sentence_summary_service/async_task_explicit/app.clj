@@ -1,6 +1,7 @@
 (ns example.sentence-summary-service.async-task-explicit.app
   "Application logic, Missionary implementation using explicit context."
   (:require [clojure.string :as str]
+            [example.common.log4j2.utils :as log]
             [example.sentence-summary-service.async-task-explicit.requests :as requests]
             [missionary.core :as m]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -42,6 +43,10 @@
       (let [result {:words (count lengths)
                     :shortest-length (apply min lengths)
                     :longest-length (apply max lengths)}]
+
+        ;; Creates log record with attributes log4j.map_message.words,
+        ;; log4j.map_message.shortest_length and log4j.map_message.longest_length
+        (log/debug context* (assoc result :message "Computed sentence summary"))
 
         ;; Add more attributes to internal span
         (span/add-span-data! {:context    context*

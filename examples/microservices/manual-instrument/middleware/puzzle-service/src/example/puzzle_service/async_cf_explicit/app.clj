@@ -3,6 +3,7 @@
    context."
   (:require [clojure.string :as str]
             [example.common.async.exec :as exec]
+            [example.common.log4j2.utils :as log]
             [example.puzzle-service.async-cf-explicit.requests :as requests]
             [qbits.auspex :as aus]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -22,10 +23,12 @@
                                          :attributes {:system/word word}}]
 
         (Thread/sleep 5) ; pretend to be CPU intensive
+        (log/debug context* "About to scramble word:" word)
         (let [scrambled-word (->> word
                                   seq
                                   shuffle
                                   (apply str))]
+          (log/debug context* "Scrambled word:" scrambled-word)
 
           ;; Add more attributes to internal span
           (span/add-span-data! {:context    context*

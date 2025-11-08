@@ -2,6 +2,7 @@
   "Application logic, Manifold implementation using bound context."
   (:require [example.average-service.async-d-bound.requests :as requests]
             [example.common.async.exec :as exec]
+            [example.common.log4j2.utils :as log]
             [manifold.deferred :as d]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.d-span :as d-span]
@@ -18,6 +19,7 @@
 
       (Thread/sleep 10) ; pretend to be CPU intensive
       (let [result (double (/ x y))]
+        (log/debug "Divided" x "by" y "to give" result)
 
         ;; Add more attributes to internal span
         (span/add-span-data! {:attributes {:service.average.divide/result result}})

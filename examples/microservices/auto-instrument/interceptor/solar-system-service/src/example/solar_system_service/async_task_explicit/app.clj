@@ -1,6 +1,7 @@
 (ns example.solar-system-service.async-task-explicit.app
   "Application logic, Missionary implementation using explicit context."
   (:require [clojure.string :as str]
+            [example.common.log4j2.utils :as log]
             [example.solar-system-service.async-task-explicit.requests :as requests]
             [missionary.core :as m]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -38,6 +39,13 @@
                                        :attributes {:system/planet planet
                                                     :service.solar-system.report/statistic-values
                                                     statistic-values}}]
+
+      ;; Creates a log record with attributes log4j.map_message.planet and
+      ;; log4j.map_message.stats
+      (log/debug context*
+                 {:message "Formatting statistics"
+                  :planet  planet
+                  :stats   statistic-values})
 
       (Thread/sleep 25) ; pretend to be CPU intensive
       (let [planet' (str/capitalize (name planet))

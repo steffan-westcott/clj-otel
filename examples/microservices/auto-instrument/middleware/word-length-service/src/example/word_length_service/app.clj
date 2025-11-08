@@ -1,7 +1,8 @@
 (ns example.word-length-service.app
   "Core application logic. This is a simple application which returns word
    lengths."
-  (:require [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
+  (:require [example.common.log4j2.utils :as log]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
@@ -12,6 +13,7 @@
   ;; Manually create an internal span that wraps body (lexical scope)
   (span/with-span! ["Calculating length" {:system/word word}]
 
+    (log/debug "Calculating length of word" word)
     (Thread/sleep ^long (+ 50 (rand-int 80)))
 
     ;; Simulate an intermittent runtime exception. An uncaught exception leaving a span's scope

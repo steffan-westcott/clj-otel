@@ -1,6 +1,7 @@
 (ns example.sentence-summary-service.sync.app
   "Application logic, synchronous implementation."
   (:require [clojure.string :as str]
+            [example.common.log4j2.utils :as log]
             [example.sentence-summary-service.sync.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -32,10 +33,13 @@
                   :shortest-length (apply min lengths)
                   :longest-length (apply max lengths)}]
 
+      ;; Creates log record with attributes log4j.map_message.words,
+      ;; log4j.map_message.shortest_length and log4j.map_message.longest_length
+      (log/debug (assoc result :message "Computed sentence summary"))
+
       ;; Add more attributes to internal span
       (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:words
                                                                                        result)}})
-
       ;; Update words-count metric
       (instrument/record! (:sentence-length instruments) {:value (count lengths)})
 

@@ -1,4 +1,4 @@
-(ns example.average-service.logging
+(ns example.sentence-summary-service.logging
   "Management of application logging"
   (:require [steffan-westcott.clj-otel.adapter.log4j :as log4j]))
 

@@ -2,4 +2,5 @@
 
 {:paths ["src"]
 
- :deps  {org.apache.logging.log4j/log4j-api {:mvn/version "2.25.2"}}}
+ :deps  {com.github.seancorfield/logging4j2       {:mvn/version "1.0.5"}
+         com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}}}

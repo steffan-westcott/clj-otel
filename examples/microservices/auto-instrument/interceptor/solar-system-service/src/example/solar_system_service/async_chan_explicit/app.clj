@@ -2,6 +2,7 @@
   "Application logic, core.async implementation using explicit context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
+            [example.common.log4j2.utils :as log]
             [example.solar-system-service.async-chan-explicit.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
@@ -37,6 +38,13 @@
                                        :attributes {:system/planet planet
                                                     :service.solar-system.report/statistic-values
                                                     statistic-values}}]
+
+      ;; Creates a log record with attributes log4j.map_message.planet and
+      ;; log4j.map_message.stats
+      (log/debug context*
+                 {:message "Formatting statistics"
+                  :planet  planet
+                  :stats   statistic-values})
 
       (Thread/sleep 25) ; pretend to be CPU intensive
       (let [planet' (str/capitalize (name planet))

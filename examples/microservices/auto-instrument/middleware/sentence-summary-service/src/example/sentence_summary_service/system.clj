@@ -4,6 +4,7 @@
   (:require [example.common.system :refer [closeable] :as common-system]
             [example.sentence-summary-service.client :as client]
             [example.sentence-summary-service.env :as env]
+            [example.sentence-summary-service.logging :as logging]
             [example.sentence-summary-service.metrics :as metrics]
             [example.sentence-summary-service.server :as server]))
 
@@ -18,6 +19,7 @@
    closed when evaluation completes."
   [f]
   (with-open [config      (closeable (env/set-config!))
+              _logging    (closeable (logging/initialize))
               instruments (closeable (metrics/instruments))
               client      (client/client)
               components  (closeable {:instruments @instruments

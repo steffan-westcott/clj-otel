@@ -2,6 +2,7 @@
   "Application logic, core.async implementation using bound context."
   (:require [com.xadecimal.async-style :as style]
             [example.average-service.async-chan-bound.requests :as requests]
+            [example.common.log4j2.utils :as log]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -17,6 +18,7 @@
 
       (Thread/sleep 10) ; pretend to be CPU intensive
       (let [result (double (/ x y))]
+        (log/debug "Divided" x "by" y "to give" result)
 
         ;; Add more attributes to internal span
         (span/add-span-data! {:attributes {:service.average.divide/result result}})

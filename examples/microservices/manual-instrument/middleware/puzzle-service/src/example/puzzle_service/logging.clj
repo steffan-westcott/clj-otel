@@ -1,14 +1,9 @@
 (ns example.puzzle-service.logging
   "Management of application logging"
-  (:import (io.opentelemetry.api OpenTelemetry)))
+  (:require [steffan-westcott.clj-otel.adapter.log4j :as log4j]))
 
 
-(defn install!
-  "Installs application logging with the given OpenTelemetry instance."
-  [^OpenTelemetry otel]
-  (when (resolve `io.opentelemetry.instrumentation.log4j.appender.v2_17.OpenTelemetryAppender)
-    (let [install
-          (eval
-           `#(io.opentelemetry.instrumentation.log4j.appender.v2_17.OpenTelemetryAppender/install
-              %))]
-      (install otel))))
+(defn initialize
+  "Initializes Log4j appender."
+  []
+  (log4j/initialize))

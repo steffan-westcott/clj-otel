@@ -3,6 +3,7 @@
    context."
   (:require [clojure.string :as str]
             [example.common.async.exec :as exec]
+            [example.common.log4j2.utils :as log]
             [example.solar-system-service.async-cf-bound.requests :as requests]
             [qbits.auspex :as aus]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
@@ -37,6 +38,12 @@
       (span/with-bound-span! ["Formatting report"
                               {:system/planet planet
                                :service.solar-system.report/statistic-values statistic-values}]
+
+        ;; Creates a log record with attributes log4j.map_message.planet and
+        ;; log4j.map_message.stats
+        (log/debug {:message "Formatting statistics"
+                    :planet  planet
+                    :stats   statistic-values})
 
         (Thread/sleep 25) ; pretend to be CPU intensive
         (let [planet' (str/capitalize (name planet))

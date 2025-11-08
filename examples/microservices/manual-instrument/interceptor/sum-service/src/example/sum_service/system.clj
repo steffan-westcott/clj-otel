@@ -24,7 +24,7 @@
   (with-open [config          (closeable (env/set-config!))
               otel-sdk        (closeable (autoconfig/init-otel-sdk!)) ; registers its own shutdown hook for closing
               runtime-metrics (runtime-telemetry/register!)
-              _logging        (closeable (logging/install! @otel-sdk))
+              _logging        (closeable (logging/initialize))
               instruments     (closeable (metrics/instruments))
               components      (closeable {:instruments @instruments})
               connector       (closeable (server/connector @components) server/stop-connector)]

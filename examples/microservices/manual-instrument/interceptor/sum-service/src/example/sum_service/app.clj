@@ -1,7 +1,8 @@
 (ns example.sum-service.app
   "Application logic. This is a simple application that sums collections of
    numbers."
-  (:require [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
+  (:require [example.common.log4j2.utils :as log]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
@@ -14,6 +15,12 @@
 
     (Thread/sleep 50)
     (let [result (reduce + 0 nums)]
+
+      ;; Will create log record with attributes log4j.map_message.nums
+      ;; and log4j.map_message.result
+      (log/debug {:message "Computed sum"
+                  :nums    (vec nums)
+                  :result  result})
 
       ;; Add an event to the internal span with some attributes attached.
       (span/add-event! "Computed sum" {:system/sum result})

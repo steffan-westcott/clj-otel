@@ -2,6 +2,7 @@
   "Application logic, core.async implementation using bound context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
+            [example.common.log4j2.utils :as log]
             [example.sentence-summary-service.async-chan-bound.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
@@ -34,6 +35,10 @@
       (let [result {:words (count lengths)
                     :shortest-length (apply min lengths)
                     :longest-length (apply max lengths)}]
+
+        ;; Creates log record with attributes log4j.map_message.words,
+        ;; log4j.map_message.shortest_length and log4j.map_message.longest_length
+        (log/debug (assoc result :message "Computed sentence summary"))
 
         ;; Add more attributes to internal span
         (span/add-span-data! {:attributes {:service.sentence-summary.summary/word-count (:words

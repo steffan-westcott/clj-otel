@@ -3,6 +3,7 @@
    https://medium.com/@maciekszajna/reloaded-workflow-out-of-the-box-be6b5f38ea98"
   (:require [example.common.system :refer [closeable] :as common-system]
             [example.planet-service.env :as env]
+            [example.planet-service.logging :as logging]
             [example.planet-service.metrics :as metrics]
             [example.planet-service.server :as server]))
 
@@ -17,6 +18,7 @@
    closed when evaluation completes."
   [f]
   (with-open [config      (closeable (env/set-config!))
+              _logging    (closeable (logging/initialize))
               instruments (closeable (metrics/instruments))
               components  (closeable {:instruments @instruments})
               connector   (closeable (server/connector @components) server/stop-connector)]

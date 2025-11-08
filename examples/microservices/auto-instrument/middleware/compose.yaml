@@ -20,6 +20,7 @@ services:
     volumes:
       - m2:/root/.m2
       - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-adapter-log4j:/app/clj-otel-adapter-log4j:ro
       - ../../../../clj-otel-api:/app/clj-otel-api:ro
       - ../../../common:/app/examples/common:ro
       - ../../../opentelemetry-javaagent.jar:/app/examples/opentelemetry-javaagent.jar:ro
@@ -56,6 +57,7 @@ services:
     volumes:
       - m2:/root/.m2
       - gitlibs:/root/.gitlibs
+      - ../../../../clj-otel-adapter-log4j:/app/clj-otel-adapter-log4j:ro
       - ../../../../clj-otel-api:/app/clj-otel-api:ro
       - ../../../common:/app/examples/common:ro
       - ../../../opentelemetry-javaagent.jar:/app/examples/opentelemetry-javaagent.jar:ro

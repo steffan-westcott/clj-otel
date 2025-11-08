@@ -1,7 +1,8 @@
 (ns example.planet-service.app
   "Application logic. This is a simple application which returns planet
    statistics."
-  (:require [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
+  (:require [example.common.log4j2.utils :as log]
+            [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
 
@@ -39,6 +40,7 @@
 
     (Thread/sleep 50)
     (let [path [planet statistic]]
+      (log/debug "Looking up" path)
 
       ;; Add an event to the current span with some attributes attached.
       (span/add-event! "Processed query path" {:service.planet/query-path path})

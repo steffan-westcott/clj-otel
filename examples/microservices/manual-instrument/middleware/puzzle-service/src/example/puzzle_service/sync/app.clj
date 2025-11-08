@@ -1,6 +1,7 @@
 (ns example.puzzle-service.sync.app
   "Application logic, synchronous implementation."
   (:require [clojure.string :as str]
+            [example.common.log4j2.utils :as log]
             [example.puzzle-service.sync.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -12,10 +13,12 @@
   (span/with-span! ["Scrambling word" {:system/word word}]
 
     (Thread/sleep 5) ; pretend to be CPU intensive
+    (log/debug "About to scramble word:" word)
     (let [scrambled-word (->> word
                               seq
                               shuffle
                               (apply str))]
+      (log/debug "Scrambled word:" scrambled-word)
 
       ;; Add more attributes to internal span
       (span/add-span-data! {:attributes {:service.puzzle/scrambled-word scrambled-word}})

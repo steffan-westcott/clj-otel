@@ -2,6 +2,7 @@
   "Application logic, core.async implementation using explicit context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
+            [example.common.log4j2.utils :as log]
             [example.puzzle-service.async-chan-explicit.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
@@ -21,10 +22,12 @@
                                        :attributes {:system/word word}}]
 
       (Thread/sleep 5) ; pretend to be CPU intensive
+      (log/debug context* "About to scramble word:" word)
       (let [scrambled-word (->> word
                                 seq
                                 shuffle
                                 (apply str))]
+        (log/debug context* "Scrambled word:" scrambled-word)
 
         ;; Add more attributes to internal span
         (span/add-span-data! {:context    context*

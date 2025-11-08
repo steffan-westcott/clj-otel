@@ -1,6 +1,7 @@
 (ns example.solar-system-service.sync.app
   "Application logic, synchronous implementation."
   (:require [clojure.string :as str]
+            [example.common.log4j2.utils :as log]
             [example.solar-system-service.sync.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
@@ -28,6 +29,12 @@
   (span/with-span! ["Formatting report"
                     {:system/planet planet
                      :service.solar-system.report/statistic-values statistic-values}]
+
+    ;; Creates a log record with attributes log4j.map_message.planet and
+    ;; log4j.map_message.stats
+    (log/debug {:message "Formatting statistics"
+                :planet  planet
+                :stats   statistic-values})
 
     (Thread/sleep 25) ; pretend to be CPU intensive
     (let [planet' (str/capitalize (name planet))

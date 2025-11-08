@@ -1,7 +1,8 @@
 (ns example.random-word-service.app
   "Core application logic. This is a simple application which returns random
    words."
-  (:require [reitit.ring :as ring]
+  (:require [example.common.log4j2.utils :as log]
+            [reitit.ring :as ring]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
@@ -23,6 +24,9 @@
 
     (Thread/sleep ^long (+ 10 (rand-int 80)))
 
+    (log/debug {:message   "About to generate word"
+                :word-type word-type})
+
     ;; Simulate an intermittent runtime exception. An uncaught exception leaving a span's scope
     ;; is reported as an exception event and the span status description is set to the
     ;; exception triage summary.
@@ -42,6 +46,8 @@
                                   :system/word-type word-type})))
 
           word       (rand-nth candidates)]
+
+      (log/debug "Generated word:" word)
 
       ;; Add more attributes to the internal span
       (span/add-span-data! {:attributes {:system/word word}})

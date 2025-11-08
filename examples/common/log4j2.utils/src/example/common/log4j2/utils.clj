@@ -1,55 +1,59 @@
 (ns example.common.log4j2.utils
-  "Functions for logging strings and maps using Log4j2."
-  (:import (org.apache.logging.log4j Level LogBuilder LogManager)
-           (org.apache.logging.log4j.message Message MapMessage)
-           (org.apache.logging.log4j.spi LoggerContext)))
+  "Macros for Log4j2 logging with bound, current or explicit context."
+  (:require [org.corfield.logging4j2.impl :as impl]
+            [steffan-westcott.clj-otel.context :as context])
+  (:import (io.opentelemetry.context Context)
+           (org.apache.logging.log4j Level LogManager Logger)))
 
-(def ^:private ^LoggerContext context
-  (LogManager/getContext false))
+(defn log*
+  "Internal fn to write a message to the log."
+  [logger level context & more]
+  (if (instance? Context context)
+    (context/with-context! context
+      (apply impl/log* logger level more))
+    (apply impl/log* logger level context more)))
 
-(defn- ->MapMessage
-  ^Message [m]
-  (reduce (fn [^MapMessage mm [k v]]
-            (.with mm (name k) v))
-          (MapMessage. (count m))
-          m))
-
-#_{:clj-kondo/ignore [:missing-docstring]}
-(defn log
-  [logger-ns ^Level level x ^Throwable e]
-  (let [logger (.getLogger context (str logger-ns))
-        ^LogBuilder builder (cond-> (.atLevel logger level)
-                              e (.withThrowable e))]
-    (if (map? x)
-      (.log builder (->MapMessage x))
-      (.log builder x))))
+(defmacro log
+  "Write a message to the log. If first of args is a context, use as explicit
+   context for the message. Otherwise, use bound or current context."
+  [level & args]
+  `(let [^Logger logger# (LogManager/getLogger (str ~*ns*))
+         ^Level level#   (get impl/levels ~level Level/ERROR)]
+     (when (.isEnabled logger# level#)
+       (log* logger# level# ~@args))))
 
 (defmacro fatal
-  "Log string or map `x` with optional exception `e` at `FATAL` severity."
-  ([x] `(fatal ~x nil))
-  ([x e] `(log ~*ns* Level/FATAL ~x ~e)))
+  "Write a FATAL message to the log. If first arg is a context, use as
+  explicit context for the message. Otherwise, use bound or current context."
+  [& args]
+  `(log :fatal ~@args))
 
 (defmacro error
-  "Log string or map `x` with optional exception `e` at `ERROR` severity."
-  ([x] `(error ~x nil))
-  ([x e] `(log ~*ns* Level/ERROR ~x ~e)))
+  "Write an ERROR message to the log. If first arg is a context, use as
+   explicit context for the message. Otherwise, use bound or current context."
+  [& args]
+  `(log :error ~@args))
 
 (defmacro warn
-  "Log string or map `x` with optional exception `e` at `WARN` severity."
-  ([x] `(warn ~x nil))
-  ([x e] `(log ~*ns* Level/WARN ~x ~e)))
+  "Write a WARN message to the log. If first arg is a context, use as
+   explicit context for the message. Otherwise, use bound or current context."
+  [& args]
+  `(log :warn ~@args))
 
 (defmacro info
-  "Log string or map `x` with optional exception `e` at `INFO` severity."
-  ([x] `(info ~x nil))
-  ([x e] `(log ~*ns* Level/INFO ~x ~e)))
+  "Write an INFO message to the log. If first arg is a context, use as
+   explicit context for the message. Otherwise, use bound or current context."
+  [& args]
+  `(log :info ~@args))
 
 (defmacro debug
-  "Log string or map `x` with optional exception `e` at `DEBUG` severity."
-  ([x] `(debug ~x nil))
-  ([x e] `(log ~*ns* Level/DEBUG ~x ~e)))
+  "Write a DEBUG message to the log. If first arg is a context, use as
+   explicit context for the message. Otherwise, use bound or current context."
+  [& args]
+  `(log :debug ~@args))
 
 (defmacro trace
-  "Log string or map `x` with optional exception `e` at `TRACE` severity."
-  ([x] `(trace ~x nil))
-  ([x e] `(log ~*ns* Level/TRACE ~x ~e)))
+  "Write a TRACE message to the log. If first arg is a context, use as
+   explicit context for the message. Otherwise, use bound or current context."
+  [& args]
+  `(log :trace ~@args))

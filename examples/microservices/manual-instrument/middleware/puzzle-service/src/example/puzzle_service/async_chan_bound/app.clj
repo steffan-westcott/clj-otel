@@ -2,6 +2,7 @@
   "Application logic, core.async implementation using bound context."
   (:require [clojure.string :as str]
             [com.xadecimal.async-style :as style]
+            [example.common.log4j2.utils :as log]
             [example.puzzle-service.async-chan-bound.requests :as requests]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.chan-span :as chan-span]
@@ -17,10 +18,12 @@
     (span/with-bound-span! ["Scrambling word" {:system/word word}]
 
       (Thread/sleep 5) ; pretend to be CPU intensive
+      (log/debug "About to scramble word:" word)
       (let [scrambled-word (->> word
                                 seq
                                 shuffle
                                 (apply str))]
+        (log/debug "Scrambled word:" scrambled-word)
 
         ;; Add more attributes to internal span
         (span/add-span-data! {:attributes {:service.puzzle/scrambled-word scrambled-word}})
