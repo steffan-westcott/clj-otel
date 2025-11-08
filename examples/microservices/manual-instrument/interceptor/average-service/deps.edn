@@ -30,7 +30,7 @@
            hato/hato {:mvn/version "1.0.0"}
 
            ;; OpenTelemetry exporter that uses OTLP
-           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.55.0"}
+           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.56.0"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.21.0-alpha"}

@@ -29,7 +29,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - [NEW] Module `clj-otel-adapter-log4j`, bound context aware appender and context data provider for Log4j.
 - [FIX] Prevent initialization of global OpenTelemetry instance during programmatic build of OTLP exporter.
 - Bump deps
-* [MAINT] OpenTelemetry `1.55.0`, instrumentation `2.21.0`
+* [MAINT] OpenTelemetry `1.56.0`, instrumentation `2.21.0`
 
 === `0.2.10` (2025-10-11)
 
