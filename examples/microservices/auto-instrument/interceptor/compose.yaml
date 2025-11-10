@@ -108,7 +108,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.137.0
+    image: otel/opentelemetry-collector-contrib:0.139.0
     environment:
       GOMEMLIMIT: "400MiB"
     volumes:
@@ -126,7 +126,7 @@ services:
 
   # Loki
   loki:
-    image: grafana/loki:3.5.5
+    image: grafana/loki:3.5.8
     volumes:
       - ./loki.yaml:/etc/loki.yaml
     command: -config.file=/etc/loki.yaml
@@ -134,7 +134,7 @@ services:
 
   # Tempo
   tempo:
-    image: grafana/tempo:2.8.2
+    image: grafana/tempo:2.9.0
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
     command:
@@ -143,7 +143,7 @@ services:
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:v3.6.0
+    image: prom/prometheus:v3.7.3
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:
@@ -154,7 +154,7 @@ services:
 
   # Grafana
   grafana:
-    image: grafana/grafana:12.2.0
+    image: grafana/grafana:12.2.1
     volumes:
       - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml:ro
       - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/grafana-dashboards.yaml:ro

@@ -49,7 +49,7 @@
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.21.0-alpha"}
 
            ;; Asynchronous event programming
-           manifold/manifold {:mvn/version "0.4.3"}
+           manifold/manifold {:mvn/version "0.4.4"}
 
            ;; Functional effects and streaming
            missionary/missionary {:mvn/version "b.46"}

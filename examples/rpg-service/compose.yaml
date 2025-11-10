@@ -20,7 +20,7 @@ services:
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:v3.6.0
+    image: prom/prometheus:v3.7.3
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:
@@ -31,7 +31,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector:0.137.0
+    image: otel/opentelemetry-collector:0.139.0
     volumes:
       - ./otel-collector.yaml:/etc/otel-collector.yaml
     command:

@@ -18,7 +18,7 @@
          io.pedestal/pedestal.service {:mvn/version "0.8.1"}
 
          ;; Asynchronous event programming
-         manifold/manifold         {:mvn/version "0.4.3"}
+         manifold/manifold         {:mvn/version "0.4.4"}
 
          ;; HTTP server abstraction
          ring/ring-core            {:mvn/version "1.15.3"}}}
