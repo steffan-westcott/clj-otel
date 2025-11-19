@@ -43,51 +43,51 @@ public class CljOtelAppender extends AbstractAppender {
     /**
      * If true, include <code>:source</code> location where log record occurred (default: false)
      */
-    public final boolean codeAttrs;
+    public final boolean captureCodeAttributes;
 
     /**
      * If true, include thread data (default: false).
      */
-    public final boolean experimentalAttrs;
+    public final boolean captureExperimentalAttributes;
 
     /**
      * If true and event is a <code>MapMessage</code>, add content to log record attributes and set log record body to <code>message</code> value (default: false).
      */
-    public final boolean mapMessageAttrs;
+    public final boolean captureMapMessageAttributes;
 
     /**
      * If true, include Log4j marker as attribute (default: false).
      */
-    public final boolean markerAttr;
+    public final boolean captureMarkerAttribute;
 
     /**
      * If true, include all Log4j context data as attributes (default: false).
      */
-    public final boolean allCdataAttrs;
+    public final boolean captureAllContextDataAttributes;
 
     /**
      * Set of keys of Log4j context data to include as attributes, if <code>allCdataAttrs</code> is false (default: no keys).
      */
-    public final Set<String> cdataAttrs;
+    public final Set<String> captureContextDataAttributes;
 
     /**
      * If true, set log record event name as value of <code>event.name</code> in Log4j context data (default: false)."
      */
-    public final boolean eventName;
+    public final boolean captureEventName;
 
     private static final String NAMESPACE = "steffan-westcott.clj-otel.adapter.log4j";
     private final IFn append;
 
-    protected CljOtelAppender(String name, Filter filter, boolean codeAttrs, boolean experimentalAttrs,
-                              boolean mapMessageAttrs, boolean markerAttr, Set<String> cdataAttrs, boolean eventName) {
+    protected CljOtelAppender(String name, Filter filter, boolean captureCodeAttributes, boolean captureExperimentalAttributes,
+                              boolean captureMapMessageAttributes, boolean captureMarkerAttribute, Set<String> captureContextDataAttributes, boolean captureEventName) {
         super(name, filter, null, true, Property.EMPTY_ARRAY);
-        this.codeAttrs = codeAttrs;
-        this.experimentalAttrs = experimentalAttrs;
-        this.mapMessageAttrs = mapMessageAttrs;
-        this.markerAttr = markerAttr;
-        this.allCdataAttrs = cdataAttrs.size() == 1 && cdataAttrs.contains("*");
-        this.cdataAttrs = cdataAttrs;
-        this.eventName = eventName;
+        this.captureCodeAttributes = captureCodeAttributes;
+        this.captureExperimentalAttributes = captureExperimentalAttributes;
+        this.captureMapMessageAttributes = captureMapMessageAttributes;
+        this.captureMarkerAttribute = captureMarkerAttribute;
+        this.captureAllContextDataAttributes = captureContextDataAttributes.size() == 1 && captureContextDataAttributes.contains("*");
+        this.captureContextDataAttributes = captureContextDataAttributes;
+        this.captureEventName = captureEventName;
         Clojure.var("clojure.core", "require").invoke(Clojure.read(NAMESPACE));
         append = Clojure.var(NAMESPACE, "append");
     }
@@ -115,6 +115,7 @@ public class CljOtelAppender extends AbstractAppender {
      * instances have been initialized, the log record is emitted immediately (but
      * not necessarily exported). Otherwise, the log record is added to a queue of
      * delayed emits.
+     *
      * @param event LogEvent to append
      */
     @Override
