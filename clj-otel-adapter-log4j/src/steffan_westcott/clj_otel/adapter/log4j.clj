@@ -4,13 +4,14 @@
             [steffan-westcott.clj-otel.api.logs.log-record :as log-record]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
-            [steffan-westcott.clj-otel.instrumentation.api.config :as inst-config])
+            [steffan-westcott.clj-otel.instrumentation.api.config :as inst-config]
+            [steffan-westcott.clj-otel.instrumentation.api.config.logging :as config-logging]
+            [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.api.baggage BaggageEntry)
            (io.opentelemetry.api.logs Severity)
            (io.opentelemetry.api.trace Span SpanContext TraceFlags TraceState)
            (io.opentelemetry.semconv.incubating ThreadIncubatingAttributes)
            (java.util.concurrent TimeUnit)
-           (org.apache.logging.log4j Level)
            (org.apache.logging.log4j.core LogEvent)
            (org.apache.logging.log4j.core.time Instant)
            (org.apache.logging.log4j.message MapMessage Message)
@@ -24,31 +25,11 @@
    StandardLevel/INFO  Severity/INFO
    StandardLevel/WARN  Severity/WARN
    StandardLevel/ERROR Severity/ERROR
-   StandardLevel/FATAL Severity/FATAL
-   StandardLevel/OFF   Severity/UNDEFINED_SEVERITY_NUMBER})
-
-(defn- trace-id-key
-  []
-  (inst-config/get-string "otel.instrumentation.common.logging.trace-id" "trace_id"))
-
-(defn- span-id-key
-  []
-  (inst-config/get-string "otel.instrumentation.common.logging.span-id" "span_id"))
-
-(defn- trace-flags-key
-  []
-  (inst-config/get-string "otel.instrumentation.common.logging.trace-flags" "trace_flags"))
+   StandardLevel/FATAL Severity/FATAL})
 
 (defn- add-baggage?
   []
   (inst-config/get-boolean "otel.instrumentation.log4j-context-data.add-baggage" false))
-
-(defn- assoc-all!
-  [m kvs]
-  (reduce (fn [m [k v]]
-            (assoc! m k v))
-          m
-          kvs))
 
 (defn context-data
   "Returns a string map to add to Log4j context data. This includes trace id,
@@ -56,28 +37,25 @@
    span in the bound or current context."
   []
   (let [span-context (span/get-span-context)]
-    (if (.isValid span-context)
-      (let [cdata (transient {(trace-id-key)    (.getTraceId span-context)
-                              (span-id-key)     (.getSpanId span-context)
-                              (trace-flags-key) (.asHex (.getTraceFlags span-context))})
-            cdata (reduce (fn [m [k ^BaggageEntry v]]
-                            (assoc! m
-                                    (str "baggage." k)
-                                    (.getValue v)))
-                          cdata
-                          (when (add-baggage?)
-                            (.asMap (baggage/get-baggage))))]
-        (persistent! cdata))
-      {})))
+    (persistent! (cond-> (transient {})
+                   (add-baggage?) (util/into! (map (fn [[k v]] [(str "baggage." k)
+                                                                (.getValue ^BaggageEntry v)]))
+                                              (.asMap (baggage/get-baggage)))
+                   (.isValid span-context) (assoc! (config-logging/trace-id-key)
+                                                   (.getTraceId span-context)
+                                                   (config-logging/span-id-key)
+                                                   (.getSpanId span-context)
+                                                   (config-logging/trace-flags-key)
+                                                   (.asHex (.getTraceFlags span-context)))))))
 
 (defn- context-from-cdata
   "Returns a context containing a span with span context data stored in cdata.
    This is used in cases where `emit` may be evaluated in a different context
    to where the log record occurred i.e. asynchronously."
   [cdata]
-  (let [trace-id    (get cdata (trace-id-key))
-        span-id     (get cdata (span-id-key))
-        trace-flags (get cdata (trace-flags-key))]
+  (let [trace-id    (get cdata (config-logging/trace-id-key))
+        span-id     (get cdata (config-logging/span-id-key))
+        trace-flags (get cdata (config-logging/trace-flags-key))]
     (and trace-id
          span-id
          trace-flags
@@ -94,6 +72,13 @@
       logger-name
       "ROOT")))
 
+(defn- get-timestamp
+  [^LogEvent event]
+  (when-some [^Instant instant (.getInstant event)]
+    (let [nanos (+ (.toNanos TimeUnit/MILLISECONDS (.getEpochMillisecond instant))
+                   (.getNanoOfMillisecond instant))]
+      [nanos TimeUnit/NANOSECONDS])))
+
 (defn- get-source
   [^LogEvent event]
   (when-some [elem (.getSource event)]
@@ -103,21 +88,14 @@
        :line (when (> line 0)
                line)})))
 
-(defn- get-timestamp
-  [^LogEvent event]
-  (when-some [^Instant instant (.getInstant event)]
-    (let [nanos (+ (.toNanos TimeUnit/MILLISECONDS (.getEpochMillisecond instant))
-                   (.getNanoOfMillisecond instant))]
-      [nanos TimeUnit/NANOSECONDS])))
-
 (defn- ->log-record
   [^CljOtelAppender appender ^LogEvent event]
-  (let [logger-name      (get-logger-name event)
-        cdata            (.toMap (.getContextData event))
+  (let [cdata            (.toMap (.getContextData event))
         context          (context/dyn)
         context          (if (identical? (context/root) context)
                            (context-from-cdata cdata) ; cover asynchronous case
                            context)
+        level            (.getLevel event)
         ^Message message (.getMessage event)
         map-message?     (and message (instance? MapMessage message))
         body             (when message
@@ -128,43 +106,48 @@
         body             (if check-msg-attr?
                            (.get ^MapMessage message "message")
                            body)
-        ^Level level     (.getLevel event)
         attributes       (persistent!
-                          (cond-> (transient {})
-                            (.-experimentalAttrs appender) (assoc!
-                                                            ThreadIncubatingAttributes/THREAD_NAME
-                                                            (.getThreadName event)
-                                                            ThreadIncubatingAttributes/THREAD_ID
-                                                            (.getThreadId event))
-                            (and map-message? (.-mapMessageAttrs appender))
-                            (assoc-all! (->> (.getData ^MapMessage message)
-                                             (remove (fn [[k _]]
-                                                       (and check-msg-attr? (= k "message"))))
-                                             (map (fn [[k v]] [(str "log4j.map_message." k)
-                                                               (str v)]))))
+                          (cond-> (util/into!
+                                   (transient {})
+                                   (filter
+                                    (fn [[k _]]
+                                      (or (.-captureAllContextDataAttributes appender)
+                                          (contains? (.-captureContextDataAttributes appender) k))))
+                                   cdata)
+                            (.-captureExperimentalAttributes appender)
+                            (assoc! ThreadIncubatingAttributes/THREAD_NAME
+                                    (.getThreadName event)
+                                    ThreadIncubatingAttributes/THREAD_ID
+                                    (.getThreadId event))
 
-                            (.-markerAttr appender) (assoc! "log4j.marker"
-                                                            (.getName (.getMarker event)))
-                            :always (assoc-all! (filter
-                                                 (fn [[k _]]
-                                                   (and (not (and (.-eventName appender)
-                                                                  (= k "event.name")))
-                                                        (or (.-allCdataAttrs appender)
-                                                            (contains? (.-cdataAttrs appender) k))))
-                                                 cdata))))]
-    {:logger-name   logger-name
+                            (and map-message? (.-captureMapMessageAttributes appender))
+                            (util/into! (comp (remove (fn [[k _]]
+                                                        (and check-msg-attr? (= k "message"))))
+                                              (map (fn [[k v]] [(str "log4j.map_message." k)
+                                                                (str v)])))
+                                        (.getData ^MapMessage message))
+
+                            (.-captureMarkerAttribute appender)
+                            (assoc! "log4j.marker" (.getName (.getMarker event)))))
+        event-name       (when (.-captureEventName appender)
+                           (get attributes "event.name"))
+        attributes       (cond-> attributes
+                           event-name (dissoc "event.name"))]
+    {:logger-name   (get-logger-name event)
      :context       context
-     :severity      (and level (StandardLevel->Severity (.getStandardLevel level)))
+     :severity      (and level
+                         (get StandardLevel->Severity
+                              (.getStandardLevel level)
+                              Severity/UNDEFINED_SEVERITY_NUMBER))
      :severity-text (and level (.name level))
      :body          body
      :attributes    attributes
      :exception     (.getThrown event)
      :thread        nil ; thread added as attributes instead
      :timestamp     (get-timestamp event)
-     :source        (when (.-codeAttrs appender)
+     :source        (when (.-captureCodeAttributes appender)
                       (get-source event))
-     :event-name    (when (.-eventName appender)
-                      (get cdata "event.name"))}))
+     :event-name    event-name}))
 
 (defn- emit
   [record]

@@ -61,17 +61,62 @@
            .findFirst
            (.orElse nil)))))
 
-(defmacro ^:private compile-if
+(defmacro compile-if
+  "Evals `test` at macro expansion time and expands to `true-expr`
+   or `false-expr` based on the result."
   [test true-expr false-expr]
-  (if (eval test)
-    `~true-expr
-    `~false-expr))
+  (if (try
+        (eval test)
+        (catch Throwable _
+          false))
+    `(do
+       ~true-expr)
+    `(do
+       ~false-expr)))
 
-(defn ^:private class-exists?
-  [class-name]
+(defmacro compile-when
+  "Evals `test` at macro expansion time and expands to `true-expr`
+   or nil based on the result."
+  [test true-expr]
+  `(compile-if ~test ~true-expr nil))
+
+(def ^{:arglists '([^String class-name])} resolve-class
+  "Returns the class with the given fully qualified name, or nil if not
+   available on the current class loader."
+  (memoize (fn [^String class-name]
+             (try
+               (Class/forName class-name)
+               (catch Exception _)))))
+
+(defn class-exists?
+  "Returns true if the class with the given fully qualified name is available
+   on the current class loader."
+  [^String class-name]
+  (boolean (resolve-class class-name)))
+
+(defn has-method?
+  "Returns true if the method with the given name and parameter types is
+   available on the class."
+  [^Class class ^String method-name & param-types]
   (boolean (try
-             (Class/forName class-name)
+             (.getMethod class method-name param-types)
              (catch Exception _))))
+
+(defn resolve-instance?
+  "Returns true if `x` is an instance of class with given name. This fn is safe
+   to use with names of classes that may not be available on the class path."
+  [^String class-name x]
+  (boolean (some-> (resolve-class class-name)
+                   (instance? x))))
+
+(def ^{:arglists '([^Class class ^String field-name])} accessible-field
+  "Returns `java.lang.reflect.Field` with accessibility flag set to true for
+   class field with given name, or nil if field not found."
+  (memoize (fn [^Class class ^String field-name]
+             (try
+               (doto (.getDeclaredField class field-name)
+                 (.setAccessible true))
+               (catch Exception _)))))
 
 (defn fn-name
   "Returns the name of the currently executing function, using the StackWalker
@@ -133,3 +178,9 @@
   (if (or (instance? ExecutionException e) (instance? CompletionException e))
     (or (ex-cause e) e)
     e))
+
+(defn into!
+  "Same as `into`, but for transient `to` collection."
+  ([to from] (reduce conj! to from))
+  ([to xf from] (transduce xf conj! to from)))
+
