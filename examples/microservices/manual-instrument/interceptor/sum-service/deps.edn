@@ -25,7 +25,7 @@
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.56.0"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
-           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.21.0-alpha"}
+           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.22.0-alpha"}
 
            ;; Pedestal HTTP server with Jetty integration
            io.pedestal/pedestal.interceptor {:mvn/version "0.8.1"}
