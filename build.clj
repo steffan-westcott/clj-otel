@@ -44,7 +44,8 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-instrumentation-resources"
    "clj-otel-instrumentation-runtime-telemetry-java8"
    "clj-otel-instrumentation-runtime-telemetry-java17"
-   "clj-otel-adapter-log4j"])
+   "clj-otel-adapter-log4j"
+   "clj-otel-adapter-logback"])
 
 (def ^:private demo-project-paths
   ["examples/common/anonymise-app"

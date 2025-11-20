@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.steffan-westcott</groupId>
+  <artifactId>clj-otel-adapter-logback</artifactId>
+  <version>VERSION</version>
+  <name>clj-otel-adapter-logback</name>
+  <description>OpenTelemetry appender and MDC provider for Logback, using Clojure library clj-otel-api</description>
+  <url>https://github.com/steffan-westcott/clj-otel</url>
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Steffan Westcott</name>
+    </developer>
+  </developers>
+  <scm>
+    <url>https://github.com/steffan-westcott/clj-otel</url>
+    <connection>scm:git:git://github.com/steffan-westcott/clj-otel.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/steffan-westcott/clj-otel.git</developerConnection>
+  </scm>
+</project>

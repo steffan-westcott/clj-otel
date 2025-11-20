@@ -1,5 +1,7 @@
 (ns steffan-westcott.clj-otel.adapter.log4j
-  "Appender and context data provider for Log4j."
+  "Appender and context data provider for Log4j. Has the same configuration and
+   functionality provided by OpenTelemetry Java instrumentation versions, but
+   is bound context aware."
   (:require [steffan-westcott.clj-otel.api.baggage :as baggage]
             [steffan-westcott.clj-otel.api.logs.log-record :as log-record]
             [steffan-westcott.clj-otel.api.trace.span :as span]
