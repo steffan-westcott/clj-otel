@@ -13,47 +13,51 @@
       (apply impl/log* logger level more))
     (apply impl/log* logger level context more)))
 
+(defmacro log'
+  "Internal macro to log a message."
+  [^Level level & args]
+  `(let [^Logger logger# (LogManager/getLogger (str ~*ns*))]
+     (when (.isEnabled logger# ~level)
+       (log* logger# ~level ~@args))))
+
 (defmacro log
   "Write a message to the log. If first of args is a context, use as explicit
    context for the message. Otherwise, use bound or current context."
   [level & args]
-  `(let [^Logger logger# (LogManager/getLogger (str ~*ns*))
-         ^Level level#   (get impl/levels ~level Level/ERROR)]
-     (when (.isEnabled logger# level#)
-       (log* logger# level# ~@args))))
+  `(log' (get impl/levels ~level Level/ERROR) ~@args))
 
 (defmacro fatal
   "Write a FATAL message to the log. If first arg is a context, use as
   explicit context for the message. Otherwise, use bound or current context."
   [& args]
-  `(log :fatal ~@args))
+  `(log' Level/FATAL ~@args))
 
 (defmacro error
   "Write an ERROR message to the log. If first arg is a context, use as
    explicit context for the message. Otherwise, use bound or current context."
   [& args]
-  `(log :error ~@args))
+  `(log' Level/ERROR ~@args))
 
 (defmacro warn
   "Write a WARN message to the log. If first arg is a context, use as
    explicit context for the message. Otherwise, use bound or current context."
   [& args]
-  `(log :warn ~@args))
+  `(log' Level/WARN ~@args))
 
 (defmacro info
   "Write an INFO message to the log. If first arg is a context, use as
    explicit context for the message. Otherwise, use bound or current context."
   [& args]
-  `(log :info ~@args))
+  `(log' Level/INFO ~@args))
 
 (defmacro debug
   "Write a DEBUG message to the log. If first arg is a context, use as
    explicit context for the message. Otherwise, use bound or current context."
   [& args]
-  `(log :debug ~@args))
+  `(log' Level/DEBUG ~@args))
 
 (defmacro trace
   "Write a TRACE message to the log. If first arg is a context, use as
    explicit context for the message. Otherwise, use bound or current context."
   [& args]
-  `(log :trace ~@args))
+  `(log' Level/TRACE ~@args))
