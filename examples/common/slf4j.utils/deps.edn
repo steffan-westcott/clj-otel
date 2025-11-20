@@ -1,0 +1,6 @@
+;!zprint {:style [:respect-nl] :width 140}
+
+{:paths ["src"]
+
+ :deps  {com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}
+         org.slf4j/slf4j-api {:mvn/version "2.0.17"}}}
