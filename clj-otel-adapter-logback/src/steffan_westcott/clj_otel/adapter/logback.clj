@@ -233,9 +233,7 @@
 
            (and supports-logstash-StructuredArgument?
                 (.-captureLogstashStructuredArguments appender))
-           (util/into! (comp (filter instance-SingleFieldAppendingMarker?)
-                             (keep logstash-single-field-attr))
-                       (.getArgumentArray event))))
+           (util/into! (logstash-marker-attrs (.getArgumentArray event)))))
 
         event-name (when (.-captureEventName appender)
                      (get attributes "event.name"))
