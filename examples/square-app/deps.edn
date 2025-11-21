@@ -35,9 +35,9 @@
                                      io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.56.0"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
-           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.76.0"}
-                                     io.grpc/grpc-protobuf     {:mvn/version "1.76.0"}
-                                     io.grpc/grpc-stub         {:mvn/version "1.76.0"}}}
+           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.77.0"}
+                                     io.grpc/grpc-protobuf     {:mvn/version "1.77.0"}
+                                     io.grpc/grpc-stub         {:mvn/version "1.77.0"}}}
 
            ;; (Re)direct clojure.tools.logging and java.util.logging to Log4J2
            :log4j      {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
