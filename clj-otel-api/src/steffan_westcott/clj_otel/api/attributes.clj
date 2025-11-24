@@ -19,10 +19,10 @@
    AttributeType/LONG          long
    AttributeType/DOUBLE        double
    AttributeType/STRING        str
-   AttributeType/BOOLEAN_ARRAY #(map boolean %)
-   AttributeType/LONG_ARRAY    #(map long %)
-   AttributeType/DOUBLE_ARRAY  #(map double %)
-   AttributeType/STRING_ARRAY  #(map str %)})
+   AttributeType/BOOLEAN_ARRAY #(mapv boolean %)
+   AttributeType/LONG_ARRAY    #(mapv long %)
+   AttributeType/DOUBLE_ARRAY  #(mapv double %)
+   AttributeType/STRING_ARRAY  #(mapv str %)})
 
 (defn- attribute-type-of
   "Returns `AttributeType` inferred from type of `x`."
