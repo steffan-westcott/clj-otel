@@ -1,0 +1,34 @@
+<configuration>
+
+    <!-- Configure an appender named STDOUT that writes to console -->
+    <!-- This appender is not used directly, instead it is wrapped by appender named OTEL-MDC -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %32X{trace_id} %16X{span_id} %40.40logger %message%n%throwable</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Configure an appender named OTEL that exports OTLP -->
+    <!-- This appender is not used directly, instead it is wrapped by appender named OTEL-MDC -->
+    <!-- OTLP debug is written to console (see deps.edn), so log messages will appear twice -->
+    <appender name="OTEL" class="steffan_westcott.clj_otel.adapter.logback.CljOtelAppender">
+        <captureExperimentalAttributes>true</captureExperimentalAttributes>
+        <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+    </appender>
+
+    <!-- Configure an appender named OTEL-MDC that adds context to MDC of wrapped appenders -->
+    <appender name="OTEL-MDC" class="steffan_westcott.clj_otel.adapter.logback.CljOtelMdcAppender">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="OTEL"/>
+    </appender>
+
+    <!-- Configure a logger for packages named example.* at DEBUG level -->
+    <logger name="example" level="DEBUG"/>
+
+    <!-- Configure root logger for all packages at INFO level, to use appender OTEL-MDC -->
+    <root level="INFO">
+        <appender-ref ref="OTEL-MDC"/>
+    </root>
+
+</configuration>

@@ -70,8 +70,10 @@ clojure -A:deps -T:build help/doc"
    "examples/microservices/manual-instrument/middleware/puzzle-load-gen"
    "examples/microservices/manual-instrument/middleware/puzzle-service"
    "examples/microservices/manual-instrument/middleware/random-word-service"
+   "examples/permutations-app"
    "examples/rpg-service"
    "examples/square-app"
+   "examples/triangular-app"
    "examples/word-stream-app"
    "tutorial/instrumented"])
 

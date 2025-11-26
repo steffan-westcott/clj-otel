@@ -1,0 +1,21 @@
+{
+  "reflection": [
+    {
+      "type": "ch.qos.logback.classic.spi.LoggingEvent",
+      "fields": [
+        {
+          "name": "mdcPropertyMap"
+        }
+      ]
+    },
+    {
+      "type": "steffan_westcott.clj_otel.adapter.logback.CljOtelAppender",
+      "allPublicConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "steffan_westcott.clj_otel.adapter.logback.CljOtelMdcAppender",
+      "allPublicConstructors": true
+    }
+  ]
+}

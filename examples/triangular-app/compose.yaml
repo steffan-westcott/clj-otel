@@ -1,0 +1,20 @@
+services:
+
+  # Jaeger
+  jaeger:
+    image: jaegertracing/jaeger:2.11.0
+    ports:
+      - "4317:4317"    # OTLP gRPC receiver
+      - "16686:16686"  # Jaeger web interface
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus.yaml
+    command:
+      - --config.file=/etc/prometheus.yaml
+    ports:
+      - "9090:9090"    # Prometheus web interface
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

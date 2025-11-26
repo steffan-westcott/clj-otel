@@ -3,4 +3,5 @@
 {:paths ["src"]
 
  :deps  {com.github.steffan-westcott/clj-otel-api {:local/root "../../../clj-otel-api"}
-         org.slf4j/slf4j-api {:mvn/version "2.0.17"}}}
+         org.slf4j/jul-to-slf4j {:mvn/version "2.0.17"}
+         org.slf4j/slf4j-api    {:mvn/version "2.0.17"}}}

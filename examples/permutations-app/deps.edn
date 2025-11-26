@@ -1,0 +1,39 @@
+;!zprint {:style [:respect-nl] :width 140}
+
+{:paths   ["src" "resources"]
+
+ :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
+           org.clojure/math.combinatorics {:mvn/version "0.3.0"}
+
+           ;; Logback implementation of SLF4J
+           ch.qos.logback/logback-classic {:mvn/version "1.5.21"}
+
+           ;; Logback appender and context data provider
+           com.github.steffan-westcott/clj-otel-adapter-logback {:local/root "../../clj-otel-adapter-logback"}
+
+           ;; Clojure wrapper of OpenTelemetry API
+           com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
+
+           ;; Common macros for SLF4J logging with bound, current or explicit context
+           org.example/slf4j.utils {:local/root "../common/slf4j.utils"}}
+
+ :aliases {;; Include this alias to export telemetry data
+           :otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
+                              "-javaagent:../opentelemetry-javaagent.jar"
+
+                              ;; Name the instrumented application or service
+                              "-Dotel.service.name=permutations-app"
+
+                              ;; Disable agent instrumentation to prevent conflict with clj-otel-adapter-logback
+                              "-Dotel.instrumentation.logback-appender.enabled=false"
+                              "-Dotel.instrumentation.logback-mdc.enabled=false"
+
+                              ;; Set metric export to every 5 seconds
+                              "-Dotel.metric.export.interval=5000"
+
+                              ;; Send log records to console rather than OTLP, as we lack a proper logging backend in this simple
+                              ;; example
+                              "-Dotel.logs.exporter=console"]}
+
+           ;; (Re)direct clojure.tools.logging to SLF4J
+           :slf4j {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]}}}

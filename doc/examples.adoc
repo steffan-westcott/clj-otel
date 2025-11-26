@@ -86,7 +86,7 @@ graph LR
 ----
 +
 endif::[]
-A single HTTP service `countries-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Compojure router, exporting telemetry to a Collector instance.
+A single HTTP service `countries-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Compojure router, Log4j logging, exporting telemetry to a Collector instance.
 
 * `examples/cube-app`
 +
@@ -103,7 +103,7 @@ graph LR
 ----
 +
 endif::[]
-A small application `cube-app` run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
+A small application `cube-app` run with the OpenTelemetry instrumentation agent on `localhost`, Log4j logging, exporting telemetry to a Collector instance.
 
 * `examples/divisor-app`
 +
@@ -121,7 +121,7 @@ graph LR
 ----
 +
 endif::[]
-A small application `divisor-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry directly to Jaeger and Prometheus instances.
+A small application `divisor-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, Log4j logging, exporting telemetry directly to Jaeger and Prometheus instances.
 
 * `examples/factorial-app`
 +
@@ -138,7 +138,24 @@ graph LR
 ----
 +
 endif::[]
-A small application `factorial-app` using programmatically configured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
+A small application `factorial-app` using programmatically configured OpenTelemetry SDK, run on `localhost`, Log4j logging, exporting telemetry to a Collector instance.
+
+* `examples/permutations-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph docker network
+        otel-collector --> jaeger
+        otel-collector --remote write--> prometheus
+    end
+    localhost --> otel-collector
+----
++
+endif::[]
+A small application `permutations-app` run with the OpenTelemetry instrumentation agent on `localhost`, Logback logging, exporting telemetry to a Collector instance.
 
 * `examples/rpg-service`
 +
@@ -157,8 +174,26 @@ graph LR
 ----
 +
 endif::[]
-A single HTTP service `rpg-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Reitit router, accessing a PostgreSQL database instance, exporting telemetry to a Collector instance.
+A single HTTP service `rpg-service` run with the OpenTelemetry instrumentation agent on `localhost`, implemented with Ring middleware, Reitit router, accessing a PostgreSQL database instance, Log4j logging, exporting telemetry to a Collector instance.
 Load namespace `example.rpg-service.repl` at the REPL to exercise this example.
+
+* `examples/triangular-app`
++
+ifdef::env-github[[source,mermaid]]
+ifndef::env-github,env-cljdoc[[mermaid]]
+ifndef::env-cljdoc[]
+----
+graph LR
+    subgraph docker network
+        jaeger
+        prometheus
+    end
+    localhost --> jaeger
+    prometheus --scrape--> localhost
+----
++
+endif::[]
+A small application `triangular-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, Logback logging, exporting telemetry directly to Jaeger and Prometheus instances.
 
 * `examples/square-app`
 +
@@ -175,7 +210,7 @@ graph LR
 ----
 +
 endif::[]
-A small application `square-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, exporting telemetry to a Collector instance.
+A small application `square-app` using autoconfigured OpenTelemetry SDK, run on `localhost`, Log4j logging, exporting telemetry to a Collector instance.
 
 * `examples/word-stream-app`
 +
@@ -201,7 +236,7 @@ graph LR
 ----
 +
 endif::[]
-A small application `word-stream-app` run with the OpenTelemetry instrumentation agent on `localhost`, exporting telemetry to a Collector instance.
+A small application `word-stream-app` run with the OpenTelemetry instrumentation agent on `localhost`, Log4j logging, exporting telemetry to a Collector instance.
 The application is implemented using https://clojure.github.io/core.async/flow.html[`core.async.flow`].
 This demonstrates manual instrumentation of a `core.async.flow` application with explicit context passing along the data flow.
 
@@ -224,7 +259,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `sentence-summary-service` and `word-length-service` both implemented with Ring middleware, Reitit router, run with the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `sentence-summary-service` and `word-length-service` both implemented with Ring middleware, Reitit router, Log4j logging, run with the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/auto-instrument/interceptor`
 +
@@ -245,7 +280,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `solar-system-service` and `planet-service` both implemented with Pedestal interceptors, run with the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `solar-system-service` and `planet-service` both implemented with Pedestal interceptors, Log4j logging, run with the OpenTelemetry instrumentation agent, exporting telemetry to a Collector instance.
 
 * `examples/microservices/manual-instrument/middleware`
 +
@@ -266,7 +301,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `puzzle-service` and `random-word-service` both implemented with Ring middleware, Reitit router, not using the agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `puzzle-service` and `random-word-service` both implemented with Ring middleware, Reitit router, not using the agent, Log4j logging, exporting telemetry to a Collector instance.
 
 * `examples/microservices/manual-instrument/interceptor`
 +
@@ -287,7 +322,7 @@ graph LR
 ----
 +
 endif::[]
-A pair of dependent microservices `average-service` and `sum-service` both implemented with Pedestal interceptors, not using the agent, exporting telemetry to a Collector instance.
+A pair of dependent microservices `average-service` and `sum-service` both implemented with Pedestal interceptors, not using the agent, Log4j logging, exporting telemetry to a Collector instance.
 
 . *Start container instances*
 +

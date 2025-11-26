@@ -1,0 +1,33 @@
+{
+  "reflection": [
+    {
+      "type": "ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+      "allPublicConstructors": true,
+      "allPublicMethods": true
+    },
+    {
+      "type": "ch.qos.logback.classic.util.DefaultJoranConfigurator",
+      "allPublicConstructors": true
+    },
+    {
+      "type": "ch.qos.logback.core.ConsoleAppender",
+      "allPublicConstructors": true
+    },
+    {
+      "type": "ch.qos.logback.core.OutputStreamAppender",
+      "methods": [
+        {
+          "name": "setEncoder",
+          "parameterTypes": [
+            "ch.qos.logback.core.encoder.Encoder"
+          ]
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "glob": "logback.xml"
+    }
+  ]
+}
