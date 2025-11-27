@@ -135,7 +135,7 @@
                            (get attributes "event.name"))
         attributes       (cond-> attributes
                            event-name (dissoc "event.name"))]
-    {:logger-name   (get-logger-name event)
+    {:logger        (get-logger-name event)
      :context       context
      :severity      (and level
                          (get StandardLevel->Severity
@@ -151,14 +151,6 @@
                       (get-source event))
      :event-name    event-name}))
 
-(defn- emit
-  [record]
-  (log-record/emit (assoc record
-                          :logger
-                          (log-record/get-logger {:name       (:logger-name record)
-                                                  :version    nil
-                                                  :schema-url nil}))))
-
 (defn append
   "Appends a `LogEvent` by emitting as a log record. If `CljOtelAppender`
    instances have been initialized, the log record is emitted immediately (but
@@ -167,12 +159,12 @@
   [^CljOtelAppender appender ^LogEvent event]
   (let [record (->log-record appender event)]
     (if CljOtelAppender/initialized
-      (emit record)
+      (log-record/emit record)
       (let [read-lock (.readLock CljOtelAppender/lock)]
         (.lock read-lock)
         (try
           (if CljOtelAppender/initialized
-            (emit record)
+            (log-record/emit record)
             (.offer CljOtelAppender/delayedEmits record))
           (finally
             (.unlock read-lock)))))))
@@ -191,7 +183,7 @@
       (set! (. CljOtelAppender -initialized) true)
       (loop []
         (when-let [record (.poll CljOtelAppender/delayedEmits)]
-          (emit record)
+          (log-record/emit record)
           (recur)))
       (finally
         (.unlock write-lock)))))

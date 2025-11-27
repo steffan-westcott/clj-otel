@@ -10,7 +10,7 @@
             [steffan-westcott.clj-otel.config :refer [config]]
             [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.util :as util])
-  (:import (clojure.lang Keyword)
+  (:import (clojure.lang IPersistentMap Keyword)
            (io.opentelemetry.api OpenTelemetry)
            (io.opentelemetry.api.logs LogRecordBuilder Logger Severity)
            (io.opentelemetry.semconv CodeAttributes ExceptionAttributes)
@@ -103,6 +103,22 @@
    (as-severity [x]
      (get keyword->Severity x Severity/UNDEFINED_SEVERITY_NUMBER)))
 
+(defprotocol ^:private AsLogger
+  (^:no-doc as-logger ^Logger [x]))
+
+(extend-protocol AsLogger
+ Logger
+   (as-logger [logger]
+     logger)
+ String
+   (as-logger [name]
+     (get-logger {:name       name
+                  :version    nil
+                  :schema-url nil}))
+ IPersistentMap
+   (as-logger [opts]
+     (get-logger opts)))
+
 (defn- stacktrace
   [^Throwable e]
   (let [sw (StringWriter.)]
@@ -122,7 +138,7 @@
 
    | key                 | description |
    |---------------------|-------------|
-   |`:logger`            | `io.opentelemetry.api.logs.Logger` used to create the log record (default: default logger, as set by [[set-default-logger!]]; if no default logger has been set, one will be set with default config).
+   |`:logger`            | Either `io.opentelemetry.api.logs.Logger`, `get-logger` option map or logger name string (default: default logger, as set by [[set-default-logger!]]; if no default logger has been set, one will be set with default config).
    |`:context`           | Context of the log record. If `nil`, use the root context (default: bound or current context).
    |`:severity`          | `^io.opentelemetry.api.logs.Severity` or keyword `:traceN`, `:debugN`, `:infoN`, `:warnN`, `:errorN`, `:fatalN` where `N` is nothing or `2`, `3`, `4` (default: nil).
    |`:severity-text`     | Short name of log record severity (default: nil).
@@ -134,12 +150,14 @@
    |`:observed-timestamp`| Timestamp for when the log record was observed by OpenTelemetry; may be later than `:timestamp` for asynchronous processing. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
    |`:source`            | Map describing source code where log record occurred. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: nil).
    |`:event-name`        | If not nil, a string event name. An event name identifies this log record as an event with specific structure of `:body` and `:attributes` (default: nil)."
-  [{:keys [^Logger logger context severity severity-text body attributes ^Throwable exception
-           ^Thread thread timestamp observed-timestamp event-name]
+  [{:keys [logger context severity severity-text body attributes ^Throwable exception ^Thread thread
+           timestamp observed-timestamp event-name]
     :or   {context (context/dyn)
            thread  (Thread/currentThread)}
     {:keys [fn line col file]} :source}]
-  (let [logger     (or logger (get-default-logger!))
+  (let [logger     (if logger
+                     (as-logger logger)
+                     (get-default-logger!))
         context    (or context (context/root))
         triage     (if exception
                      (into (assoc (main/ex-triage (Throwable->map exception))
