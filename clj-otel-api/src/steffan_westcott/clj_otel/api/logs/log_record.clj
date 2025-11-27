@@ -63,6 +63,32 @@
   ^Logger []
   (swap! default-logger #(or % (get-logger))))
 
+(def ^:private keyword->Severity
+  {:trace  Severity/TRACE
+   :trace2 Severity/TRACE2
+   :trace3 Severity/TRACE3
+   :trace4 Severity/TRACE4
+   :debug  Severity/DEBUG
+   :debug2 Severity/DEBUG2
+   :debug3 Severity/DEBUG3
+   :debug4 Severity/DEBUG4
+   :info   Severity/INFO
+   :info2  Severity/INFO2
+   :info3  Severity/INFO3
+   :info4  Severity/INFO4
+   :warn   Severity/WARN
+   :warn2  Severity/WARN2
+   :warn3  Severity/WARN3
+   :warn4  Severity/WARN4
+   :error  Severity/ERROR
+   :error2 Severity/ERROR2
+   :error3 Severity/ERROR3
+   :error4 Severity/ERROR4
+   :fatal  Severity/FATAL
+   :fatal2 Severity/FATAL2
+   :fatal3 Severity/FATAL3
+   :fatal4 Severity/FATAL4})
+
 (defprotocol ^:private AsSeverity
   (^:no-doc as-severity ^Severity [x]))
 
@@ -75,31 +101,7 @@
      x)
  Keyword
    (as-severity [x]
-     (case x
-       :trace  Severity/TRACE
-       :trace2 Severity/TRACE2
-       :trace3 Severity/TRACE3
-       :trace4 Severity/TRACE4
-       :debug  Severity/DEBUG
-       :debug2 Severity/DEBUG2
-       :debug3 Severity/DEBUG3
-       :debug4 Severity/DEBUG4
-       :info   Severity/INFO
-       :info2  Severity/INFO2
-       :info3  Severity/INFO3
-       :info4  Severity/INFO4
-       :warn   Severity/WARN
-       :warn2  Severity/WARN2
-       :warn3  Severity/WARN3
-       :warn4  Severity/WARN4
-       :error  Severity/ERROR
-       :error2 Severity/ERROR2
-       :error3 Severity/ERROR3
-       :error4 Severity/ERROR4
-       :fatal  Severity/FATAL
-       :fatal2 Severity/FATAL2
-       :fatal3 Severity/FATAL3
-       :fatal4 Severity/FATAL4)))
+     (get keyword->Severity x Severity/UNDEFINED_SEVERITY_NUMBER)))
 
 (defn- stacktrace
   [^Throwable e]
