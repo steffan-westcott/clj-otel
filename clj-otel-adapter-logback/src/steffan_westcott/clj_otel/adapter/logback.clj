@@ -185,7 +185,10 @@
                           (transient {})
                           markers)))
 
-(defn- ->log-record
+(defn append
+  "Appends a `ILoggingEvent` by emitting as a log record. If [[initialize]] has
+   been evaluated, the log record is emitted immediately (but not necessarily
+   exported). Otherwise, the log record is added to a queue of delayed emits."
   [^CljOtelAppender appender ^ILoggingEvent event]
   (let [mdc (.getMDCPropertyMap event)
         context (context/dyn)
@@ -239,54 +242,27 @@
                      (get attributes "event.name"))
         attributes (cond-> attributes
                      event-name (dissoc "event.name"))]
-    {:logger        (get-logger-name event)
-     :context       context
-     :severity      (and
-                     level
-                     (get levelInt->Severity (.levelInt level) Severity/UNDEFINED_SEVERITY_NUMBER))
-     :severity-text (and level (.levelStr level))
-     :body          (.getFormattedMessage event)
-     :attributes    attributes
-     :exception     (get-exception event)
-     :thread        nil ; thread added as attributes instead
-     :timestamp     (get-timestamp event)
-     :source        (when (.-captureCodeAttributes appender)
-                      (get-source event))
-     :event-name    event-name}))
-
-(defn append
-  "Appends a `ILoggingEvent` by emitting as a log record. If `CljOtelAppender`
-   instances have been initialized, the log record is emitted immediately (but
-   not necessarily exported). Otherwise, the log record is added to a queue of
-   delayed emits."
-  [^CljOtelAppender appender ^ILoggingEvent event]
-  (let [record (->log-record appender event)]
-    (if CljOtelAppender/initialized
-      (log-record/emit record)
-      (let [read-lock (.readLock CljOtelAppender/lock)]
-        (.lock read-lock)
-        (try
-          (if CljOtelAppender/initialized
-            (log-record/emit record)
-            (.offer CljOtelAppender/delayedEmits record))
-          (finally
-            (.unlock read-lock)))))))
+    (log-record/emit {:logger        (get-logger-name event)
+                      :context       context
+                      :severity      (and level
+                                          (get levelInt->Severity
+                                               (.levelInt level)
+                                               Severity/UNDEFINED_SEVERITY_NUMBER))
+                      :severity-text (and level (.levelStr level))
+                      :body          (.getFormattedMessage event)
+                      :attributes    attributes
+                      :exception     (get-exception event)
+                      :thread        nil ; thread added as attributes instead
+                      :timestamp     (get-timestamp event)
+                      :source        (when (.-captureCodeAttributes appender)
+                                       (get-source event))
+                      :event-name    event-name})))
 
 (defn initialize
-  "Initializes all `CljOtelAppender` instances such that they emit records
-   immediately on append. Causes queue of delayed emits to be drained.
+  "Process delayed emits, then ensure future emits are processed immediately.
 
    This fn should be evaluated as soon as the default or global OpenTelemetry
-   instance has been initialized. LoggingEvents appended beforehand are added
-   to a queue of delayed emits."
+   instance has been initialized. Emits issued beforehand are added to a queue
+   of delayed emits."
   []
-  (let [write-lock (.writeLock CljOtelAppender/lock)]
-    (.lock write-lock)
-    (try
-      (set! (. CljOtelAppender -initialized) true)
-      (loop []
-        (when-let [record (.poll CljOtelAppender/delayedEmits)]
-          (log-record/emit record)
-          (recur)))
-      (finally
-        (.unlock write-lock)))))
+  (log-record/initialize))

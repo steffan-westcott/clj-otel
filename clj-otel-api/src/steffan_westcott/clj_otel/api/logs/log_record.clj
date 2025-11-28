@@ -15,7 +15,9 @@
            (io.opentelemetry.api.logs LogRecordBuilder Logger Severity)
            (io.opentelemetry.semconv CodeAttributes ExceptionAttributes)
            (io.opentelemetry.semconv.incubating ThreadIncubatingAttributes)
-           (java.io PrintWriter StringWriter)))
+           (java.io PrintWriter StringWriter)
+           (java.util.concurrent ConcurrentLinkedQueue)
+           (java.util.concurrent.locks ReadWriteLock ReentrantReadWriteLock)))
 
 (def ^:private default-library
   (get-in config [:defaults :instrumentation-library]))
@@ -125,35 +127,10 @@
     (.printStackTrace e (PrintWriter. sw))
     (.toString sw)))
 
-(defn emit
-  "Emits a log record.
-
-   IMPORTANT: This function is for use by logging libraries only. To add
-   logging to an application or general library, use a logging library that has
-   OpenTelemetry log signal support instead e.g. Log4j2, Timbre.
-
-   Takes an option map as below. The defaults for `:context` and `:thread` may
-   be suitable only if `emit` is evaluated synchronously when the log record
-   occurs.
-
-   | key                 | description |
-   |---------------------|-------------|
-   |`:logger`            | Either `io.opentelemetry.api.logs.Logger`, `get-logger` option map or logger name string (default: default logger, as set by [[set-default-logger!]]; if no default logger has been set, one will be set with default config).
-   |`:context`           | Context of the log record. If `nil`, use the root context (default: bound or current context).
-   |`:severity`          | `^io.opentelemetry.api.logs.Severity` or keyword `:traceN`, `:debugN`, `:infoN`, `:warnN`, `:errorN`, `:fatalN` where `N` is nothing or `2`, `3`, `4` (default: nil).
-   |`:severity-text`     | Short name of log record severity (default: nil).
-   |`:body`              | Body of log record; may be string, keyword, boolean, long, double, byte array, map or seqable coll. Body may have nested structure. Keywords and map keys are transformed to strings (default: nil).
-   |`:attributes`        | Map of additional attributes for the log record (default: no attributes).
-   |`:exception`         | Exception to attach to log record. Exception details are merged with the `:attributes` value (default: nil).
-   |`:thread`            | Thread where the log record occurred, or `nil` for no thread. Thread details are merged with the `:attributes` value (default: current thread).
-   |`:timestamp`         | Timestamp for when the log record occurred. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: nil).
-   |`:observed-timestamp`| Timestamp for when the log record was observed by OpenTelemetry; may be later than `:timestamp` for asynchronous processing. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
-   |`:source`            | Map describing source code where log record occurred. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: nil).
-   |`:event-name`        | If not nil, a string event name. An event name identifies this log record as an event with specific structure of `:body` and `:attributes` (default: nil)."
+(defn- emit*
+  "Emits a log record immediately. See [[emit]] for options."
   [{:keys [logger context severity severity-text body attributes ^Throwable exception ^Thread thread
            timestamp observed-timestamp event-name]
-    :or   {context (context/dyn)
-           thread  (Thread/currentThread)}
     {:keys [fn line col file]} :source}]
   (let [logger     (if logger
                      (as-logger logger)
@@ -198,3 +175,71 @@
           event-name         (.setEventName event-name))]
     (.emit builder)))
 
+(defonce ^:private initialized
+  (volatile! false))
+
+(defonce ^:private ^ReadWriteLock lock
+  (ReentrantReadWriteLock.))
+
+(defonce ^:private ^ConcurrentLinkedQueue delayed-emits
+  (ConcurrentLinkedQueue.))
+
+(defn emit
+  "Emits a log record immediately or adds to a queue of delayed emits if not
+   initialized. See also [[initialize]].
+
+   IMPORTANT: This function is for use by logging libraries only. To add
+   logging to an application or general library, use a logging library that has
+   OpenTelemetry log signal support instead e.g. Log4j2, Timbre.
+
+   Takes an option map as below. The defaults for `:context` and `:thread` may
+   be suitable only if `emit` is evaluated synchronously when the log record
+   occurs.
+
+   | key                 | description |
+   |---------------------|-------------|
+   |`:logger`            | Either `io.opentelemetry.api.logs.Logger`, `get-logger` option map or logger name string (default: default logger, as set by [[set-default-logger!]]; if no default logger has been set, one will be set with default config).
+   |`:context`           | Context of the log record. If `nil`, use the root context (default: bound or current context).
+   |`:severity`          | `^io.opentelemetry.api.logs.Severity` or keyword `:traceN`, `:debugN`, `:infoN`, `:warnN`, `:errorN`, `:fatalN` where `N` is nothing or `2`, `3`, `4` (default: nil).
+   |`:severity-text`     | Short name of log record severity (default: nil).
+   |`:body`              | Body of log record; may be string, keyword, boolean, long, double, byte array, map or seqable coll. Body may have nested structure. Keywords and map keys are transformed to strings (default: nil).
+   |`:attributes`        | Map of additional attributes for the log record (default: no attributes).
+   |`:exception`         | Exception to attach to log record. Exception details are merged with the `:attributes` value (default: nil).
+   |`:thread`            | Thread where the log record occurred, or `nil` for no thread. Thread details are merged with the `:attributes` value (default: current thread).
+   |`:timestamp`         | Timestamp for when the log record occurred. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: nil).
+   |`:observed-timestamp`| Timestamp for when the log record was observed by OpenTelemetry; may be later than `:timestamp` for asynchronous processing. Value is either an `Instant` or vector `[amount ^TimeUnit unit]` (default: current timestamp).
+   |`:source`            | Map describing source code where log record occurred. Optional keys are `:fn`, `:line`, `:col` and `:file` (default: nil).
+   |`:event-name`        | If not nil, a string event name. An event name identifies this log record as an event with specific structure of `:body` and `:attributes` (default: nil)."
+  [{:keys [context thread]
+    :or   {context (context/dyn)
+           thread  (Thread/currentThread)}
+    :as   opts}]
+  (let [opts (assoc opts :context context :thread thread)]
+    (if @initialized
+      (emit* opts)
+      (let [read-lock (.readLock lock)]
+        (.lock read-lock)
+        (try
+          (if @initialized
+            (emit* opts)
+            (.offer delayed-emits opts))
+          (finally
+            (.unlock read-lock)))))))
+
+(defn initialize
+  "Process delayed emits, then ensure future emits are processed immediately.
+
+   This fn should be evaluated as soon as the default or global OpenTelemetry
+   instance has been initialized. Emits issued beforehand are added to a queue
+   of delayed emits."
+  []
+  (let [write-lock (.writeLock lock)]
+    (.lock write-lock)
+    (try
+      (vreset! initialized true)
+      (loop []
+        (when-let [record (.poll delayed-emits)]
+          (emit* record)
+          (recur)))
+      (finally
+        (.unlock write-lock)))))

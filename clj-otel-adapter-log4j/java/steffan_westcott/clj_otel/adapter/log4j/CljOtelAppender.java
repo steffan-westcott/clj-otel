@@ -14,9 +14,6 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 /**
@@ -24,21 +21,6 @@ import java.util.stream.Collectors;
  */
 @Plugin(name = "CljOtel", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class CljOtelAppender extends AbstractAppender {
-
-    /**
-     * If true, CljOtelAppender instances are initialized.
-     */
-    public static volatile boolean initialized = false;
-
-    /**
-     * Delayed emits while appenders remain uninitialized.
-     */
-    public static final ConcurrentLinkedQueue<Object> delayedEmits = new ConcurrentLinkedQueue<>();
-
-    /**
-     * Protects access to <code>initialized</code> and <code>delayedEmits</code>.
-     */
-    public static final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * If true, include <code>:source</code> location where log record occurred (default: false)
@@ -111,10 +93,10 @@ public class CljOtelAppender extends AbstractAppender {
     }
 
     /**
-     * Appends a <code>LogEvent</code> by emitting a log record. If `CljOtelAppender`
-     * instances have been initialized, the log record is emitted immediately (but
-     * not necessarily exported). Otherwise, the log record is added to a queue of
-     * delayed emits.
+     * Appends a <code>LogEvent</code> by emitting a log record. If
+     * <code>steffan-westcott.clj-otel.adapter.log4j/initialize</code> has
+     * been evaluated, the log record is emitted immediately (but not necessarily
+     * exported). Otherwise, the log record is added to a queue of delayed emits.
      *
      * @param event LogEvent to append
      */

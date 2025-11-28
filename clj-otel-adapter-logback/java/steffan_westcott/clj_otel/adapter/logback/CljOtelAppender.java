@@ -8,27 +8,9 @@ import clojure.lang.IFn;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
-
-    /**
-     * If true, CljOtelAppender instances are initialized.
-     */
-    public static volatile boolean initialized = false;
-
-    /**
-     * Delayed emits while appenders remain uninitialized.
-     */
-    public static final ConcurrentLinkedQueue<Object> delayedEmits = new ConcurrentLinkedQueue<>();
-
-    /**
-     * Protects access to <code>initialized</code> and <code>delayedEmits</code>.
-     */
-    public static final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * If true, include <code>:source</code> location where log record occurred (default: false)
@@ -95,9 +77,9 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     /**
      * Appends a <code>ILoggingEvent</code> by emitting a log record. If
-     * `CljOtelAppender` instances have been initialized, the log record is emitted
-     * immediately (but not necessarily exported). Otherwise, the log record is added
-     * to a queue of delayed emits.
+     * <code>steffan-westcott.clj-otel.adapter.logback/initialize</code> has
+     * been evaluated, the log record is emitted immediately (but not necessarily
+     * exported). Otherwise, the log record is added to a queue of delayed emits.
      *
      * @param event ILoggingEvent to append
      */
