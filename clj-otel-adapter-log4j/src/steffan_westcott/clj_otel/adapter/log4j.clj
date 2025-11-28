@@ -58,14 +58,12 @@
   (let [trace-id    (get cdata (config-logging/trace-id-key))
         span-id     (get cdata (config-logging/span-id-key))
         trace-flags (get cdata (config-logging/trace-flags-key))]
-    (and trace-id
-         span-id
-         trace-flags
-         (context/assoc-value (context/root)
-                              (Span/wrap (SpanContext/create trace-id
-                                                             span-id
-                                                             (TraceFlags/fromHex trace-flags 0)
-                                                             (TraceState/getDefault)))))))
+    (cond-> (context/root)
+      (and trace-id span-id trace-flags)
+      (context/assoc-value (Span/wrap (SpanContext/create trace-id
+                                                          span-id
+                                                          (TraceFlags/fromHex trace-flags 0)
+                                                          (TraceState/getDefault)))))))
 
 (defn- get-logger-name
   [^LogEvent event]
