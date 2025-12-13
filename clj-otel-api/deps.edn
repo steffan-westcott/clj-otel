@@ -4,7 +4,7 @@
  :deps    {org.clojure/clojure {:mvn/version "1.10.3"}
            camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
            io.opentelemetry/opentelemetry-api {:mvn/version "1.57.0"}
-           io.opentelemetry.instrumentation/opentelemetry-instrumentation-api {:mvn/version "2.22.0"}
+           io.opentelemetry.instrumentation/opentelemetry-instrumentation-api {:mvn/version "2.23.0"}
            io.opentelemetry.semconv/opentelemetry-semconv {:mvn/version "1.37.0"}
            io.opentelemetry.semconv/opentelemetry-semconv-incubating {:mvn/version "1.37.0-alpha"}}
  :aliases {:provided {:extra-deps {org.clojure/core.async {:mvn/version "1.9.829-alpha2"}
