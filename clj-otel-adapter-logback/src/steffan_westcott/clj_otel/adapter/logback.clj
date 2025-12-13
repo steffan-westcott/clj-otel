@@ -228,10 +228,9 @@
            (.-captureLogstashMarkerAttributes appender) (util/into! (logstash-marker-attrs markers))
            (.-captureLoggerContext appender) (util/into! (.getPropertyMap (.getLoggerContextVO
                                                                            event)))
-           (.-captureArguments appender)
-           (assoc! "log.body.template"   (.getMessage event)
-                   "log.body.parameters" (mapv str (.getArgumentArray event)))
-
+           (.-captureTemplate appender) (assoc! "log.body.template" (.getMessage event))
+           (.-captureArguments appender) (assoc! "log.body.parameters"
+                                                 (mapv str (.getArgumentArray event)))
            (and supports-logstash-StructuredArgument?
                 (.-captureLogstashStructuredArguments appender))
            (util/into! (logstash-marker-attrs (.getArgumentArray event)))))

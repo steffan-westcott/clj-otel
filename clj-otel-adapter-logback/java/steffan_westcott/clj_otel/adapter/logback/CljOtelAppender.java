@@ -38,7 +38,12 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     public boolean captureLoggerContext;
 
     /**
-     * If true, include message arguments as attributes (default: false)
+     * If true, include message template as an attribute (default: false)
+     */
+    public boolean captureTemplate;
+
+    /**
+     * If true, include message arguments as an attribute (default: false)
      */
     public boolean captureArguments;
 
@@ -111,6 +116,9 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     public void setCaptureLoggerContext(boolean captureLoggerContext) {
         this.captureLoggerContext = captureLoggerContext;
+    }
+    public void setCaptureTemplate(boolean captureTemplate) {
+        this.captureTemplate = captureTemplate;
     }
 
     public void setCaptureArguments(boolean captureArguments) {
