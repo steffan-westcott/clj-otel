@@ -5,7 +5,7 @@
  :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
 
            ;; Wrapper for Log4j2 with MapMessage support
-           com.github.seancorfield/logging4j2 {:mvn/version "1.0.5"}
+           com.github.seancorfield/logging4j2 {:mvn/version "1.0.6"}
 
            ;; Log4j2 appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../clj-otel-adapter-log4j"}
