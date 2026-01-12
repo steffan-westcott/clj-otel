@@ -5,7 +5,7 @@
  :deps    {org.clojure/clojure {:mvn/version "1.12.4"}
 
            ;; Logback implementation of SLF4J
-           ch.qos.logback/logback-classic {:mvn/version "1.5.23"}
+           ch.qos.logback/logback-classic {:mvn/version "1.5.24"}
 
            ;; Logback appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-logback {:local/root "../../clj-otel-adapter-logback"}
@@ -51,9 +51,9 @@
                                      io.opentelemetry/opentelemetry-exporter-logging          {:mvn/version "1.58.0"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
-           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.77.0"}
-                                     io.grpc/grpc-protobuf     {:mvn/version "1.77.0"}
-                                     io.grpc/grpc-stub         {:mvn/version "1.77.0"}}}
+           :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.78.0"}
+                                     io.grpc/grpc-protobuf     {:mvn/version "1.78.0"}
+                                     io.grpc/grpc-stub         {:mvn/version "1.78.0"}}}
 
            ;; (Re)direct clojure.tools.logging and java.util.logging to SLF4J
            :slf4j      {:jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/slf4j-factory"]}

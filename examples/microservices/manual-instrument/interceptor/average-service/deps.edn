@@ -57,9 +57,9 @@
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
 
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.77.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.77.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.77.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.78.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.78.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.78.0"}
 
           }
 
@@ -68,6 +68,6 @@
                               "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
            :dev   {:extra-paths ["dev"]
-                   :extra-deps  {nrepl/nrepl       {:mvn/version "1.5.1"}
+                   :extra-deps  {nrepl/nrepl       {:mvn/version "1.5.2"}
                                  http-kit/http-kit {:mvn/version "2.8.1"}}
                    :jvm-opts    ["-Dio.pedestal.dev-mode=true"]}}}

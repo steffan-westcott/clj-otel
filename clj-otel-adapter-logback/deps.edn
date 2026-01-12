@@ -5,5 +5,5 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../clj-otel-api"}}
  :aliases {:release  {:override-deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.11"}}}
            :snapshot {:override-deps {com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.11-SNAPSHOT"}}}
-           :provided {:extra-deps {ch.qos.logback/logback-classic {:mvn/version "1.5.23"}
+           :provided {:extra-deps {ch.qos.logback/logback-classic {:mvn/version "1.5.24"}
                                    net.logstash.logback/logstash-logback-encoder {:mvn/version "9.0"}}}}}

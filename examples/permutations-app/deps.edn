@@ -3,10 +3,10 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.12.4"}
-           org.clojure/math.combinatorics {:mvn/version "0.3.0"}
+           org.clojure/math.combinatorics {:mvn/version "0.3.2"}
 
            ;; Logback implementation of SLF4J
-           ch.qos.logback/logback-classic {:mvn/version "1.5.23"}
+           ch.qos.logback/logback-classic {:mvn/version "1.5.24"}
 
            ;; Logback appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-logback {:local/root "../../clj-otel-adapter-logback"}
