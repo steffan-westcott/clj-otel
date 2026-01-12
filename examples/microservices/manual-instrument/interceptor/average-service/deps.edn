@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.4"}
            org.clojure/core.async {:mvn/version "1.9.829-alpha2"}
 
            ;; Application configuration

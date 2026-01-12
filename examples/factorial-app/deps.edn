@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.3"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.4"}
 
            ;; Wrapper for Log4j2 with MapMessage support
            com.github.seancorfield/logging4j2 {:mvn/version "1.0.6"}
