@@ -8,5 +8,5 @@
            io.opentelemetry.semconv/opentelemetry-semconv {:mvn/version "1.37.0"}
            io.opentelemetry.semconv/opentelemetry-semconv-incubating {:mvn/version "1.37.0-alpha"}}
  :aliases {:provided {:extra-deps {org.clojure/core.async {:mvn/version "1.9.829-alpha2"}
-                                   manifold/manifold      {:mvn/version "0.4.4"}
+                                   manifold/manifold      {:mvn/version "0.5.0"}
                                    missionary/missionary  {:mvn/version "b.46"}}}}}

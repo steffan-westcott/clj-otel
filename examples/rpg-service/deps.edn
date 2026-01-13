@@ -23,9 +23,9 @@
            hikari-cp/hikari-cp {:mvn/version "4.0.0"}
 
            ;; Reitit HTTP routing and content handling
-           metosin/reitit-malli {:mvn/version "0.9.2"}
-           metosin/reitit-middleware {:mvn/version "0.9.2"}
-           metosin/reitit-ring {:mvn/version "0.9.2"}
+           metosin/reitit-malli {:mvn/version "0.10.0"}
+           metosin/reitit-middleware {:mvn/version "0.10.0"}
+           metosin/reitit-ring {:mvn/version "0.10.0"}
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../common/system"}
