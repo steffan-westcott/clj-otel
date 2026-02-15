@@ -7,6 +7,7 @@
                                         ValueBoolean
                                         ValueBytes
                                         ValueDouble
+                                        ValueEmpty
                                         ValueLong
                                         ValueString)
            (java.nio ByteBuffer)
@@ -15,14 +16,14 @@
 (defprotocol AsValue
   (wrap ^io.opentelemetry.api.common.Value [x]
    "Returns `io.opentelemetry.api.common.Value` instance containing value `x`,
-    where `x` is a string, keyword, boolean, long, double, byte array, map, or
-    seqable coll. `x` may have nested structure. Keywords and map keys are
+    where `x` is nil or a string, keyword, boolean, long, double, byte array,
+    map, or coll. `x` may have nested structure. Keywords and map keys are
     transformed to strings."))
 
 (extend-protocol AsValue
  nil
    (wrap [_]
-     nil)
+     (io.opentelemetry.api.common.Value/empty))
  io.opentelemetry.api.common.Value
    (wrap [x]
      x)
@@ -31,7 +32,7 @@
      (io.opentelemetry.api.common.Value/of x))
  Keyword
    (wrap [x]
-     (io.opentelemetry.api.common.Value/of (str x)))
+     (io.opentelemetry.api.common.Value/of (name x)))
  Boolean
    (wrap [x]
      (io.opentelemetry.api.common.Value/of x))
@@ -46,7 +47,7 @@
      (io.opentelemetry.api.common.Value/of ^"[Lio.opentelemetry.api.common.KeyValue;"
                                            (into-array KeyValue
                                                        (map (fn [[k v]]
-                                                              (KeyValue/of (str k) (wrap v)))
+                                                              (KeyValue/of (name k) (wrap v)))
                                                             x))))
  Seqable
    (wrap [xs]
@@ -68,6 +69,9 @@
 
 (extend-protocol Value
  nil
+   (unwrap [_]
+     nil)
+ ValueEmpty
    (unwrap [_]
      nil)
  ValueString
@@ -96,4 +100,7 @@
      (persistent! (reduce (fn [m ^KeyValue kv]
                             (assoc! m (.getKey kv) (unwrap (.getValue kv))))
                           (transient {})
-                          (.getValue v)))))
+                          (.getValue v))))
+ Object
+   (unwrap [v]
+     v))

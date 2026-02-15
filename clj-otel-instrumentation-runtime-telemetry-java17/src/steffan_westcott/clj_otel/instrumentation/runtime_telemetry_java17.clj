@@ -29,27 +29,28 @@
    selection of measurements. For a finer level of control, use the option map
    `opts` as follows:
 
-   | key               | description |
-   |-------------------|-------------|
-   |`:jmx`             | If true, include all JMX measurements, otherwise do not include any JMX measurements (default: true)
-   |`:jfr`             | Either a map or boolean value. If a map, the map keys are `JfrFeature` enum values, and the map boolean values determine if the feature should be enabled (true) or disabled (false). If not a map, the value determines if all JFR features should be enabled (true) or disabled (false) (default: See JfrFeature for each JFR feature default)
-   |`:capture-gc-cause`| If true, add garbage collection cause as an attribute to garbage collection metrics (default: false)."
+   | key                          | description |
+   |------------------------------|-------------|
+   |`:jmx`                        | If true, include all JMX measurements, otherwise do not include any JMX measurements (default: true)
+   |`:jfr`                        | Either a map or boolean value. If a map, the map keys are `JfrFeature` enum values, and the map boolean values determine if the feature should be enabled (true) or disabled (false). If not a map, the value determines if all JFR features should be enabled (true) or disabled (false) (default: See JfrFeature for each JFR feature default)
+   |`:capture-gc-cause`           | If true, add garbage collection cause as an attribute to garbage collection metrics (default: false).
+   |`:emit-experimental-telemetry`| If true, emit experimental telemetry (default: false)."
   (^RuntimeMetrics []
    (register! {}))
   (^RuntimeMetrics [opts]
    (register! (otel/get-default-otel!) opts))
   ([open-telemetry
-    {:keys [jmx jfr capture-gc-cause]
-     :or   {jmx true
-            capture-gc-cause false}}]
+    {:keys [jmx jfr capture-gc-cause emit-experimental-telemetry]
+     :or   {jmx true}}]
    (let [builder (cond-> (RuntimeMetrics/builder open-telemetry)
                    (not jmx)        (.disableAllJmx)
                    (some? jfr)      (put-jfr-features jfr)
-                   capture-gc-cause (.captureGcCause))]
+                   capture-gc-cause (.captureGcCause)
+                   emit-experimental-telemetry (.emitExperimentalTelemetry))]
      (.build builder))))
 
 (defn close!
-  "Stops generation of JVM metrics. Takes `runtime-metrics` returned by
+  "Stops generation of JVM metrics. Takes `RuntimeMetrics` returned by
    [[register!]]."
   [^RuntimeMetrics runtime-metrics]
   (.close runtime-metrics))

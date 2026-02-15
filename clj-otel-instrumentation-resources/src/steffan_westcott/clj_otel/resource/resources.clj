@@ -1,6 +1,7 @@
 (ns steffan-westcott.clj-otel.resource.resources
   "Provide `Resource` objects describing the local host and running process."
   (:import (io.opentelemetry.instrumentation.resources ContainerResource
+                                                       HostIdResource
                                                        HostResource
                                                        OsResource
                                                        ProcessResource
@@ -17,6 +18,11 @@
   "Returns a `Resource` with information about the current host."
   ^Resource []
   (HostResource/get))
+
+(defn host-id-resource
+  "Returns a `Resource` with information about the current host ID."
+  ^Resource []
+  (HostIdResource/get))
 
 (defn os-resource
   "Returns a `Resource` with information about the current operating system."

@@ -111,7 +111,11 @@ image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc
 Provides access to `TextMapPropagator` implementations of these protocols:
 
 * https://github.com/opentracing/basictracer-python/blob/master/basictracer/text_propagator.py[OpenTracing Basic Tracers protocol]
++
+WARNING: OpenTracing propagation protocol is deprecated in the OpenTelemetry specification.
 * Jaeger propagation protocol
++
+WARNING: Jaeger propagation protocol is deprecated in the OpenTelemetry specification.
 * https://github.com/openzipkin/b3-propagation[B3 propagation protocol]
 
 === `clj-otel-instrumentation-resources`
@@ -155,6 +159,8 @@ Configuration of span and metrics exporters using OTLP.
 ==== `opentelemetry-exporter-zipkin`
 
 image:https://img.shields.io/badge/maven--central-1.54.1-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-zipkin/1.54.1]
+
+WARNING: Zipkin exporter is deprecated in the OpenTelemetry specification.
 
 Configuration of span exporter to Zipkin.
 

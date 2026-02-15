@@ -1,7 +1,8 @@
 (ns steffan-westcott.clj-otel.api.attributes
   "Conversion functions between maps and
    `io.opentelemetry.api.common.Attributes` objects."
-  (:require [steffan-westcott.clj-otel.util :as util])
+  (:require [steffan-westcott.clj-otel.api.value :as value]
+            [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.api.common AttributeKey AttributeType Attributes AttributesBuilder)))
 
 (def ^:private type->keyfn
@@ -12,7 +13,8 @@
    AttributeType/BOOLEAN_ARRAY #(AttributeKey/booleanArrayKey %)
    AttributeType/LONG_ARRAY    #(AttributeKey/longArrayKey %)
    AttributeType/DOUBLE_ARRAY  #(AttributeKey/doubleArrayKey %)
-   AttributeType/STRING_ARRAY  #(AttributeKey/stringArrayKey %)})
+   AttributeType/STRING_ARRAY  #(AttributeKey/stringArrayKey %)
+   AttributeType/VALUE         #(AttributeKey/valueKey %)})
 
 (def ^:private type->valfn
   {AttributeType/BOOLEAN       boolean
@@ -22,20 +24,24 @@
    AttributeType/BOOLEAN_ARRAY #(mapv boolean %)
    AttributeType/LONG_ARRAY    #(mapv long %)
    AttributeType/DOUBLE_ARRAY  #(mapv double %)
-   AttributeType/STRING_ARRAY  #(mapv str %)})
+   AttributeType/STRING_ARRAY  #(mapv str %)
+   AttributeType/VALUE         value/wrap})
 
 (defn- attribute-type-of
   "Returns `AttributeType` inferred from type of `x`."
   ^AttributeType [x]
-  (cond (map? x)     AttributeType/STRING
-        (coll? x)    (cond (every? boolean? x) AttributeType/BOOLEAN_ARRAY
+  (cond (coll? x)    (cond (map? x)            AttributeType/VALUE
+                           (not (seq x))       AttributeType/VALUE
                            (every? integer? x) AttributeType/LONG_ARRAY
                            (every? number? x)  AttributeType/DOUBLE_ARRAY
-                           :else               AttributeType/STRING_ARRAY)
-        (boolean? x) AttributeType/BOOLEAN
+                           (every? string? x)  AttributeType/STRING_ARRAY
+                           (every? boolean? x) AttributeType/BOOLEAN_ARRAY
+                           :else               AttributeType/VALUE)
         (integer? x) AttributeType/LONG
         (number? x)  AttributeType/DOUBLE
-        :else        AttributeType/STRING))
+        (string? x)  AttributeType/STRING
+        (boolean? x) AttributeType/BOOLEAN
+        :else        AttributeType/VALUE))
 
 (def attribute-name
   "Function that returns a namespace qualified attribute name. May be
@@ -81,14 +87,15 @@
    returned map is a string."
   [^Attributes attributes]
   (into {}
-        (map (fn [[^AttributeKey k v]] [(.getKey k) v]))
+        (map (fn [[^AttributeKey k v]] [(.getKey k) (value/unwrap v)]))
         (.asMap attributes)))
 
 (defn ->attributes
   "Converts an attribute map to a `Attributes` instance. Each map key may be a
-   keyword, string or `AttributeKey` instance. Each map value may be a boolean,
-   long, double, string or a collection of one of those types. Attributes with
-   `nil` values are dropped."
+   keyword or string. A top level key may also be an `AttributeKey` instance.
+   Each map value may be a boolean, long, double, string, keyword, map or coll
+   and may have nested structure. Top level attributes with `nil` values are
+   dropped."
   ^Attributes [m]
   (let [kvs (keep attribute-key-value m)]
     (if (seq kvs)

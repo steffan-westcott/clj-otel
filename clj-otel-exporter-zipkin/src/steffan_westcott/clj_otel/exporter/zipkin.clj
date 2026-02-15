@@ -1,13 +1,17 @@
-(ns steffan-westcott.clj-otel.exporter.zipkin
-  "Span data exporter to Zipkin."
+(ns ^:deprecated steffan-westcott.clj-otel.exporter.zipkin
+  "DEPRECATED - Zipkin exporter is deprecated in the OpenTelemetry
+   specification.
+   Span data exporter to Zipkin."
   (:require [steffan-westcott.clj-otel.sdk.common :as common]
             [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.exporter.zipkin ZipkinSpanExporter)
            (java.util.function Supplier)
            (zipkin2.reporter BytesEncoder BytesMessageSender)))
 
-(defn span-exporter
-  "Returns a span exporter that sends span data using the
+(defn ^:deprecated span-exporter
+  "DEPRECATED - Zipkin exporter is deprecated in the OpenTelemetry
+   specification.
+   Returns a span exporter that sends span data using the
    [`io.zipkin.reporter2:zipkin-reporter`](https://github.com/openzipkin/zipkin-reporter-java)
    library. May take an option map as follows:
 

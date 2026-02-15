@@ -32,10 +32,10 @@
            hato/hato {:mvn/version "1.0.0"}
 
            ;; OpenTelemetry exporter that uses OTLP
-           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.58.0"}
+           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.59.0"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
-           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.23.0-alpha"}
+           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.25.0-alpha"}
 
            ;; Pedestal HTTP server with Jetty integration
            io.pedestal/pedestal.interceptor {:mvn/version "0.8.1"}
