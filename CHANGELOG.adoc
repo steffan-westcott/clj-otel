@@ -26,7 +26,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 === `0.2.11` (in progress)
 
-- [NEW] Module `clj-otel-adapter-log4j`, bound context aware appender and context data provider for Log4j.
+- [NEW] Modules `clj-otel-adapter-log4j` and `clj-otel-adapter-logback`, bound context aware appender and context data provider for Log4j and Logback.
 New examples `permutations-app` and `triangular-app` demonstrate using `clj-otel-adapter-logback` with and without the instrumentation agent.
 - [FIX] Prevent initialization of global OpenTelemetry instance during programmatic build of OTLP exporter.
 - [FIX] Unwrap attribute values returned by `attributes/->map`

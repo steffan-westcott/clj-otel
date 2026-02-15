@@ -370,10 +370,19 @@ OTLP is currently implemented over gRPC and HTTP transports.
 Almost all telemetry backends that integrate with OpenTelemetry accept telemetry data in OTLP format.
 An application or OpenTelemetry Collector exports data to these backends using an OTLP exporter.
 
-== Using the OpenTelemetry SDK
+== Using the OpenTelemetry Java API
 
-The OpenTelemetry SDK implements the creation, sampling, batching and export of telemetry data.
-The SDK acts as an implementation of the OpenTelemetry API.
+OpenTelemetry Java provides a Java API for instrumentation with trace, metrics and logs telemetry signals.
+The API is used by consuming applications in different ways:
+
+* For traces and metrics signals, the API is used by the application directly.
+* For the logs signal, the API is intended for use by logging libraries only and not directly by the application.
+OpenTelemetry Java provides appenders for existing Java logging libraries.
+
+== Using the OpenTelemetry Java SDK
+
+The OpenTelemetry Java SDK implements the creation, sampling, batching and export of telemetry data.
+The SDK acts as an implementation of the OpenTelemetry Java API.
 For an application to export telemetry data, the SDK and its dependencies should be present and configured at runtime.
 
 The SDK and its dependencies are added to an application in one of the following ways:
@@ -428,9 +437,9 @@ If the default `OpenTelemetry` has not been set, the global `OpenTelemetry` is u
 
 IMPORTANT: It is recommended to always set the default `OpenTelemetry` reference when using the autoconfigure SDK extension or programmatically configuring the SDK.
 
-== OpenTelemetry distros
+== OpenTelemetry distributions
 
-An OpenTelemetry distro (or "distribution") supplied by a vendor is a repackaging of reference OpenTelemetry software, customised for ease of use with the vendor's products.
+An OpenTelemetry distribution (or "distro") supplied by a vendor is a repackaging of reference OpenTelemetry software, customised for ease of use with the vendor's products.
 They are not forks in that they do not extend or change the OpenTelemetry API.
 
 It is not a requirement to use a vendor's distro since it should always be possible to use the reference OpenTelemetry software and configure it appropriately.

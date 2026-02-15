@@ -166,7 +166,6 @@
           severity           (.setSeverity (as-severity severity))
           severity-text      (.setSeverityText severity-text)
           body               (.setBody (value/wrap body))
-          ;; TODO: Use ExtendedAttributes when API becomes available
           :always            (.setAllAttributes (attr/->attributes attributes))
           timestamp          (as-> b (let [[amount unit] (util/timestamp timestamp)]
                                        (.setTimestamp b amount unit)))

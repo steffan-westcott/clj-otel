@@ -223,3 +223,17 @@ image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc
 
 Configuration of exporters that log OTLP in JSON format using `java.util.logging`.
 Intended for debugging only.
+
+== Adapter modules
+
+These modules adapt third-party libraries for use with `clj-otel`.
+
+=== `clj-otel-adapter-log4j`
+
+OpenTelemetry appender and context data provider for Log4j.
+Has the same configuration and functionality provided by OpenTelemetry Java instrumentation versions, but is bound context aware.
+
+=== `clj-otel-adapter-logback`
+
+Appenders providing log events and MDC for Logback.
+Has the same configuration and functionality provided by OpenTelemetry Java instrumentation versions, but is bound context aware.

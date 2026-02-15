@@ -62,6 +62,9 @@ Find more in-depth information on `clj-otel` in the xref:_documentation[document
 (instrument/add! set-password-failure-count {:value 1
                                              :attributes {:reason :too-short}})
 ----
+** To add logs telemetry, use a logging library that exports an OpenTelemetry logs signal.
+https://logging.apache.org/log4j/2.x/[Log4J], https://logback.qos.ch/[Logback] and https://github.com/taoensso/timbre[Timbre] are logging libraries that support OpenTelemetry.
+`clj-otel` provides customized Log4J and Logback appenders that support asynchronous applications.
 
 * To export telemetry data (from both manual and automatic instrumentation) from an application at runtime
 ** Download the latest OpenTelemetry instrumentation JAR `opentelemetry-javaagent.jar` from the https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases[OpenTelemetry instrumentation agent releases page].
@@ -88,7 +91,7 @@ docker run --rm                            \
 * To explore application behaviour described by the received telemetry data
 ** Use telemetry backend features such as the Jaeger user interface at http://localhost:16686/search
 
-NOTE: For demonstration configurations that export traces and metrics telemetry, see the xref:_examples[examples].
+NOTE: For demonstration configurations that export traces, metrics and logs telemetry, see the xref:_examples[examples].
 
 [#_documentation]
 == Documentation
@@ -139,7 +142,6 @@ However, problems with instrumentation agent integration have ruled this out.
 == TODO
 
 * For manual instrumentation:
-** Implement bound context aware log appenders for Log4j2 and Logback.
 ** Consider implementing a lightweight logging library that targets solely the Logs API.
 Also, add this logging library as a backend for https://github.com/taoensso/trove[Trove].
 This will enable applications to make full use of the Logs API, which is not possible with other logging libraries.
@@ -202,5 +204,5 @@ Cloud-native software is so complex now, we need all the help we can get to unde
 
 == License
 
-Copyright © 2021-2025 Steffan Westcott +
+Copyright © 2021-2026 Steffan Westcott +
 Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]

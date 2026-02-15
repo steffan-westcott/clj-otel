@@ -429,6 +429,194 @@ The metrics are recorded by instruments which take measurements asynchronously.
 (runtime-telemetry/close! jvm-reg)
 ----
 
+=== Add manual logs instrumentation
+
+NOTE: OpenTelemetry Java does not provide a logging API for use by applications.
+Instead, applications should use an existing Java logging library that emits an OpenTelemetry log signal, usually provided via an appender.
+For Clojure applications, existing options include Log4J, Logback and Timbre.
+
+==== Add Log4J appender and context data
+
+NOTE: OpenTelemetry Java provides Log4J support, but it is not bound context aware.
+Follow the guide below to add a bound context aware Log4J appender and context data to an application.
+
+* Add project dependency :
++
+.`deps.edn`
+[source,clojure]
+----
+{;; ...
+ :deps {com.github.steffan-westcott/clj-otel-adapter-log4j {:mvn/version "0.2.11"}}}
+----
+
+* If you are using the OpenTelemetry instrumentation agent, disable its built-in Log4J support to prevent conflicts :
++
+.`deps.edn`
+[source,clojure]
+----
+{;; ...
+ :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
+                             "-Dotel.instrumentation.log4j-appender.enabled=false"
+                             "-Dotel.instrumentation.log4j-context-data.enabled=false"
+                             ;; ...
+                                ]}}}
+----
+
+* Configure the appender, https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library#settings-for-the-log4j-appender[configuration options] match those for the OpenTelemetry Java Log4J appender :
++
+.`log4j2.properties`
+[source,properties]
+----
+appender.otel.name = OTEL
+appender.otel.type = CljOtel
+appender.otel.captureMapMessageAttributes = true
+# ... more options
+
+rootLogger.appenderRef.otel.ref = OTEL
+----
+
+* In the application startup code, use `steffan-westcott.clj-otel.adapter.log4j/initialize` after the SDK has been initialised, before any log statements:
+
+** For an application run with the OpenTelemetry instrumentation agent
++
+[source,clojure]
+----
+(ns example.app
+  (:require [steffan-westcott.clj-otel.adapter.log4j :as log4j]
+            ;; ...
+             ))
+
+(defn init-otel []
+  (log4j/initialize) ; SDK has already been initialized by agent
+  (log/info "OpenTelemetry initialized"))
+----
+
+** For an application run with the autoconfigure SDK extension
++
+[source,clojure]
+----
+(ns example.app
+  (:require [steffan-westcott.clj-otel.adapter.log4j :as log4j]
+            [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig]
+            ;; ...
+             ))
+
+(defn init-otel []
+  (autoconfig/init-otel-sdk!)
+  (log4j/initialize)
+  (log/info "OpenTelemetry initialized"))
+----
+
+** For an application run with a programmatically configured SDK
++
+[source,clojure]
+----
+(ns example.app
+  (:require [steffan-westcott.clj-otel.adapter.log4j :as log4j]
+            [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]
+            ;; ...
+             ))
+
+(defn init-otel []
+  (sdk/init-otel-sdk! { ... } )
+  (log4j/initialize)
+  (log/info "OpenTelemetry initialized"))
+----
+
+==== Add Logback appender and MDC
+
+NOTE: OpenTelemetry Java provides Logback support, but it is not bound context aware.
+Follow the guide below to add a bound context aware Logback appender and MDC to an application.
+
+* Add project dependency :
++
+.`deps.edn`
+[source,clojure]
+----
+{;; ...
+ :deps {com.github.steffan-westcott/clj-otel-adapter-logback {:mvn/version "0.2.11"}}}
+----
+
+* If you are using the OpenTelemetry instrumentation agent, disable its built-in Logback support to prevent conflicts :
++
+.`deps.edn`
+[source,clojure]
+----
+{;; ...
+ :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
+                             "-Dotel.instrumentation.logback-appender.enabled=false"
+                             "-Dotel.instrumentation.logback-mdc.enabled=false"
+                             ;; ...
+                                ]}}}
+----
+
+* Configure the appender, https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library#settings-for-the-logback-appender[configuration options] match those for the OpenTelemetry Java Logback appender :
++
+.`logback.xml`
+[source,xml]
+----
+<configuration>
+  <appender name="OTEL" class="steffan_westcott.clj_otel.adapter.logback.CljOtelAppender">
+    <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+    <!-- more options ... -->
+  </appender>
+  <appender name="OTEL-MDC" class="steffan_westcott.clj_otel.adapter.logback.CljOtelMdcAppender">
+    <appender-ref ref="OTEL"/>
+  </appender>
+  <root level="INFO">
+    <appender-ref ref="OTEL-MDC"/>
+  </root>
+</configuration>
+----
+
+* In the application startup code, use `steffan-westcott.clj-otel.adapter.logback/initialize` after the SDK has been initialised, before any log statements:
+
+** For an application run with the OpenTelemetry instrumentation agent
++
+[source,clojure]
+----
+(ns example.app
+  (:require [steffan-westcott.clj-otel.adapter.logback :as logback]
+            ;; ...
+             ))
+
+(defn init-otel []
+  (logback/initialize) ; SDK has already been initialized by agent
+  (log/info "OpenTelemetry initialized"))
+----
+
+** For an application run with the autoconfigure SDK extension
++
+[source,clojure]
+----
+(ns example.app
+  (:require [steffan-westcott.clj-otel.adapter.logback :as logback]
+            [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig]
+            ;; ...
+             ))
+
+(defn init-otel []
+  (autoconfig/init-otel-sdk!)
+  (logback/initialize)
+  (log/info "OpenTelemetry initialized"))
+----
+
+** For an application run with a programmatically configured SDK
++
+[source,clojure]
+----
+(ns example.app
+  (:require [steffan-westcott.clj-otel.adapter.logback :as logback]
+            [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk]
+            ;; ...
+             ))
+
+(defn init-otel []
+  (sdk/init-otel-sdk! { ... } )
+  (logback/initialize)
+  (log/info "OpenTelemetry initialized"))
+----
+
 === Work with HTTP client and server spans
 
 The guides in this section describe xref:concepts.adoc#_semantic_conventions[semantic conventions] support for HTTP xref:concepts.adoc#_span_kind[client and server spans].
