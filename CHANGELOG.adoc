@@ -30,6 +30,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 New examples `permutations-app` and `triangular-app` demonstrate using `clj-otel-adapter-logback` with and without the instrumentation agent.
 - [FIX] Prevent initialization of global OpenTelemetry instance during programmatic build of OTLP exporter.
 - [FIX] Unwrap attribute values returned by `attributes/->map`
+- [FIX] Simplified `util/qualified-name` to only convert kebab case strings.
+This ensures `attributes/->attributes` does not add unwanted `_` characters in attribute names with digits such as `"aws.s3.bucket"` and `"k8s.pod.uid"`.
 - [MAINT] For attribute array values, collect eagerly (vector) rather than lazily (list)
 - [MAINT] Deprecated Zipkin exporter, Jaeger and OpenTracing propagation protocol namespaces, to reflect their status in the OpenTelemetry specification.
 These will be removed in a future release.
