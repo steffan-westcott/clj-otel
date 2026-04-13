@@ -5,6 +5,7 @@
             [steffan-westcott.clj-otel.util :as util])
   (:import
     (clojure.lang Fn)
+    (io.opentelemetry.api.metrics MeterProvider)
     (java.util Map)
     (java.util.function Supplier)
     (io.opentelemetry.sdk.trace SdkTracerProvider SdkTracerProviderBuilder SpanLimits SpanProcessor)
@@ -83,14 +84,14 @@
     (.setSpanLimits builder ^Supplier (as-SpanLimits-Supplier span-limits))))
 
 (defprotocol ^:private AsSpanProcessor
-  (as-SpanProcessor ^SpanProcessor [span-processor meter-provider]))
+  (as-SpanProcessor ^SpanProcessor [span-processor meter-provider internal-telemetry-version]))
 
 (extend-protocol AsSpanProcessor
  SpanProcessor
-   (as-SpanProcessor [span-processor _]
+   (as-SpanProcessor [span-processor _ _]
      span-processor)
  Map
-   (as-SpanProcessor [m meter-provider]
+   (as-SpanProcessor [m ^MeterProvider meter-provider internal-telemetry-version]
      (let [{:keys [^Iterable exporters export-unsampled-spans? batch? schedule-delay
                    exporter-timeout max-queue-size max-export-batch-size]
             :or   {batch? true}}
@@ -106,7 +107,9 @@
                  exporter-timeout      (.setExporterTimeout (util/duration exporter-timeout))
                  max-queue-size        (.setMaxQueueSize max-queue-size)
                  max-export-batch-size (.setMaxExportBatchSize max-export-batch-size)
-                 meter-provider        (.setMeterProvider meter-provider))]
+                 meter-provider        (.setMeterProvider meter-provider)
+                 internal-telemetry-version (.setInternalTelemetryVersion
+                                             internal-telemetry-version))]
            (.build builder))
          (let [^SimpleSpanProcessorBuilder builder
                (cond-> (SimpleSpanProcessor/builder composite-exporter)
@@ -115,8 +118,9 @@
            (.build builder))))))
 
 (defn- add-span-processors
-  ^SdkTracerProviderBuilder [builder span-processors meter-provider]
-  (reduce #(.addSpanProcessor ^SdkTracerProviderBuilder %1 (as-SpanProcessor %2 meter-provider))
+  ^SdkTracerProviderBuilder [builder span-processors meter-provider internal-telemetry-version]
+  (reduce #(.addSpanProcessor ^SdkTracerProviderBuilder %1
+                              (as-SpanProcessor %2 meter-provider internal-telemetry-version))
           builder
           span-processors))
 
@@ -124,12 +128,15 @@
   "Internal function that returns a `SdkTracerProvider`.
    See namespace `steffan-westcott.clj-otel.sdk.otel-sdk`"
   ^SdkTracerProvider
-  [{:keys [span-processors span-limits sampler resource id-generator clock meter-provider]}]
-  (let [builder
-        (cond-> (add-span-processors (SdkTracerProvider/builder) span-processors meter-provider)
-          span-limits  (set-span-limits span-limits)
-          sampler      (.setSampler (as-Sampler sampler))
-          resource     (.setResource (res/as-Resource resource))
-          id-generator (.setIdGenerator id-generator)
-          clock        (.setClock clock))]
+  [{:keys [span-processors span-limits sampler resource id-generator clock meter-provider
+           internal-telemetry-version]}]
+  (let [builder (cond-> (add-span-processors (SdkTracerProvider/builder)
+                                             span-processors
+                                             meter-provider
+                                             internal-telemetry-version)
+                  span-limits  (set-span-limits span-limits)
+                  sampler      (.setSampler (as-Sampler sampler))
+                  resource     (.setResource (res/as-Resource resource))
+                  id-generator (.setIdGenerator id-generator)
+                  clock        (.setClock clock))]
     (.build builder)))

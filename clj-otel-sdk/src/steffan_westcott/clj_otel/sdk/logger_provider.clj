@@ -4,6 +4,7 @@
   (:require [steffan-westcott.clj-otel.sdk.resources :as res]
             [steffan-westcott.clj-otel.util :as util])
   (:import (clojure.lang IFn)
+           (io.opentelemetry.api.metrics MeterProvider)
            (io.opentelemetry.sdk.logs LogLimits
                                       LogRecordProcessor
                                       SdkLoggerProvider
@@ -38,14 +39,15 @@
      (util/supplier #(log-limits (f)))))
 
 (defprotocol ^:private AsLogRecordProcessor
-  (as-LogRecordProcessor ^LogRecordProcessor [log-processor meter-provider]))
+  (as-LogRecordProcessor ^LogRecordProcessor
+                         [log-processor meter-provider internal-telemetry-version]))
 
 (extend-protocol AsLogRecordProcessor
  LogRecordProcessor
-   (as-LogRecordProcessor [log-record-processor _]
+   (as-LogRecordProcessor [log-record-processor _ _]
      log-record-processor)
  Map
-   (as-LogRecordProcessor [m meter-provider]
+   (as-LogRecordProcessor [m ^MeterProvider meter-provider internal-telemetry-version]
      (let [{:keys [^Iterable exporters batch? schedule-delay exporter-timeout max-queue-size
                    max-export-batch-size]
             :or   {batch? true}}
@@ -59,14 +61,18 @@
                                                                      exporter-timeout))
                          max-queue-size        (.setMaxQueueSize max-queue-size)
                          max-export-batch-size (.setMaxExportBatchSize max-export-batch-size)
-                         meter-provider        (.setMeterProvider meter-provider))]
+                         meter-provider        (.setMeterProvider meter-provider)
+                         internal-telemetry-version (.setInternalTelemetryVersion
+                                                     internal-telemetry-version))]
            (.build builder))
          (SimpleLogRecordProcessor/create composite-exporter)))))
 
 (defn- add-log-processors
-  ^SdkLoggerProviderBuilder [builder log-record-processors meter-provider]
-  (reduce #(.addLogRecordProcessor ^SdkLoggerProviderBuilder %1
-                                   (as-LogRecordProcessor %2 meter-provider))
+  ^SdkLoggerProviderBuilder
+  [builder log-record-processors meter-provider internal-telemetry-version]
+  (reduce #(.addLogRecordProcessor
+            ^SdkLoggerProviderBuilder %1
+            (as-LogRecordProcessor %2 meter-provider internal-telemetry-version))
           builder
           log-record-processors))
 
@@ -74,10 +80,12 @@
   "Internal function that returns a `SdkLoggerProvider`.
    See namespace `steffan-westcott.clj-otel.sdk.otel-sdk`"
   ^SdkLoggerProvider
-  [{:keys [log-record-processors log-limits resource clock meter-provider]}]
+  [{:keys [log-record-processors log-limits resource clock meter-provider
+           internal-telemetry-version]}]
   (let [builder (cond-> (add-log-processors (SdkLoggerProvider/builder)
                                             log-record-processors
-                                            meter-provider)
+                                            meter-provider
+                                            internal-telemetry-version)
                   log-limits (.setLogLimits (as-LogLimitsSupplier log-limits))
                   resource   (.setResource (res/as-Resource resource))
                   clock      (.setClock clock))]

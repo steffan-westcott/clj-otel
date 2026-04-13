@@ -3,8 +3,7 @@
             [steffan-westcott.clj-otel.adapter.log4j :as log4j]
             [steffan-westcott.clj-otel.api.metrics.instrument :as instrument]
             [steffan-westcott.clj-otel.api.trace.span :as span]
-            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java8 :as
-             runtime-telemetry]
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry :as runtime-telemetry]
             [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig])
   (:gen-class))
 
@@ -44,7 +43,7 @@
    and initializes Log4j `CljOtelAppender` instances."
   []
   (autoconfig/init-otel-sdk!)
-  (runtime-telemetry/register!)
+  (runtime-telemetry/create!)
   (log4j/initialize)
   (log/info "OpenTelemetry initialized")
   :initialized)

@@ -28,6 +28,7 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 - [NEW] Modules `clj-otel-adapter-log4j` and `clj-otel-adapter-logback`, bound context aware appender and context data provider for Log4j and Logback.
 New examples `permutations-app` and `triangular-app` demonstrate using `clj-otel-adapter-logback` with and without the instrumentation agent.
+- [NEW] Module `clj-otel-instrumentation-runtime-telemetry`, replaces deprecated modules `clj-otel-instrumentation-runtime-telemetry-java8` and `clj-otel-instrumentation-runtime-telemetry-java17`
 - [FIX] Prevent initialization of global OpenTelemetry instance during programmatic build of OTLP exporter.
 - [FIX] Unwrap attribute values returned by `attributes/->map`
 - [FIX] Simplified `util/qualified-name` to only convert kebab case strings.
@@ -35,9 +36,9 @@ This ensures `attributes/->attributes` does not add unwanted `_` characters in a
 - [MAINT] For attribute array values, collect eagerly (vector) rather than lazily (list)
 - [MAINT] Deprecated Zipkin exporter, Jaeger and OpenTracing propagation protocol namespaces, to reflect their status in the OpenTelemetry specification.
 These will be removed in a future release.
-- [MAINT] Deprecated individual JVM metrics observers in favour of general `RuntimeMetrics` in `clj-otel-instrumentation-runtime-telemetry-java*` modules.
 - Bump deps
-* [MAINT] OpenTelemetry `1.59.0`, semconv `1.39.0`, instrumentation `2.25.0`
+* [MAINT] OpenTelemetry `1.60.1`, semconv `1.40.0`, instrumentation `2.26.1`
+** Added option `:record-min-max` to histograms when using `clj-otel-sdk`
 
 === `0.2.10` (2025-10-11)
 

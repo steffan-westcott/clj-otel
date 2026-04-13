@@ -1,5 +1,6 @@
-(ns steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17
-  "Functions for registering measurements about the JVM runtime on Java 17+."
+(ns ^:deprecated steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17
+  "DEPRECATED - Use module clj-otel-instrumentation-runtime-telemetry instead.
+   Functions for registering measurements about the JVM runtime on Java 17+."
   (:require [steffan-westcott.clj-otel.api.otel :as otel])
   (:import (io.opentelemetry.instrumentation.runtimemetrics.java17 RuntimeMetrics
                                                                    RuntimeMetricsBuilder)))
@@ -17,8 +18,9 @@
       (.enableAllFeatures builder)
       (.disableAllFeatures builder))))
 
-(defn register!
-  "Registers measurements that generate all JVM runtime metrics, using some
+(defn ^:deprecated register!
+  "DEPRECATED - Use module clj-otel-instrumentation-runtime-telemetry instead.
+   Registers measurements that generate all JVM runtime metrics, using some
    combination of JMX and JFR, and returns a `RuntimeMetrics` instance that may
    be used to stop generation (see [[close!]]). `open-telemetry` is an
    `OpenTelemetry` instance where to register the metrics. See
@@ -49,8 +51,9 @@
                    emit-experimental-telemetry (.emitExperimentalTelemetry))]
      (.build builder))))
 
-(defn close!
-  "Stops generation of JVM metrics. Takes `RuntimeMetrics` returned by
+(defn ^:deprecated close!
+  "DEPRECATED - Use module clj-otel-instrumentation-runtime-telemetry instead.
+   Stops generation of JVM metrics. Takes `RuntimeMetrics` returned by
    [[register!]]."
   [^RuntimeMetrics runtime-metrics]
   (.close runtime-metrics))

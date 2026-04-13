@@ -23,7 +23,7 @@ services:
       - ../../../../clj-otel-adapter-log4j:/app/clj-otel-adapter-log4j:ro
       - ../../../../clj-otel-api:/app/clj-otel-api:ro
       - ../../../../clj-otel-sdk-extension-autoconfigure:/app/clj-otel-sdk-extension-autoconfigure:ro
-      - ../../../../clj-otel-instrumentation-runtime-telemetry-java17:/app/clj-otel-instrumentation-runtime-telemetry-java17:ro
+      - ../../../../clj-otel-instrumentation-runtime-telemetry:/app/clj-otel-instrumentation-runtime-telemetry:ro
       - ../../../common:/app/examples/common:ro
       - ./random-word-service/deps.edn:/app/examples/microservices/manual-instrument/middleware/random-word-service/deps.edn:ro
       - ./random-word-service/dev:/app/examples/microservices/manual-instrument/middleware/random-word-service/dev:ro
@@ -61,7 +61,7 @@ services:
       - ../../../../clj-otel-adapter-log4j:/app/clj-otel-adapter-log4j:ro
       - ../../../../clj-otel-api:/app/clj-otel-api:ro
       - ../../../../clj-otel-sdk-extension-autoconfigure:/app/clj-otel-sdk-extension-autoconfigure:ro
-      - ../../../../clj-otel-instrumentation-runtime-telemetry-java17:/app/clj-otel-instrumentation-runtime-telemetry-java17:ro
+      - ../../../../clj-otel-instrumentation-runtime-telemetry:/app/clj-otel-instrumentation-runtime-telemetry:ro
       - ../../../common:/app/examples/common:ro
       - ./puzzle-service/deps.edn:/app/examples/microservices/manual-instrument/middleware/puzzle-service/deps.edn:ro
       - ./puzzle-service/dev:/app/examples/microservices/manual-instrument/middleware/puzzle-service/dev:ro

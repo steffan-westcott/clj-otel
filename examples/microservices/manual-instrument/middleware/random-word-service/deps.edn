@@ -22,18 +22,18 @@
            {:local/root "../../../../../clj-otel-sdk-extension-autoconfigure"}
 
            ;; Clojure wrapper of JVM metrics instrumentation
-           com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17
-           {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry-java17"}
+           com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry
+           {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry"}
 
            ;; Ring-Jetty web server integration
            info.sunng/ring-jetty9-adapter {:mvn/version "0.39.1"}
            info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.3"}
 
            ;; OpenTelemetry exporter that uses OTLP
-           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.59.0"}
+           io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.60.1"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
-           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.25.0-alpha"}
+           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.26.1-alpha"}
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}

@@ -14,8 +14,8 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
 
            ;; Clojure wrapper of JVM metrics instrumentation
-           com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8
-           {:local/root "../../clj-otel-instrumentation-runtime-telemetry-java8"}
+           com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry
+           {:local/root "../../clj-otel-instrumentation-runtime-telemetry"}
 
            ;; Clojure wrapper of autoconfigure OpenTelemetry SDK extension
            com.github.steffan-westcott/clj-otel-sdk-extension-autoconfigure
@@ -36,16 +36,16 @@
                                      "-Dotel.logs.exporter=console"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
-                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.25.0-alpha"}
+                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.26.1-alpha"}
 
                                      ;; Enable export of telemetry using OpenTelemetry Protocol (OTLP)
-                                     io.opentelemetry/opentelemetry-exporter-otlp             {:mvn/version "1.59.0"}
+                                     io.opentelemetry/opentelemetry-exporter-otlp             {:mvn/version "1.60.1"}
 
                                      ;; Enable export of metrics to Prometheus via HTTP server for scraping
-                                     io.opentelemetry/opentelemetry-exporter-prometheus       {:mvn/version "1.59.0-alpha"}
+                                     io.opentelemetry/opentelemetry-exporter-prometheus       {:mvn/version "1.60.1-alpha"}
 
                                      ;; Enable export of telemetry debugging to console - Could remove this if unused
-                                     io.opentelemetry/opentelemetry-exporter-logging          {:mvn/version "1.59.0"}}}
+                                     io.opentelemetry/opentelemetry-exporter-logging          {:mvn/version "1.60.1"}}}
 
            ;; Include this alias for the OTLP exporter gRPC implementation to use Netty transport instead of default OkHttp
            :grpc-netty {:extra-deps {io.grpc/grpc-netty-shaded {:mvn/version "1.78.0"}

@@ -1,6 +1,7 @@
 (ns steffan-westcott.clj-otel.sdk.otel-sdk
   "Programmatic configuration of the OpenTelemetry SDK."
   (:require [steffan-westcott.clj-otel.api.otel :as otel]
+            [steffan-westcott.clj-otel.sdk.common :as common]
             [steffan-westcott.clj-otel.sdk.logger-provider :as logger]
             [steffan-westcott.clj-otel.sdk.meter-provider :as meter]
             [steffan-westcott.clj-otel.sdk.propagators :as propagators]
@@ -165,13 +166,15 @@
    | key                | description |
    |--------------------|-------------|
    |`:bucket-boundaries`| Ordered collection of inclusive upper bounds of histogram buckets (default: implementation defined default bucket boundaries).
+   |`:record-min-max`   | If true, min and max values should be recorded (default: true).
 
    `:base-2-exponential-bucket-histogram` option map
 
    | key                | description |
    |--------------------|-------------|
-   |`:max-buckets`      | Maximum number of positive and negative buckets (default: implementation defined)
-   |`:max-scale`        | Maximum and initial scale (required if `:max-buckets` is specified).
+   |`:max-buckets`      | Maximum number of positive and negative buckets, does not include zero bucket; must be (<= 2 n) (default: 160).
+   |`:max-scale`        | Maximum and initial scale; must be (<= -10 n 20) (default: 20).
+   |`:record-min-max`   | If true, min and max values should be recorded (default: true).
 
 
    ====================================================
@@ -204,25 +207,33 @@
   ^OpenTelemetrySdk
   [service-name
    {:keys [set-as-default set-as-global register-shutdown-hook resources clock propagators
-           tracer-provider meter-provider logger-provider]
+           internal-telemetry-version tracer-provider meter-provider logger-provider]
     :or   {set-as-default         true
            set-as-global          false
            register-shutdown-hook true
            propagators            (propagators/default)}}]
   (let [resource       (res/merge-resources-with-default service-name resources)
+        internal-telemetry-version (common/keyword->InternalTelemetryVersion
+                                    internal-telemetry-version)
         meter-provider (when meter-provider
                          (meter/sdk-meter-provider (cond-> (assoc meter-provider :resource resource)
                                                      clock (assoc :clock clock))))
-        tracer-provider (when tracer-provider
-                          (tracer/sdk-tracer-provider (cond-> (assoc tracer-provider
-                                                                     :resource       resource
-                                                                     :meter-provider meter-provider)
-                                                        clock (assoc :clock clock))))
-        logger-provider (when logger-provider
-                          (logger/sdk-logger-provider (cond-> (assoc logger-provider
-                                                                     :resource       resource
-                                                                     :meter-provider meter-provider)
-                                                        clock (assoc :clock clock))))
+        tracer-provider
+        (when tracer-provider
+          (tracer/sdk-tracer-provider
+           (cond-> (assoc tracer-provider :resource resource :meter-provider meter-provider)
+             clock (assoc :clock clock)
+             internal-telemetry-version (assoc :internal-telemetry-version
+                                               internal-telemetry-version))))
+
+        logger-provider
+        (when logger-provider
+          (logger/sdk-logger-provider
+           (cond-> (assoc logger-provider :resource resource :meter-provider meter-provider)
+             clock (assoc :clock clock)
+             internal-telemetry-version (assoc :internal-telemetry-version
+                                               internal-telemetry-version))))
+
         builder        (doto (OpenTelemetrySdk/builder)
                          (.setPropagators (propagators/context-propagators propagators))
                          (.setMeterProvider meter-provider)

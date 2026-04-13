@@ -21,7 +21,7 @@ services:
       - ../../../../clj-otel-adapter-log4j:/app/clj-otel-adapter-log4j:ro
       - ../../../../clj-otel-api:/app/clj-otel-api:ro
       - ../../../../clj-otel-sdk-extension-autoconfigure:/app/clj-otel-sdk-extension-autoconfigure:ro
-      - ../../../../clj-otel-instrumentation-runtime-telemetry-java17:/app/clj-otel-instrumentation-runtime-telemetry-java17:ro
+      - ../../../../clj-otel-instrumentation-runtime-telemetry:/app/clj-otel-instrumentation-runtime-telemetry:ro
       - ../../../common:/app/examples/common:ro
       - ./sum-service/deps.edn:/app/examples/microservices/manual-instrument/interceptor/sum-service/deps.edn:ro
       - ./sum-service/dev:/app/examples/microservices/manual-instrument/interceptor/sum-service/dev:ro
@@ -59,7 +59,7 @@ services:
       - ../../../../clj-otel-adapter-log4j:/app/clj-otel-adapter-log4j:ro
       - ../../../../clj-otel-api:/app/clj-otel-api:ro
       - ../../../../clj-otel-sdk-extension-autoconfigure:/app/clj-otel-sdk-extension-autoconfigure:ro
-      - ../../../../clj-otel-instrumentation-runtime-telemetry-java17:/app/clj-otel-instrumentation-runtime-telemetry-java17:ro
+      - ../../../../clj-otel-instrumentation-runtime-telemetry:/app/clj-otel-instrumentation-runtime-telemetry:ro
       - ../../../common:/app/examples/common:ro
       - ./average-service/deps.edn:/app/examples/microservices/manual-instrument/interceptor/average-service/deps.edn:ro
       - ./average-service/dev:/app/examples/microservices/manual-instrument/interceptor/average-service/dev:ro

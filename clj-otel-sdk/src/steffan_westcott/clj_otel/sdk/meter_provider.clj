@@ -4,6 +4,8 @@
    the function `periodic-metric-reader`."
   (:require [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.sdk.metrics Aggregation
+                                         Base2ExponentialHistogramOptions
+                                         ExplicitBucketHistogramOptions
                                          InstrumentSelector
                                          InstrumentType
                                          SdkMeterProvider
@@ -40,16 +42,22 @@
       :sum        (Aggregation/sum)
       :last-value (Aggregation/lastValue)
 
-      :explicit-bucket-histogram (let [{:keys [bucket-boundaries]} opts]
-                                   (if bucket-boundaries
-                                     (Aggregation/explicitBucketHistogram (vec bucket-boundaries))
-                                     (Aggregation/explicitBucketHistogram)))
+      :explicit-bucket-histogram
+      (let [{:keys [bucket-boundaries record-min-max]} opts
+            builder (cond-> (ExplicitBucketHistogramOptions/builder)
+                      (some? record-min-max) (.setRecordMinMax record-min-max)
+                      bucket-boundaries      (.setBucketBoundaries bucket-boundaries))
+            ^ExplicitBucketHistogramOptions histogram-opts (.build builder)]
+        (Aggregation/explicitBucketHistogram histogram-opts))
 
       :base-2-exponential-bucket-histogram
-      (let [{:keys [max-buckets max-scale]} opts]
-        (if (and max-buckets max-scale)
-          (Aggregation/base2ExponentialBucketHistogram max-buckets max-scale)
-          (Aggregation/base2ExponentialBucketHistogram)))
+      (let [{:keys [max-buckets max-scale record-min-max]} opts
+            builder (cond-> (Base2ExponentialHistogramOptions/builder)
+                      (some? record-min-max) (.setRecordMinMax record-min-max)
+                      max-buckets (.setMaxBuckets max-buckets)
+                      max-scale   (.setMaxScale max-scale))
+            ^Base2ExponentialHistogramOptions histogram-opts (.build builder)]
+        (Aggregation/base2ExponentialBucketHistogram histogram-opts))
 
       (Aggregation/defaultAggregation))))
 

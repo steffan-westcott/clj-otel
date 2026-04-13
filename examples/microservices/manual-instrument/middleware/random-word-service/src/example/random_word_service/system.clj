@@ -8,7 +8,7 @@
             [example.random-word-service.logging :as logging]
             [example.random-word-service.metrics :as metrics]
             [example.random-word-service.server :as server]
-            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry-java17 :as runtime-telemetry]
+            [steffan-westcott.clj-otel.instrumentation.runtime-telemetry :as runtime-telemetry]
             [steffan-westcott.clj-otel.sdk.autoconfigure :as autoconfig]))
 
 
@@ -23,7 +23,7 @@
   [f]
   (with-open [config          (closeable (env/set-config!))
               otel-sdk        (closeable (autoconfig/init-otel-sdk!)) ; registers its own shutdown hook for closing
-              runtime-metrics (runtime-telemetry/register!)
+              runtime-metrics (runtime-telemetry/create!)
               _logging        (closeable (logging/initialize))
               instruments     (closeable (metrics/instruments))
               components      (closeable {:instruments @instruments})
