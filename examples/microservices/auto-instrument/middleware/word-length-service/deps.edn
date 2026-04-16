@@ -18,8 +18,8 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
            ;; Ring-Jetty web server integration
-           info.sunng/ring-jetty9-adapter {:mvn/version "0.39.1"}
-           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.3"}
+           info.sunng/ring-jetty9-adapter {:mvn/version "0.39.3"}
+           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.5"}
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "0.3.13"}

@@ -26,8 +26,8 @@
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry"}
 
            ;; Ring-Jetty web server integration
-           info.sunng/ring-jetty9-adapter {:mvn/version "0.39.1"}
-           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.3"}
+           info.sunng/ring-jetty9-adapter {:mvn/version "0.39.3"}
+           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.5"}
 
            ;; OpenTelemetry exporter that uses OTLP
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.61.0"}
