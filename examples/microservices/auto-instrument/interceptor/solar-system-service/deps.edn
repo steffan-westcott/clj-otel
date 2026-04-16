@@ -12,7 +12,7 @@
            cc.qbits/auspex {:mvn/version "1.0.3"}
 
            ;; JSON parsing
-           cheshire/cheshire {:mvn/version "6.1.0"}
+           cheshire/cheshire {:mvn/version "6.2.0"}
 
            ;; Log4j2 appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../../../../clj-otel-adapter-log4j"}

@@ -12,11 +12,11 @@
            cc.qbits/auspex {:mvn/version "1.0.3"}
 
            ;; Cheshire JSON processing
-           cheshire/cheshire {:mvn/version "6.1.0"}
+           cheshire/cheshire {:mvn/version "6.2.0"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.20.1"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.20.1"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.21.2"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.21.2"}
 
            ;; Log4j2 appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../../../../clj-otel-adapter-log4j"}
@@ -35,12 +35,12 @@
            info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.5"}
 
            ;; Reitit HTTP router
-           metosin/jsonista {:mvn/version "0.3.13"}
-           metosin/malli {:mvn/version "0.20.0"}
+           metosin/jsonista {:mvn/version "1.0.0"}
+           metosin/malli {:mvn/version "0.20.1"}
            metosin/muuntaja {:mvn/version "0.6.11"}
-           metosin/reitit-malli {:mvn/version "0.10.0"}
-           metosin/reitit-middleware {:mvn/version "0.10.0"}
-           metosin/reitit-ring {:mvn/version "0.10.0"}
+           metosin/reitit-malli {:mvn/version "0.10.1"}
+           metosin/reitit-middleware {:mvn/version "0.10.1"}
+           metosin/reitit-ring {:mvn/version "0.10.1"}
 
            ;; Functional effects and streaming
            missionary/missionary {:mvn/version "b.47"}
