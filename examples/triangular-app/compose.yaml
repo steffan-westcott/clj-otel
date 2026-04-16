@@ -2,14 +2,14 @@ services:
 
   # Jaeger
   jaeger:
-    image: jaegertracing/jaeger:2.11.0
+    image: jaegertracing/jaeger:2.17.0
     ports:
       - "4317:4317"    # OTLP gRPC receiver
       - "16686:16686"  # Jaeger web interface
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:v3.7.3
+    image: prom/prometheus:v3.11.2
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:

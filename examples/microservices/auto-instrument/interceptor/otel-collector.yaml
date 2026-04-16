@@ -61,13 +61,13 @@ exporters:
   debug:
 
   # Exports to Loki using OTLP over HTTP
-  otlphttp/loki:
+  otlp_http/loki:
     endpoint: "http://loki:3100/otlp"
     tls:
       insecure: true
 
   # Exports to Tempo using OTLP over gRPC
-  otlp/tempo:
+  otlp_grpc/tempo:
     endpoint: "tempo:4317"
     tls:
       insecure: true
@@ -101,13 +101,13 @@ service:
     logs:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ debug, otlphttp/loki ]
+      exporters: [ debug, otlp_http/loki ]
 
     # Enable pipeline of components for traces
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ debug, otlp/tempo, spanmetrics, servicegraph ]
+      exporters: [ debug, otlp_grpc/tempo, spanmetrics, servicegraph ]
 
     # Enable pipeline of components for metrics
     metrics:

@@ -32,7 +32,7 @@ exporters:
   debug:
 
   # Exports to Jaeger using OTLP over gRPC
-  otlp/jaeger:
+  otlp_grpc/jaeger:
     endpoint: "jaeger:4317"
     tls:
       insecure: true
@@ -49,4 +49,4 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ debug, otlp/jaeger ]
+      exporters: [ debug, otlp_grpc/jaeger ]

@@ -1115,7 +1115,7 @@ processors:
   batch:
 
 exporters:
-  otlp:
+  otlp_grpc:
     endpoint: "jaeger:4317"
     tls:
       insecure: true
@@ -1125,5 +1125,5 @@ service:
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ otlp ]
+      exporters: [ otlp_grpc ]
 ----
