@@ -31,7 +31,7 @@
            org.example/common.system {:local/root "../common/system"}
 
            ;; PostgreSQL JDBC driver
-           org.postgresql/postgresql {:mvn/version "42.7.8"}
+           org.postgresql/postgresql {:mvn/version "42.7.10"}
 
            ;; Ring-Jetty web server integration
            ring/ring-jetty-adapter {:mvn/version "1.15.4"}}

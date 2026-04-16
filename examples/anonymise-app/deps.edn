@@ -3,14 +3,14 @@
 {:paths   ["src"]
 
  :deps    {org.clojure/clojure       {:mvn/version "1.12.4"}
-           org.clojure/core.async    {:mvn/version "1.9.829-alpha2"}
+           org.clojure/core.async    {:mvn/version "1.10.870-alpha2"}
            cc.qbits/auspex           {:mvn/version "1.0.3"}
            com.github.igrishaev/whew {:mvn/version "0.1.1"}
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
            com.xadecimal/async-style {:mvn/version "0.1.0"}
            funcool/promesa           {:mvn/version "11.0.678"}
            manifold/manifold         {:mvn/version "0.5.0"}
-           missionary/missionary     {:mvn/version "b.46"}}
+           missionary/missionary     {:mvn/version "b.47"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:../opentelemetry-javaagent.jar"
                              "-Dotel.service.name=anonymise-app"
