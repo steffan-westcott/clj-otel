@@ -154,7 +154,7 @@ services:
 
   # Grafana
   grafana:
-    image: grafana/grafana:13.0.1
+    image: grafana/grafana:12.3.6
     volumes:
       - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/grafana-datasources.yaml:ro
       - ./grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/grafana-dashboards.yaml:ro

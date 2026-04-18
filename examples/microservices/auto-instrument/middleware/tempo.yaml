@@ -14,8 +14,6 @@ ingester:
     ring:
       replication_factor: 1
 
-metrics_generator:
-
 server:
   http_listen_port: 3200
   log_level: info
