@@ -33,7 +33,7 @@
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.61.0"}
 
            ;; Automatically adds OpenTelemetry resources to exported telemetry
-           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.26.1-alpha"}
+           io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.27.0-alpha"}
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "1.0.0"}

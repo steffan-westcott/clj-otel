@@ -36,7 +36,7 @@
                                      "-Dotel.logs.exporter=console"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
-                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.26.1-alpha"}
+                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.27.0-alpha"}
 
                                      ;; Enable export of telemetry using OpenTelemetry Protocol (OTLP)
                                      io.opentelemetry/opentelemetry-exporter-otlp             {:mvn/version "1.61.0"}
