@@ -14,6 +14,10 @@ ingester:
     ring:
       replication_factor: 1
 
+metrics_generator:
+  storage:
+    path: /var/tempo/metrics-generator/wal
+
 server:
   http_listen_port: 3200
   log_level: info
