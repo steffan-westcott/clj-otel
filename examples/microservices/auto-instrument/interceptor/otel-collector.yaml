@@ -33,7 +33,6 @@ connectors:
 
   # Add span metrics, with HTTP response status code as an attribute when present on the span
   spanmetrics:
-    namespace: traces.spanmetrics
     metrics_flush_interval: 15s
     dimensions:
       - name: http.response.status_code
