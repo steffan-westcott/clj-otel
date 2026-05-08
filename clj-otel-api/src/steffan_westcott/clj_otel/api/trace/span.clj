@@ -295,6 +295,12 @@
    (add-span-data! {:event {:name       name
                             :attributes attributes}})))
 
+(defn add-attributes!
+  "Adds attributes to the span in the bound or current context.
+   `attrs` is a map of attributes to set on the span."
+  [attrs]
+  (add-span-data! {:attributes attrs}))
+
 (defn add-exception!
   "Adds an event describing an `exception` that is escaping a span's scope. By
    default, exception data (as per `ex-info`) are added as attributes to the
