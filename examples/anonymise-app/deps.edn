@@ -3,7 +3,7 @@
 {:paths   ["src"]
 
  :deps    {org.clojure/clojure       {:mvn/version "1.12.4"}
-           org.clojure/core.async    {:mvn/version "1.10.870-alpha2"}
+           org.clojure/core.async    {:mvn/version "1.10.874-alpha3"}
            cc.qbits/auspex           {:mvn/version "1.0.3"}
            com.github.igrishaev/whew {:mvn/version "0.1.1"}
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}

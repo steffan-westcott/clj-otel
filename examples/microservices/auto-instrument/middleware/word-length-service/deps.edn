@@ -8,8 +8,8 @@
            aero/aero {:mvn/version "1.1.6"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.21.3"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.21.3"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.22.0"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.22.0"}
 
            ;; Log4j2 appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../../../../clj-otel-adapter-log4j"}
@@ -18,8 +18,8 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
            ;; Ring-Jetty web server integration
-           info.sunng/ring-jetty9-adapter {:mvn/version "0.39.3"}
-           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.5"}
+           info.sunng/ring-jetty9-adapter {:mvn/version "0.39.4"}
+           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.6"}
 
            ;; Reitit HTTP router
            metosin/jsonista {:mvn/version "1.0.0"}

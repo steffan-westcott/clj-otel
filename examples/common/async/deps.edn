@@ -2,7 +2,7 @@
 
 {:paths ["src"]
 
- :deps  {org.clojure/core.async    {:mvn/version "1.10.870-alpha2"}
+ :deps  {org.clojure/core.async    {:mvn/version "1.10.874-alpha3"}
          org.clojure/data.json     {:mvn/version "2.5.2"}
 
          ;; Clojure wrapper for CompletableFuture

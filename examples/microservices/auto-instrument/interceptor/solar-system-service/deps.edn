@@ -3,7 +3,7 @@
 {:paths   ["src" "resources"]
 
  :deps    {org.clojure/clojure {:mvn/version "1.12.4"}
-           org.clojure/core.async {:mvn/version "1.10.870-alpha2"}
+           org.clojure/core.async {:mvn/version "1.10.874-alpha3"}
 
            ;; Application configuration
            aero/aero {:mvn/version "1.1.6"}
