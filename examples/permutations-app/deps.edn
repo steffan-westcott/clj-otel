@@ -6,7 +6,7 @@
            org.clojure/math.combinatorics {:mvn/version "0.3.2"}
 
            ;; Logback implementation of SLF4J
-           ch.qos.logback/logback-classic {:mvn/version "1.5.32"}
+           ch.qos.logback/logback-classic {:mvn/version "1.5.34"}
 
            ;; Logback appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-logback {:local/root "../../clj-otel-adapter-logback"}
