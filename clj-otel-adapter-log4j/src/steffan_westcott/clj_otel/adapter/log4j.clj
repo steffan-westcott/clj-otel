@@ -132,10 +132,8 @@
 
                             (.-captureMarkerAttribute appender)
                             (assoc! "log4j.marker" (.getName (.getMarker event)))))
-        event-name       (when (.-captureEventName appender)
-                           (get attributes "event.name"))
-        attributes       (cond-> attributes
-                           event-name (dissoc "event.name"))]
+        event-name       (get attributes "otel.event.name")
+        attributes       (dissoc attributes "otel.event.name")]
     (log-record/emit {:logger        (get-logger-name event)
                       :context       context
                       :severity      (and level

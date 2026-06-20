@@ -67,11 +67,6 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
      */
     public Set<String> captureMdcAttributes = Collections.emptySet();
 
-    /**
-     * If true, set log record event name as value of <code>event.name</code> attribute (default: false)
-     */
-    public boolean captureEventName = false;
-
     private static final String NAMESPACE = "steffan-westcott.clj-otel.adapter.logback";
     private final IFn append;
 
@@ -136,9 +131,5 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     public void setCaptureMdcAttributes(String attributes) {
         captureMdcAttributes = trimmedSet(attributes);
         captureAllMdcAttributes = captureMdcAttributes.size() == 1 && captureMdcAttributes.contains("*");
-    }
-
-    public void setCaptureEventName(boolean captureEventName) {
-        this.captureEventName = captureEventName;
     }
 }

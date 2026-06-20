@@ -78,23 +78,7 @@ image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc
 
 Provide access to OpenTelemetry instrumentation of the JVM runtime.
 
-=== `clj-otel-instrumentation-runtime-telemetry-java8`
-
-image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/versions/0.2.10]
-image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java8/0.2.10]
-
-WARNING: This module is deprecated, use `clj-otel-instrumentation-runtime-telemetry` instead
-
-Provide access to OpenTelemetry instrumentation of the JVM runtime for Java 8+.
-
-=== `clj-otel-instrumentation-runtime-telemetry-java17`
-
-image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17/versions/0.2.10]
-image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-instrumentation-runtime-telemetry-java17/0.2.10]
-
-WARNING: This module is deprecated, use `clj-otel-instrumentation-runtime-telemetry` instead
-
-Provide access to OpenTelemetry instrumentation of the JVM runtime for Java 17+.
+NOTE: This module replaces the former modules `clj-otel-instrumentation-runtime-telemetry-java8` and `clj-otel-instrumentation-runtime-telemetry-java17`
 
 == Extension modules
 

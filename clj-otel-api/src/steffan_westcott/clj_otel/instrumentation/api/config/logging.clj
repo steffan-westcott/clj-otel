@@ -5,14 +5,14 @@
 (defn trace-id-key
   "Returns logging context data key for trace id."
   []
-  (config/get-string "otel.instrumentation.common.logging.trace-id" "trace_id"))
+  (config/get-string "otel.instrumentation.common.logging.trace-id-key" "trace_id"))
 
 (defn span-id-key
   "Returns logging context data key for span id."
   []
-  (config/get-string "otel.instrumentation.common.logging.span-id" "span_id"))
+  (config/get-string "otel.instrumentation.common.logging.span-id-key" "span_id"))
 
 (defn trace-flags-key
   "Returns logging context data key for trace flags."
   []
-  (config/get-string "otel.instrumentation.common.logging.trace-flags" "trace_flags"))
+  (config/get-string "otel.instrumentation.common.logging.trace-flags-key" "trace_flags"))

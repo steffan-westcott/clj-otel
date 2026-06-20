@@ -52,16 +52,11 @@ public class CljOtelAppender extends AbstractAppender {
      */
     public final Set<String> captureContextDataAttributes;
 
-    /**
-     * If true, set log record event name as value of <code>event.name</code> in Log4j context data (default: false)."
-     */
-    public final boolean captureEventName;
-
     private static final String NAMESPACE = "steffan-westcott.clj-otel.adapter.log4j";
     private final IFn append;
 
     protected CljOtelAppender(String name, Filter filter, boolean captureCodeAttributes, boolean captureExperimentalAttributes,
-                              boolean captureMapMessageAttributes, boolean captureMarkerAttribute, Set<String> captureContextDataAttributes, boolean captureEventName) {
+                              boolean captureMapMessageAttributes, boolean captureMarkerAttribute, Set<String> captureContextDataAttributes) {
         super(name, filter, null, true, Property.EMPTY_ARRAY);
         this.captureCodeAttributes = captureCodeAttributes;
         this.captureExperimentalAttributes = captureExperimentalAttributes;
@@ -69,7 +64,6 @@ public class CljOtelAppender extends AbstractAppender {
         this.captureMarkerAttribute = captureMarkerAttribute;
         this.captureAllContextDataAttributes = captureContextDataAttributes.size() == 1 && captureContextDataAttributes.contains("*");
         this.captureContextDataAttributes = captureContextDataAttributes;
-        this.captureEventName = captureEventName;
         Clojure.var("clojure.core", "require").invoke(Clojure.read(NAMESPACE));
         append = Clojure.var(NAMESPACE, "append");
     }
@@ -86,10 +80,9 @@ public class CljOtelAppender extends AbstractAppender {
                                                  @PluginAttribute("captureExperimentalAttributes") boolean experimentalAttrs,
                                                  @PluginAttribute("captureMapMessageAttributes") boolean mapMessageAttrs,
                                                  @PluginAttribute("captureMarkerAttribute") boolean markerAttr,
-                                                 @PluginAttribute("captureContextDataAttributes") String cdataAttrsString,
-                                                 @PluginAttribute("captureEventName") boolean eventName) {
+                                                 @PluginAttribute("captureContextDataAttributes") String cdataAttrsString) {
         return new CljOtelAppender(name, filter, codeAttrs, experimentalAttrs, mapMessageAttrs, markerAttr,
-                trimmedSet(cdataAttrsString), eventName);
+                trimmedSet(cdataAttrsString));
     }
 
     /**

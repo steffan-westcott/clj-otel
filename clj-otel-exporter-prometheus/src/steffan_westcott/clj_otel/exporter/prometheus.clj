@@ -12,7 +12,7 @@
 
    | key                           | description |
    |-------------------------------|-------------|
-   |`:host`                        | The host to bind to (default: `\"0.0.0.0\"`).
+   |`:host`                        | The host to bind to (default: `localhost`).
    |`:port`                        | The port to bind to (default: `9464`).
    |`:executor`                    | `ExecutorService` to use for the Prometheus HTTP server (default: a fixed pool of 5 daemon threads).
    |`:registry`                    | `PrometheusRegistry` to use for the HTTP server (default: new registry).

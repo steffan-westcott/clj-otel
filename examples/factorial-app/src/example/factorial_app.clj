@@ -14,6 +14,7 @@
     ;[steffan-westcott.clj-otel.exporter.otlp.http.metrics :as otlp-http-metrics]
     ;[steffan-westcott.clj-otel.exporter.otlp.http.trace :as otlp-http-trace]
     [steffan-westcott.clj-otel.exporter.otlp.grpc.trace :as otlp-grpc-trace]
+    [steffan-westcott.clj-otel.instrumentation.runtime-telemetry :as runtime-telemetry]
     [steffan-westcott.clj-otel.resource.resources :as res]
     [steffan-westcott.clj-otel.sdk.meter-provider :as meter]
     [steffan-westcott.clj-otel.sdk.otel-sdk :as sdk])
@@ -32,11 +33,12 @@
 
 (defn init-otel!
   "Configure and initialize the OpenTelemetry SDK as the default OpenTelemetry
-   instance used by the application. This function should be evaluated before
-   performing any OpenTelemetry API operations such as tracing. This function
-   may be evaluated once only, any attempts to evaluate it more than once will
-   result in error. A shutdown hook is registered that close the OpenTelemetry
-   instance when the application closes."
+   instance used by the application, initialize logging appenders and JVM
+   runtime telemetry. This function should be evaluated before performing any
+   OpenTelemetry API operations such as tracing. This function may be evaluated
+   once only, any attempts to evaluate it more than once will result in error.
+   A shutdown hook is registered that close the OpenTelemetry instance when the
+   application closes."
   []
   (sdk/init-otel-sdk!
 
@@ -95,6 +97,9 @@
 
   ;; Initialize CljOtelAppender instances
   (log4j/initialize)
+
+  ;; Start exporting JVM runtime telemetry
+  (runtime-telemetry/create!)
 
   (log/info "OpenTelemetry initialized")
   :initalized)
