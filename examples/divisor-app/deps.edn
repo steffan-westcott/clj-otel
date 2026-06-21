@@ -27,6 +27,7 @@
 
                                      ;; Export metrics to Prometheus via HTTP server for scraping
                                      "-Dotel.metrics.exporter=prometheus"
+                                     "-Dotel.exporter.prometheus.host=0.0.0.0"
 
                                      ;; Set metric export to every 10 seconds
                                      "-Dotel.metric.export.interval=10000"
