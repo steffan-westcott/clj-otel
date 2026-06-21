@@ -39,7 +39,7 @@ exporters:
       insecure: true
 
   # Exports to Prometheus
-  prometheusremotewrite:
+  prometheus_remote_write:
     endpoint: "http://prometheus:9090/api/v1/write"
     tls:
       insecure: true
@@ -62,7 +62,7 @@ service:
     metrics:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
-      exporters: [ debug, prometheusremotewrite ]
+      exporters: [ debug, prometheus_remote_write ]
 
     # Enable debug only pipeline for logs, as we lack a proper logging backend
     logs:

@@ -108,7 +108,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.150.1
+    image: otel/opentelemetry-collector-contrib:0.154.0
     environment:
       GOMEMLIMIT: "400MiB"
     volumes:

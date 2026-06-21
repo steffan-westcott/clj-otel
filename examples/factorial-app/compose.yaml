@@ -19,7 +19,7 @@ services:
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector:0.150.1
+    image: otel/opentelemetry-collector:0.154.0
     volumes:
       - ./otel-collector.yaml:/etc/otel-collector.yaml
     command:
