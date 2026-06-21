@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.4"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.5"}
 
            ;; Wrapper for Log4j2 with MapMessage support
            com.github.seancorfield/logging4j2 {:mvn/version "1.0.8"}
@@ -58,4 +58,4 @@
                                    "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
            ;; Initialize Clojure classes at build time with GraalVM native-image
-           :native     {:extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}}}}}
+           :native     {:extra-deps {com.github.clj-easy/graal-build-time {:mvn/version "1.0.6"}}}}}

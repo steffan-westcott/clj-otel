@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.4"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.5"}
            org.clojure/math.combinatorics {:mvn/version "0.3.2"}
 
            ;; Logback implementation of SLF4J
