@@ -2,7 +2,7 @@ services:
 
   # Postgres
   postgres:
-    image: postgres:18.0-alpine
+    image: postgres:18.4-alpine
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
@@ -14,13 +14,13 @@ services:
 
   # Jaeger
   jaeger:
-    image: jaegertracing/jaeger:2.17.0
+    image: jaegertracing/jaeger:2.19.0
     ports:
       - "16686:16686"  # Jaeger web interface
 
   # Prometheus
   prometheus:
-    image: prom/prometheus:v3.11.2
+    image: prom/prometheus:v3.12.0
     volumes:
       - ./prometheus.yaml:/etc/prometheus.yaml
     command:

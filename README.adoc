@@ -85,7 +85,7 @@ https://logging.apache.org/log4j/2.x/[Log4J], https://logback.qos.ch/[Logback] a
 docker run --rm                            \
            -p 16686:16686                  \
            -p 4318:4318                    \
-           jaegertracing/jaeger:2.11.0
+           jaegertracing/jaeger:2.19.0
 ----
 
 * To explore application behaviour described by the received telemetry data
