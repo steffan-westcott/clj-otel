@@ -286,9 +286,10 @@
       links      (add-links-data! links))))
 
 (defn add-event!
-  "Adds an event to the bound or current context. `name` is a string, keyword or
-   symbol to use as the event name. `attributes` is a map of attributes to
-   attach to the event. For more flexible options, use [[add-span-data!]]."
+  "Adds an event to the span in the bound or current context. `name` is a
+   string, keyword or symbol to use as the event name. `attributes` is a map of
+   attributes to attach to the event. For more flexible options, use
+   [[add-span-data!]]."
   ([name]
    (add-event! name {}))
   ([name attributes]
