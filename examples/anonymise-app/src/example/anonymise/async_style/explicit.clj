@@ -26,7 +26,8 @@
     (-> (style/async
           (Thread/sleep 200)
           (str/lower-case s))
-        (style/then #(<replace-names context* %)))))
+        (style/then #(<replace-names context* %))
+        style/await)))
 
 
 (defn app
