@@ -37,8 +37,9 @@ This ensures `attributes/->attributes` does not add unwanted `_` characters in a
 - [MAINT] Deprecated Zipkin exporter, Jaeger and OpenTracing propagation protocol namespaces, to reflect their status in the OpenTelemetry specification.
 These will be removed in a future release.
 - Bump deps
-* [MAINT] OpenTelemetry `1.63.0`, semconv `1.42.0`, instrumentation `2.29.0`
+* [MAINT] OpenTelemetry `1.64.0`, semconv `1.43.0`, instrumentation `2.30.0`
 ** Added option `:record-min-max` to histograms when using `clj-otel-sdk`
+** Added option map to fn `steffan-westcott.clj-otel.resource.resources/process-resource`
 
 === `0.2.10` (2025-10-11)
 

@@ -30,9 +30,17 @@
   (OsResource/get))
 
 (defn process-resource
-  "Returns a `Resource` with information about the current running process."
-  ^Resource []
-  (ProcessResource/get))
+  "Returns a `Resource` with information about the current running process. May
+   take an option map as follows:
+
+   | key                    | description |
+   |------------------------|-------------|
+   |`:include-command-attrs`| Include command line attributes, which may contain sensitive information (default: true)."
+  (^Resource [] (process-resource {}))
+  (^Resource
+   [{:keys [include-command-attrs]
+     :or   {include-command-attrs true}}]
+   (ProcessResource/create (boolean include-command-attrs))))
 
 (defn process-runtime-resource
   "Returns a `Resource` with information about the Java runtime."
