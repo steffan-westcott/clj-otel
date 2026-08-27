@@ -4,7 +4,13 @@
    This namespace includes Ring middleware and Pedestal interceptors for
    working with HTTP server spans. Support is provided for working either with
    or without the OpenTelemetry instrumentation agent, and for synchronous or
-   asynchronous HTTP request handlers."
+   asynchronous HTTP request handlers.
+
+   `wrap-server-span` must be used before any other Ring middleware in this
+   namespace.
+
+   `server-span-interceptors` must be used before any other Pedestal
+   interceptors in this namespace."
   (:require [clojure.string :as str]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context])
@@ -209,7 +215,8 @@
     ([request]
      (span/with-span! (server-span-opts request create-span-opts)
        (try
-         (let [response (handler' request)]
+         (let [response (handler'
+                         (assoc request :io.opentelemetry/server-span-context (context/dyn)))]
            (add-server-span-response-data! response)
            response)
          (catch Throwable e
@@ -250,7 +257,8 @@
   [handler']
   (fn handler
     ([request]
-     (handler' request)) ; If an exception is thrown, the agent will add an exception event
+     ;; If an exception is thrown, the agent will add an exception event
+     (handler' (assoc request :io.opentelemetry/server-span-context (context/dyn))))
     ([request respond' raise']
      (let [context (context/dyn)]
        (handler' (assoc request :io.opentelemetry/server-span-context context)
@@ -275,6 +283,10 @@
    agent). Both synchronous (1-arity) and asynchronous (3-arity) Ring handlers
    are supported.
 
+   `wrap-server-span` must be used before any other Ring middleware in this
+   namespace. Also, placing this before any routing middleware ensures all
+   HTTP requests are traced, including those without a matching route.
+
    When `:create-span?` is false, for each request it is assumed the current
    context contains a server span created by the OpenTelemetry instrumentation
    agent.
@@ -289,9 +301,10 @@
    and semantic attribute `err.type` is set to the string (or class name of
    `Throwable`) value of `:io.opentelemetry.api.trace.span.attrs/error-type`.
 
-   No matter how the server span is created, for an asynchronous handler the
-   bound context and key `:io.opentelemetry/server-span-context` in the request
-   map are set to the context containing the server span.
+   No matter how the server span is created, key
+   `:io.opentelemetry/server-span-context` in the request map is set to the
+   context containing the server span. For asynchronous handlers, the bound
+   context is also set.
 
    May take an option map as follows:
 
@@ -351,11 +364,11 @@
    matched route as a string, or nil if no match."
   [handler' route-fn]
   (fn handler
-    ([{:keys [request-method]
+    ([{:keys [request-method io.opentelemetry/server-span-context]
        :as   request}]
      (if-let [route (route-fn request)]
        (do
-         (add-route-data! request-method route)
+         (add-route-data! request-method route {:context server-span-context})
          (handler' (assoc-in request
                     [:io.opentelemetry/server-request-attrs HttpAttributes/HTTP_ROUTE]
                     route)))
@@ -465,8 +478,9 @@
    created by the OpenTelemetry instrumentation agent or manually create new
    server spans (when not using the agent).
 
-   The interceptors should prepend any others in the service map to ensure all
-   HTTP requests are traced, including those without a matching route.
+   `server-span-interceptors` must precede any other interceptors in this
+   namespace. Also, they should prepend any others in the service map to ensure
+   all HTTP requests are traced, including those without a matching route.
 
    When `:create-span?` is false, for each request it is assumed the current
    context contains a server span created by the OpenTelemetry instrumentation
