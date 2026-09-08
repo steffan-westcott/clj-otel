@@ -21,7 +21,7 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../../../../clj-otel-api"}
 
            ;; async/await functions built on core.async
-           com.xadecimal/async-style {:mvn/version "0.2.0"}
+           com.xadecimal/async-style {:mvn/version "0.4.1"}
 
            ;; hato HTTP client
            hato/hato {:mvn/version "1.0.0"}

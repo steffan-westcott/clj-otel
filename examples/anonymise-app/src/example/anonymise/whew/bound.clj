@@ -1,11 +1,11 @@
 (ns example.anonymise.whew.bound
   "CompletableFuture with whew library, using bound context"
   (:require [clojure.string :as str]
-            [whew.core :as whew]
-            [steffan-westcott.clj-otel.api.trace.span :as span]))
+            [steffan-westcott.clj-otel.api.trace.span :as span]
+            [whew.core :as whew]))
 
 
-(defn <replace-names
+(defn- <replace-names
   "Returns a CompletableFuture containing string `s` with names replaced by `***`."
   [s]
   (span/async-bound-cf-span "Replacing names"
@@ -14,7 +14,7 @@
                               (str/replace s #"\b(alice|bob)\b" "***"))))
 
 
-(defn <anonymise
+(defn- <anonymise
   "Returns a CompletableFuture containing string `s` lowercased and anonymised."
   [s]
   (span/async-bound-cf-span "Anonymising string"
@@ -25,6 +25,7 @@
 
 
 (defn app
+  "Example application using whew with bound context."
   [s]
   (span/with-bound-span! "Running application"
     (whew/deref (<anonymise s))))

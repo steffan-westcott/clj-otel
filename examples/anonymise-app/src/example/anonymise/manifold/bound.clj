@@ -27,6 +27,7 @@
 
 
 (defn app
+  "Example application using Manifold with bound context."
   [s]
   (span/with-bound-span! "Running application"
     @(<anonymise s)))

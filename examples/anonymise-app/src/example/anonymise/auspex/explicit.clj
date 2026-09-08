@@ -32,6 +32,7 @@
 
 
 (defn app
+  "Example application using auspex with explicit context."
   [s]
   (span/with-span! "Running application"
     @(<anonymise (context/current) s)))

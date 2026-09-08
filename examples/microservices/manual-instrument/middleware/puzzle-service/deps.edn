@@ -15,8 +15,8 @@
            cheshire/cheshire {:mvn/version "6.2.0"}
 
            ;; Jackson deps version pinning
-           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.22.1"}
-           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.22.1"}
+           com.fasterxml.jackson.core/jackson-databind {:mvn/version "2.22.2"}
+           com.fasterxml.jackson.datatype/jackson-datatype-jsr310 {:mvn/version "2.22.2"}
 
            ;; Log4j2 appender and context data provider
            com.github.steffan-westcott/clj-otel-adapter-log4j {:local/root "../../../../../clj-otel-adapter-log4j"}
@@ -33,14 +33,14 @@
            {:local/root "../../../../../clj-otel-instrumentation-runtime-telemetry"}
 
            ;; async/await functions built on core.async
-           com.xadecimal/async-style {:mvn/version "0.2.0"}
+           com.xadecimal/async-style {:mvn/version "0.4.1"}
 
            ;; hato HTTP client
            hato/hato {:mvn/version "1.0.0"}
 
            ;; Ring-Jetty web server integration
-           info.sunng/ring-jetty9-adapter {:mvn/version "0.40.2"}
-           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.8"}
+           info.sunng/ring-jetty9-adapter {:mvn/version "0.40.4"}
+           info.sunng/ring-jetty9-adapter-http2 {:mvn/version "0.2.10"}
 
            ;; OpenTelemetry exporter that uses OTLP
            io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.64.0"}
@@ -55,9 +55,9 @@
            missionary/missionary {:mvn/version "b.47"}
 
            ;; Reitit HTTP router
-           metosin/jsonista {:mvn/version "1.0.0"}
+           metosin/jsonista {:mvn/version "1.0.1"}
            metosin/malli {:mvn/version "0.20.1"}
-           metosin/muuntaja {:mvn/version "0.6.11"}
+           metosin/muuntaja {:mvn/version "0.6.12"}
            metosin/reitit-malli {:mvn/version "0.10.1"}
            metosin/reitit-middleware {:mvn/version "0.10.1"}
            metosin/reitit-ring {:mvn/version "0.10.1"}
@@ -72,9 +72,9 @@
            org.example/log4j2.utils {:local/root "../../../../common/log4j2.utils"}
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.82.2"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.82.2"}
-           ; io.grpc/grpc-stub {:mvn/version "1.82.2"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.84.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.84.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.84.0"}
 
           }
 

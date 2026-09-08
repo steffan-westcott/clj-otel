@@ -3,14 +3,14 @@
   (:require [clojure.string :as str]
             [steffan-westcott.clj-otel.api.trace.span :as span]))
 
-(defn replace-names
+(defn- replace-names
   [s]
   (span/with-span! "Replacing names"
     (Thread/sleep 100)
     (str/replace s #"\b(alice|bob)\b" "***")))
 
 
-(defn anonymise
+(defn- anonymise
   [s]
   (span/with-span! "Anonymising string"
     (-> (do
@@ -20,6 +20,7 @@
 
 
 (defn app
+  "Example synchronous application."
   [s]
   (span/with-span! "Running application"
     (anonymise s)))

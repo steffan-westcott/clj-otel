@@ -31,6 +31,7 @@
 
 
 (defn app
+  "Example application using async-style with explicit context."
   [s]
   (span/with-span-binding [context "Running application"]
     (style/wait (<anonymise context s))))

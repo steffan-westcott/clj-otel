@@ -1,8 +1,8 @@
 (ns example.anonymise.whew.explicit
   "CompletableFuture with whew library, using explicit context"
   (:require [clojure.string :as str]
-            [steffan-westcott.clj-otel.context :as context]
             [steffan-westcott.clj-otel.api.trace.span :as span]
+            [steffan-westcott.clj-otel.context :as context]
             [whew.core :as whew]))
 
 
@@ -28,6 +28,7 @@
 
 
 (defn app
+  "Example application using whew with explicit context."
   [s]
   (span/with-span! "Running application"
     (whew/deref (<anonymise (context/current) s))))

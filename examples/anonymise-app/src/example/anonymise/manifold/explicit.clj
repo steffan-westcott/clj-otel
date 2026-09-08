@@ -10,29 +10,28 @@
 (defn <replace-names
   "Returns a deferred containing string `s` with names replaced by `***`."
   [context s]
-  (d-span/d-span-binding [context*
-                          {:parent context
-                           :name   "Replacing names"}]
-                         (d/future
-                           (Thread/sleep 100)
-                           (span/add-span-data! {:context context*
-                                                 :event   {:name "Nearly done"}})
-                           (str/replace s #"\b(alice|bob)\b" "***"))))
+  (d-span/d-span-binding [context* {:parent context
+                                    :name   "Replacing names"}]
+    (d/future
+      (Thread/sleep 100)
+      (span/add-span-data! {:context context*
+                            :event   {:name "Nearly done"}})
+      (str/replace s #"\b(alice|bob)\b" "***"))))
 
 
 (defn <anonymise
   "Returns a deferred containing string `s` lowercased and anonymised."
   [context s]
-  (d-span/d-span-binding [context*
-                          {:parent context
-                           :name   "Anonymising string"}]
-                         (-> (d/future
-                               (Thread/sleep 200)
-                               (str/lower-case s))
-                             (d/chain #(<replace-names context* %)))))
+  (d-span/d-span-binding [context* {:parent context
+                                    :name   "Anonymising string"}]
+    (-> (d/future
+          (Thread/sleep 200)
+          (str/lower-case s))
+        (d/chain #(<replace-names context* %)))))
 
 
 (defn app
+  "Example application using Manifold with explicit context."
   [s]
   (span/with-span! "Running application"
     @(<anonymise (context/current) s)))

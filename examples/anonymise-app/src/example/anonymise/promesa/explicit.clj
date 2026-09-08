@@ -30,6 +30,7 @@
 
 
 (defn app
+  "Example application using promesa with explicit context."
   [s]
   (span/with-span! "Running application"
     @(<anonymise (context/current) s)))

@@ -30,6 +30,7 @@
 
 
 (defn app
+  "Example application using Missionary with explicit context."
   [s]
   (span/with-span! "Running application"
     (m/? (<anonymise (context/current) s))))

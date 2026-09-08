@@ -47,7 +47,7 @@ clojure -A:deps -T:build help/doc"
    "clj-otel-adapter-logback"])
 
 (def ^:private demo-project-paths
-  ["examples/common/anonymise-app"
+  ["examples/anonymise-app"
    "examples/common/async"
    "examples/common/load-gen"
    "examples/common/log4j2.utils"

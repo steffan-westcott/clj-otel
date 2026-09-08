@@ -28,6 +28,7 @@
 
 
 (defn app
+  "Example application using async-style with bound context."
   [s]
   (span/with-bound-span! "Running application"
     (style/wait (<anonymise s))))
