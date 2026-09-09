@@ -2,8 +2,8 @@
 
 {:paths   ["src" "resources"]
  :deps    {org.clojure/clojure {:mvn/version "1.10.3"}
-           io.opentelemetry/opentelemetry-api {:mvn/version "1.64.0"}
-           io.opentelemetry.instrumentation/opentelemetry-instrumentation-api {:mvn/version "2.30.0"}
+           io.opentelemetry/opentelemetry-api {:mvn/version "1.65.0"}
+           io.opentelemetry.instrumentation/opentelemetry-instrumentation-api {:mvn/version "2.31.1"}
            io.opentelemetry.semconv/opentelemetry-semconv {:mvn/version "1.43.0"}
            io.opentelemetry.semconv/opentelemetry-semconv-incubating {:mvn/version "1.43.0-alpha"}}
  :aliases {:provided {:extra-deps {org.clojure/core.async {:mvn/version "1.10.874-alpha3"}

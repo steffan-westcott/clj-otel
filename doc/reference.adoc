@@ -151,14 +151,6 @@ image:https://img.shields.io/badge/maven--central-1.54.1-orange[Maven Central,li
 
 Configuration of span and metrics exporters using OTLP.
 
-==== `opentelemetry-exporter-zipkin`
-
-image:https://img.shields.io/badge/maven--central-1.54.1-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-zipkin/1.54.1]
-
-WARNING: Zipkin exporter is deprecated in the OpenTelemetry specification.
-
-Configuration of span exporter to Zipkin.
-
 ==== `opentelemetry-exporter-prometheus`
 
 image:https://img.shields.io/badge/maven--central-1.54.1--alpha-orange[Maven Central,link=https://central.sonatype.com/artifact/io.opentelemetry/opentelemetry-exporter-prometheus/1.54.1-alpha]
@@ -188,13 +180,6 @@ image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=
 image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-otlp/0.2.10]
 
 Configuration of span and metrics exporters using OTLP.
-
-==== `clj-otel-exporter-zipkin`
-
-image:https://img.shields.io/badge/clojars-0.2.10-orange?logo=clojure&logoColor=white[Clojars,link=https://clojars.org/com.github.steffan-westcott/clj-otel-exporter-zipkin/versions/0.2.10]
-image:https://img.shields.io/badge/cljdoc-0.2.10-blue[cljdoc,link=https://cljdoc.org/d/com.github.steffan-westcott/clj-otel-exporter-zipkin/0.2.10]
-
-Configuration of span exporter to Zipkin.
 
 ==== `clj-otel-exporter-prometheus`
 
