@@ -39,7 +39,7 @@ Previously, for synchronous handlers it was assumed the current context containe
 - [MAINT] Deprecated Zipkin exporter, Jaeger and OpenTracing propagation protocol namespaces, to reflect their status in the OpenTelemetry specification.
 These will be removed in a future release.
 - Bump deps
-* [MAINT] OpenTelemetry `1.65.0`, semconv `1.43.0`, instrumentation `2.31.1`
+* [MAINT] OpenTelemetry `1.66.0`, semconv `1.43.0`, instrumentation `2.31.1`
 ** Removed obsolete module `clj-otel-exporter-zipkin`
 ** Added option `:record-min-max` to histograms when using `clj-otel-sdk`
 ** Added option map to fn `steffan-westcott.clj-otel.resource.resources/process-resource`
