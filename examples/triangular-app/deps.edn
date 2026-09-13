@@ -2,7 +2,7 @@
 
 {:paths   ["src" "resources"]
 
- :deps    {org.clojure/clojure {:mvn/version "1.12.5"}
+ :deps    {org.clojure/clojure {:mvn/version "1.12.6"}
 
            ;; Logback implementation of SLF4J
            ch.qos.logback/logback-classic {:mvn/version "1.6.3"}

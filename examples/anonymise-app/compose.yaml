@@ -2,13 +2,13 @@ services:
 
   # Jaeger
   jaeger:
-    image: jaegertracing/jaeger:2.19.0
+    image: jaegertracing/jaeger:2.20.0
     ports:
       - "16686:16686"  # Jaeger web interface
 
   # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector:0.154.0
+    image: otel/opentelemetry-collector:0.160.0
     volumes:
       - ./otel-collector.yaml:/etc/otel-collector.yaml
     command:
