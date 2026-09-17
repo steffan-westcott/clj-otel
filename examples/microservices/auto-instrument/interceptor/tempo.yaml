@@ -1,18 +1,9 @@
-compactor:
-  compaction:
-    block_retention: 1h
-
 distributor:
   receivers:
     otlp:
       protocols:
         grpc:
           endpoint: "tempo:4317"
-
-ingester:
-  lifecycler:
-    ring:
-      replication_factor: 1
 
 metrics_generator:
   storage:
