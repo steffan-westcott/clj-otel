@@ -37,7 +37,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -134,7 +134,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(jvm_memory_used_bytes{instance=\"$instance\",jvm_memory_type=\"heap\"})",
@@ -145,7 +145,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_type=\"heap\"})",
@@ -157,7 +157,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(jvm_memory_limit_bytes{instance=\"$instance\",jvm_memory_type=\"heap\"})",
@@ -173,7 +173,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -273,7 +273,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -292,7 +292,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"G1 Eden Space\"}",
@@ -309,7 +309,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -409,7 +409,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -428,7 +428,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"G1 Survivor Space\"}",
@@ -445,7 +445,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -545,7 +545,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -564,7 +564,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"G1 Old Gen\"}",
@@ -577,7 +577,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "jvm_memory_limit_bytes{instance=\"$instance\",jvm_memory_pool_name=\"G1 Old Gen\"}",
@@ -594,7 +594,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "P1809F7CD0C75ACF3"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -675,7 +675,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "(jvm_gc_duration_seconds_sum{instance=\"$instance\"}) - (jvm_gc_duration_seconds_sum{instance=\"$instance\"} offset 15s)",
@@ -701,7 +701,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -798,7 +798,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "sum(jvm_memory_used_bytes{instance=\"$instance\",jvm_memory_type=\"non_heap\"})",
@@ -809,7 +809,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "sum(jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_type=\"non_heap\"})",
@@ -821,7 +821,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "sum(jvm_memory_limit_bytes{instance=\"$instance\",jvm_memory_type=\"non_heap\"})",
@@ -837,7 +837,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -937,7 +937,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -956,7 +956,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"CodeHeap 'non-profiled nmethods'\"}",
@@ -969,7 +969,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_limit_bytes{instance=\"$instance\",jvm_memory_pool_name=\"CodeHeap 'non-profiled nmethods'\"}",
@@ -986,7 +986,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1086,7 +1086,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -1105,7 +1105,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"CodeHeap 'profiled nmethods'\"}",
@@ -1118,7 +1118,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_limit_bytes{instance=\"$instance\",jvm_memory_pool_name=\"CodeHeap 'profiled nmethods'\"}",
@@ -1135,7 +1135,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1235,7 +1235,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -1254,7 +1254,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"Compressed Class Space\"}",
@@ -1267,7 +1267,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_limit_bytes{instance=\"$instance\",jvm_memory_pool_name=\"Compressed Class Space\"}",
@@ -1284,7 +1284,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1384,7 +1384,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -1403,7 +1403,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"CodeHeap 'non-nmethods'\"}",
@@ -1416,7 +1416,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_limit_bytes{instance=\"$instance\",jvm_memory_pool_name=\"CodeHeap 'non-nmethods'\"}",
@@ -1433,7 +1433,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1533,7 +1533,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -1552,7 +1552,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_memory_committed_bytes{instance=\"$instance\",jvm_memory_pool_name=\"Metaspace\"}",
@@ -1569,7 +1569,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1672,7 +1672,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_class_count{instance=\"$instance\"}",
@@ -1684,7 +1684,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_class_loaded_total{instance=\"$instance\"}",
@@ -1715,7 +1715,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1796,7 +1796,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "exemplar": false,
@@ -1813,7 +1813,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1893,7 +1893,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "expr": "jvm_thread_count{instance=\"$instance\",jvm_thread_daemon=\"true\"}",
@@ -1923,7 +1923,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P1809F7CD0C75ACF3"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -2003,7 +2003,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "P1809F7CD0C75ACF3"
+                "uid": "prometheus"
               },
               "editorMode": "code",
               "exemplar": false,
@@ -2035,7 +2035,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "P1809F7CD0C75ACF3"
+          "uid": "prometheus"
         },
         "definition": "label_values(job)",
         "hide": 0,
@@ -2062,7 +2062,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "P1809F7CD0C75ACF3"
+          "uid": "prometheus"
         },
         "definition": "label_values({job=\"$service\"},instance)",
         "hide": 0,

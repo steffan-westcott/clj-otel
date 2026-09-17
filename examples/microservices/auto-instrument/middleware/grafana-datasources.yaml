@@ -3,6 +3,7 @@ apiVersion: 1
 datasources:
   - name: loki
     type: loki
+    uid: loki
     url: http://loki:3100
     isDefault: false
     editable: true
@@ -18,6 +19,7 @@ datasources:
           urlDisplayLabel: "Tempo"
   - name: tempo
     type: tempo
+    uid: tempo
     url: http://tempo:3200
     isDefault: true
     editable: true
@@ -36,13 +38,11 @@ datasources:
         query: "{service_name=\"$${__span.tags['service.name']}\"} | span_id=\"$${__span.spanId}\""
   - name: prometheus
     type: prometheus
+    uid: prometheus
     url: http://prometheus:9090
     isDefault: false
     editable: true
     jsonData:
-      prometheusType: "Prometheus"
-      prometheusVersion: "2.50.1"
       exemplarTraceIdDestinations:
         - name: "trace_id"
           datasourceUid: "tempo"
-          urlDisplayLabel: "Tempo"
