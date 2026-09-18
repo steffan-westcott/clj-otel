@@ -17,15 +17,15 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
 
            ;; HoneyEQL EDN Query Language adapter
-           com.github.tamizhvendan/honeyeql {:mvn/version "1.0.6"}
+           com.github.tamizhvendan/honeyeql {:mvn/version "1.0.7"}
 
            ;; HikariCP JDBC connection pool
            hikari-cp/hikari-cp {:mvn/version "4.1.0"}
 
            ;; Reitit HTTP routing and content handling
-           metosin/reitit-malli {:mvn/version "0.10.1"}
-           metosin/reitit-middleware {:mvn/version "0.10.1"}
-           metosin/reitit-ring {:mvn/version "0.10.1"}
+           metosin/reitit-malli {:mvn/version "0.11.0"}
+           metosin/reitit-middleware {:mvn/version "0.11.0"}
+           metosin/reitit-ring {:mvn/version "0.11.0"}
 
            ;; Common functions for system configuration and operation
            org.example/common.system {:local/root "../common/system"}
