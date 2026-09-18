@@ -1,4 +1,5 @@
 distributor:
+  max_attribute_bytes: 8192
   receivers:
     otlp:
       protocols:
