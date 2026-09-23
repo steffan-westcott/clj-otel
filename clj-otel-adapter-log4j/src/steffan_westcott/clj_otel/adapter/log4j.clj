@@ -6,8 +6,8 @@
             [steffan-westcott.clj-otel.api.logs.log-record :as log-record]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
-            [steffan-westcott.clj-otel.instrumentation.api.config :as inst-config]
             [steffan-westcott.clj-otel.instrumentation.api.config.logging :as config-logging]
+            [steffan-westcott.clj-otel.instrumentation.api.config.props :as config-props]
             [steffan-westcott.clj-otel.util :as util])
   (:import (io.opentelemetry.api.baggage BaggageEntry)
            (io.opentelemetry.api.logs Severity)
@@ -31,7 +31,7 @@
 
 (defn- add-baggage?
   []
-  (inst-config/get-boolean "otel.instrumentation.log4j-context-data.add-baggage" false))
+  (config-props/get-boolean "otel.instrumentation.log4j-context-data.add-baggage" false))
 
 (defn context-data
   "Returns a string map to add to Log4j context data. This includes trace id,
@@ -110,21 +110,22 @@
                            (.get ^MapMessage message "message")
                            body)
         attributes       (persistent!
-                          (cond-> (util/into!
-                                   (transient {})
-                                   (filter
-                                    (fn [[k _]]
-                                      (or (.-captureAllContextDataAttributes appender)
-                                          (contains? (.-captureContextDataAttributes appender) k))))
-                                   cdata)
+                          (cond-> (transient {})
+                            (.-matchContextDataAttribute appender)
+                            (util/into! (filter (fn [[k _]]
+                                                  ((.-matchContextDataAttribute appender) k)))
+                                        cdata)
+
                             (.-captureExperimentalAttributes appender)
                             (assoc! ThreadIncubatingAttributes/THREAD_NAME
                                     (.getThreadName event)
                                     ThreadIncubatingAttributes/THREAD_ID
                                     (.getThreadId event))
 
-                            (and map-message? (.-captureMapMessageAttributes appender))
-                            (util/into! (comp (remove (fn [[k _]]
+                            (and map-message? (.-matchMapMessageAttribute appender))
+                            (util/into! (comp (filter (fn [[k _]]
+                                                        ((.-matchMapMessageAttribute appender) k)))
+                                              (remove (fn [[k _]]
                                                         (and check-msg-attr? (= k "message"))))
                                               (map (fn [[k v]] [(str "log4j.map_message." k)
                                                                 (str v)])))

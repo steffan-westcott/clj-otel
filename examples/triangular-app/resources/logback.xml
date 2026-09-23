@@ -14,7 +14,7 @@
     <!-- OTLP debug is written to console (see deps.edn), so log messages will appear twice -->
     <appender name="OTEL" class="steffan_westcott.clj_otel.adapter.logback.CljOtelAppender">
         <captureExperimentalAttributes>true</captureExperimentalAttributes>
-        <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+        <keyValuePairAttributesIncluded>*</keyValuePairAttributesIncluded>
     </appender>
 
     <!-- Configure an appender named OTEL-MDC that adds context to MDC of wrapped appenders -->

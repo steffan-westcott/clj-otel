@@ -5,9 +5,7 @@ import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import clojure.java.api.Clojure;
 import clojure.lang.IFn;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
@@ -28,14 +26,36 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     public boolean captureMarkerAttribute;
 
     /**
-     * If true, include Logback KeyValuePairs as attributes (default: false).
+     * Set of globs for keys of Logback KeyValuePairs to exclude as log record attributes, or default <code>null</code> if none defined.
+     * Takes precedence over <code>keyValuePairAttributesIncluded</code>.
      */
-    public boolean captureKeyValuePairAttributes;
+    public Set<String> keyValuePairAttributesExcluded;
 
     /**
-     * If true, include logger context properties as attributes (default: false)
+     * Set of globs for keys of Logback KeyValuePairs to include as log record attributes, or default <code>null</code> if none defined.
      */
-    public boolean captureLoggerContext;
+    public Set<String> keyValuePairAttributesIncluded;
+
+    /**
+     * Predicate for keys of Logback KeyValuePairs to include as log record attributes, or default <code>null</code> if none defined.
+     */
+    public IFn matchKeyValuePairAttribute;
+
+    /**
+     * Set of globs for keys of Logback context properties to exclude as log record attributes, or default <code>null</code> if none defined.
+     * Takes precedence over <code>loggerContextAttributesIncluded</code>.
+     */
+    public Set<String> loggerContextAttributesExcluded;
+
+    /**
+     * Set of globs for keys of Logback context properties to include as log record attributes, or default <code>null</code> if none defined.
+     */
+    public Set<String> loggerContextAttributesIncluded;
+
+    /**
+     * Predicate for keys of Logback context properties to include as log record attributes, or default <code>null</code> if none defined.
+     */
+    public IFn matchLoggerContextAttribute;
 
     /**
      * If true, include message template as an attribute (default: false)
@@ -48,31 +68,74 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     public boolean captureArguments;
 
     /**
-     * If true, include Logstash markers as attributes (default: false)
+     * Set of globs for keys of Logstash marker attribute to exclude as log record attributes, or default <code>null</code> if none defined.
+     * Takes precedence over <code>logstashMarkerAttributesIncluded</code>.
      */
-    public boolean captureLogstashMarkerAttributes;
+    public Set<String> logstashMarkerAttributesExcluded;
 
     /**
-     * If true, include structured Logstash markers as attributes (default: false)
+     * Set of globs for keys of Logstash marker attributes to include as log record attributes, or default <code>null</code> if none defined.
      */
-    public boolean captureLogstashStructuredArguments;
+    public Set<String> logstashMarkerAttributesIncluded;
 
     /**
-     * if true, include all MDC as attributes (default: false)
+     * Predicate for keys of Logstash marker attributes to include as log record attributes, or default <code>null</code> if none defined.
      */
-    public boolean captureAllMdcAttributes;
+    public IFn matchLogstashMarkerAttribute;
 
     /**
-     * Set of keys of MDC to include as attributes, if <code>allMdcAttrs</code> is false (default: no keys)
+     * Set of globs for keys of Logstash structured arguments to exclude as log record attributes, or default <code>null</code> if none defined.
+     * Takes precedence over <code>logstashStructuredArgumentAttributesIncluded</code>.
      */
-    public Set<String> captureMdcAttributes = Collections.emptySet();
+    public Set<String> logstashStructuredArgumentAttributesExcluded;
 
-    private static final String NAMESPACE = "steffan-westcott.clj-otel.adapter.logback";
+    /**
+     * Set of globs for keys of Logstash structured arguments to include as log record attributes, or default <code>null</code> if none defined.
+     */
+    public Set<String> logstashStructuredArgumentAttributesIncluded;
+
+    /**
+     * Predicate for keys of Logstash structured arguments to include as log record attributes, or default <code>null</code> if none defined.
+     */
+    public IFn matchLogstashStructuredArgumentsAttribute;
+
+    /**
+     * Set of globs for keys of MDC attributes to exclude as log record attributes, or default <code>null</code> if none defined.
+     * Takes precedence over <code>mdcAttributesIncluded</code>.
+     */
+    public Set<String> mdcAttributesExcluded;
+
+    /**
+     * Set of globs for keys of MDC attributes to include as log record attributes, or default <code>null</code> if none defined.
+     */
+    public Set<String> mdcAttributesIncluded;
+
+    /**
+     * Predicate for keys of MDC attributes to include as log record attributes, or default <code>null</code> if none defined.
+     */
+    public IFn matchMdcAttribute;
+
+    private static final String ADAPTER_NAMESPACE = "steffan-westcott.clj-otel.adapter.logback";
     private final IFn append;
+    private static final String GLOB_NAMESPACE = "steffan-westcott.clj-otel.instrumentation.api.config.glob";
+    private final IFn maybeGlob;
 
     public CljOtelAppender() {
-        Clojure.var("clojure.core", "require").invoke(Clojure.read(NAMESPACE));
-        append = Clojure.var(NAMESPACE, "append");
+        Clojure.var("clojure.core", "require").invoke(Clojure.read(ADAPTER_NAMESPACE));
+        append = Clojure.var(ADAPTER_NAMESPACE, "append");
+        Clojure.var("clojure.core", "require").invoke(Clojure.read(GLOB_NAMESPACE));
+        this.maybeGlob = Clojure.var(GLOB_NAMESPACE, "maybe-glob");
+    }
+
+    @Override
+    public void start()
+    {
+        this.matchKeyValuePairAttribute = invokeMaybeGlob(keyValuePairAttributesExcluded, keyValuePairAttributesIncluded);
+        this.matchLoggerContextAttribute = invokeMaybeGlob(loggerContextAttributesExcluded, loggerContextAttributesIncluded);
+        this.matchLogstashMarkerAttribute = invokeMaybeGlob(logstashMarkerAttributesExcluded, logstashMarkerAttributesIncluded);
+        this.matchLogstashStructuredArgumentsAttribute = invokeMaybeGlob(logstashStructuredArgumentAttributesExcluded, logstashStructuredArgumentAttributesIncluded);
+        this.matchMdcAttribute = invokeMaybeGlob(mdcAttributesExcluded, mdcAttributesIncluded);
+        super.start();
     }
 
     /**
@@ -105,13 +168,22 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         this.captureMarkerAttribute = captureMarkerAttribute;
     }
 
-    public void setCaptureKeyValuePairAttributes(boolean captureKeyValuePairAttributes) {
-        this.captureKeyValuePairAttributes = captureKeyValuePairAttributes;
+    public void setKeyValuePairAttributesExcluded(String keyValuePairAttrsExcludedString) {
+        this.keyValuePairAttributesExcluded = trimmedSet(keyValuePairAttrsExcludedString);
     }
 
-    public void setCaptureLoggerContext(boolean captureLoggerContext) {
-        this.captureLoggerContext = captureLoggerContext;
+    public void setKeyValuePairAttributesIncluded(String keyValuePairAttrsIncludedString) {
+        this.keyValuePairAttributesIncluded = trimmedSet(keyValuePairAttrsIncludedString);
     }
+
+    public void setLoggerContextAttributesExcluded(String loggerContextAttrsExcludedString) {
+        this.loggerContextAttributesExcluded = trimmedSet(loggerContextAttrsExcludedString);
+    }
+
+    public void setLoggerContextAttributesIncluded(String loggerContextAttrsIncludedString) {
+        this.loggerContextAttributesIncluded = trimmedSet(loggerContextAttrsIncludedString);
+    }
+
     public void setCaptureTemplate(boolean captureTemplate) {
         this.captureTemplate = captureTemplate;
     }
@@ -120,16 +192,35 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         this.captureArguments = captureArguments;
     }
 
-    public void setCaptureLogstashMarkerAttributes(boolean captureLogstashMarkerAttributes) {
-        this.captureLogstashMarkerAttributes = captureLogstashMarkerAttributes;
+    public void setLogstashMarkerAttributesExcluded(String logstashMarkerAttrsExcludedString) {
+        this.logstashMarkerAttributesExcluded = trimmedSet(logstashMarkerAttrsExcludedString);
     }
 
-    public void setCaptureLogstashStructuredArguments(boolean captureLogstashStructuredArguments) {
-        this.captureLogstashStructuredArguments = captureLogstashStructuredArguments;
+    public void setLogstashMarkerAttributesIncluded(String logstashMarkerAttrsIncludedString) {
+        this.logstashMarkerAttributesIncluded = trimmedSet(logstashMarkerAttrsIncludedString);
     }
 
-    public void setCaptureMdcAttributes(String attributes) {
-        captureMdcAttributes = trimmedSet(attributes);
-        captureAllMdcAttributes = captureMdcAttributes.size() == 1 && captureMdcAttributes.contains("*");
+    public void setLogstashStructuredArgumentAttributesExcluded(String logstashStructuredArgumentAttrsExcludedString) {
+        this.logstashStructuredArgumentAttributesExcluded = trimmedSet(logstashStructuredArgumentAttrsExcludedString);
     }
+
+    public void setLogstashStructuredArgumentAttributesIncluded(String logstashStructuredArgumentAttrsIncludedString) {
+        this.logstashStructuredArgumentAttributesIncluded = trimmedSet(logstashStructuredArgumentAttrsIncludedString);
+    }
+
+    public void setMdcAttributesExcluded(String mdcAttrsExcludedString) {
+        this.mdcAttributesExcluded = trimmedSet(mdcAttrsExcludedString);
+    }
+
+    public void setMdcAttributesIncluded(String mdcAttrsIncludedString) {
+        this.mdcAttributesIncluded = trimmedSet(mdcAttrsIncludedString);
+    }
+
+    private IFn invokeMaybeGlob(Collection<String> excluded, Collection<String> included) {
+        HashMap<Object, Object> opts = new HashMap<>();
+        opts.put(Clojure.read(":excluded"), excluded);
+        opts.put(Clojure.read(":included"), included);
+        return (IFn) maybeGlob.invoke(opts);
+    }
+
 }

@@ -1,7 +1,7 @@
-(ns steffan-westcott.clj-otel.instrumentation.api.config
+(ns steffan-westcott.clj-otel.instrumentation.api.config.props
   "Functions for reading configuration properties from system properties or
    environment variables. Mirrors same functionality as
-   `io.opentelemetry.instrumentation.api.internal.ConfigPropertiesUtil`."
+   `io.opentelemetry.instrumentation.api.internal.SystemProperty`."
   (:require [clojure.string :as str])
   (:import (java.util Locale)))
 

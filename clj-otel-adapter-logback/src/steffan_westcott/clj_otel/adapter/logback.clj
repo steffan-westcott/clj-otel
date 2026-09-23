@@ -6,8 +6,8 @@
             [steffan-westcott.clj-otel.api.logs.log-record :as log-record]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]
-            [steffan-westcott.clj-otel.instrumentation.api.config :as inst-config]
             [steffan-westcott.clj-otel.instrumentation.api.config.logging :as config-logging]
+            [steffan-westcott.clj-otel.instrumentation.api.config.props :as config-props]
             [steffan-westcott.clj-otel.util :as util])
   (:import (ch.qos.logback.classic.spi ILoggingEvent LoggerContextVO LoggingEvent ThrowableProxy)
            (io.opentelemetry.api.baggage BaggageEntry)
@@ -56,7 +56,7 @@
 
 (defn- add-baggage?
   []
-  (inst-config/get-boolean "otel.instrumentation.logback-mdc.add-baggage" false))
+  (config-props/get-boolean "otel.instrumentation.logback-mdc.add-baggage" false))
 
 (defn- instance-LogStashMarker?
   [x]
@@ -183,6 +183,11 @@
                           (transient {})
                           markers)))
 
+(defn- filter-keys
+  [pred]
+  (filter (fn [[k _]]
+            (pred k))))
+
 (defn append
   "Appends a `ILoggingEvent` by emitting as a log record. If [[initialize]] has
    been evaluated, the log record is emitted immediately (but not necessarily
@@ -197,20 +202,19 @@
         markers (flatten-markers (util/compile-if supports-MarkerList?
                                                   (.getMarkerList event)
                                                   (list (.getMarker event))))
-        kv-pairs (util/compile-if supports-KeyValuePairs?
-                                  (util/into! (transient {})
-                                              (map (fn [^KeyValuePair kvp] [(.-key kvp)
-                                                                            (.-value kvp)]))
-                                              (when (.-captureKeyValuePairAttributes appender)
-                                                (.getKeyValuePairs event)))
-                                  (transient {}))
+        kv-pairs (util/compile-if
+                  supports-KeyValuePairs?
+                  (cond-> (transient {})
+                    (.-matchKeyValuePairAttribute appender)
+                    (util/into! (comp (map (fn [^KeyValuePair kvp] [(.-key kvp) (.-value kvp)]))
+                                      (filter-keys (.-matchKeyValuePairAttribute appender)))
+                                (.getKeyValuePairs event)))
+                  (transient {}))
         attributes
         (persistent!
-         (cond-> (util/into! kv-pairs
-                             (filter (fn [[k _]]
-                                       (or (.-captureAllMdcAttributes appender)
-                                           (contains? (.-captureMdcAttributes appender) k))))
-                             mdc)
+         (cond-> kv-pairs
+           (.-matchMdcAttribute appender) (util/into! (filter-keys (.-matchMdcAttribute appender))
+                                                      mdc)
            (.-captureExperimentalAttributes appender)
            (assoc! ThreadIncubatingAttributes/THREAD_ID
                    (get mdc mdc-thread-id-key)
@@ -221,19 +225,25 @@
            (.-captureMarkerAttribute appender)
            (assoc! "logback.marker"
                    (->> markers
-                        (remove #(and (.-captureLogstashMarkerAttributes appender)
+                        (remove #(and (.-matchLogstashMarkerAttribute appender)
                                       (instance-LogStashMarker? %)))
                         (mapv #(.getName ^Marker %))))
 
-           (.-captureLogstashMarkerAttributes appender) (util/into! (logstash-marker-attrs markers))
-           (.-captureLoggerContext appender) (util/into! (.getPropertyMap (.getLoggerContextVO
-                                                                           event)))
+           (.-matchLogstashMarkerAttribute appender)
+           (util/into! (filter-keys (.-matchLogstashMarkerAttribute appender))
+                       (logstash-marker-attrs markers))
+
+           (.-matchLoggerContextAttribute appender)
+           (util/into! (filter-keys (.-matchLoggerContextAttribute appender))
+                       (.getPropertyMap (.getLoggerContextVO event)))
+
            (.-captureTemplate appender) (assoc! "log.body.template" (.getMessage event))
            (.-captureArguments appender) (assoc! "log.body.parameters"
                                                  (mapv str (.getArgumentArray event)))
            (and supports-logstash-StructuredArgument?
-                (.-captureLogstashStructuredArguments appender))
-           (util/into! (logstash-marker-attrs (.getArgumentArray event)))))
+                (.-matchLogstashStructuredArgumentsAttribute appender))
+           (util/into! (filter-keys (.-matchLogstashStructuredArgumentsAttribute appender))
+                       (logstash-marker-attrs (.getArgumentArray event)))))
 
         event-name (get attributes "otel.event.name")
         attributes (dissoc attributes "otel.event.name")]
