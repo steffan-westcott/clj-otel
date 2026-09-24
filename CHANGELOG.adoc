@@ -29,6 +29,8 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 - [NEW] Modules `clj-otel-adapter-log4j` and `clj-otel-adapter-logback`, bound context aware appender and context data provider for Log4j and Logback.
 New examples `permutations-app` and `triangular-app` demonstrate using `clj-otel-adapter-logback` with and without the instrumentation agent.
 - [NEW] Module `clj-otel-instrumentation-runtime-telemetry`, replaces former modules `clj-otel-instrumentation-runtime-telemetry-java8` and `clj-otel-instrumentation-runtime-telemetry-java17`
+- [NEW] Predicate option `:request-header-attr?` to select HTTP headers by name to add as attributes to manually created server spans.
+This new option is supported by `wrap-server-span` and `server-span-interceptors` and deprecates option `:captured-request-headers`.
 - [FIX] Prevent initialization of global OpenTelemetry instance during programmatic build of OTLP exporter.
 - [FIX] Unwrap attribute values returned by `attributes/->map`
 - [FIX] Simplified `util/qualified-name` to only convert kebab case strings.

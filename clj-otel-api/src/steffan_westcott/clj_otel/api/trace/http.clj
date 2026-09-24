@@ -29,19 +29,27 @@
     (Long/parseLong s)
     (catch Throwable _)))
 
+(defn- maybe-contains
+  [xs]
+  (when (seq xs)
+    (let [literals (set xs)]
+      (fn pred [s]
+        (contains? literals s)))))
+
 (defn- merge-headers-attrs
-  [init prefix captured-headers headers]
-  (reduce (fn [m header-name]
-            (if-let [v (get headers header-name)]
+  [init prefix header-attr? headers]
+  (reduce (fn [m [k v]]
+            (if (header-attr? k)
               (assoc! m
-                      (str prefix header-name)
-                      (str/split v
-                                 (if (= "cookie" header-name)
-                                   #";"
-                                   #",")))
+                      (str prefix k)
+                      (mapv str/trim
+                            (str/split v
+                                       (if (= "cookie" k)
+                                         #";"
+                                         #","))))
               m))
           init
-          captured-headers))
+          headers))
 
 (defn- client-ip
   [forwarded x-forwarded-for remote-addr]
@@ -57,7 +65,7 @@
       remote-addr))
 
 (defn- server-request-attrs
-  [request captured-request-headers]
+  [request request-header-attr?]
   (let [{:keys [headers request-method scheme uri query-string remote-addr server-name server-port]}
         request
 
@@ -66,19 +74,20 @@
         content-length (some-> content-length
                                parse-long*)]
     (persistent! (cond-> (transient {})
-                   uri            (assoc! UrlAttributes/URL_PATH uri)
-                   request-method (assoc! HttpAttributes/HTTP_REQUEST_METHOD
-                                          (str/upper-case (name request-method)))
-                   scheme         (assoc! UrlAttributes/URL_SCHEME (name scheme))
-                   query-string   (assoc! UrlAttributes/URL_QUERY query-string)
-                   client-addr    (assoc! ClientAttributes/CLIENT_ADDRESS client-addr)
-                   user-agent     (assoc! UserAgentAttributes/USER_AGENT_ORIGINAL user-agent)
-                   content-length (assoc! HttpIncubatingAttributes/HTTP_REQUEST_BODY_SIZE
-                                          content-length)
-                   server-name    (assoc! ServerAttributes/SERVER_ADDRESS server-name)
-                   server-port    (assoc! ServerAttributes/SERVER_PORT server-port)
-                   captured-request-headers
-                   (merge-headers-attrs "http.request.header." captured-request-headers headers)))))
+                   uri                  (assoc! UrlAttributes/URL_PATH uri)
+                   request-method       (assoc! HttpAttributes/HTTP_REQUEST_METHOD
+                                                (str/upper-case (name request-method)))
+                   scheme               (assoc! UrlAttributes/URL_SCHEME (name scheme))
+                   query-string         (assoc! UrlAttributes/URL_QUERY query-string)
+                   client-addr          (assoc! ClientAttributes/CLIENT_ADDRESS client-addr)
+                   user-agent           (assoc! UserAgentAttributes/USER_AGENT_ORIGINAL user-agent)
+                   content-length       (assoc! HttpIncubatingAttributes/HTTP_REQUEST_BODY_SIZE
+                                                content-length)
+                   server-name          (assoc! ServerAttributes/SERVER_ADDRESS server-name)
+                   server-port          (assoc! ServerAttributes/SERVER_PORT server-port)
+                   request-header-attr? (merge-headers-attrs "http.request.header."
+                                                             request-header-attr?
+                                                             headers)))))
 
 (defn server-span-opts
   "Returns a span options map (a parameter for
@@ -240,16 +249,16 @@
                       raise))))
 
 (defn- wrap-server-request-attrs
-  [handler' {:keys [captured-request-headers]}]
+  [handler' {:keys [request-header-attr?]}]
   (fn handler
     ([request]
      (handler' (assoc request
                       :io.opentelemetry/server-request-attrs
-                      (server-request-attrs request captured-request-headers))))
+                      (server-request-attrs request request-header-attr?))))
     ([request respond raise]
      (handler' (assoc request
                       :io.opentelemetry/server-request-attrs
-                      (server-request-attrs request captured-request-headers))
+                      (server-request-attrs request request-header-attr?))
                respond
                raise))))
 
@@ -311,17 +320,21 @@
    | key                       | description |
    |---------------------------|-------------|
    |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
-   |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
+   |`:request-header-attr?`    | Predicate that returns true for downcased keys of HTTP request headers to be captured as attributes of manually created server spans (default: no headers captured).
+   |`:captured-request-headers`| Deprecated, use `:request-header-attr?` instead. Collection of down-cased HTTP request header keys to be captured."
   ([handler]
    (wrap-server-span handler {}))
   ([handler
     {:keys [create-span?]
      :as   create-span-opts}]
-   (cond-> handler
-     :always            (wrap-bound-context)
-     create-span?       (wrap-new-server-span create-span-opts)
-     create-span?       (wrap-server-request-attrs create-span-opts)
-     (not create-span?) (wrap-existing-server-span))))
+   (let [request-header-attr? (or (:request-header-attr? create-span-opts)
+                                  (maybe-contains (:captured-request-headers create-span-opts)))
+         create-span-opts     (assoc create-span-opts :request-header-attr? request-header-attr?)]
+     (cond-> handler
+       :always            (wrap-bound-context)
+       create-span?       (wrap-new-server-span create-span-opts)
+       create-span?       (wrap-server-request-attrs create-span-opts)
+       (not create-span?) (wrap-existing-server-span)))))
 
 (defn ^:deprecated wrap-exception-event
   "DEPRECATED - OpenTelemetry no longer recommends to record exceptions that
@@ -407,10 +420,10 @@
 ;;; Pedestal interceptors
 
 (defn- server-request-attrs-interceptor
-  [{:keys [captured-request-headers]}]
+  [{:keys [request-header-attr?]}]
   {:name  ::server-request-attrs
    :enter (fn enter [ctx]
-            (let [attrs (server-request-attrs (:request ctx) captured-request-headers)]
+            (let [attrs (server-request-attrs (:request ctx) request-header-attr?)]
               (update ctx :request assoc :io.opentelemetry/server-request-attrs attrs)))})
 
 (defn- new-server-span-interceptor
@@ -511,21 +524,25 @@
    |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains a server span created by OpenTelemetry instrumentation agent (default: false).
    |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
    |`:set-bound-context?`      | When true, sets the bound context to the context containing the server span (default: false).
-   |`:captured-request-headers`| Collection of down-cased names of request headers that are captured as attributes of manually created server spans (default: no headers captured)."
+   |`:request-header-attr?`    | Predicate that returns true for downcased keys of HTTP request headers to be captured as attributes of manually created server spans (default: no headers captured).
+   |`:captured-request-headers`| Deprecated, use `:request-header-attr?` instead. Collection of down-cased HTTP request header keys to be captured."
   ([]
    (server-span-interceptors {}))
   ([{:keys [create-span? set-current-context? set-bound-context?]
      :or   {set-current-context? true}
      :as   create-span-opts}]
-   (cond-> []
-     create-span?       (conj (server-request-attrs-interceptor create-span-opts))
-     create-span?       (conj (new-server-span-interceptor create-span-opts))
-     create-span?       (conj (response-data-interceptor))
-     (not create-span?) (conj (existing-server-span-interceptor))
-     :always            (conj (execution-id-interceptor))
-     :always            (conj (copy-context-interceptor))
-     (and create-span? set-current-context?) (conj (current-context-interceptor))
-     set-bound-context? (conj (bound-context-interceptor)))))
+   (let [request-header-attr? (or (:request-header-attr? create-span-opts)
+                                  (maybe-contains (:captured-request-headers create-span-opts)))
+         create-span-opts     (assoc create-span-opts :request-header-attr? request-header-attr?)]
+     (cond-> []
+       create-span?       (conj (server-request-attrs-interceptor create-span-opts))
+       create-span?       (conj (new-server-span-interceptor create-span-opts))
+       create-span?       (conj (response-data-interceptor))
+       (not create-span?) (conj (existing-server-span-interceptor))
+       :always            (conj (execution-id-interceptor))
+       :always            (conj (copy-context-interceptor))
+       (and create-span? set-current-context?) (conj (current-context-interceptor))
+       set-bound-context? (conj (bound-context-interceptor))))))
 
 (defn route-interceptor
   "Returns a Pedestal interceptor that adds a matched route to the server span
