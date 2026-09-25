@@ -218,33 +218,43 @@
 
 ;;; Ring middleware
 
+(defn- wrap-response-data
+  [handler' _create-span-opts]
+  (fn handler
+    ([request]
+     (try
+       (let [response (handler' request)]
+         (add-server-span-response-data! response)
+         response)
+       (catch Throwable e
+         (add-server-span-response-data! {:status 500
+                                          :io.opentelemetry.api.trace.span.attrs/error-type e})
+         (throw e))))
+    ([{:keys [io.opentelemetry/server-span-context]
+       :as   request} respond' raise']
+     (handler' request
+               (fn respond [response]
+                 (add-server-span-response-data! response {:context server-span-context})
+                 (respond' response))
+               (fn raise [e]
+                 (add-server-span-response-data!
+                  {:status 500
+                   :io.opentelemetry.api.trace.span.attrs/error-type e}
+                  {:context server-span-context})
+                 (raise' e))))))
+
 (defn- wrap-new-server-span
   [handler' create-span-opts]
   (fn handler
     ([request]
      (span/with-span! (server-span-opts request create-span-opts)
-       (try
-         (let [response (handler'
-                         (assoc request :io.opentelemetry/server-span-context (context/dyn)))]
-           (add-server-span-response-data! response)
-           response)
-         (catch Throwable e
-           (add-server-span-response-data! {:status 500
-                                            :io.opentelemetry.api.trace.span.attrs/error-type e})
-           (throw e)))))
+       (handler' (assoc request :io.opentelemetry/server-span-context (context/dyn)))))
     ([request respond raise]
      (span/async-span (server-span-opts request create-span-opts)
                       (fn f [context respond* raise*]
                         (handler' (assoc request :io.opentelemetry/server-span-context context)
-                                  (fn respond [response]
-                                    (add-server-span-response-data! response {:context context})
-                                    (respond* response))
-                                  (fn raise [e]
-                                    (add-server-span-response-data!
-                                     {:status 500
-                                      :io.opentelemetry.api.trace.span.attrs/error-type e}
-                                     {:context context})
-                                    (raise* e))))
+                                  respond*
+                                  raise*))
                       respond
                       raise))))
 
@@ -332,6 +342,7 @@
          create-span-opts     (assoc create-span-opts :request-header-attr? request-header-attr?)]
      (cond-> handler
        :always            (wrap-bound-context)
+       create-span?       (wrap-response-data create-span-opts)
        create-span?       (wrap-new-server-span create-span-opts)
        create-span?       (wrap-server-request-attrs create-span-opts)
        (not create-span?) (wrap-existing-server-span)))))
