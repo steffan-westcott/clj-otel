@@ -1,6 +1,7 @@
 (ns example.average-service.server
   "HTTP server components."
-  (:require [example.average-service.async-cf-bound.routes :as async-cf-bound-routes]
+  (:require [clojure.string :as str]
+            [example.average-service.async-cf-bound.routes :as async-cf-bound-routes]
             [example.average-service.async-cf-explicit.routes :as async-cf-explicit-routes]
             [example.average-service.async-chan-bound.routes :as async-chan-bound-routes]
             [example.average-service.async-chan-explicit.routes :as async-chan-explicit-routes]
@@ -18,16 +19,19 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
 
 
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
+
+
 (defn- using-bound-context?
   []
   (boolean (#{"async-cf-bound" "async-chan-bound" "async-d-bound"} (:server-impl config))))
 
 
-
 (defn- sync?
   []
   (= "sync" (:server-impl config)))
-
 
 
 (defn- routes
@@ -44,7 +48,6 @@
     "sync"              (sync-routes/routes)))
 
 
-
 (defn connector
   "Starts the Jetty server and returns the started connector."
   [components]
@@ -56,9 +59,11 @@
           ;; As this application is not run with the OpenTelemetry instrumentation
           ;; agent, create a server span for each request. The current context is
           ;; set if all request handling is processed synchronously.
-          (trace-http/server-span-interceptors {:create-span?         true
-                                                :set-current-context? (sync?)
-                                                :set-bound-context?   (using-bound-context?)})
+          (trace-http/server-span-interceptors {:create-span?          true
+                                                :set-current-context?  (sync?)
+                                                :set-bound-context?    (using-bound-context?)
+                                                :request-header-attr?  not-pseudo-header?
+                                                :response-header-attr? not-pseudo-header?})
 
           ;; Add metric that records the number of active HTTP requests
           [(metrics-http-server/active-requests-interceptor)]
@@ -98,7 +103,6 @@
 
         (jetty/create-connector jetty-options)
         (conn/start!))))
-
 
 
 (defn stop-connector

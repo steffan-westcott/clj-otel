@@ -11,6 +11,11 @@
             [steffan-westcott.clj-otel.context :as context]))
 
 
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
+
+
 (defn- <client-request
   "Make an asynchronous HTTP request using `hato` and return a deferred of the
    response."
@@ -39,7 +44,9 @@
                                    (bound-fn [response]
 
                                      ;; Add HTTP response data to the client span.
-                                     (trace-http/add-client-span-response-data! response)
+                                     (trace-http/add-client-span-response-data!
+                                      response
+                                      {:response-header-attr? not-pseudo-header?})
 
                                      (respond* response))
                                    (bound-fn [e]
@@ -51,7 +58,6 @@
                                      (raise* e)))))
                               respond
                               raise)))))
-
 
 
 (defn <get-sum

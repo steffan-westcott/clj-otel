@@ -11,6 +11,11 @@
   (:import (java.util.concurrent CancellationException CompletableFuture)))
 
 
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
+
+
 (defn- <client-request
   "Make an asynchronous HTTP request using `hato` and return a task of the
    response."
@@ -30,7 +35,9 @@
 
                          ;; Add HTTP response data to the client span.
                          (trace-http/add-client-span-response-data! response
-                                                                    {:context context})
+                                                                    {:context context
+                                                                     :response-header-attr?
+                                                                     not-pseudo-header?})
 
                          (respond response))
                raise   (fn [e]
@@ -57,7 +64,6 @@
                 (raise (CancellationException.))))))
        respond
        raise))))
-
 
 
 (defn <get-sum

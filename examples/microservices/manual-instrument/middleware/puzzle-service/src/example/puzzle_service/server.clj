@@ -1,6 +1,7 @@
 (ns example.puzzle-service.server
   "HTTP server and handler components."
-  (:require [example.puzzle-service.async-cf-bound.routes :as async-cf-bound-routes]
+  (:require [clojure.string :as str]
+            [example.puzzle-service.async-cf-bound.routes :as async-cf-bound-routes]
             [example.puzzle-service.async-cf-explicit.routes :as async-cf-explicit-routes]
             [example.puzzle-service.async-chan-bound.routes :as async-chan-bound-routes]
             [example.puzzle-service.async-chan-explicit.routes :as async-chan-explicit-routes]
@@ -21,6 +22,11 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span])
   (:import (org.eclipse.jetty.server Server)))
+
+
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
 
 
 (defn- async?
@@ -93,7 +99,10 @@
                      ;; Wrap handling of all requests, including those which have no matching
                      ;; route. As this application is not run with the OpenTelemetry
                      ;; instrumentation agent, create a server span for each request.
-                     {:middleware [[trace-http/wrap-server-span {:create-span? true}]
+                     {:middleware [[trace-http/wrap-server-span
+                                    {:create-span?          true
+                                     :request-header-attr?  not-pseudo-header?
+                                     :response-header-attr? not-pseudo-header?}]
                                    [metrics-http-server/wrap-active-requests]]}))
 
 

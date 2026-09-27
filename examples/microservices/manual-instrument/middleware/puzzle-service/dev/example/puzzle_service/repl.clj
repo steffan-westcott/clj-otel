@@ -40,15 +40,17 @@
 
 
 (defn process-response
-  "Returns the status and decoded JSON body of a response, or client error."
-  [{:keys [status body error]}]
+  "Returns the status, headers and decoded JSON body of a response, or client
+   error."
+  [{:keys [status headers body error]}]
   (if error
     {:error error}
-    {:status status
-     :body   (and body
-                  (json/read-str body
-                                 {:eof-error? false
-                                  :key-fn     keyword}))}))
+    {:status  status
+     :headers headers
+     :body    (and body
+                   (json/read-str body
+                                  {:eof-error? false
+                                   :key-fn     keyword}))}))
 
 
 #_{:clj-kondo/ignore [:unresolved-var]}

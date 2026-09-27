@@ -1,7 +1,8 @@
 (ns example.puzzle-service.async-task-explicit.requests
   "Requests to other microservices, Missionary implementation using explicit
    context."
-  (:require [example.puzzle-service.env :refer [config]]
+  (:require [clojure.string :as str]
+            [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
             [missionary.core :as m]
             [reitit.ring :as ring]
@@ -9,6 +10,11 @@
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context])
   (:import (java.util.concurrent CancellationException CompletableFuture)))
+
+
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
 
 
 (defn- <client-request
@@ -30,7 +36,9 @@
 
                          ;; Add HTTP response data to the client span.
                          (trace-http/add-client-span-response-data! response
-                                                                    {:context context})
+                                                                    {:context context
+                                                                     :response-header-attr?
+                                                                     not-pseudo-header?})
 
                          (respond response))
                raise   (fn [e]

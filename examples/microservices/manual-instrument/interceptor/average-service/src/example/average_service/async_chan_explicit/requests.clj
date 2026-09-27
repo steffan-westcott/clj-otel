@@ -11,6 +11,11 @@
             [steffan-westcott.clj-otel.context :as context]))
 
 
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
+
+
 (defn- <client-request
   "Make an asynchronous HTTP request using `hato` and return a channel of the
    response."
@@ -39,7 +44,9 @@
 
                               ;; Add HTTP response data to the client span.
                               (trace-http/add-client-span-response-data! response
-                                                                         {:context context*})
+                                                                         {:context context*
+                                                                          :response-header-attr?
+                                                                          not-pseudo-header?})
 
                               (respond* response))
                             (fn [e]

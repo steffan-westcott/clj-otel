@@ -1,7 +1,8 @@
 (ns example.puzzle-service.async-d-bound.requests
   "Requests to other microservices, Manifold implementation using bound
    context."
-  (:require [example.common.async.manifold :as d']
+  (:require [clojure.string :as str]
+            [example.common.async.manifold :as d']
             [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
             [manifold.deferred :as d]
@@ -9,6 +10,11 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
+
+
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
 
 
 (defn- <client-request
@@ -39,7 +45,9 @@
                                    (bound-fn [response]
 
                                      ;; Add HTTP response data to the client span.
-                                     (trace-http/add-client-span-response-data! response)
+                                     (trace-http/add-client-span-response-data!
+                                      response
+                                      {:response-header-attr? not-pseudo-header?})
 
                                      (respond* response))
                                    (bound-fn [e]

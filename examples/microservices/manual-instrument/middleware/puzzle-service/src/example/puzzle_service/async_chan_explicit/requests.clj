@@ -1,7 +1,8 @@
 (ns example.puzzle-service.async-chan-explicit.requests
   "Requests to other microservices, core.async implementation using explicit
    context."
-  (:require [com.xadecimal.async-style :as style]
+  (:require [clojure.string :as str]
+            [com.xadecimal.async-style :as style]
             [example.common.async.async-style :as style']
             [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
@@ -9,6 +10,11 @@
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
+
+
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
 
 
 (defn- <client-request
@@ -39,7 +45,9 @@
 
                               ;; Add HTTP response data to the client span.
                               (trace-http/add-client-span-response-data! response
-                                                                         {:context context*})
+                                                                         {:context context*
+                                                                          :response-header-attr?
+                                                                          not-pseudo-header?})
 
                               (respond* response))
                             (fn [e]

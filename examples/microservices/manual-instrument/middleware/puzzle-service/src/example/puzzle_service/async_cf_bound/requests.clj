@@ -1,13 +1,20 @@
 (ns example.puzzle-service.async-cf-bound.requests
   "Requests to other microservices, async CompletableFuture implementation
    using bound context."
-  (:require [example.puzzle-service.env :refer [config]]
+  (:require [clojure.string :as str]
+            [example.puzzle-service.env :refer [config]]
             [hato.client :as client]
             [qbits.auspex :as aus]
             [reitit.ring :as ring]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]
             [steffan-westcott.clj-otel.api.trace.span :as span]
             [steffan-westcott.clj-otel.context :as context]))
+
+
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
+
 
 (defn- <client-request
   "Make an asynchronous HTTP request using `hato` and return a
@@ -35,7 +42,8 @@
                               (trace-http/add-client-span-response-data!
                                (if e
                                  {:io.opentelemetry.api.trace.span.attrs/error-type e}
-                                 response))))))))
+                                 response)
+                               {:response-header-attr? not-pseudo-header?})))))))
 
 
 

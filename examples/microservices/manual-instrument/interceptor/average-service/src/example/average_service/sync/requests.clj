@@ -8,6 +8,11 @@
             [steffan-westcott.clj-otel.context :as context]))
 
 
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
+
+
 (defn- client-request
   "Perform a synchronous HTTP request using `hato`."
   [client request]
@@ -32,7 +37,8 @@
                          (throw e)))]
 
         ;; Add HTTP response data to the client span.
-        (trace-http/add-client-span-response-data! response)
+        (trace-http/add-client-span-response-data! response
+                                                   {:response-header-attr? not-pseudo-header?})
 
         response))))
 

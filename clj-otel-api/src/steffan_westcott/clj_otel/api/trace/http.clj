@@ -39,15 +39,14 @@
 (defn- merge-headers-attrs
   [init prefix header-attr? headers]
   (reduce (fn [m [k v]]
-            (if (header-attr? k)
-              (assoc! m
-                      (str prefix k)
-                      (mapv str/trim
-                            (str/split v
-                                       (if (= "cookie" k)
-                                         #";"
-                                         #","))))
-              m))
+            (let [k (str/lower-case k)]
+              (if (header-attr? k)
+                (assoc! m
+                        (str prefix k)
+                        (if (string? v)
+                          [v]
+                          (vec v)))
+                m)))
           init
           headers))
 
@@ -164,14 +163,15 @@
   "Adds data about the HTTP `response` to a manually created client or server
    span. Takes an options map as follows:
 
-   | key        | description |
-   |------------|-------------|
-   |`:context`  | Context containing span to add response data to (default: bound or current context).
-   |`:span-kind`| One of `:client` or `:server` (required)."
+   | key                    | description |
+   |------------------------|-------------|
+   |`:context`              | Context containing span to add response data to (default: bound or current context).
+   |`:span-kind`            | One of `:client` or `:server` (required).
+   |`:response-header-attr?`| Predicate for names of HTTP headers to add as attributes, or default nil where no attributes are added."
   ([response
-    {:keys [context span-kind]
+    {:keys [context span-kind response-header-attr?]
      :or   {context (context/dyn)}}]
-   (let [{:keys [status io.opentelemetry.api.trace.span.status/description
+   (let [{:keys [headers status io.opentelemetry.api.trace.span.status/description
                  io.opentelemetry.api.trace.span.attrs/error-type]}
          response
 
@@ -182,9 +182,12 @@
                         status))
          err-type (and error?
                        (or (and error-type (as-error-type error-type)) (and status (str status))))
-         attrs (cond-> {}
-                 status   (assoc HttpAttributes/HTTP_RESPONSE_STATUS_CODE status)
-                 err-type (assoc ErrorAttributes/ERROR_TYPE err-type))
+         attrs (persistent! (cond-> (transient {})
+                              status   (assoc! HttpAttributes/HTTP_RESPONSE_STATUS_CODE status)
+                              err-type (assoc! ErrorAttributes/ERROR_TYPE err-type)
+                              response-header-attr? (merge-headers-attrs "http.response.header."
+                                                                         response-header-attr?
+                                                                         headers)))
          span-status (when error?
                        (cond-> {:code :error}
                          description (assoc :description description)))]
@@ -196,9 +199,10 @@
   "Adds data about the HTTP `response` to a manually created client span. May
    take an options map as follows:
 
-   | key       | description |
-   |-----------|-------------|
-   |`:context` | Context containing span to add response data to (default: bound or current context)."
+   | key                    | description |
+   |------------------------|-------------|
+   |`:context`              | Context containing span to add response data to (default: bound or current context).
+   |`:response-header-attr?`| Predicate for names of HTTP headers to add as attributes, or default nil where no attributes are added."
   ([response]
    (add-client-span-response-data! response {}))
   ([response opts]
@@ -208,9 +212,10 @@
   "Adds data about the HTTP `response` to a manually created server span. May
    take an options map as follows:
 
-   | key       | description |
-   |-----------|-------------|
-   |`:context` | Context containing span to add response data to (default: bound or current context)."
+   | key                    | description |
+   |------------------------|-------------|
+   |`:context`              | Context containing span to add response data to (default: bound or current context).
+   |`:response-header-attr?`| Predicate for names of HTTP headers to add as attributes, or default nil where no attributes are added."
   ([response]
    (add-server-span-response-data! response {}))
   ([response opts]
@@ -219,12 +224,12 @@
 ;;; Ring middleware
 
 (defn- wrap-response-data
-  [handler' _create-span-opts]
+  [handler' {:keys [response-header-attr?]}]
   (fn handler
     ([request]
      (try
        (let [response (handler' request)]
-         (add-server-span-response-data! response)
+         (add-server-span-response-data! response {:response-header-attr? response-header-attr?})
          response)
        (catch Throwable e
          (add-server-span-response-data! {:status 500
@@ -234,7 +239,9 @@
        :as   request} respond' raise']
      (handler' request
                (fn respond [response]
-                 (add-server-span-response-data! response {:context server-span-context})
+                 (add-server-span-response-data! response
+                                                 {:context server-span-context
+                                                  :response-header-attr? response-header-attr?})
                  (respond' response))
                (fn raise [e]
                  (add-server-span-response-data!
@@ -331,6 +338,7 @@
    |---------------------------|-------------|
    |`:create-span?`            | When true, manually creates a new server span. Otherwise, assumes current context contains an existing server span created by OpenTelemetry instrumentation agent (default: false).
    |`:request-header-attr?`    | Predicate that returns true for downcased keys of HTTP request headers to be captured as attributes of manually created server spans (default: no headers captured).
+   |`:response-header-attr?`   | Predicate that returns true for downcased keys of HTTP response headers to be captured as attributes of manually created server spans (default: no headers captured).
    |`:captured-request-headers`| Deprecated, use `:request-header-attr?` instead. Collection of down-cased HTTP request header keys to be captured."
   ([handler]
    (wrap-server-span handler {}))
@@ -444,11 +452,13 @@
                            (server-span-opts (:request ctx) create-span-opts))))
 
 (defn- response-data-interceptor
-  []
+  [{:keys [response-header-attr?]}]
   {:name  ::response-data
    :leave (fn leave [{:keys [io.opentelemetry/server-span-context response]
                       :as   ctx}]
-            (add-server-span-response-data! response {:context server-span-context})
+            (add-server-span-response-data! response
+                                            {:context server-span-context
+                                             :response-header-attr? response-header-attr?})
             ctx)
    :error (fn error [{:keys [io.opentelemetry/server-span-context]
                       :as   ctx} e]
@@ -536,6 +546,7 @@
    |`:set-current-context?`    | When true and `:create-span?` is also true, sets the current context to the context containing the created server span. Should only be set to `true` if all requests handled by this interceptor will be processed synchronously (default: true).
    |`:set-bound-context?`      | When true, sets the bound context to the context containing the server span (default: false).
    |`:request-header-attr?`    | Predicate that returns true for downcased keys of HTTP request headers to be captured as attributes of manually created server spans (default: no headers captured).
+   |`:response-header-attr?`   | Predicate that returns true for downcased keys of HTTP response headers to be captured as attributes of manually created server spans (default: no headers captured).
    |`:captured-request-headers`| Deprecated, use `:request-header-attr?` instead. Collection of down-cased HTTP request header keys to be captured."
   ([]
    (server-span-interceptors {}))
@@ -548,7 +559,7 @@
      (cond-> []
        create-span?       (conj (server-request-attrs-interceptor create-span-opts))
        create-span?       (conj (new-server-span-interceptor create-span-opts))
-       create-span?       (conj (response-data-interceptor))
+       create-span?       (conj (response-data-interceptor create-span-opts))
        (not create-span?) (conj (existing-server-span-interceptor))
        :always            (conj (execution-id-interceptor))
        :always            (conj (copy-context-interceptor))

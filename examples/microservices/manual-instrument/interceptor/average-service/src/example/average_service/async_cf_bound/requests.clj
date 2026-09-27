@@ -10,6 +10,11 @@
             [steffan-westcott.clj-otel.context :as context]))
 
 
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
+
+
 (defn- <client-request
   "Make an asynchronous HTTP request using `hato` and return a
    `CompletableFuture` of the response."
@@ -36,7 +41,8 @@
                               (trace-http/add-client-span-response-data!
                                (if e
                                  {:io.opentelemetry.api.trace.span.attrs/error-type e}
-                                 response))))))))
+                                 response)
+                               {:response-header-attr? not-pseudo-header?})))))))
 
 
 

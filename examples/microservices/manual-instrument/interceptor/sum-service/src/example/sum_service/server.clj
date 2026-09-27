@@ -1,6 +1,7 @@
 (ns example.sum-service.server
   "HTTP server components."
-  (:require [example.common.async.interceptor :as common-interceptor]
+  (:require [clojure.string :as str]
+            [example.common.async.interceptor :as common-interceptor]
             [example.sum-service.env :refer [config]]
             [example.sum-service.routes :as routes]
             [io.pedestal.connector :as conn]
@@ -9,6 +10,11 @@
             [io.pedestal.http.route :as route]
             [steffan-westcott.clj-otel.api.metrics.http.server :as metrics-http-server]
             [steffan-westcott.clj-otel.api.trace.http :as trace-http]))
+
+
+(defn- not-pseudo-header?
+  [name]
+  (not (str/starts-with? name ":")))
 
 
 (defn connector
@@ -23,7 +29,9 @@
           ;; agent, create a server span for each request. Because all request
           ;; processing for this service is synchronous, the current context is
           ;; set for each request.
-          (trace-http/server-span-interceptors {:create-span? true})
+          (trace-http/server-span-interceptors {:create-span?          true
+                                                :request-header-attr?  not-pseudo-header?
+                                                :response-header-attr? not-pseudo-header?})
 
           ;; Add metric that records the number of active HTTP requests
           [(metrics-http-server/active-requests-interceptor)]
