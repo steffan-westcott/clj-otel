@@ -449,17 +449,25 @@ Follow the guide below to add a bound context aware Log4J appender and context d
  :deps {com.github.steffan-westcott/clj-otel-adapter-log4j {:mvn/version "0.2.11"}}}
 ----
 
-* If you are using the OpenTelemetry instrumentation agent, disable its built-in Log4J support to prevent conflicts :
+* If you are using the OpenTelemetry instrumentation agent, disable its built-in Log4J support to prevent conflicts and delay the agent performing JMX discovery:
++
+WARNING: This delay is required if the application configures java.util.logging, perhaps to redirect to Log4J, and there is a practical time gap between starting the JVM and the application initialising logging e.g. REPL interaction.
+The agent does not have access to Clojure's dynamic classes, so the application itself must eagerly initialize the Log4J appender in preparation for redirected java.util.logging messages.
+The delay is intended to prevent the agent using `java.util.logging.LogManager` before it has been initialized by the application.
 +
 .`deps.edn`
 [source,clojure]
 ----
 {;; ...
- :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
-                             "-Dotel.instrumentation.log4j-appender.enabled=false"
-                             "-Dotel.instrumentation.log4j-context-data.enabled=false"
-                             ;; ...
-                                ]}}}
+ :aliases {:otel {:jvm-opts
+       ["-javaagent:opentelemetry-javaagent.jar"
+        "-Dotel.instrumentation.log4j-appender.enabled=false"
+        "-Dotel.instrumentation.log4j-context-data.enabled=false"
+        ;;
+        "-Dotel.jmx.discovery.delay=30000" ; allow more time to initialize logging
+        "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager" ; redirect j.u.l
+              ;; ...
+        ]}}}
 ----
 
 * Configure the appender, https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library#settings-for-the-log4j-appender[configuration options] match those for the OpenTelemetry Java Log4J appender :
@@ -469,7 +477,7 @@ Follow the guide below to add a bound context aware Log4J appender and context d
 ----
 appender.otel.name = OTEL
 appender.otel.type = CljOtel
-appender.otel.captureMapMessageAttributes = true
+appender.otel.captureExperimentalAttributes = true
 # ... more options
 
 rootLogger.appenderRef.otel.ref = OTEL
@@ -487,7 +495,7 @@ rootLogger.appenderRef.otel.ref = OTEL
              ))
 
 (defn init-otel []
-  (log4j/initialize) ; SDK has already been initialized by agent
+  (log4j/initialize) ; Must eval this before agent performs JMX discovery
   (log/info "OpenTelemetry initialized"))
 ----
 
@@ -537,17 +545,24 @@ Follow the guide below to add a bound context aware Logback appender and MDC to 
  :deps {com.github.steffan-westcott/clj-otel-adapter-logback {:mvn/version "0.2.11"}}}
 ----
 
-* If you are using the OpenTelemetry instrumentation agent, disable its built-in Logback support to prevent conflicts :
+* If you are using the OpenTelemetry instrumentation agent, disable its built-in Logback support to prevent conflicts and delay the agent performing JMX discovery:
++
+WARNING: This delay is required if the application configures java.util.logging, perhaps to redirect to SLF4J, and there is a practical time gap between starting the JVM and the application initialising logging e.g. REPL interaction.
+The agent does not have access to Clojure's dynamic classes, so the application itself must eagerly initialize the Logback appender in preparation for redirected java.util.logging messages.
+The delay is intended to prevent the agent using `java.util.logging.LogManager` before it has been initialized by the application.
 +
 .`deps.edn`
 [source,clojure]
 ----
 {;; ...
- :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
-                             "-Dotel.instrumentation.logback-appender.enabled=false"
-                             "-Dotel.instrumentation.logback-mdc.enabled=false"
-                             ;; ...
-                                ]}}}
+ :aliases {:otel {:jvm-opts
+       ["-javaagent:opentelemetry-javaagent.jar"
+        "-Dotel.instrumentation.logback-appender.enabled=false"
+        "-Dotel.instrumentation.logback-mdc.enabled=false"
+        ;;
+        "-Dotel.jmx.discovery.delay=30000" ; allow more time to initialize logging
+                 ;; ...
+        ]}}}
 ----
 
 * Configure the appender, https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library#settings-for-the-logback-appender[configuration options] match those for the OpenTelemetry Java Logback appender :
@@ -557,7 +572,7 @@ Follow the guide below to add a bound context aware Logback appender and MDC to 
 ----
 <configuration>
   <appender name="OTEL" class="steffan_westcott.clj_otel.adapter.logback.CljOtelAppender">
-    <captureKeyValuePairAttributes>true</captureKeyValuePairAttributes>
+    <captureExperimentalAttributes>true</captureExperimentalAttributes>
     <!-- more options ... -->
   </appender>
   <appender name="OTEL-MDC" class="steffan_westcott.clj_otel.adapter.logback.CljOtelMdcAppender">
@@ -581,7 +596,7 @@ Follow the guide below to add a bound context aware Logback appender and MDC to 
              ))
 
 (defn init-otel []
-  (logback/initialize) ; SDK has already been initialized by agent
+  (logback/initialize) ; Must eval this before agent performs JMX discovery
   (log/info "OpenTelemetry initialized"))
 ----
 

@@ -18,7 +18,7 @@
            (java.util Map)
            (java.util.concurrent TimeUnit)
            (ch.qos.logback.classic Level)
-           (org.slf4j Marker)
+           (org.slf4j LoggerFactory Marker)
            (org.slf4j.event KeyValuePair)
            (steffan_westcott.clj_otel.adapter.logback CljOtelAppender)))
 
@@ -270,4 +270,5 @@
    instance has been initialized. Emits issued beforehand are added to a queue
    of delayed emits."
   []
+  (LoggerFactory/getILoggerFactory) ; eagerly create appender
   (log-record/initialize))

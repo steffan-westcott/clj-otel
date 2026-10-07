@@ -14,6 +14,7 @@
            (io.opentelemetry.api.trace Span SpanContext TraceFlags TraceState)
            (io.opentelemetry.semconv.incubating ThreadIncubatingAttributes)
            (java.util.concurrent TimeUnit)
+           (org.apache.logging.log4j LogManager)
            (org.apache.logging.log4j.core LogEvent)
            (org.apache.logging.log4j.core.time Instant)
            (org.apache.logging.log4j.message MapMessage Message)
@@ -158,4 +159,5 @@
    instance has been initialized. Emits issued beforehand are added to a queue
    of delayed emits."
   []
+  (LogManager/getContext false) ; eagerly create appender
   (log-record/initialize))

@@ -21,6 +21,11 @@
            :otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
                               "-javaagent:../opentelemetry-javaagent.jar"
 
+                              ;; Delay agent use of java.util.logging.LogManager such that the application can configure it beforehand.
+                              ;; Eval (steffan-westcott.clj-otel.adapter.logback/initialize) and install SLF4JBridgeHandler before this
+                              ;; timeout!
+                              "-Dotel.jmx.discovery.delay=30000"
+
                               ;; Name the instrumented application or service
                               "-Dotel.service.name=permutations-app"
 

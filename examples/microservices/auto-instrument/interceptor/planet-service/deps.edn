@@ -31,6 +31,10 @@
  :aliases {:otel  {:jvm-opts [;; Use the OpenTelemetry instrumentation agent
                               "-javaagent:../../../../opentelemetry-javaagent.jar"
 
+                              ;; Delay agent use of java.util.logging.LogManager such that the application can configure it
+                              ;; beforehand.
+                              "-Dotel.jmx.discovery.delay=20000"
+
                               ;; Disable agent instrumentation to prevent conflict with clj-otel-adapter-log4j
                               "-Dotel.instrumentation.log4j-appender.enabled=false"
                               "-Dotel.instrumentation.log4j-context-data.enabled=false"]}
