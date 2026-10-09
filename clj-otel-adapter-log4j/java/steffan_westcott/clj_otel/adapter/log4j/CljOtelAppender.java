@@ -91,7 +91,8 @@ public class CljOtelAppender extends AbstractAppender {
                                                  @PluginAttribute("mapMessageAttributesIncluded") String mapMessageAttrsIncludedString,
                                                  @PluginAttribute("captureMarkerAttribute") boolean markerAttr,
                                                  @PluginAttribute("contextDataAttributesExcluded") String contextDataAttrsExcludedString,
-                                                 @PluginAttribute("contextDataAttributesIncluded") String contextDataAttrsIncludedString) {
+                                                 @PluginAttribute("contextDataAttributesIncluded") String contextDataAttrsIncludedString,
+                                                 @PluginAttribute("numLogsCapturedBeforeOtelInstall") int _numLogsCapturedBeforeOtelInstall) {
         return new CljOtelAppender(name, filter, codeAttrs, experimentalAttrs, trimmedSet(mapMessageAttrsExcludedString),
                 trimmedSet(mapMessageAttrsIncludedString), markerAttr, trimmedSet(contextDataAttrsExcludedString),
                 trimmedSet(contextDataAttrsIncludedString));

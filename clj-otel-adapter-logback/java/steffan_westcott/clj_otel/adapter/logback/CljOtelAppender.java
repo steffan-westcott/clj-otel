@@ -216,6 +216,10 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         this.mdcAttributesIncluded = trimmedSet(mdcAttrsIncludedString);
     }
 
+    public void setNumLogsCapturedBeforeOtelInstall(int _numLogsCapturedBeforeOtelInstall) {
+        // ignored
+    }
+
     private IFn invokeMaybeGlob(Collection<String> excluded, Collection<String> included) {
         HashMap<Object, Object> opts = new HashMap<>();
         opts.put(Clojure.read(":excluded"), excluded);
