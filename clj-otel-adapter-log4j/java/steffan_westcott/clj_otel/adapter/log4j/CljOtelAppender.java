@@ -43,6 +43,16 @@ public class CljOtelAppender extends AbstractAppender {
     public final boolean captureMarkerAttribute;
 
     /**
+     * If true, include message template as an attribute
+     */
+    public final boolean captureTemplate;
+
+    /**
+     * If true, include message arguments as an attribute
+     */
+    public final boolean captureArguments;
+
+    /**
      * Predicate for keys of Log4j context data to add to log record attributes, or default <code>null</code> where no attributes are added.
      */
     public final IFn matchContextDataAttribute;
@@ -54,8 +64,8 @@ public class CljOtelAppender extends AbstractAppender {
 
     protected CljOtelAppender(String name, Filter filter, boolean captureCodeAttributes, boolean captureExperimentalAttributes,
                               Set<String> mapMessageAttrsExcluded, Set<String> mapMessageAttrsIncluded,
-                              boolean captureMarkerAttribute, Set<String> contextDataAttrsExcluded,
-                              Set<String> contextDataAttrsIncluded) {
+                              boolean captureMarkerAttribute, boolean captureTemplate, boolean captureArguments,
+                              Set<String> contextDataAttrsExcluded, Set<String> contextDataAttrsIncluded) {
         super(name, filter, null, true, Property.EMPTY_ARRAY);
 
         Clojure.var("clojure.core", "require").invoke(Clojure.read(ADAPTER_NAMESPACE));
@@ -66,6 +76,8 @@ public class CljOtelAppender extends AbstractAppender {
         this.captureCodeAttributes = captureCodeAttributes;
         this.captureExperimentalAttributes = captureExperimentalAttributes;
         this.captureMarkerAttribute = captureMarkerAttribute;
+        this.captureTemplate = captureTemplate;
+        this.captureArguments = captureArguments;
         this.matchMapMessageAttribute = invokeMaybeGlob(mapMessageAttrsExcluded, mapMessageAttrsIncluded);
         this.matchContextDataAttribute = invokeMaybeGlob(contextDataAttrsExcluded, contextDataAttrsIncluded);
     }
@@ -90,12 +102,14 @@ public class CljOtelAppender extends AbstractAppender {
                                                  @PluginAttribute("mapMessageAttributesExcluded") String mapMessageAttrsExcludedString,
                                                  @PluginAttribute("mapMessageAttributesIncluded") String mapMessageAttrsIncludedString,
                                                  @PluginAttribute("captureMarkerAttribute") boolean markerAttr,
+                                                 @PluginAttribute("captureTemplate") boolean captureTemplate,
+                                                 @PluginAttribute("captureArguments") boolean captureArguments,
                                                  @PluginAttribute("contextDataAttributesExcluded") String contextDataAttrsExcludedString,
                                                  @PluginAttribute("contextDataAttributesIncluded") String contextDataAttrsIncludedString,
                                                  @PluginAttribute("numLogsCapturedBeforeOtelInstall") int _numLogsCapturedBeforeOtelInstall) {
         return new CljOtelAppender(name, filter, codeAttrs, experimentalAttrs, trimmedSet(mapMessageAttrsExcludedString),
-                trimmedSet(mapMessageAttrsIncludedString), markerAttr, trimmedSet(contextDataAttrsExcludedString),
-                trimmedSet(contextDataAttrsIncludedString));
+                trimmedSet(mapMessageAttrsIncludedString), markerAttr, captureTemplate, captureArguments,
+                trimmedSet(contextDataAttrsExcludedString), trimmedSet(contextDataAttrsIncludedString));
     }
 
     /**

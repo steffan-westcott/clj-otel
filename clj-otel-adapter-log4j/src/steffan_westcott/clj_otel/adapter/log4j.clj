@@ -106,6 +106,8 @@
                            (if map-message?
                              (.getFormat ^MapMessage message)
                              (.getFormattedMessage message)))
+        parameters       (when message
+                           (.getParameters message))
         check-msg-attr?  (and map-message? (not (seq body)))
         body             (if check-msg-attr?
                            (.get ^MapMessage message "message")
@@ -117,12 +119,6 @@
                                                   ((.-matchContextDataAttribute appender) k)))
                                         cdata)
 
-                            (.-captureExperimentalAttributes appender)
-                            (assoc! ThreadIncubatingAttributes/THREAD_NAME
-                                    (.getThreadName event)
-                                    ThreadIncubatingAttributes/THREAD_ID
-                                    (.getThreadId event))
-
                             (and map-message? (.-matchMapMessageAttribute appender))
                             (util/into! (comp (filter (fn [[k _]]
                                                         ((.-matchMapMessageAttribute appender) k)))
@@ -132,8 +128,20 @@
                                                                 (str v)])))
                                         (.getData ^MapMessage message))
 
+                            (and (.-captureTemplate appender) (seq parameters))
+                            (assoc! "log.body.template" (.getFormat message))
+
+                            (and (.-captureArguments appender) (seq parameters))
+                            (assoc! "log.body.parameters" (mapv str parameters))
+
                             (.-captureMarkerAttribute appender)
-                            (assoc! "log4j.marker" (.getName (.getMarker event)))))
+                            (assoc! "log4j.marker" (.getName (.getMarker event)))
+
+                            (.-captureExperimentalAttributes appender)
+                            (assoc! ThreadIncubatingAttributes/THREAD_NAME
+                                    (.getThreadName event)
+                                    ThreadIncubatingAttributes/THREAD_ID
+                                    (.getThreadId event))))
         event-name       (get attributes "otel.event.name")
         attributes       (dissoc attributes "otel.event.name")]
     (log-record/emit {:logger        (get-logger-name event)
