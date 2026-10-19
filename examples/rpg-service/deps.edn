@@ -17,7 +17,7 @@
            com.github.steffan-westcott/clj-otel-api {:local/root "../../clj-otel-api"}
 
            ;; HoneyEQL EDN Query Language adapter
-           com.github.tamizhvendan/honeyeql {:mvn/version "1.0.7"}
+           com.github.tamizhvendan/honeyeql {:mvn/version "2.0.7"}
 
            ;; HikariCP JDBC connection pool
            hikari-cp/hikari-cp {:mvn/version "4.1.0"}
@@ -31,7 +31,7 @@
            org.example/common.system {:local/root "../common/system"}
 
            ;; PostgreSQL JDBC driver
-           org.postgresql/postgresql {:mvn/version "42.7.13"}
+           org.postgresql/postgresql {:mvn/version "42.7.14"}
 
            ;; Ring-Jetty web server integration
            ring/ring-jetty-adapter {:mvn/version "1.15.5"}}
