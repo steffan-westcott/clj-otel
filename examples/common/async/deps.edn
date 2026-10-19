@@ -15,7 +15,7 @@
          com.xadecimal/async-style {:mvn/version "0.4.1"}
 
          ;; Pedestal HTTP service
-         io.pedestal/pedestal.service {:mvn/version "0.8.1"}
+         io.pedestal/pedestal.service {:mvn/version "0.8.2"}
 
          ;; Asynchronous event programming
          manifold/manifold         {:mvn/version "0.5.0"}

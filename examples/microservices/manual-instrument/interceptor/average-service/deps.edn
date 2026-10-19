@@ -38,10 +38,10 @@
            io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.32.0-alpha"}
 
            ;; Pedestal HTTP server with Jetty integration
-           io.pedestal/pedestal.interceptor {:mvn/version "0.8.1"}
-           io.pedestal/pedestal.jetty {:mvn/version "0.8.1"}
-           io.pedestal/pedestal.route {:mvn/version "0.8.1"}
-           io.pedestal/pedestal.service {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.interceptor {:mvn/version "0.8.2"}
+           io.pedestal/pedestal.jetty {:mvn/version "0.8.2"}
+           io.pedestal/pedestal.route {:mvn/version "0.8.2"}
+           io.pedestal/pedestal.service {:mvn/version "0.8.2"}
 
            ;; Functional effects and streaming
            missionary/missionary {:mvn/version "b.47"}
@@ -57,9 +57,9 @@
 
            ;; Uncomment the following io.grpc deps to use them instead of OkHttp for OTLP exporter
 
-           ; io.grpc/grpc-netty-shaded {:mvn/version "1.84.0"}
-           ; io.grpc/grpc-protobuf {:mvn/version "1.84.0"}
-           ; io.grpc/grpc-stub {:mvn/version "1.84.0"}
+           ; io.grpc/grpc-netty-shaded {:mvn/version "1.85.0"}
+           ; io.grpc/grpc-protobuf {:mvn/version "1.85.0"}
+           ; io.grpc/grpc-stub {:mvn/version "1.85.0"}
 
           }
 
@@ -68,6 +68,6 @@
                               "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]}
 
            :dev   {:extra-paths ["dev"]
-                   :extra-deps  {nrepl/nrepl       {:mvn/version "1.7.0"}
+                   :extra-deps  {nrepl/nrepl       {:mvn/version "1.8.0"}
                                  http-kit/http-kit {:mvn/version "2.8.1"}}
                    :jvm-opts    ["-Dio.pedestal.dev-mode=true"]}}}
