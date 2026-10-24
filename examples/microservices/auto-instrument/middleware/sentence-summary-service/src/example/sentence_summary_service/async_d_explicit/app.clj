@@ -43,8 +43,7 @@
                     :shortest-length (apply min lengths)
                     :longest-length (apply max lengths)}]
 
-        ;; Creates log record with attributes log4j.map_message.words,
-        ;; log4j.map_message.shortest_length and log4j.map_message.longest_length
+        ;; Creates log record with attributes "words", "shortest_length" and "longest_length"
         (log/debug context* (assoc result :message "Computed sentence summary"))
 
         ;; Add more attributes to internal span

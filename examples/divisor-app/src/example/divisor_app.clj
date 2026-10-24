@@ -30,7 +30,8 @@
   "Returns the greatest common divisor of x and y."
   [x y]
   (span/with-span! [::calculating-gcd {:app.divisor/args [x y]}]
-    (log/debug {:message "About to calculate GCD"
+    (log/debug {:otel.event.name "calc"
+                :message "About to calculate GCD"
                 :x       x
                 :y       y})
     (span/add-event! "my event")

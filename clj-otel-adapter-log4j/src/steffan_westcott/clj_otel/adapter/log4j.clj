@@ -89,6 +89,20 @@
        :line (when (> line 0)
                line)})))
 
+(defn- filter-keys
+  [pred]
+  (filter (fn [[k _]]
+            (pred k))))
+
+(defn- remove-keys
+  [pred]
+  (remove (fn [[k _]]
+            (pred k))))
+
+(defn- get*
+  [ms k]
+  (first (keep #(get % k) ms)))
+
 (defn append
   "Appends a `LogEvent` by emitting as a log record. If [[initialize]] has been
    evaluated, the log record is emitted immediately (but not necessarily
@@ -101,32 +115,27 @@
                            context)
         level            (.getLevel event)
         ^Message message (.getMessage event)
-        map-message?     (and message (instance? MapMessage message))
+        map-message      (and (instance? MapMessage message) (.getData ^MapMessage message))
         body             (when message
-                           (if map-message?
+                           (if map-message
                              (.getFormat ^MapMessage message)
                              (.getFormattedMessage message)))
         parameters       (when message
                            (.getParameters message))
-        check-msg-attr?  (and map-message? (not (seq body)))
+        check-msg-attr?  (and map-message (not (seq body)))
         body             (if check-msg-attr?
                            (.get ^MapMessage message "message")
                            body)
         attributes       (persistent!
                           (cond-> (transient {})
                             (.-matchContextDataAttribute appender)
-                            (util/into! (filter (fn [[k _]]
-                                                  ((.-matchContextDataAttribute appender) k)))
-                                        cdata)
+                            (util/into! (filter-keys (.-matchContextDataAttribute appender)) cdata)
 
-                            (and map-message? (.-matchMapMessageAttribute appender))
-                            (util/into! (comp (filter (fn [[k _]]
-                                                        ((.-matchMapMessageAttribute appender) k)))
-                                              (remove (fn [[k _]]
-                                                        (and check-msg-attr? (= k "message"))))
-                                              (map (fn [[k v]] [(str "log4j.map_message." k)
-                                                                (str v)])))
-                                        (.getData ^MapMessage message))
+                            (and map-message (.-matchStructuredAttribute appender))
+                            (util/into! (comp (filter-keys (.-matchStructuredAttribute appender))
+                                              (remove-keys #(and check-msg-attr? (= % "message")))
+                                              (map (fn [[k v]] [k (str v)])))
+                                        map-message)
 
                             (and (.-captureTemplate appender) (seq parameters))
                             (assoc! "log.body.template" (.getFormat message))
@@ -141,9 +150,11 @@
                             (assoc! ThreadIncubatingAttributes/THREAD_NAME
                                     (.getThreadName event)
                                     ThreadIncubatingAttributes/THREAD_ID
-                                    (.getThreadId event))))
-        event-name       (get attributes "otel.event.name")
-        attributes       (dissoc attributes "otel.event.name")]
+                                    (.getThreadId event))
+
+                            :always (dissoc! "otel.event.name")))
+
+        event-name       (get* [map-message cdata] "otel.event.name")]
     (log-record/emit {:logger        (get-logger-name event)
                       :context       context
                       :severity      (and level

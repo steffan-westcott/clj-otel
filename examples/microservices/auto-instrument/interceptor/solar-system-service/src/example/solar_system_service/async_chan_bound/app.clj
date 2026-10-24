@@ -34,8 +34,7 @@
                             {:system/planet planet
                              :service.solar-system.report/statistic-values statistic-values}]
 
-      ;; Creates a log record with attributes log4j.map_message.planet and
-      ;; log4j.map_message.stats
+      ;; Creates a log record with attributes "planet" and "stats"
       (log/debug {:message "Formatting statistics"
                   :planet  planet
                   :stats   statistic-values})

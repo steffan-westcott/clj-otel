@@ -35,7 +35,7 @@ public class CljOtelAppender extends AbstractAppender {
     /**
      * Predicate for keys of <code>MapMessage</code> events to add to log record attributes, or default <code>null</code> where no attributes are added.
      */
-    public final IFn matchMapMessageAttribute;
+    public final IFn matchStructuredAttribute;
 
     /**
      * If true, include Log4j marker as attribute (default: false).
@@ -63,7 +63,7 @@ public class CljOtelAppender extends AbstractAppender {
     private final IFn maybeGlob;
 
     protected CljOtelAppender(String name, Filter filter, boolean captureCodeAttributes, boolean captureExperimentalAttributes,
-                              Set<String> mapMessageAttrsExcluded, Set<String> mapMessageAttrsIncluded,
+                              Set<String> structuredAttrsExcluded, Set<String> structuredAttrsIncluded,
                               boolean captureMarkerAttribute, boolean captureTemplate, boolean captureArguments,
                               Set<String> contextDataAttrsExcluded, Set<String> contextDataAttrsIncluded) {
         super(name, filter, null, true, Property.EMPTY_ARRAY);
@@ -78,7 +78,7 @@ public class CljOtelAppender extends AbstractAppender {
         this.captureMarkerAttribute = captureMarkerAttribute;
         this.captureTemplate = captureTemplate;
         this.captureArguments = captureArguments;
-        this.matchMapMessageAttribute = invokeMaybeGlob(mapMessageAttrsExcluded, mapMessageAttrsIncluded);
+        this.matchStructuredAttribute = invokeMaybeGlob(structuredAttrsExcluded, structuredAttrsIncluded);
         this.matchContextDataAttribute = invokeMaybeGlob(contextDataAttrsExcluded, contextDataAttrsIncluded);
     }
 
@@ -99,16 +99,16 @@ public class CljOtelAppender extends AbstractAppender {
                                                  @PluginElement("Filter") Filter filter,
                                                  @PluginAttribute("captureCodeAttributes") boolean codeAttrs,
                                                  @PluginAttribute("captureExperimentalAttributes") boolean experimentalAttrs,
-                                                 @PluginAttribute("mapMessageAttributesExcluded") String mapMessageAttrsExcludedString,
-                                                 @PluginAttribute("mapMessageAttributesIncluded") String mapMessageAttrsIncludedString,
+                                                 @PluginAttribute("structuredAttributesExcluded") String structuredAttrsExcludedString,
+                                                 @PluginAttribute("structuredAttributesIncluded") String structuredAttrsIncludedString,
                                                  @PluginAttribute("captureMarkerAttribute") boolean markerAttr,
                                                  @PluginAttribute("captureTemplate") boolean captureTemplate,
                                                  @PluginAttribute("captureArguments") boolean captureArguments,
                                                  @PluginAttribute("contextDataAttributesExcluded") String contextDataAttrsExcludedString,
                                                  @PluginAttribute("contextDataAttributesIncluded") String contextDataAttrsIncludedString,
                                                  @PluginAttribute("numLogsCapturedBeforeOtelInstall") int _numLogsCapturedBeforeOtelInstall) {
-        return new CljOtelAppender(name, filter, codeAttrs, experimentalAttrs, trimmedSet(mapMessageAttrsExcludedString),
-                trimmedSet(mapMessageAttrsIncludedString), markerAttr, captureTemplate, captureArguments,
+        return new CljOtelAppender(name, filter, codeAttrs, experimentalAttrs, trimmedSet(structuredAttrsExcludedString),
+                trimmedSet(structuredAttrsIncludedString), markerAttr, captureTemplate, captureArguments,
                 trimmedSet(contextDataAttrsExcludedString), trimmedSet(contextDataAttrsIncludedString));
     }
 

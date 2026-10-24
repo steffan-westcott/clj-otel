@@ -16,8 +16,7 @@
     (Thread/sleep 50)
     (let [result (reduce + 0 nums)]
 
-      ;; Will create log record with attributes log4j.map_message.nums
-      ;; and log4j.map_message.result
+      ;; Will create log record with attributes "nums" and "result"
       (log/debug {:message "Computed sum"
                   :nums    (vec nums)
                   :result  result})
