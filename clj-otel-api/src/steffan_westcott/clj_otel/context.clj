@@ -143,8 +143,6 @@
 (def ^:private map-getter
   (reify
    TextMapGetter
-     (keys [_ carrier]
-       (keys carrier))
      (get [_ carrier key]
        (some-> (get carrier (str/lower-case key))
                (str/split #",")
