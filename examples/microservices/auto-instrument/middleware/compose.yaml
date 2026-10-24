@@ -14,7 +14,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "word-length-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=word-length-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=sentence-summary"
     ports:
       - "8091:8091"      # nREPL server
     volumes:
@@ -50,7 +50,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "sentence-summary-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=sentence-summary-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=sentence-summary"
       SERVER:
     ports:
       - "8090:8090"      # nREPL server

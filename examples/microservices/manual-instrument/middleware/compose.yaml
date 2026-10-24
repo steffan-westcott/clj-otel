@@ -14,7 +14,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "random-word-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=random-word-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=puzzle"
     ports:
       - "8091:8091"      # nREPL server
     volumes:
@@ -51,7 +51,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "puzzle-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=puzzle-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=puzzle"
       SERVER:
     ports:
       - "8090:8090"      # nREPL server

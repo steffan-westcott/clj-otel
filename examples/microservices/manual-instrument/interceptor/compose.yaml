@@ -14,7 +14,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "sum-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=sum-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=average"
     volumes:
       - m2:/root/.m2
       - gitlibs:/root/.gitlibs
@@ -51,7 +51,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "average-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=average-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=average"
       SERVER:
     volumes:
       - m2:/root/.m2

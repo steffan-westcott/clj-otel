@@ -14,7 +14,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "planet-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=planet-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=solar-system"
     ports:
       - "8091:8091"      # nREPL server
     volumes:
@@ -50,7 +50,7 @@ services:
     env_file: compose.env
     environment:
       OTEL_SERVICE_NAME: "solar-system-service"
-      OTEL_RESOURCE_ATTRIBUTES: "service.instance.id=solar-system-service-1"
+      OTEL_RESOURCE_ATTRIBUTES: "service.namespace=solar-system"
       SERVER:
     ports:
       - "8090:8090"      # nREPL server
