@@ -120,7 +120,8 @@
 (defn- get-exception
   [^ILoggingEvent event]
   (when-some [e (.getThrowableProxy event)]
-    (and (instance? ThrowableProxy e) (.getThrowable ^ThrowableProxy e))))
+    (when (instance? ThrowableProxy e)
+      (.getThrowable ^ThrowableProxy e))))
 
 (defn- get-timestamp
   [^ILoggingEvent event]
@@ -156,10 +157,8 @@
    (when-let [^Field field (or (util/accessible-field (class single-field-marker) "fieldValue")
                                (util/accessible-field (class single-field-marker) "object")
                                (util/accessible-field (class single-field-marker) "rawJson"))]
-     (let [k (.getFieldName ^net.logstash.logback.marker.SingleFieldAppendingMarker
-                            single-field-marker)
-           v (.get field single-field-marker)]
-       [k v]))))
+     {(.getFieldName ^net.logstash.logback.marker.SingleFieldAppendingMarker single-field-marker)
+      (.get field single-field-marker)})))
 
 (defn- logstash-map-attrs
   [map-entries-marker]
@@ -174,12 +173,11 @@
   (persistent! (transduce (keep (fn [marker]
                                   (cond
                                     (instance-SingleFieldAppendingMarker? marker)
-                                    (some->> (logstash-single-field-attr marker)
-                                             (into {}))
+                                    (logstash-single-field-attr marker)
 
                                     (instance-MapEntriesAppendingMarker? marker)
                                     (logstash-map-attrs marker))))
-                          util/into!
+                          (completing util/into!)
                           (transient {})
                           markers)))
 
@@ -187,6 +185,10 @@
   [pred]
   (filter (fn [[k _]]
             (pred k))))
+
+(defn- get*
+  [ms k]
+  (first (keep #(get % k) ms)))
 
 (defn append
   "Appends a `ILoggingEvent` by emitting as a log record. If [[initialize]] has
@@ -199,22 +201,24 @@
                   (context-from-mdc mdc) ; cover asynchronous case
                   context)
         level (.getLevel event)
+        arg-array (.getArgumentArray event)
+        kv-pairs (util/compile-if supports-KeyValuePairs?
+                                  (persistent! (util/into! (transient {})
+                                                           (map (fn [^KeyValuePair kvp] [(.-key kvp)
+                                                                                         (.-value
+                                                                                          kvp)]))
+                                                           (.getKeyValuePairs event)))
+                                  {})
+        logstash-structured-args (when supports-logstash-StructuredArgument?
+                                   (logstash-marker-attrs arg-array))
         markers (flatten-markers (util/compile-if supports-MarkerList?
                                                   (.getMarkerList event)
                                                   (list (.getMarker event))))
-        kv-pairs (util/compile-if
-                  supports-KeyValuePairs?
-                  (cond-> (transient {})
-                    (.-matchKeyValuePairAttribute appender)
-                    (util/into! (comp (map (fn [^KeyValuePair kvp] [(.-key kvp) (.-value kvp)]))
-                                      (filter-keys (.-matchKeyValuePairAttribute appender)))
-                                (.getKeyValuePairs event)))
-                  (transient {}))
+        logstash-markers (logstash-marker-attrs markers)
+        event-name (get* [kv-pairs mdc logstash-structured-args logstash-markers] "otel.event.name")
         attributes
         (persistent!
-         (cond-> kv-pairs
-           (.-matchMdcAttribute appender) (util/into! (filter-keys (.-matchMdcAttribute appender))
-                                                      mdc)
+         (cond-> (transient {})
            (.-captureExperimentalAttributes appender)
            (assoc! ThreadIncubatingAttributes/THREAD_ID
                    (get mdc mdc-thread-id-key)
@@ -225,28 +229,32 @@
            (.-captureMarkerAttribute appender)
            (assoc! "logback.marker"
                    (->> markers
-                        (remove #(and (.-matchLogstashMarkerAttribute appender)
+                        (remove #(and (.-matchStructuredAttribute appender)
                                       (instance-LogStashMarker? %)))
                         (mapv #(.getName ^Marker %))))
 
-           (.-matchLogstashMarkerAttribute appender)
-           (util/into! (filter-keys (.-matchLogstashMarkerAttribute appender))
-                       (logstash-marker-attrs markers))
+           (and (.-captureTemplate appender) (seq arg-array)) (assoc! "log.body.template"
+                                                                      (.getMessage event))
+           (and (.-captureArguments appender) (seq arg-array)) (assoc! "log.body.parameters"
+                                                                       (mapv str arg-array))
 
            (.-matchLoggerContextAttribute appender)
            (util/into! (filter-keys (.-matchLoggerContextAttribute appender))
                        (.getPropertyMap (.getLoggerContextVO event)))
 
-           (.-captureTemplate appender) (assoc! "log.body.template" (.getMessage event))
-           (.-captureArguments appender) (assoc! "log.body.parameters"
-                                                 (mapv str (.getArgumentArray event)))
-           (and supports-logstash-StructuredArgument?
-                (.-matchLogstashStructuredArgumentsAttribute appender))
-           (util/into! (filter-keys (.-matchLogstashStructuredArgumentsAttribute appender))
-                       (logstash-marker-attrs (.getArgumentArray event)))))
+           (.-matchStructuredAttribute appender)
+           (util/into! (filter-keys (.-matchStructuredAttribute appender)) logstash-markers)
 
-        event-name (get attributes "otel.event.name")
-        attributes (dissoc attributes "otel.event.name")]
+           (.-matchStructuredAttribute appender)
+           (util/into! (filter-keys (.-matchStructuredAttribute appender)) logstash-structured-args)
+
+           (.-matchMdcAttribute appender) (util/into! (filter-keys (.-matchMdcAttribute appender))
+                                                      mdc)
+
+           (.-matchStructuredAttribute appender)
+           (util/into! (filter-keys (.-matchStructuredAttribute appender)) kv-pairs)
+
+           :always (dissoc! "otel.event.name")))]
     (log-record/emit {:logger        (get-logger-name event)
                       :context       context
                       :severity      (and level

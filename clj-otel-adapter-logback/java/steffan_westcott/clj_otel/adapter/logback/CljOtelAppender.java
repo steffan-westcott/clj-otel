@@ -26,20 +26,20 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     public boolean captureMarkerAttribute;
 
     /**
-     * Set of globs for keys of Logback KeyValuePairs to exclude as log record attributes, or default <code>null</code> if none defined.
-     * Takes precedence over <code>keyValuePairAttributesIncluded</code>.
+     * Set of globs for keys of Logback KeyValuePairs, Logstash markers and Logstash structured arguments to exclude as log record attributes, or default <code>null</code> if none defined.
+     * Takes precedence over <code>structuredAttributesIncluded</code>.
      */
-    public Set<String> keyValuePairAttributesExcluded;
+    public Set<String> structuredAttributesExcluded;
 
     /**
-     * Set of globs for keys of Logback KeyValuePairs to include as log record attributes, or default <code>null</code> if none defined.
+     * Set of globs for keys of Logback KeyValuePairs, Logstash markers and Logstash structured arguments to include as log record attributes, or default <code>null</code> if none defined.
      */
-    public Set<String> keyValuePairAttributesIncluded;
+    public Set<String> structuredAttributesIncluded;
 
     /**
-     * Predicate for keys of Logback KeyValuePairs to include as log record attributes, or default <code>null</code> if none defined.
+     * Predicate for keys of Logback KeyValuePairs, Logstash markers and Logstash structured arguments to include as log record attributes, or default <code>null</code> if none defined.
      */
-    public IFn matchKeyValuePairAttribute;
+    public IFn matchStructuredAttribute;
 
     /**
      * Set of globs for keys of Logback context properties to exclude as log record attributes, or default <code>null</code> if none defined.
@@ -66,38 +66,6 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
      * If true, include message arguments as an attribute (default: false)
      */
     public boolean captureArguments;
-
-    /**
-     * Set of globs for keys of Logstash marker attribute to exclude as log record attributes, or default <code>null</code> if none defined.
-     * Takes precedence over <code>logstashMarkerAttributesIncluded</code>.
-     */
-    public Set<String> logstashMarkerAttributesExcluded;
-
-    /**
-     * Set of globs for keys of Logstash marker attributes to include as log record attributes, or default <code>null</code> if none defined.
-     */
-    public Set<String> logstashMarkerAttributesIncluded;
-
-    /**
-     * Predicate for keys of Logstash marker attributes to include as log record attributes, or default <code>null</code> if none defined.
-     */
-    public IFn matchLogstashMarkerAttribute;
-
-    /**
-     * Set of globs for keys of Logstash structured arguments to exclude as log record attributes, or default <code>null</code> if none defined.
-     * Takes precedence over <code>logstashStructuredArgumentAttributesIncluded</code>.
-     */
-    public Set<String> logstashStructuredArgumentAttributesExcluded;
-
-    /**
-     * Set of globs for keys of Logstash structured arguments to include as log record attributes, or default <code>null</code> if none defined.
-     */
-    public Set<String> logstashStructuredArgumentAttributesIncluded;
-
-    /**
-     * Predicate for keys of Logstash structured arguments to include as log record attributes, or default <code>null</code> if none defined.
-     */
-    public IFn matchLogstashStructuredArgumentsAttribute;
 
     /**
      * Set of globs for keys of MDC attributes to exclude as log record attributes, or default <code>null</code> if none defined.
@@ -130,10 +98,8 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     @Override
     public void start()
     {
-        this.matchKeyValuePairAttribute = invokeMaybeGlob(keyValuePairAttributesExcluded, keyValuePairAttributesIncluded);
+        this.matchStructuredAttribute = invokeMaybeGlob(structuredAttributesExcluded, structuredAttributesIncluded);
         this.matchLoggerContextAttribute = invokeMaybeGlob(loggerContextAttributesExcluded, loggerContextAttributesIncluded);
-        this.matchLogstashMarkerAttribute = invokeMaybeGlob(logstashMarkerAttributesExcluded, logstashMarkerAttributesIncluded);
-        this.matchLogstashStructuredArgumentsAttribute = invokeMaybeGlob(logstashStructuredArgumentAttributesExcluded, logstashStructuredArgumentAttributesIncluded);
         this.matchMdcAttribute = invokeMaybeGlob(mdcAttributesExcluded, mdcAttributesIncluded);
         super.start();
     }
@@ -168,12 +134,12 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         this.captureMarkerAttribute = captureMarkerAttribute;
     }
 
-    public void setKeyValuePairAttributesExcluded(String keyValuePairAttrsExcludedString) {
-        this.keyValuePairAttributesExcluded = trimmedSet(keyValuePairAttrsExcludedString);
+    public void setStructuredAttributesExcluded(String structuredAttributesExcludedString) {
+        this.structuredAttributesExcluded = trimmedSet(structuredAttributesExcludedString);
     }
 
-    public void setKeyValuePairAttributesIncluded(String keyValuePairAttrsIncludedString) {
-        this.keyValuePairAttributesIncluded = trimmedSet(keyValuePairAttrsIncludedString);
+    public void setStructuredAttributesIncluded(String structuredAttributesIncludedString) {
+        this.structuredAttributesIncluded = trimmedSet(structuredAttributesIncludedString);
     }
 
     public void setLoggerContextAttributesExcluded(String loggerContextAttrsExcludedString) {
@@ -190,22 +156,6 @@ public class CljOtelAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
 
     public void setCaptureArguments(boolean captureArguments) {
         this.captureArguments = captureArguments;
-    }
-
-    public void setLogstashMarkerAttributesExcluded(String logstashMarkerAttrsExcludedString) {
-        this.logstashMarkerAttributesExcluded = trimmedSet(logstashMarkerAttrsExcludedString);
-    }
-
-    public void setLogstashMarkerAttributesIncluded(String logstashMarkerAttrsIncludedString) {
-        this.logstashMarkerAttributesIncluded = trimmedSet(logstashMarkerAttrsIncludedString);
-    }
-
-    public void setLogstashStructuredArgumentAttributesExcluded(String logstashStructuredArgumentAttrsExcludedString) {
-        this.logstashStructuredArgumentAttributesExcluded = trimmedSet(logstashStructuredArgumentAttrsExcludedString);
-    }
-
-    public void setLogstashStructuredArgumentAttributesIncluded(String logstashStructuredArgumentAttrsIncludedString) {
-        this.logstashStructuredArgumentAttributesIncluded = trimmedSet(logstashStructuredArgumentAttrsIncludedString);
     }
 
     public void setMdcAttributesExcluded(String mdcAttrsExcludedString) {
