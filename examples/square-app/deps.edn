@@ -29,7 +29,7 @@
                                      "-Dotel.metric.export.interval=10000"]
 
                         :extra-deps {;; Automatically add various OpenTelemetry resources to exported telemetry
-                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.33.0-alpha"}
+                                     io.opentelemetry.instrumentation/opentelemetry-resources {:mvn/version "2.33.1-alpha"}
 
                                      ;; Enables export of telemetry using OpenTelemetry Protocol (OTLP)
                                      io.opentelemetry/opentelemetry-exporter-otlp {:mvn/version "1.67.0"}}}
