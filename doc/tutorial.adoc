@@ -40,8 +40,8 @@ The application has no instrumentation initially.
 ----
 {:paths ["src"]
 
- :deps  {org.clojure/clojure     {:mvn/version "1.12.5"}
-         ring/ring-jetty-adapter {:mvn/version "1.15.4"}}}
+ :deps  {org.clojure/clojure     {:mvn/version "1.12.6"}
+         ring/ring-jetty-adapter {:mvn/version "1.15.6"}}}
 ----
 +
 .`./src/tutorial/counter_service.clj`
@@ -107,7 +107,7 @@ You will now start a telemetry backend that will receive and display telemetry t
 docker run --rm                            \
            -p 16686:16686                  \
            -p 4318:4318                    \
-           jaegertracing/jaeger:2.19.0
+           jaegertracing/jaeger:2.22.0
 ----
 
 * Once Jaeger has started, verify you can access the user interface by navigating to http://localhost:16686/search in a web browser.
@@ -130,8 +130,8 @@ Ensure the file is placed in the project root directory (the same directory as `
 ----
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure     {:mvn/version "1.12.5"}
-           ring/ring-jetty-adapter {:mvn/version "1.15.4"}}
+ :deps    {org.clojure/clojure     {:mvn/version "1.12.6"}
+           ring/ring-jetty-adapter {:mvn/version "1.15.6"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
                              "-Dotel.service.name=counter-service"
@@ -177,8 +177,8 @@ You will now enrich the telemetry detail by adding manual instrumentation in add
 ----
 {:paths   ["src"]
 
- :deps    {org.clojure/clojure                      {:mvn/version "1.12.5"}
-           ring/ring-jetty-adapter                  {:mvn/version "1.15.4"}
+ :deps    {org.clojure/clojure                      {:mvn/version "1.12.6"}
+           ring/ring-jetty-adapter                  {:mvn/version "1.15.6"}
            com.github.steffan-westcott/clj-otel-api {:mvn/version "0.2.10"}}
 
  :aliases {:otel {:jvm-opts ["-javaagent:opentelemetry-javaagent.jar"
