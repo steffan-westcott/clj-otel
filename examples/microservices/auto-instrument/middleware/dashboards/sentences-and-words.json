@@ -97,7 +97,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(service_sentence_summary_sentence_length_bucket{job=\"sentence-summary-service\"}[$__rate_interval])",
+          "expr": "rate(service_sentence_summary_sentence_length_bucket{job=\"sentence-summary/sentence-summary-service\"}[$__rate_interval])",
           "format": "heatmap",
           "instant": false,
           "legendFormat": "__auto",
@@ -195,7 +195,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "rate(service_word_length_letters_total{job=\"word-length-service\"}[$__rate_interval])",
+          "expr": "rate(service_word_length_letters_total{job=\"sentence-summary/word-length-service\"}[$__rate_interval])",
           "instant": false,
           "legendFormat": "rate",
           "range": true,

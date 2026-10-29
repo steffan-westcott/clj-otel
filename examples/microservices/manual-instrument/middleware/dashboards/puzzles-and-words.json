@@ -97,7 +97,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (le) (rate(service_puzzle_puzzle_size_letters_bucket{job=\"puzzle-service\"}[$__rate_interval]))",
+          "expr": "sum by (le) (rate(service_puzzle_puzzle_size_letters_bucket{job=\"puzzle/puzzle-service\"}[$__rate_interval]))",
           "format": "heatmap",
           "instant": false,
           "key": "Q-85fb20fb-abb8-4c6f-bd6a-e65063b82131-0",
@@ -196,7 +196,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "increase(service_random_word_words_total{job=\"random-word-service\"}[1m])",
+          "expr": "increase(service_random_word_words_total{job=\"puzzle/random-word-service\"}[1m])",
           "instant": false,
           "legendFormat": "{{word_type}}",
           "range": true,

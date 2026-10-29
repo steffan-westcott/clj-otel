@@ -109,7 +109,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(service_solar_system_reports_created_total{job=\"solar-system-service\"}[$__rate_interval]) * 60",
+          "expr": "rate(service_solar_system_reports_created_total{job=\"solar-system/solar-system-service\"}[$__rate_interval]) * 60",
           "instant": false,
           "legendFormat": "created",
           "range": true,
@@ -204,7 +204,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "rate(service_planet_statistic_lookups_total{job=\"planet-service\"}[$__rate_interval])",
+          "expr": "rate(service_planet_statistic_lookups_total{job=\"solar-system/planet-service\"}[$__rate_interval])",
           "instant": false,
           "legendFormat": "{{statistic}}",
           "range": true,
