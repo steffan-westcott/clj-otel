@@ -2,4 +2,4 @@
 
 {:paths ["src"]
  :deps  {org.clojure/clojure ^:antq/exclude {:mvn/version "1.10.3"}
-         io.opentelemetry.contrib/opentelemetry-aws-xray-propagator {:mvn/version "1.60.0-alpha"}}}
+         io.opentelemetry.contrib/opentelemetry-aws-xray-propagator {:mvn/version "1.61.0-alpha"}}}
