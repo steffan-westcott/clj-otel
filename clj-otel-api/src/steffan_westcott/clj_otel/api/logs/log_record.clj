@@ -9,6 +9,8 @@
             [steffan-westcott.clj-otel.api.value :as value]
             [steffan-westcott.clj-otel.config :refer [config]]
             [steffan-westcott.clj-otel.context :as context]
+            #_{:clj-kondo/ignore [:unused-namespace]}
+            [steffan-westcott.clj-otel.instrumentation.api.config.glob :as glob] ; for uberjar
             [steffan-westcott.clj-otel.util :as util])
   (:import (clojure.lang IPersistentMap Keyword)
            (io.opentelemetry.api OpenTelemetry)
