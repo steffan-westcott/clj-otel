@@ -24,10 +24,11 @@ WARNING: Until version `1.0.0` there is a greater possibility of breaking change
 
 == `0.x` changes
 
-=== `0.2.11` (in progress)
+=== `0.2.11` (2026-11-01)
 
 - [NEW] Modules `clj-otel-adapter-log4j` and `clj-otel-adapter-logback`, bound context aware appender and context data provider for Log4j and Logback.
-New examples `permutations-app` and `triangular-app` demonstrate using `clj-otel-adapter-logback` with and without the instrumentation agent.
+Existing examples using Log4j demonstrate using `clj-otel-adapter-log4j` with and without the instrumentation agent.
+Similarly, new examples `permutations-app` and `triangular-app` demonstrate using `clj-otel-adapter-logback`.
 - [NEW] Module `clj-otel-instrumentation-runtime-telemetry`, replaces former modules `clj-otel-instrumentation-runtime-telemetry-java8` and `clj-otel-instrumentation-runtime-telemetry-java17`
 - [NEW] Predicate options `:request-header-attr?` and `:response-header-attr?` to select HTTP headers by name to add as attributes to manually created server spans.
 These new options are supported by `wrap-server-span` and `server-span-interceptors`.
@@ -42,7 +43,7 @@ This ensures `attributes/->attributes` does not add unwanted `_` characters in a
 - [FIX] Allow `wrap-route` to be used within any context.
 Previously, for synchronous handlers it was assumed the current context contained the server span.
 - [MAINT] For attribute array values, collect eagerly (vector) rather than lazily (list)
-- [MAINT] Deprecated Zipkin exporter, Jaeger and OpenTracing propagation protocol namespaces, to reflect their status in the OpenTelemetry specification.
+- [MAINT] Deprecated Jaeger and OpenTracing propagation protocol namespaces, to reflect their status in the OpenTelemetry specification.
 These will be removed in a future release.
 - Bump deps
 * [MAINT] OpenTelemetry `1.67.0`, semconv `1.44.0`, instrumentation `2.33.1`

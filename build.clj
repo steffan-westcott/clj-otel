@@ -21,7 +21,7 @@ clojure -A:deps -T:build help/doc"
   (:import (java.nio.file FileSystems)))
 
 (def ^:private version
-  "0.2.11-SNAPSHOT")
+  "0.2.11")
 
 (def ^:private library-group-id
   "com.github.steffan-westcott")
