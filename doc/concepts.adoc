@@ -56,7 +56,7 @@ OpenTelemetry's Mission: to enable effective observability by making high-qualit
 OpenTelemetry is a set of APIs, SDKs, tooling, integrations and semantic conventions for creating and managing telemetry data.
 OpenTelemetry provides a vendor-agnostic implementation per language (Java, Go, JavaScript, C++ and others) that exports telemetry data to backends of your choice.
 The Java implementation supports *automatic instrumentation* of many https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/supported-libraries.md[libraries, frameworks and application servers] and *manual instrumentation* of library or application source code.
-OpenTelemetry supports various backends, including OSS projects (Jaeger, Zipkin, Prometheus, Grafana Tempo, SigNoz) and commercial products (Honeycomb, ServiceNow, Aspecto, Dynatrace, New Relic, Datadog and more).
+OpenTelemetry supports various backends, including OSS projects (Jaeger, Zipkin, Prometheus, Grafana, SigNoz) and commercial products (Honeycomb, ServiceNow, BugSnag, Dynatrace, New Relic, Datadog and more).
 
 The OpenTelemetry project also provides the *OpenTelemetry Collector*, a vendor-agnostic deployable process which receives, processes and exports telemetry data.
 
@@ -112,23 +112,20 @@ The following sections are incomplete selections of open-source software (OSS) a
 
 NOTE: Some commercial telemetry backends have a free version with a reduced capacity or feature set.
 
-* https://www.appdynamics.com/[AppDynamics]
-* https://www.aspecto.io/[Aspecto]
 * https://aws.amazon.com/xray/[AWS X-Ray]
 * https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview[Azure Application Insights]
 * https://betterstack.com/[Better Stack]
-* https://www.bugsnag.com/[Bugsnag]
+* https://www.bugsnag.com/[BugSnag]
 * https://www.causely.io/[Causely]
 * https://chronosphere.io/[Chronosphere]
 * https://coralogix.com/[Coralogix]
 * https://www.dash0.com/[Dash0]
 * https://www.datadoghq.com/[Datadog]
 * https://www.dynatrace.com/[Dynatrace]
-* https://gigapipe.com/qryn/[Gigapipe qryn]
+* https://gigapipe.com/[Gigapipe]
 * https://cloud.google.com/trace[Google Cloud Trace]
 * https://grafana.com/products/cloud/[Grafana Cloud]
 * https://www.groundcover.com/[groundcover]
-* https://gethelios.dev/[Helios]
 * https://www.honeycomb.io/[Honeycomb]
 * https://www.hyperdx.io/[HyperDX]
 * https://www.instana.com/[Instana]
@@ -139,7 +136,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://logz.io/[Logz.io]
 * https://lumigo.io/[Lumigo]
 * https://newrelic.com/[New Relic]
-* https://www.observeinc.com/[Observe Inc.]
+* https://www.snowflake.com/en/product/observe/[Observe by Snowflake]
 * https://oneuptime.com/[OneUptime]
 * https://docs.oracle.com/en-us/iaas/application-performance-monitoring/index.html[Oracle Cloud Infrastructure APM]
 * https://www.randoli.io/[Randoli]
@@ -147,9 +144,7 @@ NOTE: Some commercial telemetry backends have a free version with a reduced capa
 * https://www.servicepilot.com/[ServicePilot]
 * https://www.splunk.com/en_us/products/apm-application-performance-monitoring.html[Splunk APM]
 * https://www.sumologic.com/[Sumo Logic]
-* https://telemetryhub.com/[TelemetryHub]
 * https://uptrace.dev/[Uptrace]
-* https://tanzu.vmware.com/aria-operations-for-applications[VMware Aria Operations for Applications]
 * https://vunetsystems.com/vuapp360/[VuNet]
 
 == Using OpenTelemetry
@@ -236,21 +231,22 @@ The available types of instrument are:
 
 === Logs
 
-A service log is made of *lines of text* (possibly structured e.g. in JSON format) written when certain *points in the service code are executed*.
+A service log is made of *log records* created when certain *points in the service code are executed*.
 Logs are well suited to ad-hoc debugging and capture of low-level details.
 
 === Events
 
 Events are captured as either a specific type of log or as a span event.
-Events are records that *describe actions taken* by the system or significant *environmental changes*, such as a service deployment or change in configuration.
+Events are records that may describe a significant state change or checkpoint, such as a service deployment or change in configuration.
 
 [#_attributes]
 === Attributes
 
-Attributes may be attached to some telemetry data such as spans and resources.
+Attributes may be attached to some telemetry data such as spans, measurements, log records and resources.
 Attributes are a map where each entry has a string key.
-Each entry value is a boolean, long, double, string or an array of one of those types.
-Entries with a `nil` value are dropped.
+Each entry value is a boolean, long, double, string, array or map.
+Entry values may have nested structure.
+Top level entries with a `nil` value are dropped.
 
 OpenTelemetry recommends using namespaced attribute names to prevent clashes.
 See the specification for https://opentelemetry.io/docs/reference/specification/common/common/#attributes[attributes] and https://opentelemetry.io/docs/reference/specification/common/attribute-naming/[attribute naming].
@@ -322,10 +318,10 @@ OpenTelemetry provides text map propagators for the following protocols:
 
 * https://www.w3.org/TR/trace-context/[W3C Trace Context propagation protocol]
 * https://www.w3.org/TR/baggage/[W3C baggage header propagation protocol]
-* https://github.com/opentracing/basictracer-python/blob/master/basictracer/text_propagator.py[OpenTracing Basic Tracers protocol]
-* Jaeger propagation protocol
 * https://github.com/openzipkin/b3-propagation[B3 propagation protocol]
 * https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader[AWS X-Ray Trace Header propagation protocol]
+* https://github.com/opentracing/basictracer-python/blob/master/basictracer/text_propagator.py[OpenTracing Basic Tracers protocol] (deprecated)
+* Jaeger propagation protocol (deprecated)
 
 The *W3C Trace Context* and *W3C baggage header* propagation protocols are the most commonly used.
 
@@ -477,14 +473,12 @@ The following are alternative telemetry projects in the Clojure ecosystem, conce
 
 * https://github.com/BrunoBonacci/mulog#%CE%BCtrace[μ/trace] : Micro distributed tracing library with the focus on tracking data with custom attributes; a subsystem of https://github.com/BrunoBonacci/mulog[μ/log]
 * https://github.com/amperity/ken#tracing[ken] tracing support
-* https://github.com/uswitch/opencensus-clojure[opencensus-clojure] : Clojure wrapper for https://github.com/census-instrumentation/opencensus-java[opencensus-java]
 * https://github.com/alvinfrancis/opentracing-clj[opentracing-clj] : OpenTracing API support for Clojure, built on top of https://github.com/opentracing/opentracing-java[opentracing-java]
 * https://github.com/Cyrik/omni-trace[omni-trace] : Clojure(Script) tracing for debugging
 
 === Unstructured logs
 
 * https://github.com/ptaoussanis/timbre[Timbre] : Pure Clojure/Script logging library
-* https://github.com/FundingCircle/clj-loga[clj-loga] : Custom log formatting for Timbre
 
 === Metrics
 

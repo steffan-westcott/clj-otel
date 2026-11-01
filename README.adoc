@@ -115,7 +115,7 @@ See more xref:doc/examples.adoc[information on configuring and running the examp
 
 == Project status
 
-* `clj-otel` is currently used in a small number of independent production settings.
+* `clj-otel` is currently used in several independent production settings.
 Breaking API changes may still be made, but there should be few, if any.
 * For manual instrumentation:
 ** Coverage of the Traces API is complete.
@@ -130,7 +130,6 @@ There is also a demonstration https://clojure.github.io/core.async/index.html[`c
 ** Coverage of Logs API is complete.
 Note that the Logs API is for use by logging libraries only.
 For applications and general libraries, use a logging library with OpenTelemetry logging signal support, such as Log4j2, Timbre etc.
-These logging libraries support current context only.
 * For the programmatic configuration of the OpenTelemetry SDK:
 ** Coverage of Traces `TracerProvider` is complete.
 ** Coverage of Metrics `MeterProvider` is in progress.
@@ -158,9 +157,8 @@ See xref:CHANGELOG.adoc[changelog]
 
 The *most needed* contribution is *experience reports* of `clj-otel` use in production systems.
 I am keen to hear of usages of `clj-otel` and any problems and successes.
-`clj-otel` is a very young project, so now is an ideal time to provide *feedback* on the API design as improvements can be made freely.
 
-I will be happy to consider pull requests for minor changes, but I may not accept more significant changes while I make a start on some items in the TODO list.
+I will be happy to consider pull requests for minor changes, but I may not accept more significant changes.
 
 For questions or feedback on `clj-otel`, contact me on the https://clojurians.slack.com/messages/clj-otel[`#clj-otel`] channel in http://clojurians.net/[Clojurians Slack], user `steffan`.
 
